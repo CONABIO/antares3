@@ -27,11 +27,11 @@ setup(name='madmex',
       license='GPLv3',
       packages=find_packages(),
       install_requires=[
-          'rasterio',
-          'datacube',
+          'python-dotenv',
+          'Django',
           'xarray',
           'psycopg2'],
-      scripts=[],
+      scripts=['madmex.py'],
       test_suite="tests",
       extras_require=extra_reqs)
 
