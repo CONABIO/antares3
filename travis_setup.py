@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+import os
+
+### 1 - datacube database requires a configuration file
+dc_conf = ['[datacube]',
+           'db_database: datacube',
+           'db_hostname: localhost']
+
+with open(os.path.expanduser('~/.datacube.conf'), 'w') as dst:
+    for line in dc_conf:
+        dst.write('%s\n' % line)
+

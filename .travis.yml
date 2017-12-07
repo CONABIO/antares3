@@ -1,0 +1,42 @@
+language: python
+
+cache: pip
+
+dist: trusty
+
+addons:
+  postgresql: "9.5"
+
+sudo: required
+
+python:
+  - "2.7"
+  - "3.6"
+
+before_install:
+  - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes
+  - sudo apt-get --yes --force-yes update -qq
+  # Datacube system dependencies (gdal and netcdf)
+  - sudo apt-get install --yes libhdf5-serial-dev libnetcdf-dev
+  - sudo apt-get install --yes libgdal1-dev
+  - pip install -U pip
+  - pip install numpy
+  - pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
+  - ./travis_setup.py
+
+
+install:
+  - pip install -e .
+
+before_script:
+  - psql -U postgres -c "create extension postgis"
+  - createdb datacube
+  - datacube -v system init
+
+script:
+  - python setup.py test
+
+warnings_are_errors: true
+
+notifications:
+  email: false
