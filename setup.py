@@ -30,7 +30,7 @@ setup(name='madmex',
           'rasterio',
           'datacube',
           'xarray',
-          'psycopg2']
+          'psycopg2'],
       scripts=[],
       test_suite="tests",
       extras_require=extra_reqs)

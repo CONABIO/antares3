@@ -1,4 +1,4 @@
-geextract.egg-info/*
+madmex.egg-info/*
 docs/_build/*
 *.swp
 *.pyc
