@@ -29,6 +29,8 @@ install:
   - pip install -e .
 
 before_script:
+  # install the proper postgis version
+  - sudo apt-get install postgresql-9.5-postgis-2.3 postgis -y -q
   - psql -U postgres -c "create extension postgis"
   - createdb datacube
   - datacube -v system init
