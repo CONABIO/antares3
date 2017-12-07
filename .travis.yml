@@ -19,6 +19,10 @@ before_install:
   # Datacube system dependencies (gdal and netcdf)
   - sudo apt-get install --yes libhdf5-serial-dev libnetcdf-dev
   - sudo apt-get install --yes libgdal1-dev
+  # Postgis dependencies
+  - sudo apt-get install --yes libgdal1h libgeos-c1 liblwgeom-2.4-0
+  # install the proper postgis version
+  - sudo apt-get install --yes postgresql-9.5-postgis-2.3 postgis
   - pip install -U pip
   - pip install numpy
   - pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
@@ -29,8 +33,6 @@ install:
   - pip install -e .
 
 before_script:
-  # install the proper postgis version
-  - sudo apt-get install postgresql-9.5-postgis-2.3 postgis -y -q
   - psql -U postgres -c "create extension postgis"
   - createdb datacube
   - datacube -v system init
