@@ -1,0 +1,8 @@
+madmex.egg-info/*
+docs/_build/*
+*.swp
+*.pyc
+*.pyc[cod]
+.DS_Store
+.env
+__pycache__/
