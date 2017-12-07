@@ -19,10 +19,13 @@ before_install:
   # Datacube system dependencies (gdal and netcdf)
   - sudo apt-get install --yes libhdf5-serial-dev libnetcdf-dev
   - sudo apt-get install --yes libgdal1-dev
-  # Postgis dependencies
-  - sudo apt-get install --yes libgdal1h libgeos-c1 liblwgeom-2.4-0
-  # install the proper postgis version
-  - sudo apt-get install --yes postgresql-9.5-postgis-2.3 postgis
+  # POstgis dependencies
+  - sudo apt-get install --yes libjson-c-dev postgresql-server-dev-9.5
+  # Download and compile postgis
+  - wget http://download.osgeo.org/postgis/source/postgis-2.3.2.tar.gz
+  - (mv postgis* /tmp; cd /tmp; tar xzf postgis-2.3.2.tar.gz)
+  - (cd /tmp/postgis-2.3.2 ; ./configure; make; sudo make install)
+  # Python (numpy headers required for rasterio)
   - pip install -U pip
   - pip install numpy
   - pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
