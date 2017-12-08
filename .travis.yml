@@ -2,7 +2,9 @@ language: python
 
 cache: pip
 
-dist: trusty
+#dist: trusty
+
+dist: xenial
 
 addons:
   postgresql: "9.5"
