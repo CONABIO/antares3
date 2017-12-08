@@ -26,7 +26,7 @@ before_install:
  # - (mv postgis* /tmp; cd /tmp; tar xzf postgis-2.3.2.tar.gz)
  # - (cd /tmp/postgis-2.3.2 ; ./configure; make; sudo make install)
  #just testing:
-  - sudo apt-get install -y postgresql-9.3-postgis-2.2
+ # - sudo apt-get install -y postgresql-9.3-postgis-2.2
   - sudo apt-get install -y postgresql postgresql-9.5-postgis-2.2
   # Python (numpy headers required for rasterio)
   - pip install -U pip
