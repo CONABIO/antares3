@@ -20,11 +20,14 @@ before_install:
   - sudo apt-get install --yes libhdf5-serial-dev libnetcdf-dev
   - sudo apt-get install --yes libgdal1-dev
   # POstgis dependencies
-  - sudo apt-get install --yes libjson-c-dev postgresql-server-dev-9.5
+ # - sudo apt-get install --yes libjson-c-dev postgresql-server-dev-9.5
   # Download and compile postgis
-  - wget http://download.osgeo.org/postgis/source/postgis-2.3.2.tar.gz
-  - (mv postgis* /tmp; cd /tmp; tar xzf postgis-2.3.2.tar.gz)
-  - (cd /tmp/postgis-2.3.2 ; ./configure; make; sudo make install)
+ # - wget http://download.osgeo.org/postgis/source/postgis-2.3.2.tar.gz
+ # - (mv postgis* /tmp; cd /tmp; tar xzf postgis-2.3.2.tar.gz)
+ # - (cd /tmp/postgis-2.3.2 ; ./configure; make; sudo make install)
+ #just testing:
+  - sudo apt-get install -y postgresql-9.3-postgis-2.2
+  - sudo apt-get install -y postgresql postgresql-9.5-postgis-2.2
   # Python (numpy headers required for rasterio)
   - pip install -U pip
   - pip install numpy
