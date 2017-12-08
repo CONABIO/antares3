@@ -27,5 +27,5 @@ class Command(AntaresBaseCommand):
         each one of them.
         '''
         for name in options['names']:
-            logger.info('Hello %s from madmex!' % name)
+            logger.info('Hello %s from madmex antares3 jojojo!' % name)
 
