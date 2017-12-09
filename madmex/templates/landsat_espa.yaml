@@ -1,0 +1,34 @@
+id: {{ id }}
+extent:
+  center_dt: {{ dt }}
+  coord:
+    ll: {lat: {{ ll_lat }}, lon: {{  ll_lon }} }
+    lr: {lat: {{ lr_lat }}, lon: {{  lr_lon }} }
+    ul: {lat: {{ ul_lat }}, lon: {{  ul_lon }} }
+    ur: {lat: {{ ur_lat }}, lon: {{  ur_lon }} }
+  from_dt: {{ dt }}
+  to_dt: {{ dt }}
+format: {name: GEOTIFF}
+grid_spatial:
+  projection:
+    geo_ref_points:
+      ll: {x: {{ ll_x }}, y: {{ ll_y }} }
+      lr: {x: {{ lr_x }}, y: {{ lr_y }} }
+      ul: {x: {{ ul_x }}, y: {{ ul_y }} }
+      ur: {x: {{ ur_x }}, y: {{ ur_y }} }
+    spatial_reference: {{ epsg_code }}
+image:
+  bands:
+    blue: {layer: 1, path: {{ blue }} }
+    green: {layer: 1, path: {{ green }} }
+    nir: {layer: 1, path: {{ nir }} }
+    quality: {layer: 1, path: {{ qual }} }
+    red: {layer: 1, path: {{ red }} }
+    swir1: {layer: 1, path: {{ swir1 }} }
+    swir2: {layer: 1, path: {{ swir2 }} }
+instrument: {name: {{ instrument }} }
+lineage:
+  source_datasets: {}
+platform: {code: {{ platform }} }
+processing_level: L1TP
+product_type: L1TP

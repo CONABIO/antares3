@@ -30,9 +30,11 @@ setup(name='madmex',
           'python-dotenv',
           'Django',
           'xarray',
+          'pyproj',
           'psycopg2',
           'datacube'],
       scripts=['madmex.py'],
+      include_package_data=True,
       test_suite="tests",
       extras_require=extra_reqs)
 
