@@ -4,7 +4,10 @@ Created on Dec 12, 2017
 @author: agutierrez
 '''
 
+from importlib import import_module
+
 from django.contrib.gis.db import models
+from django.contrib.gis.utils.layermapping import LayerMapping
 
 
 class Country(models.Model):
@@ -20,5 +23,21 @@ class Region(models.Model):
     the_geom = models.MultiPolygonField()
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='country', default=None)
 
-def ingest_from_shape(path, table):
-    print(__name__)
+def ingest_countries_from_shape(path):
+    '''Ingestion function for countries to database.
+
+    This function should be executed only once when the system is configured:
+
+    Args:
+        path (str): The path to the shape file.
+
+    '''
+    mapping = {
+        'name' : 'NAME',
+        'the_geom' : 'MULTIPOLYGON'
+    }
+    layer_mapping = LayerMapping(
+        Country, path, mapping,
+        transform=False, encoding='UTF-8 ',
+    )
+    layer_mapping.save()
