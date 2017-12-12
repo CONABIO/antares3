@@ -6,3 +6,5 @@ docs/_build/*
 .DS_Store
 .env
 __pycache__/
+.project
+.pydevproject
