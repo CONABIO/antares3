@@ -1,10 +1,26 @@
 import os
 from glob import glob
+import re
 import uuid
+import xml.etree.ElementTree as ET
 
 import rasterio
+from pyproj import Proj
 from jinja2 import Environment, PackageLoader
 
+LANDSAT_BANDS = {'TM': {'blue': 'sr_band1',
+                        'green': 'sr_band2',
+                        'red': 'sr_band3',
+                        'nir': 'sr_band4',
+                        'swir1': 'sr_band5',
+                        'swir2': 'sr_band7'},
+                 'OLI_TIRS': {'blue': 'sr_band2',
+                              'green': 'sr_band3',
+                              'red': 'sr_band4',
+                              'nir': 'sr_band5',
+                              'swir1': 'sr_band6',
+                              'swir2': 'sr_band7'}}
+LANDSAT_BANDS['ETM'] = LANDSAT_BANDS['TM']
 
 def metadata_convert(path):
     """Prepare metatdata prior to datacube indexing
@@ -34,54 +50,86 @@ def metadata_convert(path):
     # Check that path is a dir and contains appropriate files
     if not os.path.isdir(path):
         raise ValueError('Argument path= is not a directory')
-    mtl_file_list = glob(os.path.join(path, '*MTL.txt'))
+    mtl_file_list = glob(os.path.join(path, '*.xml'))
+    # Filter list of xml files with regex (there could be more than one in case
+    # some bands have been opend in qgis for example)
+    pattern = re.compile(r'[A-Z0-9]{4}_[A-Z0-9]{4}_\d{6}_\d{8}_\d{8}_01_(T1|T2|RT)\.xml')
+    print(mtl_file_list)
+    mtl_file_list = [x for x in mtl_file_list if pattern.search(x)]
+    print(mtl_file_list)
     if len(mtl_file_list) != 1:
-        raise ValueError('Target directory must contain a unique MTL text file')
+        raise ValueError('Could not identify a unique xml metadata file')
     mtl_file = mtl_file_list[0]
-    meta_dict = {}
-    with open(mtl_file) as f:
-        for line in f:
-            try:
-                (key, val) = line.split(' = ')
-                (key, val) = (key.lstrip(), val.strip('\n').strip('"'))
-                meta_dict[key] = val
-            except Exception:
-                pass
+    # Start parsing xml
+    root = ET.parse(mtl_file).getroot()
+    ns = 'http://espa.cr.usgs.gov/v2'
+    dt = root.find('ns:global_metadata/ns:scene_center_time',
+                   namespaces={'ns': ns}).text
+    instrument = root.find('ns:global_metadata/ns:instrument',
+                           namespaces={'ns': ns}).text
+    satellite = root.find('ns:global_metadata/ns:satellite',
+                          namespaces={'ns': ns}).text
+    ulx = float(root.find('ns:global_metadata/ns:projection_information/ns:corner_point[@location="UL"]',
+                          namespaces={'ns': ns}).attrib['x'])
+    uly = float(root.find('ns:global_metadata/ns:projection_information/ns:corner_point[@location="UL"]',
+                          namespaces={'ns': ns}).attrib['y'])
+    lrx = float(root.find('ns:global_metadata/ns:projection_information/ns:corner_point[@location="LR"]',
+                          namespaces={'ns': ns}).attrib['x'])
+    lry = float(root.find('ns:global_metadata/ns:projection_information/ns:corner_point[@location="LR"]',
+                          namespaces={'ns': ns}).attrib['y'])
     # Retrieve crs from first band
-    bands = glob(os.path.join(path, '*B1.TIF'))
+    bands = glob(os.path.join(path, '*_sr_band2.tif'))
     with rasterio.open(bands[0]) as src:
-        epsg = src.crs['init']
+        crs = src.crs
+    # Get coorner coordinates in long lat by transforming from projected values 
+    p = Proj(crs)
+    ul_lon, ul_lat = p(ulx, uly, inverse=True)
+    lr_lon, lr_lat = p(lrx, lry, inverse=True)
+    ll_lon, ll_lat = p(ulx, lry, inverse=True)
+    ur_lon, ur_lat = p(lrx, uly, inverse=True)
     # Prepare metadata fields
     meta_out = {
         'id': uuid.uuid5(uuid.NAMESPACE_URL, path),
-        'dt': meta_dict['SCENE_CENTER_TIME'],
-        'll_lat': meta_dict['CORNER_LL_LAT_PRODUCT'],
-        'lr_lat': meta_dict['CORNER_LR_LAT_PRODUCT'],
-        'ul_lat': meta_dict['CORNER_UL_LAT_PRODUCT'],
-        'ur_lat': meta_dict['CORNER_UR_LAT_PRODUCT'],
-        'll_lon': meta_dict['CORNER_LL_LON_PRODUCT'],
-        'lr_lon': meta_dict['CORNER_LR_LON_PRODUCT'],
-        'ul_lon': meta_dict['CORNER_UL_LON_PRODUCT'],
-        'ur_lon': meta_dict['CORNER_UR_LON_PRODUCT'],
-        'll_x': meta_dict['CORNER_LL_PROJECTION_X_PRODUCT'],
-        'lr_x': meta_dict['CORNER_LR_PROJECTION_X_PRODUCT'],
-        'ul_x': meta_dict['CORNER_UL_PROJECTION_X_PRODUCT'],
-        'ur_x': meta_dict['CORNER_UR_PROJECTION_X_PRODUCT'],
-        'll_y': meta_dict['CORNER_LL_PROJECTION_Y_PRODUCT'],
-        'lr_y': meta_dict['CORNER_LR_PROJECTION_Y_PRODUCT'],
-        'ul_y': meta_dict['CORNER_UL_PROJECTION_Y_PRODUCT'],
-        'ur_y': meta_dict['CORNER_UR_PROJECTION_Y_PRODUCT'],
-        'epsg_code': epsg,
-        # TODO: FIle names have to be assigned dynamically, otherwise will
-        # only work for Landsat 8
-        'blue': meta_dict['FILE_NAME_BAND_2'],
-        'green': meta_dict['FILE_NAME_BAND_3'],
-        'red': meta_dict['FILE_NAME_BAND_4'],
-        'nir': meta_dict['FILE_NAME_BAND_5'],
-        'swir1': meta_dict['FILE_NAME_BAND_6'],
-        'swir2': meta_dict['FILE_NAME_BAND_7'],
-        'instrument': meta_dict['SENSOR_ID'],
-        'platform': meta_dict['SPACECRAFT_ID'],
+        'dt': dt,
+        'll_lat': ll_lat,
+        'lr_lat': lr_lat,
+        'ul_lat': ul_lat,
+        'ur_lat': ur_lat,
+        'll_lon': ll_lon,
+        'lr_lon': lr_lon,
+        'ul_lon': ul_lon,
+        'ur_lon': ur_lon,
+        'll_x': ulx,
+        'lr_x': lrx,
+        'ul_x': ulx,
+        'ur_x': lrx,
+        'll_y': lry,
+        'lr_y': lry,
+        'ul_y': uly,
+        'ur_y': uly,
+        'crs': crs.wkt,
+        'blue': os.path.join(path, root.find('ns:bands/ns:band[@name="%s"]/ns:file_name' %
+                                             LANDSAT_BANDS[instrument]['blue'],
+                                             namespaces={'ns': 'http://espa.cr.usgs.gov/v2'}).text),
+        'green': os.path.join(path, root.find('ns:bands/ns:band[@name="%s"]/ns:file_name' %
+                                              LANDSAT_BANDS[instrument]['green'],
+                                              namespaces={'ns': 'http://espa.cr.usgs.gov/v2'}).text),
+        'red': os.path.join(path, root.find('ns:bands/ns:band[@name="%s"]/ns:file_name' %
+                                              LANDSAT_BANDS[instrument]['red'],
+                                              namespaces={'ns': 'http://espa.cr.usgs.gov/v2'}).text),
+        'nir': os.path.join(path, root.find('ns:bands/ns:band[@name="%s"]/ns:file_name' %
+                                              LANDSAT_BANDS[instrument]['nir'],
+                                              namespaces={'ns': 'http://espa.cr.usgs.gov/v2'}).text),
+        'swir1': os.path.join(path, root.find('ns:bands/ns:band[@name="%s"]/ns:file_name' %
+                                              LANDSAT_BANDS[instrument]['swir1'],
+                                              namespaces={'ns': 'http://espa.cr.usgs.gov/v2'}).text),
+        'swir2': os.path.join(path, root.find('ns:bands/ns:band[@name="%s"]/ns:file_name' %
+                                              LANDSAT_BANDS[instrument]['swir2'],
+                                              namespaces={'ns': 'http://espa.cr.usgs.gov/v2'}).text),
+        'qual': os.path.join(path, root.find('ns:bands/ns:band[@name="pixel_qa"]/ns:file_name',
+                                              namespaces={'ns': 'http://espa.cr.usgs.gov/v2'}).text),
+        'instrument': instrument,
+        'platform': satellite,
 
     }
     # Load template
