@@ -34,15 +34,15 @@ Example usage:
 python madmex.py prepare_metadata.py --path /path/to/dir/containing/scenes --dataset_name landsat_espa --outfile metadata_landsat.yaml
 """
     def add_arguments(self, parser):
-        parser.add_argument('-p', '--path', nargs=1,
+        parser.add_argument('-p', '--path',
                             type=str,
                             required=True,
                             help='Directory containing the scenes or tiles for which metadata have to be generated')
-        parser.add_argument('-d', '--dataset_name', nargs=1,
+        parser.add_argument('-d', '--dataset_name',
                             type=str,
                             required=True,
                             help='Name of the dataset to ingest. Supported datasets are landsat_espa')
-        parser.add_argument('-o', '--outfile', nargs=1,
+        parser.add_argument('-o', '--outfile',
                             type=str,
                             required=True,
                             help='Name of the file to which metadata will be written. Typically of type .yaml')
@@ -61,7 +61,7 @@ python madmex.py prepare_metadata.py --path /path/to/dir/containing/scenes --dat
             except Exception as e:
                 logger.warn('No metadata generated for %s, reason: %s' % (scene, e))
         # Write metadata_list to a single file
-        with open(options['outfile'], 'w') as src:
+        with open(options['outfile'], 'w') as dst:
             for metadata in metadata_list:
                 dst.write(metadata)
                 dst.write('\n---\n')
