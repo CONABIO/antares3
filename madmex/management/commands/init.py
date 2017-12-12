@@ -8,6 +8,8 @@ import logging
 
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import ingest_countries_from_shape
+from madmex.settings import TEMP_DIR
+from madmex.util import aware_download
 
 
 logger = logging.getLogger(__name__)
@@ -27,7 +29,9 @@ class Command(AntaresBaseCommand):
         We retrieve the names given in the command line input and greet
         each one of them.
         '''
-        path = options['path'][0]
+        path = 'http://thematicmapping.org/downloads/TM_WORLD_BORDERS-0.3.zip'
+        
+        aware_download(path, TEMP_DIR)
         logger.debug('The path to the shape is %s to be ingested.' % path)
-        ingest_countries_from_shape(path)
+        #ingest_countries_from_shape(path)
 
