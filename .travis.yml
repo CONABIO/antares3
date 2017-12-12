@@ -10,7 +10,6 @@ addons:
 sudo: required
 
 python:
-  - "2.7"
   - "3.6"
 
 before_install:
