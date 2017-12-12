@@ -31,7 +31,7 @@ Datasets details:
 --------------
 Example usage:
 --------------
-python madmex.py prepare_metadata.py --path /path/to/dir/containing/scenes --dataset_name landsat_espa --outfile metadata_landsat.yaml
+python madmex.py prepare_metadata --path /path/to/dir/containing/scenes --dataset_name landsat_espa --outfile metadata_landsat.yaml
 """
     def add_arguments(self, parser):
         parser.add_argument('-p', '--path',
