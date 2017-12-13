@@ -6,6 +6,7 @@ Created on Dec 12, 2017
 import logging
 import os
 import sys
+import zipfile
 
 from pip._vendor import requests
 
@@ -53,7 +54,26 @@ def aware_download(url, directory):
         logger.info('File already exists: %s' % filepath)
 
     return filepath
+
+def extract_zip(filepath, directory):
+    '''Extracts zip file to the given directory.
+
+    This function extracts the contents of a zip file to a given directory.
     
+    Args:
+        url: The path to the zip file to be uncompressed.
+        directory: The directory in which the file should be unzipped.
+    ''' 
+    target_directory = os.path.join(directory, basename(filepath, False))
+    if os.path.exists(target_directory):
+        logger.debug('The directory %s already exists.' % target_directory)
+    else:
+        aware_make_dir(target_directory)
+        with zipfile.ZipFile(filepath, 'r') as zip_handle:
+            logger.debug('Unzipping %s.' % target_directory)
+            zip_handle.extractall(target_directory)
+    return target_directory
+
 def aware_make_dir(directory):
     '''Helper function to create a directory if it does not exists.
 
@@ -64,3 +84,23 @@ def aware_make_dir(directory):
     '''    
     if not os.path.exists(directory):
         os.makedirs(directory)
+
+def basename(filename, suffix=True):
+    '''Get base name of a file with or without its suffix.
+     
+     Returns the base name of a file path. Depending on the arguments this can be
+     done with or without the suffix. In case no suffix argument is given, the default would
+     be to return the base name with the suffix.
+     
+    Args:
+        filename: The path to the file.
+        suffix: True to return the base with suffix; False otherwise.
+
+    Returns:
+        The base name.
+    '''
+    if suffix:
+        name = os.path.basename(filename)
+    else:
+        name = os.path.splitext(os.path.basename(filename))[0]
+    return name
