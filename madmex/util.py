@@ -5,6 +5,7 @@ Created on Dec 12, 2017
 '''
 import logging
 import os
+import re
 import sys
 import zipfile
 
@@ -105,3 +106,17 @@ def basename(filename, suffix=True):
     else:
         name = os.path.splitext(os.path.basename(filename))[0]
     return name
+
+def filter_files_from_folder(directory, regex=r'*'):
+    '''Returns a list with the files found in the given directory filtered by the given regex.
+    
+    Args:
+        directory: The path to the directory.
+        regex: Regular expression to filter the directory.
+
+    Returns:
+        The array with the filtered results.
+    
+    '''
+    pattern = re.compile(regex) 
+    return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and pattern.match(f)]
