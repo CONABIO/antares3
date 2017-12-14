@@ -1,0 +1,113 @@
+source_type: ls8_espa_scene
+output_type: ls8_espa_mexico
+
+description: Landsat 8 Collection 1 processed to surface reflectance by espa. Resampled to 30m EPSG:4326 projection with a 100 km tile size.
+
+location: '/media/loic/data/datacube/ingested_data'
+file_path_template: 'LS8_espa/mexico/LS8_espa_{tile_index[0]}_{tile_index[1]}_{start_time}.nc'
+global_attributes:
+  title: CONABIO Data Cube Landsat Surface Reflectance
+  summary: Landsat 8 OLI surface reflectance processed by espa
+  source: USGS
+  institution: CONABIO
+  instrument: OLI_TIRS
+  cdm_data_type: Grid
+  keywords: CONABIO,LANDSAT,OLI,SURFACE REFLECTANCE
+  keywords_vocabulary: GCMD
+  platform: LANDSAT_8
+  processing_level: L2
+  product_version: '0.0.1'
+  product_suite: USGS Landsat Collection 1
+  project: MADMEX
+  coverage_content_type: physicalMeasurement
+  references: http://dx.doi.org/10.3334/ORNLDAAC/1146
+  license: https://creativecommons.org/licenses/by/4.0/
+  naming_authority: gov.usgs
+  acknowledgment: Landsat data is provided by the United States Geological Survey (USGS).
+
+ingestion_bounds:
+  left: -119
+  bottom: 14
+  right: -86
+  top: 33
+
+storage:
+  driver: NetCDF CF
+
+  crs: PROJCS["Mexico_Albers_Equal_Area_Conic",GEOGCS["GCS_North_American_1983",DATUM["North_American_Datum_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["degree",0.017453292519943295],AXIS["Lon",EAST],AXIS["Lat",NORTH]],PROJECTION["Albers_Conic_Equal_Area"],PARAMETER["central_meridian",-105.0],PARAMETER["latitude_of_origin",24.0],PARAMETER["standard_parallel_1",14.5],PARAMETER["false_easting",0.0],PARAMETER["false_northing",0.0],PARAMETER["standard_parallel_2",32.5],UNIT["m",1.0],AXIS["x",EAST],AXIS["y",NORTH]]
+  tile_size:
+          x: 100020
+          y: 100020
+  resolution:
+          x: 30
+          y: -30
+  chunking:
+      x: 200
+      y: 200
+      time: 1
+  dimension_order: ['time', 'y', 'x']
+
+measurements:
+    - name: blue
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'blue'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 0.45-0.52 microns (Blue)"
+          alias: "band_2"
+    - name: green
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'green'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 0.52-0.60 microns (Green)"
+          alias: "band_3"
+    - name: red
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'red'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 0.63-0.69 microns (Red)"
+          alias: "band_4"
+    - name: nir
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'nir'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 0.76-0.90 microns (Near Infrared)"
+          alias: "band_5"
+    - name: swir1
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'swir1'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 1.55-1.75 microns (Short-wave Infrared)"
+          alias: "band_6"
+    - name: swir2
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'swir2'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 2.08-2.35 microns (Short-wave Infrared)"
+          alias: "band_7"
+    - name: 'pixel_qa'
+      dtype: int16
+      nodata: 1
+      resampling_method: nearest
+      src_varname: 'pixel_qa'
+      zlib: True
+      attrs:
+          long_name: "Pixel Quality Attributes Bit Index"
+          alias: [pixel_qa]
