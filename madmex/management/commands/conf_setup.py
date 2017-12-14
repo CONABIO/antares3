@@ -8,7 +8,7 @@ Purpose: Write static configuration files written in the library to a standard
 """
 import os
 import pkg_resources as pr
-from shutil import copytree
+from distutils.dir_util import copy_tree
 
 from madmex.management.base import AntaresBaseCommand
 
@@ -40,9 +40,5 @@ python madmex.py conf_setup --dir /home/user/madmex_conf_files
             dir_out = os.path.expanduser('~/.config/madmex')
         if not os.path.exists(dir_out):
             os.makedirs(dir_out)
-        conf_sub_dirs = pr.resource_listdir('madmex', '../conf')
-        [copytree(x, dir_out) for x in conf_sub_dirs]
-
-# TODO build string with pr.resource_string
-
-
+        conf_dir = pr.resource_filename('madmex', 'conf')
+        copy_tree(conf_dir, dir_out)
