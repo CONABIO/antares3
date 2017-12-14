@@ -71,3 +71,43 @@ class UsgsApi():
             response = self._consume_api_requests(endpoint)
             if response['data']:
                 logger.debug('Succesfully logged out of earth explorer usgs api.')
+
+    def search(self, extent):
+        #(xmin, ymin, xmax, ymax)
+        #(min_longitude, min_latitude, max_longitude, max_latitude)
+        #"lowerLeft": {"latitude": 75,"longitude": -135},"upperRight": {"latitude": 90,"longitude": -120 }
+        
+        payload = {
+                'datasetName': 'LANDSAT_8',
+                    'spatialFilter': {
+                        'filterType': 'mbr',
+                        'lowerLeft': {
+                            'latitude': extent[1],
+                            'longitude': extent[0]
+                        },
+                        'upperRight': {
+                            'latitude': extent[3],
+                            'longitude': extent[2] 
+                        }
+                    },
+                    'temporalFilter': {
+                        'dateField': 'search_date',
+                        'startDate': '2006-01-01',
+                        'endDate': '2007-12-01'
+                    },
+                    'additionalCriteria': {
+                        'filterType': 'and', 
+                        'childFilters': [
+                            {'filterType':'between','fieldId':10036,'firstValue':'22','secondValue':'24'},
+                            {'filterType':'between','fieldId':10038,'firstValue':'38','secondValue':'40'}
+                        ]
+                    },
+                'maxResults': 10,
+                'startingNumber': 1,
+                'sortOrder': 'ASC',
+                'apiKey': self.api_key
+            }
+        
+        endpoint = '/search?jsonRequest=%s' % json.dumps(payload)
+        response = self._consume_api_requests(endpoint)
+        return response
