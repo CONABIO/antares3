@@ -1,5 +1,5 @@
-name: ls8_collections_sr_scene
-description: Landsat 8 USGS Collection 1 Higher Level SR scene proessed by ESPA. 30m UTM based projection.
+name: ls8_espa_scene
+description: Landsat 8 Collection 1 Higher Level SR scene processed by ESPA. 30m UTM based projection.
 metadata_type: eo
 
 metadata:
