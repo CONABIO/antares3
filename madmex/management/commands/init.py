@@ -10,7 +10,8 @@ import os
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import ingest_countries_from_shape
 from madmex.settings import TEMP_DIR
-from madmex.util import aware_download, extract_zip, aware_make_dir
+from madmex.util import aware_download, extract_zip, aware_make_dir, \
+    filter_files_from_folder
 
 
 logger = logging.getLogger(__name__)
@@ -32,8 +33,9 @@ class Command(AntaresBaseCommand):
         '''
         url = 'http://thematicmapping.org/downloads/TM_WORLD_BORDERS-0.3.zip'
         filepath = aware_download(url, TEMP_DIR)
-        logger.debug('The path to the shape is %s to be ingested.' % url)
-        #ingest_countries_from_shape(path)
         unzipdir = extract_zip(filepath, TEMP_DIR)
-        
         os.listdir(unzipdir)
+        shape_name = filter_files_from_folder(unzipdir, regex=r'.*.shp')[0]
+        shape_file = os.path.join(unzipdir, shape_name)
+        logger.info('This %s shape file will be ingested.' % shape_file)
+        ingest_countries_from_shape(shape_file)
