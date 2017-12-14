@@ -63,7 +63,7 @@ def metadata_convert(path):
     # Start parsing xml
     root = ET.parse(mtl_file).getroot()
     ns = 'http://espa.cr.usgs.gov/v2'
-    dt = root.find('ns:global_metadata/ns:scene_center_time',
+    dt = root.find('ns:global_metadata/ns:acquisition_date',
                    namespaces={'ns': ns}).text
     instrument = root.find('ns:global_metadata/ns:instrument',
                            namespaces={'ns': ns}).text
