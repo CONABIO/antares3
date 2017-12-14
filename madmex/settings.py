@@ -145,6 +145,8 @@ USE_TZ = True
 
 TEMP_DIR = os.getenv('TEMP_DIR', os.getenv('HOME'))
 
+USGS_USER = os.getenv('USGS_USER')
+USGS_PASSWORD = os.getenv('USGS_PASSWORD')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
