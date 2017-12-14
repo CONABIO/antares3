@@ -23,6 +23,12 @@ class Region(models.Model):
     the_geom = models.MultiPolygonField()
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='country', default=None)
 
+class Footprint(models.Model):
+    '''This model represents a footprint. 
+    '''
+    name = models.CharField(max_length=50)
+    the_geom = models.PolygonField()
+
 def ingest_countries_from_shape(path):
     '''Ingestion function for countries to database.
 
