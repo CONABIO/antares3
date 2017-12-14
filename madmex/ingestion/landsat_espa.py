@@ -63,12 +63,18 @@ def metadata_convert(path):
     # Start parsing xml
     root = ET.parse(mtl_file).getroot()
     ns = 'http://espa.cr.usgs.gov/v2'
-    dt = root.find('ns:global_metadata/ns:acquisition_date',
-                   namespaces={'ns': ns}).text
+    # Build datetime from date and time
+    date_str = root.find('ns:global_metadata/ns:acquisition_date',
+                         namespaces={'ns': ns}).text
+    time_str = root.find('ns:global_metadata/ns:scene_center_time',
+                         namespaces={'ns': ns}).text
+    dt = '%sT%s' % (date_str, time_str)
+    # satellite sensor metadata
     instrument = root.find('ns:global_metadata/ns:instrument',
                            namespaces={'ns': ns}).text
     satellite = root.find('ns:global_metadata/ns:satellite',
                           namespaces={'ns': ns}).text
+    # Scene corners in projected coordinates
     ulx = float(root.find('ns:global_metadata/ns:projection_information/ns:corner_point[@location="UL"]',
                           namespaces={'ns': ns}).attrib['x'])
     uly = float(root.find('ns:global_metadata/ns:projection_information/ns:corner_point[@location="UL"]',
