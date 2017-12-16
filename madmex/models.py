@@ -28,6 +28,7 @@ class Footprint(models.Model):
     '''
     name = models.CharField(max_length=50)
     the_geom = models.PolygonField()
+    in_region = models.IntegerField(default=0)
 
 def ingest_countries_from_shape(path):
     '''Ingestion function for countries to database.
