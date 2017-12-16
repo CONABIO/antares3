@@ -158,3 +158,118 @@ class UsgsApi():
             self.api_key = None
         else:
             logger.debug('You need to log in first in order to log out!.')
+
+
+class EspaApi():
+    def __init__(self):
+        '''
+        This is the constructor, it creates an object that holds
+        credentials to usgs portal. 
+        '''
+        if USGS_USER != None and USGS_PASSWORD != None:
+            self.username = USGS_USER
+            self.password = USGS_PASSWORD
+            self.host = 'https://espa.cr.usgs.gov'
+        else:
+            logger.error('Please add the usgs credentials to the .env file.')
+            sys.exit(-1)
+
+    def _consume_api_requests(self, endpoint, data=None):
+        '''
+        This method hides the complexity of making a request to usgs,
+        depending on whether data parameter is given or not, it makes
+        a GET or a POST request. It requires an endpoint to query the
+        api if an invalid request is given, then the aip will answer
+        with a 404 error message.
+        '''
+        url = self.host + '/api' + endpoint
+        logger.info(url)
+        if not data:
+            response = requests.get(url, auth=(USGS_USER,USGS_PASSWORD))
+        else: # a POST request
+            response = requests.post(url, data = data, auth=(USGS_USER,USGS_PASSWORD))
+        data = response.json()
+        return data
+
+    def get_functions(self):
+        '''Obtains the functions available in the api.
+        
+        Will query the api for the valid functions that it exposes.
+        
+        Returns:
+            The dictionary representation of the api response.
+        '''
+        return self._consume_api_requests('/%s' % espa_version)
+
+    def get_projections(self):
+        '''Returns the available projections that the api supports.
+        
+        Just queries the api to obtain the available projections.
+        
+        Returns:
+            A dictionary with the projections.
+        '''
+        return self._consume_api_requests('/%s/projections' % espa_version)
+
+    def get_available_products(self, scene_id):
+        '''Returns the available products that the api offers.
+        
+        Given a scene id, this method returns the available products
+        that can be requested in an order.
+        
+        Returns:
+            A dictionary with the available products.
+        '''
+        return self._consume_api_requests('/%s/available-products/%s' % (espa_version, scene_id))
+    
+    def get_formats(self):
+        '''
+        Returns the available formats in which the data can be requested.
+        '''
+        return self._consume_api_requests('/%s/formats' % espa_version)
+    
+    def order(self, collection, inputs, products):
+        '''
+        This is the only method implementing a post request. Data about which
+        scenes are requested and which products are needed is required on 
+        this method calling. More complex querying is supported, we are keeping
+        this simple for now.
+        '''
+        request_json = {'format':'gtiff',
+                        'note':'testing',
+                        collection:{
+                                'inputs':inputs,
+                                'products':products
+                            }
+                        } 
+        payload = json.dumps(request_json).encode('utf8')
+        print payload
+        return self._consume_api_requests('/%s/order' % espa_version, payload)
+    
+    def get_list_orders(self):
+        '''
+        This methos returns the status of the orders that have been posted.
+        '''
+        return self._consume_api_requests('/%s/list-orders' % espa_version)
+
+    def get_resampling_methods(self):
+        '''
+        Returns the resampling methods available when the products are
+        requested in a different resolution that the standard one. Default
+        value will be nearest neighbors.
+        '''
+        return self._consume_api_requests('/%s/resampling-methods' % espa_version)
+
+    def get_user_info(self):
+        '''
+        Returns information about the user that the credentials that this
+        object holds.
+        '''
+        return self._consume_api_requests('/%s/user' % espa_version)
+
+    def get_list_order(self, order_id):
+        '''
+        Returns the status of the given order.
+        '''
+        url = '/%s/item-status/%s' % (espa_version, order_id)
+        return self._consume_api_requests(url)
