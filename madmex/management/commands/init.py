@@ -10,7 +10,7 @@ import os
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import ingest_countries_from_shape
 from madmex.settings import TEMP_DIR
-from madmex.util import aware_download, extract_zip, aware_make_dir, \
+from madmex.util.local import aware_download, extract_zip, aware_make_dir, \
     filter_files_from_folder
 
 
