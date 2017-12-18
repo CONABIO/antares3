@@ -223,17 +223,26 @@ class EspaApi():
         return self._consume_api_requests('/%s/available-products/%s' % (espa_version, scene_id))
     
     def get_formats(self):
-        '''
-        Returns the available formats in which the data can be requested.
+        '''Lists the available formats for the data.
+        
+        Retrieves the available formats in which the data can be requested. This formats
+        include the type of raster the system can handle.
+        
+        Returns:
+            A list with the formats.
         '''
         return self._consume_api_requests('/%s/formats' % espa_version)
     
     def order(self, collection, inputs, products):
-        '''
+        '''Creates an order in the ESPA api.
+        
         This is the only method implementing a post request. Data about which
         scenes are requested and which products are needed is required on 
         this method calling. More complex querying is supported, we are keeping
         this simple for now.
+        
+        Returns:
+            A dictionary object with the order id.
         '''
         request_json = {'format':'gtiff',
                         'note':'testing',
@@ -247,29 +256,46 @@ class EspaApi():
         return self._consume_api_requests('/%s/order' % espa_version, payload)
     
     def get_list_orders(self):
-        '''
-        This methos returns the status of the orders that have been posted.
+        '''Queries the orders that have been requested.
+        
+        This method returns the status of the orders that have been posted. When
+        the orders are ready the download may start.
+        
+        Returns:
+            A dictionary object with the orders and status.
         '''
         return self._consume_api_requests('/%s/list-orders' % espa_version)
 
     def get_resampling_methods(self):
-        '''
+        '''Lists the resampling methods available.
+        
         Returns the resampling methods available when the products are
         requested in a different resolution that the standard one. Default
         value will be nearest neighbors.
+        
+        Returns:
+            A dictionary object with the resampling methods.
         '''
         return self._consume_api_requests('/%s/resampling-methods' % espa_version)
 
     def get_user_info(self):
-        '''
+        '''Information of the key and password holders.
+        
         Returns information about the user that the credentials that this
         object holds.
+        
+        Returns:
+            A dictionary object with the user's information.
         '''
         return self._consume_api_requests('/%s/user' % espa_version)
 
     def get_list_order(self, order_id):
-        '''
-        Returns the status of the given order.
+        '''Retrieves the status of an order
+        
+        Queries the system for the status of the given order id.
+        
+        Returns:
+            A dictionary object with the order's status.
         '''
         url = '/%s/item-status/%s' % (espa_version, order_id)
         return self._consume_api_requests(url)
