@@ -250,9 +250,8 @@ class EspaApi():
                                 'inputs':inputs,
                                 'products':products
                             }
-                        } 
+                        }
         payload = json.dumps(request_json).encode('utf8')
-        print payload
         return self._consume_api_requests('/%s/order' % espa_version, payload)
     
     def get_list_orders(self):
