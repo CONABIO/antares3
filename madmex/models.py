@@ -28,9 +28,15 @@ class Footprint(models.Model):
     '''
     name = models.CharField(max_length=50)
     the_geom = models.PolygonField()
-    in_region = models.IntegerField(default=0)
+    
+class Order(models.Model):
+    '''This model holds the information of usgs orders. 
+    '''
+    user = models.CharField(max_length=50)
+    order_id = models.CharField(max_length=100)
+    downloaded = models.BooleanField()
 
-def ingest_countries_from_shape(path):
+def ingest_countries_from_shape(path, mapping):
     '''Ingestion function for countries to database.
 
     This function should be executed only once when the system is configured:
@@ -39,12 +45,23 @@ def ingest_countries_from_shape(path):
         path (str): The path to the shape file.
 
     '''
-    mapping = {
-        'name' : 'NAME',
-        'the_geom' : 'MULTIPOLYGON'
-    }
     layer_mapping = LayerMapping(
         Country, path, mapping,
+        transform=False, encoding='UTF-8 ',
+    )
+    layer_mapping.save()
+    
+def ingest_states_from_shape(path, mapping):
+    '''Ingestion function for countries to database.
+
+    This function should be executed only once when the system is configured:
+
+    Args:
+        path (str): The path to the shape file.
+
+    '''
+    layer_mapping = LayerMapping(
+        Region, path, mapping,
         transform=False, encoding='UTF-8 ',
     )
     layer_mapping.save()
