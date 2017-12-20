@@ -96,7 +96,7 @@ class Command(AntaresBaseCommand):
             data = espa_client.order(collection_espa, interest, products)
             if data.get('status') == 'ordered':
                 logger.info('The order was posted with id: %s' % data.get('orderid'))
-                order = Order(order_id=data.get('orderid'), downloaded=False)
+                order = Order(user=espa_client.username, order_id=data.get('orderid'), downloaded=False)
                 order.save()
             else:
                 logger.info(json.dumps(data, indent=4))

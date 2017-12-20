@@ -32,7 +32,7 @@ class Footprint(models.Model):
 class Order(models.Model):
     '''This model holds the information of usgs orders. 
     '''
-    user = models.CharField(max_length=50)
+    user = models.CharField(max_length=50, default=None)
     order_id = models.CharField(max_length=100)
     downloaded = models.BooleanField()
 
