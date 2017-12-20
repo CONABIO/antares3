@@ -31,6 +31,7 @@ class Command(AntaresBaseCommand):
         parser.add_argument('--shape', nargs=1, help='The name of the shape to use in the database.')
         parser.add_argument('--start-date', nargs=1, help='Date to start the query, inclusive.')
         parser.add_argument('--end-date', nargs=1, help='Date to end the query, inclusive.')
+        parser.add_argument('--landsat', nargs=1, help='Landsat mission.')
 
     def handle(self, **options):
         '''This method takes a given shape names and queries the usgs api for available scenes.
@@ -43,6 +44,7 @@ class Command(AntaresBaseCommand):
 
         start_date = options['start_date'][0]
         end_date = options['end_date'][0]
+        landsat = int(options['landsat'][0])
         shape_name = options['shape'][0]
 
         espa_client = EspaApi()
@@ -60,7 +62,6 @@ class Command(AntaresBaseCommand):
 
         if shape_object:
             extent = shape_object.the_geom.extent
-            landsat = 5
 
             if landsat == 8:
                 collection_usgs = 'LANDSAT_8_C1'
