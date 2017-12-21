@@ -149,6 +149,9 @@ TEMP_DIR = os.getenv('TEMP_DIR', os.getenv('HOME'))
 USGS_USER = os.getenv('USGS_USER')
 USGS_PASSWORD = os.getenv('USGS_PASSWORD')
 
+SCIHUB_USER = os.getenv('SCIHUB_USER')
+SCIHUB_PASSWORD = os.getenv('SCIHUB_PASSWORD')
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 

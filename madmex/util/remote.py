@@ -9,7 +9,8 @@ import sys
 
 import requests
 
-from madmex.settings import USGS_USER, USGS_PASSWORD
+from madmex.settings import USGS_USER, USGS_PASSWORD, SCIHUB_USER, \
+    SCIHUB_PASSWORD
 
 
 logger = logging.getLogger(__name__)
@@ -298,3 +299,46 @@ class EspaApi():
         '''
         url = '/%s/item-status/%s' % (espa_version, order_id)
         return self._consume_api_requests(url)
+
+class ScihubApi():
+    def __init__(self):
+        '''
+        This is the constructor, it creates an object that holds
+        credentials to usgs portal. 
+        '''
+        if SCIHUB_USER != None and SCIHUB_PASSWORD != None:
+            self.username = SCIHUB_USER
+            self.password = SCIHUB_PASSWORD
+            self.host = 'https://scihub.copernicus.eu'
+            self.session = requests.Session()
+            self.session.auth = (SCIHUB_USER, SCIHUB_PASSWORD)
+            self.user_agent = 'sentinelsat/0.12.1'
+            self.session.headers['User-Agent'] = self.user_agent
+        else:
+            logger.error('Please add the scihub credentials to the .env file.')
+            sys.exit(-1)
+    
+    def _consume_api_requests(self, query, data=None):
+        '''
+        This method hides the complexity of making a request to usgs,
+        depending on whether data parameter is given or not, it makes
+        a GET or a POST request. It requires an endpoint to query the
+        api if an invalid request is given, then the aip will answer
+        with a 404 error message.
+        '''
+        url = self.host + '/dhus/search?start=0&rows=100' 
+        logger.info(url)
+        if not data:
+            print('GET')
+            print((SCIHUB_USER, SCIHUB_PASSWORD))
+            response = requests.get(url, auth=(SCIHUB_USER, SCIHUB_PASSWORD))
+        else: # a POST request
+            print ('POST')
+            print(self.session.headers)
+            response = self.session.post(url, data, auth=self.session.auth)
+        data = response
+        return data
+    
+    def test(self):
+        data = {'q': '*'}
+        print(self._consume_api_requests('', data))
