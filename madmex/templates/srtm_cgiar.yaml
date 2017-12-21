@@ -1,0 +1,31 @@
+id: {{ id }}
+extent:
+  center_dt: '2000-02-11'
+  coord:
+    ll: {lat: {{ ll_lat }}, lon: {{  ll_lon }} }
+    lr: {lat: {{ lr_lat }}, lon: {{  lr_lon }} }
+    ul: {lat: {{ ul_lat }}, lon: {{  ul_lon }} }
+    ur: {lat: {{ ur_lat }}, lon: {{  ur_lon }} }
+  from_dt: '2000-02-11'
+  to_dt: '2000-02-22'
+format: {name: GEOTIFF}
+grid_spatial:
+  projection:
+    geo_ref_points:
+      ll: {x: {{ ll_lat }}, y: {{ ll_lon }} }
+      lr: {x: {{ lr_lat }}, y: {{ lr_lon }} }
+      ul: {x: {{ ul_lat }}, y: {{ ul_lon }} }
+      ur: {x: {{ ur_lat }}, y: {{ ur_lon }} }
+    spatial_reference: {{ crs }}
+image:
+  bands:
+    elevation: {layer: 1, path: {{ elevation }} }
+    slope: {layer: 1, path: {{ slope }} }
+    aspect: {layer: 1, path: {{ aspect }} }
+instrument: {name: SIR}
+lineage:
+  source_datasets: {}
+platform: {code: Space Shuttle Endeavour} 
+processing_level: modelled
+product_type: DEM 
+
