@@ -68,7 +68,7 @@ python madmex.py prepare_metadata --path /path/to/dir/containing/srtm_terrain_me
         subdir_list = glob(os.path.join(path, '*'))
         # If the directory does not contain subdirectories it means that it's a single target directory
         if not any([os.path.isdir(x) for x in subdir_list]):
-            subdir_list = path
+            subdir_list = [path]
         try:
             ingest = import_module('madmex.ingestion.%s' % options['dataset_name'])
         except ImportError as e:
