@@ -33,7 +33,7 @@ Datasets details:
         be prepared prior to running this command, and the 3 geotiff named srtm_mosaic.tif, slope_mosaic.tif and aspect_mosaic.tif
         must be present in the target directory (--path argument). The preparation can be achieved by running the following bash commands
         in the directory where the unpacked srtm tiles are stored:
-            file_list=$(ls *zip|sed -n 's/\(.*\).zip/\/vsizip\/\1.zip\/\1.tif/g;p'|tr -s '\n' ' ')
+            file_list=$(ls *zip|sed -n 's/\(.*\).zip/\/vsizip\/\\1.zip\/\\1.tif/g;p'|tr -s '\\n' ' ')
             gdal_merge.py -o srtm_mosaic.tif $file_list
             gdaldem slope srtm_mosaic.tif slope_mosaic.tif -s 111120
             gdaldem aspect srtm_mosaic.tif aspect_mosaic.tif
