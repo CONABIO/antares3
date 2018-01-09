@@ -10,9 +10,9 @@ import re
 
 from django.contrib.gis.geos.polygon import Polygon
 
+from madmex.api.remote import UsgsApi, EspaApi
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import Country, Footprint, Region, Order
-from madmex.util.remote import UsgsApi, EspaApi
 
 
 logger = logging.getLogger(__name__)
@@ -21,9 +21,18 @@ def point_from_object(coords):
     return (coords.get('longitude'), coords.get('latitude'))
 
 class Command(AntaresBaseCommand):
-    '''
-    classdocs
-    '''
+    help = '''
+Command that places an order into the ESPA system matching the given criteria. ESPA
+will take some time to process the order and it will send confirmation e-mails both when
+the order is placed, and when the order is ready. Once the order is ready, the download_order
+command must be used to download the scenes.
+
+--------------
+Example usage:
+--------------
+# Downloads the Landsat 8 scenes that intersect the state of Jalisco and where taken during 2017.
+create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '2017-12-31' --landsat 8 
+'''
     def add_arguments(self, parser):
         '''
         Just queries for the name to greet.
