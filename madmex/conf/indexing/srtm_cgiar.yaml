@@ -1,0 +1,29 @@
+name: srtm_cgiar_mosaic
+description: Terrain metrics (altitude, slope, aspect) derived from CGIAR version of SRTM. 90m longlat
+metadata_type: eo
+
+metadata:
+    platform:
+        code: Space Shuttle Endeavour
+    instrument:
+        name: SIR
+    product_type: DEM
+    format:
+        name: GeoTiff
+
+measurements:
+    - name: 'elevation'
+      aliases: [altitude, elevation]
+      dtype: int16
+      nodata: -32768
+      units: 'meter'
+    - name: 'slope'
+      aliases: [slope]
+      dtype: float32 
+      nodata: -9999
+      units: 'degree'
+    - name: 'aspect'
+      aliases: [aspect]
+      dtype: float32
+      nodata: -9999
+      units: 'degree'

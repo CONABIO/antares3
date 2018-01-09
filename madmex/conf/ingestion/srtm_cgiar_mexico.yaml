@@ -1,0 +1,70 @@
+source_type: srtm_cgiar_mosaic
+output_type: srtm_cgiar_mexico
+
+description: Terrain metrics (altitude, slope, aspect) derived from CGIAR version of SRTM. 90m longlat. Resampled to 30m EPSG:4326 projection with a 100 km tile size.
+
+location: '/Users/ldutrieux/data/datacube_ingest'
+file_path_template: 'srtm_cgiar/mexico/srtm_{tile_index[0]}_{tile_index[1]}_{start_time}.nc'
+global_attributes:
+  title: CONABIO Data Cube CGIAR SRTM
+  summary: Terrain metrics derived from CGIAR version of SRTM
+  source: CGIAR
+  institution: CONABIO
+  instrument: SIR
+  cdm_data_type: Grid
+  keywords: CONABIO,SRTM,TERRAIN,SLOPE,ASPECT
+  keywords_vocabulary: GCMD
+  platform: Space Shuttle Endeavour 
+  processing_level: L2
+  product_version: '0.0.1'
+  product_suite: CGIAR
+  project: MADMEX
+  coverage_content_type: physicalMeasurement
+
+storage:
+  driver: NetCDF CF
+  # http://spatialreference.org/ref/sr-org/mexico-albers-equal-area-conic/
+  crs: PROJCS["Mexico_Albers_Equal_Area_Conic",GEOGCS["GCS_North_American_1983",DATUM["North_American_Datum_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["degree",0.017453292519943295],AXIS["Lon",EAST],AXIS["Lat",NORTH]],PROJECTION["Albers_Conic_Equal_Area"],PARAMETER["central_meridian",-105.0],PARAMETER["latitude_of_origin",24.0],PARAMETER["standard_parallel_1",14.5],PARAMETER["false_easting",0.0],PARAMETER["false_northing",0.0],PARAMETER["standard_parallel_2",32.5],UNIT["m",1.0],AXIS["x",EAST],AXIS["y",NORTH]]
+  tile_size:
+          x: 100020
+          y: 100020
+  resolution:
+          x: 90
+          y: -90
+  origin:
+    x: -1290000
+    y: 1005000
+  chunking:
+      x: 200
+      y: 200
+      time: 200
+  dimension_order: ['time', 'y', 'x']
+
+measurements:
+    - name: 'elevation'
+      dtype: int16
+      nodata: -32768
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'elevation'
+      attrs:
+          long_name: "Elevation from SRTM"
+          alias: "elevation"
+    - name: 'slope'
+      dtype: float32 
+      nodata: -9999
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'slope'
+      attrs:
+          long_name: "Slope from SRTM"
+          alias: "slope"
+    - name: 'aspect'
+      dtype: float32
+      nodata: -9999
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'aspect'
+      attrs:
+          long_name: "Aspect from SRTM"
+          alias: "aspect"
