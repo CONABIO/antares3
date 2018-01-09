@@ -15,15 +15,19 @@ from madmex.util.remote import EspaApi
 logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
-    '''
-    classdocs
-    '''
+    help = '''
+Command line option to download scenes using the ESPA api. An order must be placed in
+advanced using the create_order command. When an order is placed, ESPA will take some
+time to process the order. When it is ready an email confirmation is sent. This command
+looks into the database for orders that had not been downloaded yet. It then parses the
+contents of the order.
 
-    def add_arguments(self, parser):
-        '''
-        Just queries for the name to greet.
-        '''
-
+--------------
+Example usage:
+--------------
+# Downloads the orders found in the database that have not been downloaded yet.
+python madmex.py download_order
+'''
     def handle(self, **options):
         logger.info('Hello world!')
         
