@@ -3,7 +3,7 @@ output_type: srtm_cgiar_mexico
 
 description: Terrain metrics (altitude, slope, aspect) derived from CGIAR version of SRTM. 90m longlat. Resampled to 30m EPSG:4326 projection with a 100 km tile size.
 
-location: '/Users/ldutrieux/data/datacube_ingest'
+location: '/LUSTRE/MADMEX/datacube_ingest'
 file_path_template: 'srtm_cgiar/mexico/srtm_{tile_index[0]}_{tile_index[1]}_{start_time}.nc'
 global_attributes:
   title: CONABIO Data Cube CGIAR SRTM
@@ -23,8 +23,8 @@ global_attributes:
 
 storage:
   driver: NetCDF CF
-  # http://spatialreference.org/ref/sr-org/mexico-albers-equal-area-conic/
-  crs: PROJCS["Mexico_Albers_Equal_Area_Conic",GEOGCS["GCS_North_American_1983",DATUM["North_American_Datum_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["degree",0.017453292519943295],AXIS["Lon",EAST],AXIS["Lat",NORTH]],PROJECTION["Albers_Conic_Equal_Area"],PARAMETER["central_meridian",-105.0],PARAMETER["latitude_of_origin",24.0],PARAMETER["standard_parallel_1",14.5],PARAMETER["false_easting",0.0],PARAMETER["false_northing",0.0],PARAMETER["standard_parallel_2",32.5],UNIT["m",1.0],AXIS["x",EAST],AXIS["y",NORTH]]
+  # http://spatialreference.org/ref/sr-org/mexico-inegi-lambert-conformal-conic/
+  crs: PROJCS["unnamed",GEOGCS["WGS 84",DATUM["unknown",SPHEROID["WGS84",6378137,6556752.3141]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",17.5],PARAMETER["standard_parallel_2",29.5],PARAMETER["latitude_of_origin",12],PARAMETER["central_meridian",-102],PARAMETER["false_easting",2500000],PARAMETER["false_northing",0]] 
   tile_size:
           x: 100020
           y: 100020
@@ -32,8 +32,9 @@ storage:
           x: 90
           y: -90
   origin:
-    x: -1290000
-    y: 1005000
+    # -118.21, 33.02
+    x: 977160 
+    y: 2426720
   chunking:
       x: 200
       y: 200
