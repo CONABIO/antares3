@@ -12,10 +12,10 @@ format: {name: GEOTIFF}
 grid_spatial:
   projection:
     geo_ref_points:
-      ll: {x: {{ ll_lat }}, y: {{ ll_lon }} }
-      lr: {x: {{ lr_lat }}, y: {{ lr_lon }} }
-      ul: {x: {{ ul_lat }}, y: {{ ul_lon }} }
-      ur: {x: {{ ur_lat }}, y: {{ ur_lon }} }
+      ll: {x: {{ ll_lon }}, y: {{ ll_lat }} }
+      lr: {x: {{ lr_lon }}, y: {{ lr_lat }} }
+      ul: {x: {{ ul_lon }}, y: {{ ul_lat }} }
+      ur: {x: {{ ur_lon }}, y: {{ ur_lat }} }
     spatial_reference: {{ crs }}
 image:
   bands:
