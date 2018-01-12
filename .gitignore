@@ -5,4 +5,7 @@ docs/_build/*
 *.pyc[cod]
 .DS_Store
 .env
+.eggs/*
 __pycache__/
+.project
+.pydevproject

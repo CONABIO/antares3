@@ -18,6 +18,7 @@ A python library for scalable satellite image analysis, from data dowload to pro
    :caption: User guide
 
    install
+   ingest
    api/index
    cli
 

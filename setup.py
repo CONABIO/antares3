@@ -13,7 +13,8 @@ with open('madmex/__init__.py') as f:
 # 
 extra_reqs = {'docs': ['sphinx',
                        'sphinx-rtd-theme',
-                       'sphinxcontrib-programoutput']}
+                       'sphinxcontrib-programoutput'],
+              'multi': ['cloudpickle']}
 extra_reqs['all'] = list(set(itertools.chain(*extra_reqs.values())))
 
 setup(name='madmex',
@@ -30,8 +31,13 @@ setup(name='madmex',
           'python-dotenv',
           'Django',
           'xarray',
-          'psycopg2'],
+          'pyproj',
+          'jinja2',
+          'requests',
+          'psycopg2',
+          'datacube'],
       scripts=['madmex.py'],
+      include_package_data=True,
       test_suite="tests",
       extras_require=extra_reqs)
 
