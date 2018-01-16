@@ -66,6 +66,14 @@ def rasterio_to_xarray(fname):
 
     return xarray.DataArray(data, dims=dims, coords=coords, attrs=attrs)
 
+def read_shapefile(input_zone_polygon):
+    '''
+        Given a raster path, it opens it and returns the dataset.
+    '''
+
+    shp = ogr.Open(input_zone_polygon)
+    lyr = shp.GetLayer()
+    return lyr
 
 class Command(AntaresBaseCommand):
     help = '''
@@ -95,8 +103,5 @@ python madmex.py zonal_stats --raster /path/to/raster/data.tif --shapefile /path
         logger.info('Shapefile : %s' % shape)
 
         xarr = rasterio_to_xarray(raster)
-        print(xarr)
-        print(xarr.dims)
-        print(xarr.coords)
-        print(xarr.attrs)
-        
+        vector_data = read_shapefile(shape)
+
