@@ -5,12 +5,10 @@ Created on Jan 16, 2018
 '''
 
 import numpy
-import gdal
 import ogr
 import osr
 import logging
 import xarray
-import pandas
 import rasterio
 
 from madmex.management.base import AntaresBaseCommand
@@ -19,7 +17,7 @@ from madmex.management.base import AntaresBaseCommand
 logger = logging.getLogger(__name__)
 
 def rasterio_to_xarray(fname):
-    """Converts the given file to an xarray.DataArray object.
+    '''Converts the given file to an xarray.DataArray object.
 
     Arguments:
      - `fname`: the filename of the rasterio-compatible file to read
@@ -33,7 +31,7 @@ def rasterio_to_xarray(fname):
     This produces an xarray.DataArray object with two dimensions: x and y.
     The co-ordinates for these dimensions are set based on the geographic
     reference defined in the original file.
-    """
+    '''
     
     with rasterio.open(fname) as src:
         data = src.read(1)
@@ -55,7 +53,7 @@ def rasterio_to_xarray(fname):
         attrs = {}
 
         try:
-            aff = src.transform
+            aff = src.affine
             attrs['affine'] = aff.to_gdal()
         except AttributeError:
             pass
@@ -67,6 +65,7 @@ def rasterio_to_xarray(fname):
             pass
 
     return xarray.DataArray(data, dims=dims, coords=coords, attrs=attrs)
+
 
 class Command(AntaresBaseCommand):
     help = '''
@@ -91,10 +90,13 @@ python madmex.py zonal_stats --raster /path/to/raster/data.tif --shapefile /path
         '''
         raster = options['raster'][0]
         shape  = options['shapefile'][0]
+        
         logger.info('Raster file : %s ' % raster)
         logger.info('Shapefile : %s' % shape)
 
         xarr = rasterio_to_xarray(raster)
         print(xarr)
-            
-            
+        print(xarr.dims)
+        print(xarr.coords)
+        print(xarr.attrs)
+        
