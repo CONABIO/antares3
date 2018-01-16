@@ -7,6 +7,7 @@ Created on Jan 16, 2018
 import numpy
 import ogr
 import osr
+import gdal
 import logging
 import xarray
 import rasterio
@@ -49,7 +50,6 @@ def rasterio_to_xarray(fname):
                   'x': numpy.arange(start=x0, stop=(x0 + nx * dx), step=dx)}
 
         dims = ('y', 'x')
-
         attrs = {}
 
         try:
@@ -75,9 +75,21 @@ def read_shapefile(input_zone_polygon):
     lyr = shp.GetLayer()
     return lyr
 
+def get_raster_georeference_from_xarray(ordered_dict):
+    '''
+
+    '''
+    xOrigin     = list(ordered_dict.values())[0][0] 
+    yOrigin     = list(ordered_dict.values())[0][3] 
+    pixelWidth  = list(ordered_dict.values())[0][1] 
+    pixelHeight = list(ordered_dict.values())[0][5]
+
+    return xOrigin, yOrigin, pixelWidth, pixelHeight
+
 class Command(AntaresBaseCommand):
     help = '''
 Computes zonal statistics for every feature in a vector datasource across in a raster datasource.
+
 --------------
 Example usage:
 --------------
@@ -97,11 +109,16 @@ python madmex.py zonal_stats --raster /path/to/raster/data.tif --shapefile /path
         
         '''
         raster = options['raster'][0]
-        shape  = options['shapefile'][0]
-        
+        shape  = options['shapefile'][0]        
         logger.info('Raster file : %s ' % raster)
         logger.info('Shapefile : %s' % shape)
-
+        logger.info('Converting the given raster file to an xarray.DataArray object')
         xarr = rasterio_to_xarray(raster)
+
+        xO, yO, pW, pH = get_raster_georeference_from_xarray(xarr.attrs)
+
+        logger.info('Reading shapefile')
         vector_data = read_shapefile(shape)
+
+        
 
