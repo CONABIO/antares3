@@ -5,12 +5,11 @@ Created on Jan 16, 2018
 '''
 
 import numpy
-import ogr
-import osr
-import gdal
 import logging
 import xarray
 import rasterio
+
+from osgeo import ogr, osr, gdal
 
 from madmex.management.base import AntaresBaseCommand
 
@@ -18,20 +17,20 @@ from madmex.management.base import AntaresBaseCommand
 logger = logging.getLogger(__name__)
 
 def rasterio_to_xarray(fname):
-    '''Converts the given file to an xarray.DataArray object.
+    '''
+        Converts the given file to an xarray.DataArray object.
 
-    Arguments:
-     - `fname`: the filename of the rasterio-compatible file to read
-    
-    Returns:
-        An xarray.DataArray object containing the data from the given file,
-        along with the relevant geographic metadata.
-    
-    Notes:
-    
-    This produces an xarray.DataArray object with two dimensions: x and y.
-    The co-ordinates for these dimensions are set based on the geographic
-    reference defined in the original file.
+        Arguments:
+         - fname: the filename of the rasterio-compatible file to read
+        
+        Returns:
+            An xarray.DataArray object containing the data from the given file,
+            along with the relevant geographic metadata.
+        
+        Notes:        
+        This produces an xarray.DataArray object with two dimensions: x and y.
+        The co-ordinates for these dimensions are set based on the geographic
+        reference defined in the original file.
     '''
     
     with rasterio.open(fname) as src:
@@ -66,18 +65,10 @@ def rasterio_to_xarray(fname):
 
     return xarray.DataArray(data, dims=dims, coords=coords, attrs=attrs)
 
-def read_shapefile(input_zone_polygon):
-    '''
-        Given a raster path, it opens it and returns the dataset.
-    '''
-
-    shp = ogr.Open(input_zone_polygon)
-    lyr = shp.GetLayer()
-    return lyr
 
 def get_raster_georeference_from_xarray(ordered_dict):
     '''
-
+        Given an OrderedDict collection from xarray, returns georeference info.
     '''
     xOrigin     = list(ordered_dict.values())[0][0] 
     yOrigin     = list(ordered_dict.values())[0][3] 
@@ -85,6 +76,7 @@ def get_raster_georeference_from_xarray(ordered_dict):
     pixelHeight = list(ordered_dict.values())[0][5]
 
     return xOrigin, yOrigin, pixelWidth, pixelHeight
+
 
 class Command(AntaresBaseCommand):
     help = '''
@@ -99,7 +91,7 @@ python madmex.py zonal_stats --raster /path/to/raster/data.tif --shapefile /path
 ''' 
     def add_arguments(self, parser):
         '''
-        Requires a raster file and a vector shapefile.
+            Requires a raster file and a vector shapefile.
         '''
         parser.add_argument('--raster', nargs=1, help='Path to raster data.')
         parser.add_argument('--shapefile', nargs=1, help='Path to shapefile data.')
@@ -114,11 +106,30 @@ python madmex.py zonal_stats --raster /path/to/raster/data.tif --shapefile /path
         logger.info('Shapefile : %s' % shape)
         logger.info('Converting the given raster file to an xarray.DataArray object')
         xarr = rasterio_to_xarray(raster)
+        print(xarr.attrs)
 
+        logger.info('Extracting georeference data from xarray raster')
         xO, yO, pW, pH = get_raster_georeference_from_xarray(xarr.attrs)
 
-        logger.info('Reading shapefile')
-        vector_data = read_shapefile(shape)
-
         
+        rasterg = gdal.Open(raster)
+
+        logger.info('Reading shapefile')
+        driver = ogr.GetDriverByName('ESRI Shapefile')
+        shapefile = driver.Open(shape)
+        layer = shapefile.GetLayer()
+        
+
+        logger.info('Reprojecting vector file to same as raster')
+        sourceSR = layer.GetSpatialRef()
+        targetSR = osr.SpatialReference()
+        targetSR.ImportFromWkt(rasterg.GetProjectionRef())
+        coordTrans = osr.CoordinateTransformation(sourceSR,targetSR)
+        feat = layer.GetNextFeature()
+        geom = feat.GetGeometryRef()
+        geom.Transform(coordTrans)
+
+
+
+
 
