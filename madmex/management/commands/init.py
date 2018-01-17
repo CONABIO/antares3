@@ -17,15 +17,16 @@ from madmex.util.local import aware_download, extract_zip, aware_make_dir, \
 logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
-    '''
-    classdocs
-    '''
-    def add_arguments(self, parser):
-        '''
-        Just queries for the name to greet.
-        '''
-        parser.add_argument('--path', nargs=1, help='The path to the shape to be ingested.')
+    help = '''
+Will download and ingest the basic shape files needed for the system. By default,
+it will download shapes for Mexico including its regions.
 
+--------------
+Example usage:
+--------------
+# Triggers the download and executes the shape ingestion.
+python madmex.py init
+'''
     def handle(self, **options):
         '''
         We retrieve the names given in the command line input and greet
@@ -43,12 +44,12 @@ class Command(AntaresBaseCommand):
             'name' : 'ISO',
             'the_geom' : 'MULTIPOLYGON'
         }
-        #ingest_countries_from_shape(shape_file, mapping)
+        ingest_countries_from_shape(shape_file, mapping)
         shape_name = filter_files_from_folder(unzipdir, regex=r'.*adm1.shp')[0]
         shape_file = os.path.join(unzipdir, shape_name)
         logger.info('This %s shape file will be ingested.' % shape_file)
         mapping = {
-            'country': {'name': 'NAME_0'},
+            'country': {'name': 'ISO'},
             'name' : 'NAME_1',
             'the_geom' : 'MULTIPOLYGON'
         }
