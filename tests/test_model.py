@@ -23,8 +23,8 @@ class TestModel(unittest.TestCase):
         my_model = rf.Model()
         my_model.fit(X,y) 
         my_model.save(model_path)
-        self.assertTrue(os.path.isfile(model_path))
         model_file = os.path.join(model_path,'%s.pkl' % my_model.model_name)
+        self.assertTrue(os.path.isfile(model_file))
         os.remove(model_file)
 
 if __name__ == "__main__":
