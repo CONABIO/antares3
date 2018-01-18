@@ -35,6 +35,7 @@ setup(name='madmex',
           'jinja2',
           'requests',
           'psycopg2',
+          'scipy'
           'sklearn_xarray',
           'datacube'],
       scripts=['madmex.py'],
