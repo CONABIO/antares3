@@ -41,17 +41,18 @@ class Order(models.Model):
 class Tag(models.Model):
     '''To keep a deeper control over the tags that we can handle. 
     '''
-    name = models.CharField(max_length=50, default=None)
+    key = models.CharField(max_length=50, default=None)
+    value = models.CharField(max_length=150, default=None)
 
-class Training(models.Model):
+class Object(models.Model):
     '''This table holds objects that will be used for training. They must be related to
     regions and each object should have an assigned tag which is the ground truth for
     it.
     '''
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
     the_geom = models.PolygonField()
     added = models.DateTimeField(auto_now_add=True)
-    region = models.ManyToManyField(Region)
+    regions = models.ManyToManyField(Region)
+    tags = models.ManyToManyField(Tag)
 
 def ingest_countries_from_shape(path, mapping):
     '''Ingestion function for countries to database.
