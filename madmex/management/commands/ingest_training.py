@@ -5,24 +5,16 @@ Created on Jan 19, 2018
 '''
 
 from functools import partial
-import json
 import logging
-import os
 
 from django.contrib.gis.geos.geometry import GEOSGeometry
 import fiona
-from fiona.crs import from_epsg
-import geojson
 import pyproj
-from rasterio import warp
-from shapely.algorithms.cga import signed_area
 from shapely.geometry.geo import shape
 from shapely.ops import transform
 
 from madmex.management.base import AntaresBaseCommand
-from madmex.model.supervised import rf
 from madmex.models import Region, Tag, Object
-from madmex.settings import TEMP_DIR
 
 
 logger = logging.getLogger(__name__)
