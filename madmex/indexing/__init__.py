@@ -1,9 +1,15 @@
 import os
+import uuid
+from datetime import datetime
 
 import yaml
 from datacube.index._datasets import ProductResource, MetadataTypeResource, DatasetResource
 from datacube.index.postgres._connections import PostgresDb
 from datacube.model import Dataset
+from pyproj import Proj
+import netCDF4 as nc
+from affine import Affine
+from osgeo import osr
 
 from ../util import randomword
 
@@ -94,6 +100,24 @@ def add_dataset(pr, dt, metadict):
     dataset_resource.add(dataset)
 
 
+def wkt_to_proj4(wkt):
+    """Utility to convert CRS WKT to CRS in proj4 format
+
+    Uses the gdal python bindings. This function can be deleted if a recent version
+    of rasterio is present (1), in which case ``rasterio.crs.CRS`` ``from_wkt``
+    method should be prefered.
+
+    Args:
+        wkt (str): CRS string in Well Known Text format
+
+    Return:
+        str: Corresponding proj4 string
+    """
+    srs = osr.SpatialReference()
+    srs.ImportFromWkt(wkt)
+    return srs.ExportToProj4()
+
+
 def metadict_from_netcdf(file, description):
     """Get metadata dictionary for netcdf dataset written using ``write_dataset_to_netcdf``
 
@@ -106,25 +130,35 @@ def metadict_from_netcdf(file, description):
         dict: A dictionary containing dataset metadata
     """
     raise NotImplementedError()
+    with nc.Dataset(file) as src:
+        creation_dt = src.date_created
+        aff = Affine.from_gdal(*src['crs'].GeoTransform)
+        res = aff[0]
+        xmin = min(src['x']) - res / 2
+        xmax = max(src['x']) + res / 2
+        ymin = min(src['y']) - res / 2
+        ymax = max(src['y']) + res / 2
+        crs_wkt = src['crs'].crs_wkt
+        # var list
+        var_list = src.get_variables_by_attributes(grid_mapping='crs')
+        var_list = [x.name for x in var_list]
+    # Convert projected corner coordinates to longlat
+    p = Proj(wkt_to_proj4(crs_wkt))
+    long_min, lat_min = p(xmin, ymin, inverse=True)
+    long_max, lat_max = p(xmax, ymax, inverse=True)
     out = {
-        'id':,
-        'creation_dt':,
-        'product_type':,
-        'platform': {
-            'code':
-        },
-        'instrument': {
-            'name':
-        },
-        'format': {
-            'name': 'NetCDF'
-        },
+        'id': uuid.uuid5(uuid.NAMESPACE_URL, file),
+        'creation_dt': datetime.today().strftime('%Y-%m-%d'),
+        'product_type': description['metadata']['product_type'],
+        'platform': description['metadata']['platform'],
+        'instrument': description['metadata']['instrument'],
+        'format': description['metadata']['format'],
         'extent': {
             'coord': {
-                'll': {'lat':, 'lon':},
-                'lr': {'lat':, 'lon':},
-                'ul': {'lat':, 'lon':},
-                'ur': {'lat':, 'lon':}
+                'll': {'lat': lat_min, 'lon': long_min},
+                'lr': {'lat': lat_min, 'lon': long_max},
+                'ul': {'lat': lat_max, 'lon': long_min},
+                'ur': {'lat': lat_max, 'lon': long_max}
             }
         },
         'from_dt':,
@@ -133,12 +167,12 @@ def metadict_from_netcdf(file, description):
         'grid_spatial': {
             'projection': {
                 'geo_ref_points': {
-                    'll': {'y':, 'x':},
-                    'lr': {'y':, 'x':},
-                    'ul': {'y':, 'x':},
-                    'ur': {'y':, 'x':}
+                    'll': {'y': ymin, 'x': xmin},
+                    'lr': {'y': ymin, 'x': xmax},
+                    'ul': {'y': ymax, 'x': xmin},
+                    'ur': {'y': ymax, 'x': xmax}
                 },
-                'spatial_reference':,
+                'spatial_reference': crs_wkt,
             },
         },
         'image': {
