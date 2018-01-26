@@ -27,15 +27,13 @@ def stats(t):
     median  = ndimage.median(t.values.tolist(), labels=labels, index=index)
     minimum = ndimage.minimum(t.values.tolist(), labels=labels, index=index)
     std     = ndimage.standard_deviation(t.values.tolist(), labels=labels, index=index)
-    var     = ndimage.variance(t.values.tolist(), labels=labels, index=index)
-
+    
     results.append(mean)
     results.append(maximum)
     results.append(median)
     results.append(minimum)
     results.append(std)
-    results.append(var)
-    
+        
     return results
 
 class Command(AntaresBaseCommand):
