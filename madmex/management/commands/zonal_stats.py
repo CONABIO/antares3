@@ -14,7 +14,7 @@ from madmex.management.base import AntaresBaseCommand
 
 logger = logging.getLogger(__name__)
 
-def stats(t):
+def stats(t, labels, index):
     '''
         Receives a 'z' level from the xarray, then applies the mask and get statistics
         over every distinct feature (index) in the mask.
@@ -38,7 +38,7 @@ def stats(t):
 
 class Command(AntaresBaseCommand):
     help = '''
-Computes zonal statistics for every feature in a mask datasource across an xarray datasource.
+Computes zonal statistics for every feature in a mask datasource across the xarray datasource.
 The mask is a numpy.ndarray like:
 
             [[ 1.  1.  0.  0.  0.]
@@ -48,7 +48,7 @@ The mask is a numpy.ndarray like:
              [ 0.  0.  2.  2.  2.]]
 
 Where 1, 2, .. etc represents features to analyze for zonal stats. 
-This mask is applied to a xarray that represents satellite data, bio-climatics information, digital elevations models, etc. 
+This mask is applied to the xarray that represents satellite data, bio-climatics information, digital elevations models, etc. 
 The xarray can privide many of this information at the same time, for that reason the shape of the xarray 
 can be like  
 
@@ -89,15 +89,16 @@ python madmex.py zonal_stats --xarray <xarray_from_data_cube> --mask <numpy.ndar
         '''
         xarr = options['xarray'][0]
         mask  = options['mask'][0]
+        
+        looger.info('Getting indexes from mask')
+        index = numpy.unique(mask)
 
 
         for i in range(xarr.shape[0]):
             looger.info('Processing time', i)
-            z = xarr.isel(time=int(i))
-            looger.info('Getting indexes from mask')
-            index = numpy.unique(mask)
+            z = xarr.isel(time=int(i))            
             looger.info('Computing statistics over layer ', i)
-            st = stats(z)
+            st = stats(z, mask, index)
             stat_xr = xarray.DataArray(st)
             
         
