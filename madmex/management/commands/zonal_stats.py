@@ -93,7 +93,7 @@ python madmex.py zonal_stats --xarray <xarray_from_data_cube> --mask <numpy.ndar
         mask  = options['mask'][0]
 
 
-        for i in range(xarr.shape[2]):
+        for i in range(xarr.shape[0]):
             looger.info('Processing time', i)
             z = xarr.isel(time=int(i))
             looger.info('Getting indexes from mask')
