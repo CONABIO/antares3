@@ -50,25 +50,25 @@ The mask is a numpy.ndarray like:
              [ 0.  0.  2.  2.  2.]]
 
 Where 1, 2, .. etc represents features to analyze for zonal stats. 
-This mask is apllyed to a xarray that represents satellite, bio-climatics, digital elevations models, etc. 
+This mask is applied to a xarray that represents satellite data, bio-climatics information, digital elevations models, etc. 
 The xarray can privide many of this information at the same time, for that reason the shape of the xarray 
 can be like  
 
-            (5, 5, 3)  for ('x', 'y', 'z') 
+            (3, 5, 5)  for ('z', 'y', 'x') 
 
-Where 'z' represents the informations written before. Sometimes, 'z' represents time over a serie of time
+Where 'z' represents the information described above. Sometimes, 'z' represents 'time' over a serie of time
 over the same place. 
-The zonal stats get information over every 'z' level according the mask over the xarray.
-For now, 6 distinct statistics are applied:
+The zonal stats get information over every 'z' level according with the mask over the xarray.
+For now, 5 distinct statistics are applied:
     
-            mean, max, median, min, standard deviation and variance
+            mean, max, median, min and standard-deviation
 
 Args:
-        xarray (numpy.ndarray object ): Xarray from datacube data base
-        mask (xarray.DataArray object): Numpy array 
+        xarray (numpy.ndarray): Xarray from datacube database
+        mask (xarray.DataArray): Numpy array 
 
 Returns:
-        bool: The return value. True for success, False otherwise.
+        statistics (xarray.DataArray): An xarray with the statistics computed.
 
 
 --------------
@@ -83,7 +83,7 @@ python madmex.py zonal_stats --xarray <xarray_from_data_cube> --mask <numpy.ndar
             Requires a raster file and a vector shapefile.
         '''
         parser.add_argument('--xarray', nargs=1, help='xarray from datacube data base.')
-        parser.add_argument('--mask', nargs=1, help='numpy.ndarray with 1 in the 1st feature, 2 in de second and so on')
+        parser.add_argument('--mask', nargs=1, help='numpy.ndarray with 1 in the 1st feature, 2 for the 2nd one and so on')
 
     def handle(self, **options):
         '''
