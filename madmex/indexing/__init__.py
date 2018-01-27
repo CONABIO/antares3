@@ -11,7 +11,7 @@ import netCDF4 as nc
 from affine import Affine
 from osgeo import osr
 
-from ../util import randomword
+from madmex.util import randomword
 
 def add_product(description, name):
     """Add a new product to the database given a product description dictionary
@@ -118,18 +118,41 @@ def wkt_to_proj4(wkt):
     return srs.ExportToProj4()
 
 
-def metadict_from_netcdf(file, description):
+def metadict_from_netcdf(file, description, center_dt, from_dt=None,
+                         to_dt=None, algorithm=None):
     """Get metadata dictionary for netcdf dataset written using ``write_dataset_to_netcdf``
 
     Args:
         file (str): Netcdf file previously written using the ``write_dataset_to_netcdf``
             function.
         description (dict): corresponding product description
+        center_dt (datetime.datetime): Central date of the dataset
+        from_dt (datetime.datetime): Optional begin date of the dataset
+        to_dt (datetime.datetime): Optional end date of the dataset
+        algorithm (str): Option description/identifier of the algorithm/recipe used to
+            produce that dataset
 
     Return:
         dict: A dictionary containing dataset metadata
+
+    Example:
+        >>> from madmex.indexing import metadict_from_netcdf
+        >>> import yaml
+        >>> from pprint import pprint
+        >>> from datetime import datetime
+
+        >>> nc_file = '/path/to/nc_file.nc'
+        >>> with open('~/.config/madmex/indexing/corresponding_config_file.yaml') src:
+        >>>     description = yaml.load(src)
+
+        >>> metadict = metadict_from_netcdf(nc_file, description, center_dt=datetime(2015, 7, 1))
+        >>> pprint(metadict)
+
     """
-    raise NotImplementedError()
+    if from_dt is None:
+        from_dt = center_dt
+    if to_dt is None:
+        to_dt = center_dt
     with nc.Dataset(file) as src:
         creation_dt = src.date_created
         aff = Affine.from_gdal(*src['crs'].GeoTransform)
@@ -148,7 +171,7 @@ def metadict_from_netcdf(file, description):
     long_max, lat_max = p(xmax, ymax, inverse=True)
     out = {
         'id': uuid.uuid5(uuid.NAMESPACE_URL, file),
-        'creation_dt': datetime.today().strftime('%Y-%m-%d'),
+        'creation_dt': creation_dt,
         'product_type': description['metadata']['product_type'],
         'platform': description['metadata']['platform'],
         'instrument': description['metadata']['instrument'],
@@ -161,9 +184,9 @@ def metadict_from_netcdf(file, description):
                 'ur': {'lat': lat_max, 'lon': long_max}
             }
         },
-        'from_dt':,
-        'center_dt':,
-        'to_dt':,
+        'from_dt': from_dt.strftime('%Y-%m-%d'),
+        'center_dt': center_dt.strftime('%Y-%m-%d'),
+        'to_dt': to_dt.strftime('%Y-%m-%d'),
         'grid_spatial': {
             'projection': {
                 'geo_ref_points': {
@@ -176,10 +199,10 @@ def metadict_from_netcdf(file, description):
             },
         },
         'image': {
-            'bands': {
-            },
+            'bands': {band:{'path': file, 'layer': band} for band in var_list},
         },
         'lineage': {
-            'algorithm':,
+            'algorithm': algorithm,
         },
     }
+    return out
