@@ -18,115 +18,115 @@ storage:
 
 measurements:
     - name: 'blue_mean'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'green_mean'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'red_mean'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'nir_mean'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'swir1_mean'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'swir2_mean'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'ndvi_mean'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'unitless'
     - name: 'blue_min'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'green_min'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'red_min'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'nir_min'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'swir1_min'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'swir2_min'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'ndvi_min'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'unitless'
     - name: 'blue_max'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'green_max'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'red_max'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'nir_max'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'swir1_max'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'swir2_max'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'ndvi_max'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'unitless'
     - name: 'blue_std'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'green_std'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'red_std'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'nir_std'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'swir1_std'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'swir2_std'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'reflectance'
     - name: 'ndvi_std'
-      dtype: float64
+      dtype: int16
       nodata: -9999
       units: 'unitless'
     - name: 'elevation'
