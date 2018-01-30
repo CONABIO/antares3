@@ -4,6 +4,8 @@ from datacube.storage import masking
 import xarray as xr
 import numpy as np
 
+from datetime import datetime
+
 def run(x, y, time, dask_chunks, nc_filename):
     """Basic datapreparation recipe 001
 
