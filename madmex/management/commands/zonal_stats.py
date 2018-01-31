@@ -4,37 +4,16 @@ Created on Jan 16, 2018
 @author: rmartinez
 '''
 
-import numpy
 import logging
+
+import numpy
 import xarray
 
-from scipy import ndimage
+from madmex.data.munge import stats
 from madmex.management.base import AntaresBaseCommand
 
 
 logger = logging.getLogger(__name__)
-
-def stats(t, labels, index):
-    '''
-        Receives a 'z' level from the xarray, then applies the mask and get statistics
-        over every distinct feature (index) in the mask.
-    '''
-    looger.info('Applying mask to xarray')
-    results = []
-
-    mean    = ndimage.mean(t.values.tolist(), labels=labels, index=index)
-    maximum = ndimage.maximum(t.values.tolist(), labels=labels, index=index)
-    median  = ndimage.median(t.values.tolist(), labels=labels, index=index)
-    minimum = ndimage.minimum(t.values.tolist(), labels=labels, index=index)
-    std     = ndimage.standard_deviation(t.values.tolist(), labels=labels, index=index)
-    
-    results.append(mean)
-    results.append(maximum)
-    results.append(median)
-    results.append(minimum)
-    results.append(std)
-        
-    return results
 
 class Command(AntaresBaseCommand):
     help = '''
@@ -90,16 +69,14 @@ python madmex.py zonal_stats --xarray <xarray_from_data_cube> --mask <numpy.ndar
         xarr = options['xarray'][0]
         mask  = options['mask'][0]
         
-        looger.info('Getting indexes from mask')
+        logger.info('Getting indexes from mask')
         index = numpy.unique(mask)
 
 
         for i in range(xarr.shape[0]):
-            looger.info('Processing time', i)
+            logger.info('Processing time', i)
             z = xarr.isel(time=int(i))            
-            looger.info('Computing statistics over layer ', i)
+            logger.info('Computing statistics over layer ', i)
             st = stats(z, mask, index)
             stat_xr = xarray.DataArray(st)
-            
-        
-
+            print(stat_xr)
