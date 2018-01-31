@@ -203,6 +203,7 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
         },
         'lineage': {
             'algorithm': algorithm,
+            'source_datasets': {},
         },
     }
     return out
