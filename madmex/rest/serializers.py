@@ -11,7 +11,11 @@ from madmex.models import Object
 class ObjectSerializer(serializers.HyperlinkedModelSerializer):
     tags = serializers.StringRelatedField(many=True)
     regions = serializers.StringRelatedField(many=True)
+    ones = serializers.SerializerMethodField('get_one')
+    
+    def get_one(self, foo):
+        return 1
     class Meta:
         model = Object
-        fields = ('added', 'id', 'regions', 'tags', 'the_geom')
+        fields = ('added', 'id', 'regions', 'tags', 'the_geom', 'ones')
         
