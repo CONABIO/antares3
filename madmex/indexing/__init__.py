@@ -96,7 +96,7 @@ def add_dataset(pr, dt, metadict):
     """
     db = PostgresDb.from_config()
     dataset_resource = DatasetResource(db, pr)
-    dataset = Dataset(dt, metadict)
+    dataset = Dataset(dt, metadict, sources={})
     dataset_resource.add(dataset)
 
 
@@ -170,7 +170,7 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
     long_min, lat_min = p(xmin, ymin, inverse=True)
     long_max, lat_max = p(xmax, ymax, inverse=True)
     out = {
-        'id': uuid.uuid5(uuid.NAMESPACE_URL, file),
+        'id': str(uuid.uuid5(uuid.NAMESPACE_URL, file)),
         'creation_dt': creation_dt,
         'product_type': description['metadata']['product_type'],
         'platform': description['metadata']['platform'],
