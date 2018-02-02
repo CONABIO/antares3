@@ -3,9 +3,11 @@ Created on Dec 12, 2017
 
 @author: agutierrez
 '''
+import distutils
 import logging
 import os
 import re
+from subprocess import check_output
 import sys
 import zipfile
 
@@ -120,3 +122,36 @@ def filter_files_from_folder(directory, regex=r'*'):
     '''
     pattern = re.compile(regex) 
     return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and pattern.match(f)]
+
+
+class LocalProcessLauncher():
+    '''
+    This class will implement a launcher for local processes outside
+    python. It will solve the problem of looking for the place where
+    a executable is located.
+    '''
+    def __init__(self):
+        pass
+    
+    def execute(self, shell_string, write_output = False):
+        '''
+        Looks for the executable in the environment and calls it.
+        '''
+        shell_string_array = shell_string.split(' ')
+        shell_string_array[0]  = self._get_executable(shell_string_array [0])
+        return check_output(shell_string_array)
+    
+    def _get_executable(self, executable):
+        '''
+        Looks for the given executable in a list of directories.
+        '''
+        return distutils.spawn.find_executable(executable, os.pathsep.join([
+                                               '/usr/bin',
+                                               '/bin',
+                                               '/usr/sbin',
+                                               '/sbin',
+                                               '/usr/local/bin/',
+                                               '/Applications/Postgres.app/Contents/Versions/9.5/bin/',
+                                               '/Library/Frameworks/GDAL.framework/Programs/']))  
+
+
