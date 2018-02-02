@@ -27,11 +27,13 @@ class Command(AntaresBaseCommand):
         '''
         parser.add_argument('--shape', nargs=1, help='The name of the shape to ingest.')
         parser.add_argument('--properties', nargs='*', help='The name of the shape to ingest.')
+        parser.add_argument('--dataset', nargs='*', help='The name of the shape to ingest.')
     
     def handle(self, **options):
         
         shape_file = options['shape'][0]
         properties = options['properties']
+        dataset = options['dataset'][0]
         
         print(properties)
 
@@ -48,7 +50,7 @@ class Command(AntaresBaseCommand):
 
  
                 
-                o = Object(the_geom = geom)
+                o = Object(the_geom = geom, dataset=dataset)
                 o.save()
                 for region in Region.objects.filter(the_geom__intersects=geom):
                     o.regions.add(region)

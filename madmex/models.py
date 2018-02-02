@@ -29,7 +29,7 @@ class Footprint(models.Model):
     name = models.CharField(max_length=50, unique=True)
     the_geom = models.PolygonField()
     added = models.DateTimeField(auto_now_add=True)
-    
+
 class Order(models.Model):
     '''This model holds the information of usgs orders. 
     '''
@@ -37,12 +37,27 @@ class Order(models.Model):
     order_id = models.CharField(max_length=100, unique=True)
     downloaded = models.BooleanField()
     added = models.DateTimeField(auto_now_add=True)
+
+class Model(models.Model):
+    '''A database entry that handles the models that we train.
+    '''
+    name = models.CharField(max_length=100, unique=True)
+    path = models.CharField(max_length=100, unique=True)
+    training_set = models.CharField(max_length=100, unique=True)
+    added = models.DateTimeField(auto_now_add=True)
     
-class Tag(models.Model):
+class TrainTag(models.Model):
     '''To keep a deeper control over the tags that we can handle. 
     '''
     key = models.CharField(max_length=50, default=None)
     value = models.CharField(max_length=150, default=None)
+    
+class PredictTag(models.Model):
+    '''To keep a the tags assigned to an object by a specific model. 
+    '''
+    key = models.CharField(max_length=50, default=None)
+    value = models.CharField(max_length=150, default=None)
+    model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='model', default=None)
 
 class Object(models.Model):
     '''This table holds objects that will be used for training. They must be related to
@@ -52,7 +67,9 @@ class Object(models.Model):
     the_geom = models.PolygonField()
     added = models.DateTimeField(auto_now_add=True)
     regions = models.ManyToManyField(Region)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(TrainTag)
+    prediction_tags = models.ManyToManyField(PredictTag, default=None)
+    dataset = models.CharField(max_length=100, default=None)
 
 def ingest_countries_from_shape(path, mapping):
     '''Ingestion function for countries to database.
