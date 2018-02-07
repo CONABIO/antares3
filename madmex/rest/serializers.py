@@ -9,7 +9,7 @@ from madmex.models import Object
 
 
 class ObjectSerializer(serializers.HyperlinkedModelSerializer):
-    tags = serializers.StringRelatedField(many=True)
+    tags = serializers.SlugRelatedField(many=True, read_only=True, slug_field='value')
     regions = serializers.StringRelatedField(many=True)
     ones = serializers.SerializerMethodField('get_one')
     

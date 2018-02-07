@@ -52,6 +52,9 @@ class TrainTag(models.Model):
     key = models.CharField(max_length=50, default=None)
     value = models.CharField(max_length=150, default=None)
     
+    def __unicode__(self):
+        return '%s: %s' % (self.key, self.value)
+    
 class PredictTag(models.Model):
     '''To keep a the tags assigned to an object by a specific model. 
     '''
