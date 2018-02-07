@@ -182,11 +182,11 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
                 'lr': {'lat': lat_min, 'lon': long_max},
                 'ul': {'lat': lat_max, 'lon': long_min},
                 'ur': {'lat': lat_max, 'lon': long_max}
-            }
+            },
+            'from_dt': from_dt.strftime('%Y-%m-%d'),
+            'center_dt': center_dt.strftime('%Y-%m-%d'),
+            'to_dt': to_dt.strftime('%Y-%m-%d'),
         },
-        'from_dt': from_dt.strftime('%Y-%m-%d'),
-        'center_dt': center_dt.strftime('%Y-%m-%d'),
-        'to_dt': to_dt.strftime('%Y-%m-%d'),
         'grid_spatial': {
             'projection': {
                 'geo_ref_points': {
