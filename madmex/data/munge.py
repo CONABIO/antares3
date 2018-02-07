@@ -3,31 +3,35 @@ Created on Jan 31, 2018
 
 @author: agutierrez
 '''
+from importlib import import_module
 import logging
 
-from scipy import ndimage
-
+import numpy
 
 logger = logging.getLogger(__name__)
 
-def stats(t, labels, index):
+def calculate_zonal_statistics(array, labels, index, statistics):
     '''
-        Receives a 'z' level from the xarray, then applies the mask and get statistics
-        over every distinct feature (index) in the mask.
+    Receives an array with labels and indexes for those labels. It calculates the zonal
+    statistics for those labels. Statistics are the target functions to be applied, it should
+    cointain strings from the set: ('mean', 'maximum', 'median', 'minimum', 'standard_deviation',
+    'variance','sum')
+    
+    Args:
+        array (numpy.array): Array to which statitstics will be applied
+        labels (numpy.array): Labels for the statistics of interest
+        index (numpy.array): Positions in which the statistics can be found
+        statistics (string array): Functions to be applied
+
+    Return:
+        zonal_statistics (numpy.array): The calculated statistics
+    
     '''
-    logger.info('Applying mask to xarray')
     results = []
-
-    mean = ndimage.mean(t.values.tolist(), labels=labels, index=index)
-    maximum = ndimage.maximum(t.values.tolist(), labels=labels, index=index)
-    median = ndimage.median(t.values.tolist(), labels=labels, index=index)
-    minimum = ndimage.minimum(t.values.tolist(), labels=labels, index=index)
-    std = ndimage.standard_deviation(t.values.tolist(), labels=labels, index=index)
-
-    results.append(mean)
-    results.append(maximum)
-    results.append(median)
-    results.append(minimum)
-    results.append(std)
-
-    return results
+    module = import_module('scipy.ndimage.measurements')
+    for statistic in statistics:
+        function = getattr(module, statistic)
+        stat = function(array, labels=labels, index=index)
+        results.append(stat)
+    zonal_statistics = numpy.asarray(results).transpose()  
+    return zonal_statistics
