@@ -62,7 +62,7 @@ class PredictTag(models.Model):
     value = models.CharField(max_length=150, default=None)
     model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='model', default=None)
 
-class Object(models.Model):
+class TrainObject(models.Model):
     '''This table holds objects that will be used for training. They must be related to
     regions and each object should have an assigned tag which is the ground truth for
     it.
@@ -70,7 +70,17 @@ class Object(models.Model):
     the_geom = models.PolygonField()
     added = models.DateTimeField(auto_now_add=True)
     regions = models.ManyToManyField(Region)
-    tags = models.ManyToManyField(TrainTag)
+    training_tags = models.ManyToManyField(TrainTag)
+    dataset = models.CharField(max_length=100, default=None)
+
+class PredictObject(models.Model):
+    '''This table holds objects that will be used for training. They must be related to
+    regions and each object should have an assigned tag which is the ground truth for
+    it.
+    '''
+    the_geom = models.PolygonField()
+    added = models.DateTimeField(auto_now_add=True)
+    regions = models.ManyToManyField(Region)
     prediction_tags = models.ManyToManyField(PredictTag, default=None)
     dataset = models.CharField(max_length=100, default=None)
 

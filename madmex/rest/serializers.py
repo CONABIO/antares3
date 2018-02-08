@@ -5,7 +5,7 @@ Created on Jan 22, 2018
 '''
 
 from rest_framework import serializers
-from madmex.models import Object
+from madmex.models import TrainObject
 
 
 class ObjectSerializer(serializers.HyperlinkedModelSerializer):
@@ -16,6 +16,6 @@ class ObjectSerializer(serializers.HyperlinkedModelSerializer):
     def get_one(self, foo):
         return 1
     class Meta:
-        model = Object
+        model = TrainObject
         fields = ('added', 'id', 'regions', 'tags', 'the_geom', 'ones')
         
