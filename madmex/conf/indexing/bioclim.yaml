@@ -1,0 +1,29 @@
+name: bio_climatics_mosaic
+description: Climatic surface of temperature in °C and presipitation in mm, of the Mexican Republic (1903-2011) 
+metadata_type: eo
+
+metadata:
+    platform:
+        code: WorldClim (1950-2000) and the daily climatological base (1902-2011)
+    instrument:
+        name: unknown
+    product_type: BIO
+    format:
+        name: GeoTiff
+
+measurements:
+    - name: 'tmax'
+      aliases: [maximum_temperature]
+      dtype: float32
+      nodata: -9999
+      units: 'degree'
+    - name: 'tmean'
+      aliases: [mean_temperature]
+      dtype: float32 
+      nodata: -9999
+      units: 'degree'
+    - name: 'tmin'
+      aliases: [minimum_temperature]
+      dtype: float32
+      nodata: -9999
+      units: 'degree'
