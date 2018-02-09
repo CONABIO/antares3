@@ -14,7 +14,7 @@ from shapely.geometry.geo import shape
 from shapely.ops import transform
 
 from madmex.management.base import AntaresBaseCommand
-from madmex.models import Region, Tag, Object
+from madmex.models import Region, TrainTag, TrainObject
 
 
 logger = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ class Command(AntaresBaseCommand):
 
  
                 
-                o = Object(the_geom = geom, dataset=dataset)
+                o = TrainObject(the_geom = geom, dataset=dataset)
                 o.save()
                 for region in Region.objects.filter(the_geom__intersects=geom):
                     o.regions.add(region)
@@ -59,10 +59,10 @@ class Command(AntaresBaseCommand):
                     key = prop
                     value = feat['properties'][prop].lower()
                     try:
-                        tag = Tag.objects.get(key=key,value=value)
-                    except Tag.DoesNotExist:
-                        tag = Tag(key=key,value=value)
+                        tag = TrainTag.objects.get(key=key,value=value)
+                    except TrainTag.DoesNotExist:
+                        tag = TrainTag(key=key,value=value)
                         tag.save()
-                    o.tags.add(tag)
+                    o.training_tags.add(tag)
                 o.save()
                 

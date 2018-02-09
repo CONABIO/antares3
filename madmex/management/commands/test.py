@@ -13,16 +13,20 @@ from django.contrib.gis.geos.polygon import Polygon
 from fiona import transform
 import geojson
 import numpy
+from pandas.compat import lrange
 import rasterio
 from rasterio.features import rasterize
 import scipy.ndimage
 from shapely.geometry.geo import shape
 import xarray
+from xarray.core.dataset import Dataset
+from xarray.core.formatting import pretty_print
 
 from madmex.management.base import AntaresBaseCommand
 from madmex.model.supervised import rf
-from madmex.models import Object
-from madmex.orm.queries import example_query
+from madmex.models import TrainObject
+from madmex.orm.queries import example_query, get_datacube_objects, \
+    get_datacube_chunks
 from madmex.settings import TEMP_DIR
 
 
@@ -49,9 +53,16 @@ class Command(AntaresBaseCommand):
         print('Model score.')
         print(my_model.score(X,y))
         '''
+        base = '/LUSTRE/MADMEX/tasks/2018_tasks/datacube_madmex/datacube_directories_mapping_docker_2'
+
+        for s in get_datacube_chunks('ls8_espa_mexico_uncompressed'):            
+            name = '%s%s' % (base, s[0][19:])
+            dataset = xarray.open_dataset(name).attrs['geospatial_bounds']
+
+            print(dataset)
+            #print(polygon_wkt)
         
-        
-        
+        '''
         xr_array = xarray.open_dataset('/LUSTRE/MADMEX/datacube_ingest/LS8_espa/mexico/LS8_espa_12_-16_20171221172432088372.nc')
         
         
@@ -129,13 +140,9 @@ class Command(AntaresBaseCommand):
         for obj in Object.objects.all()[:10] :
             print(obj.the_geom.transform(3785, clone=True))
         
-        '''
         for obj in Object.objects.filter(the_geom__intersects=GEOSGeometry(plygn_wkt)):
             print(obj)
-        '''
-        
-        
-        '''
+    
         for row in example_query():
             print(row)
         '''

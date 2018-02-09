@@ -25,6 +25,8 @@ router = routers.DefaultRouter()
 router.register(r'objects', views.ObjectViewSet)
 
 urlpatterns = [
+    path('datacube_landsat_tiles/', views.datacube_chunks, name='datacube_chunks'),
+    path('datacube/', views.datacube_landsat_tiles, name='datacube_landsat_tiles'),
     path('admin/', admin.site.urls),
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
