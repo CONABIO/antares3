@@ -10,14 +10,16 @@ import os
 import logging
 from datetime import datetime
 
-import dask
-import dask.multiprocessing
-dask.set_options(get=dask.multiprocessing.get)
+from dask.distributed import Client
+from datacube.index.postgres._connections import PostgresDb
+from datacube.index._api import Index
+from datacube.api import GridWorkflow
 
 from madmex.management.base import AntaresBaseCommand
 
 from madmex.indexing import add_product, add_dataset, metadict_from_netcdf
 from madmex.util import yaml_to_dict, mid_date
+from madmex.recipes import RECIPES
 
 
 logger = logging.getLogger(__name__)
@@ -59,44 +61,52 @@ python madmex.py apply_recipe -recipe madmex_001 -b 2016-01-01 -e 2016-12-31 -la
                             type=str,
                             required=True,
                             help='Name under which the product should be referenced in the datacube')
-        parser.add_argument('-chunk', '--chunk_size',
-                            type=int,
-                            required=False,
-                            help='Dask chunk size (in x and y dimensions) to use for distributed processing')
-        parser.set_defaults(chunk_size=2000)
 
     def handle(self, *args, **options):
+        try:
+            recipe_meta = RECIPES[options['recipe']]
+        except KeyError:
+            raise ValueError('Selected recipe does not exist')
+        product = recipe_meta['product']
+        fun = recipe_meta['fun']
+        yaml_file = recipe_meta['config_file']
         # TODO: Make this path more dynamic. MAybe with a variable defined in .env
-        path = os.path.expanduser('~/datacube_ingest/recipes/')
+        path = os.path.expanduser(os.path.join('~/datacube_ingest/recipes/', options['recipe']))
         if not os.path.exists(path):
             os.makedirs(path)
-        filename = os.path.join(path, '%s.nc' % options['name'])
-        # Import recipe
-        try:
-            mod = import_module('madmex.recipes.%s' % options['recipe'])
-        except ImportError as e:
-            raise ValueError('Selected recipe does not exist')
         # Apply the recipe
         lat = tuple(options['lat'])
         long = tuple(options['long'])
         begin = datetime.strptime(options['begin'], '%Y-%m-%d')
         end = datetime.strptime(options['end'], '%Y-%m-%d')
         time = (begin, end)
-        dask_chunks = {'x': options['chunk_size'],
-                       'y': options['chunk_size']}
-        mod.run(x=long, y=lat, time=time, dask_chunks=dask_chunks,
-                nc_filename=filename)
         # Prepare data for product indexing
-        yaml_file = os.path.expanduser(os.path.join('~/.config/madmex/indexing',
-                                                    '%s.yaml' % options['recipe']))
         product_description = yaml_to_dict(yaml_file)
         center_dt = mid_date(begin, end)
-        metadict = metadict_from_netcdf(file=filename, description=product_description,
-                                        center_dt=center_dt, from_dt=begin,
-                                        to_dt=end, algorithm=options['recipe'])
+        # metadict = metadict_from_netcdf(file=filename, description=product_description,
+                                        # center_dt=center_dt, from_dt=begin,
+                                        # to_dt=end, algorithm=options['recipe'])
         # Add product
-        pr, dt = add_product(product_description, options['name'])
+        # pr, dt = add_product(product_description, options['name'])
         # Add dataset
-        add_dataset(pr=pr, dt=dt, metadict=metadict)
+        # add_dataset(pr=pr, dt=dt, metadict=metadict)
+
+
+
+        # GridWorkflow object
+        db = PostgresDb.from_config()
+        i = Index(db)
+        gwf = GridWorkflow(i, product=product)
+        tile_dict = gwf.list_cells(product=product, time=(begin, end),
+                                   x=long, y=lat)
+        # Iterable (dictionary view (analog to list of tuples))
+        iterable = tile_dict.items()
+
+        # Start cluster and run 
+        client = Client()
+        C = client.map(fun, iterable, **{'gwf': gwf, 'center_dt': center_dt})
+        nc_list = client.gather(C)
+
+        # TODO: Index every element of nc_list (might need exception handling for the None)
 
 
