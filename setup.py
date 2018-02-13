@@ -14,7 +14,8 @@ with open('madmex/__init__.py') as f:
 extra_reqs = {'docs': ['sphinx',
                        'sphinx-rtd-theme',
                        'sphinxcontrib-programoutput'],
-              'multi': ['cloudpickle']}
+              'multi': ['cloudpickle',
+                        'distributed']}
 extra_reqs['all'] = list(set(itertools.chain(*extra_reqs.values())))
 
 setup(name='madmex',

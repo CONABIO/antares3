@@ -7,7 +7,7 @@ import numpy as np
 
 from datetime import datetime
 
-def run(tile, gwf):
+def run(tile, gwf, center_dt):
     """Basic datapreparation recipe 001
 
     Combines temporal statistics of surface reflectance and ndvi with terrain
@@ -27,7 +27,7 @@ def run(tile, gwf):
         dc = datacube.Datacube(app = 'recipe_madmex_001')
         center_dt = center_dt.strftime("%Y-%m-%d")
         # TODO: Need a more dynamic way to handle this filename (e.g.: global variable for the path up to datacube_ingest)
-        nc_filename = os.path.expanduser('~/datacube_ingest/recipes/madmex_001/madmex_001_%d_%d_%s.nc' % tile[0] + (center_dt,))
+        nc_filename = os.path.expanduser('~/datacube_ingest/recipes/madmex_001/madmex_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         # TODO: Is it a good idea to check if file already exist and skip processing if it does?
         # Load Landsat sr
         sr = gwf.load(tile[1])
@@ -80,6 +80,7 @@ def run(tile, gwf):
         write_dataset_to_netcdf(combined, nc_filename)
         return nc_filename
     except Exception as e:
+        print(e)
         return None
 
 

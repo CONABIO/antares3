@@ -10,7 +10,7 @@ import os
 import logging
 from datetime import datetime
 
-from dask.distributed import Client
+from dask.distributed import Client, LocalCluster
 from datacube.index.postgres._connections import PostgresDb
 from datacube.index._api import Index
 from datacube.api import GridWorkflow
@@ -69,6 +69,7 @@ python madmex.py apply_recipe -recipe madmex_001 -b 2016-01-01 -e 2016-12-31 -la
             raise ValueError('Selected recipe does not exist')
         product = recipe_meta['product']
         fun = recipe_meta['fun']
+        print(fun)
         yaml_file = recipe_meta['config_file']
         # TODO: Make this path more dynamic. MAybe with a variable defined in .env
         path = os.path.expanduser(os.path.join('~/datacube_ingest/recipes/', options['recipe']))
@@ -101,11 +102,15 @@ python madmex.py apply_recipe -recipe madmex_001 -b 2016-01-01 -e 2016-12-31 -la
                                    x=long, y=lat)
         # Iterable (dictionary view (analog to list of tuples))
         iterable = tile_dict.items()
+        print(product)
 
         # Start cluster and run 
+        # cluster = LocalCluster(n_workers=n_workers,
+                               # threads_per_worker=threads)
         client = Client()
         C = client.map(fun, iterable, **{'gwf': gwf, 'center_dt': center_dt})
         nc_list = client.gather(C)
+        print(nc_list)
 
         # TODO: Index every element of nc_list (might need exception handling for the None)
 
