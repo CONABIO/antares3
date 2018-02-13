@@ -15,15 +15,15 @@ measurements:
     - name: 'tmax'
       aliases: [maximum_temperature]
       dtype: float32
-      nodata: -9999
+      nodata: -3.40282e+38
       units: 'degree'
     - name: 'tmean'
       aliases: [mean_temperature]
       dtype: float32 
-      nodata: -9999
+      nodata: -3.40282e+38
       units: 'degree'
     - name: 'tmin'
       aliases: [minimum_temperature]
       dtype: float32
-      nodata: -9999
+      nodata: -3.40282e+38
       units: 'degree'
