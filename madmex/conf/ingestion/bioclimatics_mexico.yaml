@@ -1,0 +1,71 @@
+source_type: bioclimatics 
+output_type: bioclimatics_mexico
+
+description: Climatic surface with monthly temporal resolution, interpolated at very high spatial resolution (926 m) with data quality control considering the topographic effect, from the corresponding climatic surface in the WorldClim database (1950-2000) and from the climatological basis daily (1902-2011) of more than 5,000 meteorological stations of the National Meteorological Service of the National Water Commission. 
+
+location: '/home/madmex_user/datacube_ingest'
+file_path_template: 'bioclim/mexico/bio_{tile_index[0]}_{tile_index[1]}_{start_time}.nc'i
+global_attributes:
+  title: CONABIO Data Cube Bioclimatics
+  summary: Climatic surface with monthly temporal resolution
+  source: UNIATMOS, UNAM
+  institution: CONABIO
+  instrument: Weather station
+  cdm_data_type: Grid
+  keywords: CONABIO,BIOCLIMATICS,TEMPERATURE
+  keywords_vocabulary: SMN,BIO
+  platform: Servicio Meteorologico Nacional
+  processing_level: Monthly climatological surface, with a spatial resolution of 926m, considers the topographic effect. 
+  product_version: '0.0.1'
+  product_suite: BIO
+  project: MADMEX
+  coverage_content_type: physicalMeasurement
+
+storage:
+  driver: NetCDF CF
+  # http://spatialreference.org/ref/sr-org/mexico-inegi-lambert-conformal-conic/
+  crs: PROJCS["unnamed",GEOGCS["WGS 84",DATUM["unknown",SPHEROID["WGS84",6378137,6556752.3141]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",17.5],PARAMETER["standard_parallel_2",29.5],PARAMETER["latitude_of_origin",12],PARAMETER["central_meridian",-102],PARAMETER["false_easting",2500000],PARAMETER["false_northing",0]] 
+  tile_size:
+          x: 100080
+          y: 100080
+  resolution:
+          x: 900
+          y: -900
+  origin:
+    # -118.21, 33.02
+    x: 977160 
+    y: 2426720
+  chunking:
+      x: 200
+      y: 200
+      time: 200
+  dimension_order: ['time', 'y', 'x']
+
+measurements:
+    - name: 'tmax'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax'
+      attrs:
+          long_name: "Maximum temperature"
+          alias: "tmax"
+    - name: 'tmean'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean'
+      attrs:
+          long_name: "Mean temperature"
+          alias: "tmean"
+    - name: 'tmin'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin'
+      attrs:
+          long_name: "Minimum temperature"
+          alias: "tmin"
