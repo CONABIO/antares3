@@ -81,8 +81,12 @@ def add_product_from_recipe(recipe, name=None):
     return add_product_from_yaml(description, name)
 
 
-def add_dataset(pr, dt, metadict):
-    """Add a dataset to the datacube
+def add_dataset(pr, dt, metadict, file):
+    """Add a dataset to the datacube database
+
+    It's added to 2 tables:
+      - dataset: with all the metadata
+      - dataset_location
 
     Args:
         pr (ProductResource): A ProductResource object, contained in the return of
@@ -90,6 +94,7 @@ def add_dataset(pr, dt, metadict):
         dt (DatasetType): A DatasetType object, contained in the return of ``add_product``
         metadict (dict): Dictionary containing dataset metadata, generally generated
             by ``metadict_from_netcdf``
+        file (str): Path of the file to add to the index
 
     Return:
         No return, the function is used for its side effect of adding a dataset to the datacube
@@ -98,6 +103,8 @@ def add_dataset(pr, dt, metadict):
     dataset_resource = DatasetResource(db, pr)
     dataset = Dataset(dt, metadict, sources={})
     dataset_resource.add(dataset)
+    uid = metadict['id']
+    dataset_resource.add_location(uid, file)
 
 
 def wkt_to_proj4(wkt):

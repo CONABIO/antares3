@@ -14,10 +14,11 @@ from dask.distributed import Client, LocalCluster
 from datacube.index.postgres._connections import PostgresDb
 from datacube.index._api import Index
 from datacube.api import GridWorkflow
+import datacube
 
 from madmex.management.base import AntaresBaseCommand
 
-from madmex.indexing import add_product, add_dataset, metadict_from_netcdf
+from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_netcdf
 from madmex.util import yaml_to_dict, mid_date
 from madmex.recipes import RECIPES
 
@@ -32,6 +33,9 @@ Example usage:
 --------------
 # Apply madmex_001 recipe (The datacube must contain the ls8_espa_mexico and srtm_cgiar_mexico products)
 python madmex.py apply_recipe -recipe madmex_001 -b 2016-01-01 -e 2016-12-31 -lat 19 23 -long -106 -101 --name madmex_001_jalisco_2016
+
+# Apply ndvi_mean recipe (The datacube must contain the ls8_espa_mexico)
+python madmex.py apply_recipe -recipe ndvi_mean -b 2017-01-01 -e 2017-12-31 -lat 19 23 -long -106 -101 --name landsat_ndvi_jalisco_2017
 """
     def add_arguments(self, parser):
         # Recipe is a positional argument
@@ -63,36 +67,25 @@ python madmex.py apply_recipe -recipe madmex_001 -b 2016-01-01 -e 2016-12-31 -la
                             help='Name under which the product should be referenced in the datacube')
 
     def handle(self, *args, **options):
+        # TODO: Make this path more dynamic. MAybe with a variable defined in .env
+        path = os.path.expanduser(os.path.join('~/datacube_ingest/recipes/', options['recipe']))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        # Prepare a few variables
         try:
             recipe_meta = RECIPES[options['recipe']]
         except KeyError:
             raise ValueError('Selected recipe does not exist')
         product = recipe_meta['product']
         fun = recipe_meta['fun']
-        print(fun)
         yaml_file = recipe_meta['config_file']
-        # TODO: Make this path more dynamic. MAybe with a variable defined in .env
-        path = os.path.expanduser(os.path.join('~/datacube_ingest/recipes/', options['recipe']))
-        if not os.path.exists(path):
-            os.makedirs(path)
-        # Apply the recipe
         lat = tuple(options['lat'])
         long = tuple(options['long'])
         begin = datetime.strptime(options['begin'], '%Y-%m-%d')
         end = datetime.strptime(options['end'], '%Y-%m-%d')
         time = (begin, end)
-        # Prepare data for product indexing
-        product_description = yaml_to_dict(yaml_file)
         center_dt = mid_date(begin, end)
-        # metadict = metadict_from_netcdf(file=filename, description=product_description,
-                                        # center_dt=center_dt, from_dt=begin,
-                                        # to_dt=end, algorithm=options['recipe'])
-        # Add product
-        # pr, dt = add_product(product_description, options['name'])
-        # Add dataset
-        # add_dataset(pr=pr, dt=dt, metadict=metadict)
-
-
+        dc = datacube.Datacube('recipe_from_cl')
 
         # GridWorkflow object
         db = PostgresDb.from_config()
@@ -102,16 +95,30 @@ python madmex.py apply_recipe -recipe madmex_001 -b 2016-01-01 -e 2016-12-31 -la
                                    x=long, y=lat)
         # Iterable (dictionary view (analog to list of tuples))
         iterable = tile_dict.items()
-        print(product)
 
         # Start cluster and run 
-        # cluster = LocalCluster(n_workers=n_workers,
-                               # threads_per_worker=threads)
         client = Client()
-        C = client.map(fun, iterable, **{'gwf': gwf, 'center_dt': center_dt})
+        C = client.map(fun, iterable, **{'gwf': gwf,
+                                         'center_dt': center_dt,
+                                         'dc': dc})
         nc_list = client.gather(C)
-        print(nc_list)
 
-        # TODO: Index every element of nc_list (might need exception handling for the None)
+        # Add product
+        # TODO: What happens if product already exist
+        product_description = yaml_to_dict(yaml_file)
+        pr, dt = add_product_from_yaml(yaml_file, options['name'])
+        # Function to run on the list of filenames returned by Client.map()
+        def index_nc_file(nc):
+            """Helper function with tons of variables taken from the local environment
+            """
+            try:
+                metadict = metadict_from_netcdf(file=nc, description=product_description,
+                                                center_dt=center_dt, from_dt=begin,
+                                                to_dt=end, algorithm=options['recipe'])
+                add_dataset(pr=pr, dt=dt, metadict=metadict, file=nc)
+            except Exception as e:
+                pass
+
+        [index_nc_file(x) for x in nc_list]
 
 

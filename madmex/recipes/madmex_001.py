@@ -7,7 +7,7 @@ import numpy as np
 
 from datetime import datetime
 
-def run(tile, gwf, center_dt):
+def run(tile, gwf, center_dt, dc):
     """Basic datapreparation recipe 001
 
     Combines temporal statistics of surface reflectance and ndvi with terrain
@@ -19,12 +19,13 @@ def run(tile, gwf, center_dt):
         gwf (GridWorkflow): GridWorkflow object instantiated with the corresponding
             product
         center_dt (datetime): Date to be used in making the filename
+        dc (datacube.Datacube): Datacube object, useful for recipes that perform merging
+            of several products
 
     Return:
         str: The filename of the netcdf file created
     """
     try:
-        dc = datacube.Datacube(app = 'recipe_madmex_001')
         center_dt = center_dt.strftime("%Y-%m-%d")
         # TODO: Need a more dynamic way to handle this filename (e.g.: global variable for the path up to datacube_ingest)
         nc_filename = os.path.expanduser('~/datacube_ingest/recipes/madmex_001/madmex_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))

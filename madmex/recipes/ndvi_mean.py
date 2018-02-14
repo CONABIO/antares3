@@ -7,7 +7,7 @@ import numpy as np
 
 from datetime import datetime
 
-def run(tile, gwf, center_dt):
+def run(tile, gwf, center_dt, dc):
     """Basic datapreparation recipe 001
 
     Computes mean NDVI for a landsat collection over a given time frame
@@ -18,6 +18,8 @@ def run(tile, gwf, center_dt):
         gwf (GridWorkflow): GridWorkflow object instantiated with the corresponding
             product
         center_dt (datetime): Date to be used in making the filename
+        dc (datacube.Datacube): Datacube object, useful for recipes that perform merging
+            of several products
 
     Return:
         str: The filename of the netcdf file created
