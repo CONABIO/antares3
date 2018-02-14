@@ -1,12 +1,12 @@
-name: bio_climatics_mosaic
-description: Climatic surface of temperature in °C and presipitation in mm, of the Mexican Republic (1903-2011) 
+name: bioclimatics
+description: Climatic surface of temperature in Celsius Degrees and presipitation in mm, of the Mexican Republic (1903-2011) 
 metadata_type: eo
 
 metadata:
     platform:
         code: WorldClim (1950-2000) and the daily climatological base (1902-2011)
     instrument:
-        name: unknown
+        name: Weather station
     product_type: BIO
     format:
         name: GeoTiff
