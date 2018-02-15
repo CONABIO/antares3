@@ -36,9 +36,11 @@ def run(tile, gwf, center_dt, dc):
         sr = gwf.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
         # Compute ndvi
         sr['ndvi'] = (sr.nir - sr.red) / (sr.nir + sr.red) * 10000
+        clear = masking.make_mask(sr.pixel_qa, clear=True)
         ndvi = sr.drop(['pixel_qa', 'blue', 'red', 'green', 'nir', 'swir1', 'swir2'])
+        ndvi_clear = ndvi.where(clear)
         # Run temporal reductions and rename DataArrays
-        ndvi_mean = ndvi.mean('time', keep_attrs=True).astype('int16')
+        ndvi_mean = ndvi_clear.mean('time', keep_attrs=True).astype('int16')
         ndvi_mean.attrs['crs'] = sr.attrs['crs']
         write_dataset_to_netcdf(ndvi_mean, nc_filename,
                                 netcdfparams={'zlib': True})
