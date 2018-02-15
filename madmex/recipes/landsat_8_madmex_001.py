@@ -4,10 +4,15 @@ from datacube.storage.storage import write_dataset_to_netcdf
 from datacube.storage import masking
 import xarray as xr
 import numpy as np
+import dask
 
 from datetime import datetime
 
 from madmex.util import randomword
+import logging
+logger = logging.getLogger(__name__)
+
+dask.set_options(get=dask.get)
 
 def run(tile, gwf, center_dt):
     """Basic datapreparation recipe 001
@@ -26,19 +31,20 @@ def run(tile, gwf, center_dt):
         str: The filename of the netcdf file created
     """
     try:
-        dc = datacube.Datacube('landsat_madmex_001_%s' % randomword(5))
+        dc = datacube.Datacube(app = 'landsat_madmex_001_%s' % randomword(5))
         center_dt = center_dt.strftime("%Y-%m-%d")
         # TODO: Need a more dynamic way to handle this filename (e.g.: global variable for the path up to datacube_ingest)
-        nc_filename = os.path.expanduser('~/datacube_ingest/recipes/madmex_001/madmex_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
-        # TODO: Is it a good idea to check if file already exist and skip processing if it does?
+        nc_filename = os.path.expanduser('~/datacube_ingest/recipes/landsat_8_madmex_001/madmex_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         # Load Landsat sr
-        sr = gwf.load(tile[1], dask_chunks={'x': 1667, 'y': 1667}))
-        # Compute ndvi
-        sr['ndvi'] = (sr.nir - sr.red) / (sr.nir + sr.red)
+        if os.path.isfile(nc_filename):
+            raise ValueError('%s already exist' % nc_filename)
+        sr = gwf.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
         # Load terrain metrics using same spatial parameters than sr
         terrain = dc.load(product='srtm_cgiar_mexico', like=sr,
                           time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
-                          dask_chunks={'x': 1667, 'y': 1667}))
+                          dask_chunks={'x': 1667, 'y': 1667})
+        # Compute ndvi
+        sr['ndvi'] = (sr.nir - sr.red) / (sr.nir + sr.red)
         # Mask clouds, shadow, water, ice,... and drop qa layer
         invalid = masking.make_mask(sr.pixel_qa, cloud=True, cloud_shadow=True,
                                     snow=True, fill=True)
@@ -83,7 +89,7 @@ def run(tile, gwf, center_dt):
         write_dataset_to_netcdf(combined, nc_filename)
         return nc_filename
     except Exception as e:
-        print(e)
+        logger.info('Tile (%d, %d) not processed. %s' % (tile[0][0], tile[0][1], e))
         return None
 
 

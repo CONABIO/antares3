@@ -22,7 +22,6 @@ from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_ne
 from madmex.util import yaml_to_dict, mid_date
 from madmex.recipes import RECIPES
 
-
 logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):

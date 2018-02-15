@@ -4,6 +4,9 @@ from datacube.storage.storage import write_dataset_to_netcdf
 from datacube.storage import masking
 import xarray as xr
 import numpy as np
+import dask
+
+dask.set_options(get=dask.get)
 
 from datetime import datetime
 import logging
@@ -27,7 +30,7 @@ def run(tile, gwf, center_dt):
     try:
         center_dt = center_dt.strftime("%Y-%m-%d")
         # TODO: Need a more dynamic way to handle this filename (e.g.: global variable for the path up to datacube_ingest)
-        nc_filename = os.path.expanduser('~/datacube_ingest/recipes/ndvi_mean/ndvi_mean_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
+        nc_filename = os.path.expanduser('~/datacube_ingest/recipes/landsat_8_ndvi_mean/ndvi_mean_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         if os.path.isfile(nc_filename):
             raise ValueError('%s already exist' % nc_filename)
         # Load Landsat sr

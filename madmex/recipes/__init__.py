@@ -1,6 +1,6 @@
 import os
-from .landsat_8_madmex_001 import run as madmex_001
-from .landsat_8_ndvi_mean import run as ndvi_mean
+from .landsat_8_madmex_001 import run as landsat_8_madmex_001
+from .landsat_8_ndvi_mean import run as landsat_8_ndvi_mean
 
 """
 Adding recipes:
