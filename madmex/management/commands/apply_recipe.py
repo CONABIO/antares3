@@ -34,19 +34,19 @@ area.
 Data are processed in parallel using dask distributed
 
 Available recipes are:
-    - madmex_001: Temporal metrics (min, max, mean, std) of Landsat bands and ndvi combined with terrain metrics (elevation, slope and aspect)
-    - ndvi_mean: Simple ndvi temporal mean
+    - landsat_8_madmex_001: Temporal metrics (min, max, mean, std) of Landsat bands and ndvi combined with terrain metrics (elevation, slope and aspect)
+    - landsat_8_ndvi_mean: Simple ndvi temporal mean
 
 See docstring in madmex/recipes/__init__.py for instructions on how to add new recipes to the system
 
 --------------
 Example usage:
 --------------
-# Apply madmex_001 recipe (The datacube must contain the ls8_espa_mexico and srtm_cgiar_mexico products)
-python madmex.py apply_recipe -recipe madmex_001 -b 2016-01-01 -e 2016-12-31 -lat 19 23 -long -106 -101 --name madmex_001_jalisco_2016
+# Apply landsat_8_madmex_001 recipe (The datacube must contain the ls8_espa_mexico and srtm_cgiar_mexico products)
+python madmex.py apply_recipe -recipe landsat_8_madmex_001 -b 2016-01-01 -e 2016-12-31 -lat 19 23 -long -106 -101 --name landsat_8_madmex_001_jalisco_2016
 
-# Apply ndvi_mean recipe (The datacube must contain the ls8_espa_mexico)
-python madmex.py apply_recipe -recipe ndvi_mean -b 2017-01-01 -e 2017-12-31 -lat 19 23 -long -106 -101 --name landsat_ndvi_jalisco_2017
+# Apply landsat_8_ndvi_mean recipe (The datacube must contain the ls8_espa_mexico)
+python madmex.py apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-12-31 -lat 19 23 -long -106 -101 --name landsat_ndvi_jalisco_2017
 """
     def add_arguments(self, parser):
         # Recipe is a positional argument

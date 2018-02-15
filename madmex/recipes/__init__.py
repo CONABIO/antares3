@@ -1,6 +1,6 @@
 import os
-from .madmex_001 import run as madmex_001
-from .ndvi_mean import run as ndvi_mean
+from .landsat_8_madmex_001 import run as madmex_001
+from .landsat_8_ndvi_mean import run as ndvi_mean
 
 """
 Adding recipes:
@@ -16,14 +16,14 @@ Adding recipes:
 """
 
 RECIPES = {
-    'madmex_001': {
+    'landsat_8_madmex_001': {
         'product': 'ls8_espa_mexico',
-        'fun': madmex_001,
-        'config_file': os.path.expanduser('~/.config/madmex/indexing/madmex_001.yaml'),
+        'fun': landsat_8_madmex_001,
+        'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_8_madmex_001.yaml'),
     },
-    'ndvi_mean': {
+    'landsat_8_ndvi_mean': {
         'product': 'ls8_espa_mexico',
-        'fun': ndvi_mean,
-        'config_file': os.path.expanduser('~/.config/madmex/indexing/ndvi_mean.yaml'),
+        'fun': landsat_8_ndvi_mean,
+        'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_8_ndvi_mean.yaml'),
     },
 }
