@@ -40,9 +40,9 @@ def run(tile, gwf, center_dt):
                           time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
                           dask_chunks={'x': 1667, 'y': 1667}))
         # Mask clouds, shadow, water, ice,... and drop qa layer
-        # TODO: Don't we want to keep water?
-        clear = masking.make_mask(sr.pixel_qa, clear=True)
-        sr_clear = sr.where(clear)
+        invalid = masking.make_mask(sr.pixel_qa, cloud=True, cloud_shadow=True,
+                                    snow=True, fill=True)
+        sr_clear = sr.where(~invalid)
         sr_clear2 = sr_clear.drop('pixel_qa')
         # Run temporal reductions and rename DataArrays
         sr_mean = sr_clear2.mean('time', keep_attrs=True).astype('int16')
