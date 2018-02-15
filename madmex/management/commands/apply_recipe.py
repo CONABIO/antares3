@@ -27,6 +27,17 @@ logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
     help = """
+Apply an existing 'recipe' to an ingested collection or a list of ingested collections in the datacube.
+A new ingested collection is created every time this command line is ran. The same recipe cannot be ran twice over the same
+area.
+
+Data are processed in parallel using dask distributed
+
+Available recipes are:
+    - madmex_001: Temporal metrics (min, max, mean, std) of Landsat bands and ndvi combined with terrain metrics (elevation, slope and aspect)
+    - ndvi_mean: Simple ndvi temporal mean
+
+See docstring in madmex/recipes/__init__.py for instructions on how to add new recipes to the system
 
 --------------
 Example usage:
@@ -102,6 +113,8 @@ python madmex.py apply_recipe -recipe ndvi_mean -b 2017-01-01 -e 2017-12-31 -lat
                                          'center_dt': center_dt,
                                          'dc': dc})
         nc_list = client.gather(C)
+        n_tiles = len([x for x in nc_list if x is not None])
+        logger.info('Processing done, %d tiles written to disk' % n_tiles)
 
         # Add product
         # TODO: What happens if product already exist
@@ -112,6 +125,7 @@ python madmex.py apply_recipe -recipe ndvi_mean -b 2017-01-01 -e 2017-12-31 -lat
             """Helper function with tons of variables taken from the local environment
             """
             try:
+                print("Adding %s to datacube database" % nc)
                 metadict = metadict_from_netcdf(file=nc, description=product_description,
                                                 center_dt=center_dt, from_dt=begin,
                                                 to_dt=end, algorithm=options['recipe'])

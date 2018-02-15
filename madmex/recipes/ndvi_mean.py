@@ -6,6 +6,8 @@ import xarray as xr
 import numpy as np
 
 from datetime import datetime
+import logging
+logger = logging.getLogger(__name__)
 
 def run(tile, gwf, center_dt, dc):
     """Basic datapreparation recipe 001
@@ -28,7 +30,8 @@ def run(tile, gwf, center_dt, dc):
         center_dt = center_dt.strftime("%Y-%m-%d")
         # TODO: Need a more dynamic way to handle this filename (e.g.: global variable for the path up to datacube_ingest)
         nc_filename = os.path.expanduser('~/datacube_ingest/recipes/ndvi_mean/ndvi_mean_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
-        # TODO: Is it a good idea to check if file already exist and skip processing if it does?
+        if os.path.isfile(nc_filename):
+            raise ValueError('%s already exist' % nc_filename)
         # Load Landsat sr
         sr = gwf.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
         # Compute ndvi
@@ -37,10 +40,11 @@ def run(tile, gwf, center_dt, dc):
         # Run temporal reductions and rename DataArrays
         ndvi_mean = ndvi.mean('time', keep_attrs=True).astype('int16')
         ndvi_mean.attrs['crs'] = sr.attrs['crs']
-        write_dataset_to_netcdf(ndvi_mean, nc_filename)
+        write_dataset_to_netcdf(ndvi_mean, nc_filename,
+                                netcdfparams={'zlib': True})
         return nc_filename
     except Exception as e:
-        print(e)
+        logger.info('Tile (%d, %d) not processed. %s' % (tile[0][0], tile[0][1], e))
         return None
 
 
