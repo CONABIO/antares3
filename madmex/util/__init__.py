@@ -1,11 +1,12 @@
 import random
+import string
 
 import yaml
 
 def randomword(length):
     """Generate a random string of desired length
     """
-    return ''.join(random.choice(string.lowercase) for i in range(length))
+    return ''.join(random.choice(string.ascii_lowercase) for i in range(length))
 
 
 def yaml_to_dict(filename):
