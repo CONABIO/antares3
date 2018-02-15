@@ -96,7 +96,6 @@ python madmex.py apply_recipe -recipe ndvi_mean -b 2017-01-01 -e 2017-12-31 -lat
         end = datetime.strptime(options['end'], '%Y-%m-%d')
         time = (begin, end)
         center_dt = mid_date(begin, end)
-        dc = datacube.Datacube('recipe_from_cl')
 
         # GridWorkflow object
         db = PostgresDb.from_config()
@@ -110,8 +109,7 @@ python madmex.py apply_recipe -recipe ndvi_mean -b 2017-01-01 -e 2017-12-31 -lat
         # Start cluster and run 
         client = Client()
         C = client.map(fun, iterable, **{'gwf': gwf,
-                                         'center_dt': center_dt,
-                                         'dc': dc})
+                                         'center_dt': center_dt})
         nc_list = client.gather(C)
         n_tiles = len([x for x in nc_list if x is not None])
         logger.info('Processing done, %d tiles written to disk' % n_tiles)
