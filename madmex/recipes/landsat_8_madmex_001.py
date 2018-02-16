@@ -51,7 +51,7 @@ def run(tile, gwf, center_dt):
         sr_clear = sr.where(~invalid)
         sr_clear2 = sr_clear.drop('pixel_qa')
         # Run temporal reductions and rename DataArrays
-        sr_mean = sr_clear2.mean('time', keep_attrs=True).astype('int16')
+        sr_mean = sr_clear2.mean('time', keep_attrs=True, skipna=True).astype('int16')
         sr_mean.rename({'blue': 'blue_mean',
                         'green': 'green_mean',
                         'red': 'red_mean',
@@ -59,7 +59,7 @@ def run(tile, gwf, center_dt):
                         'swir1': 'swir1_mean',
                         'swir2': 'swir2_mean',
                         'ndvi': 'ndvi_mean'}, inplace=True)
-        sr_min = sr_clear2.min('time', keep_attrs=True).astype('int16')
+        sr_min = sr_clear2.min('time', keep_attrs=True, skipna=True).astype('int16')
         sr_min.rename({'blue': 'blue_min',
                         'green': 'green_min',
                         'red': 'red_min',
@@ -67,7 +67,7 @@ def run(tile, gwf, center_dt):
                         'swir1': 'swir1_min',
                         'swir2': 'swir2_min',
                         'ndvi': 'ndvi_min'}, inplace=True)
-        sr_max = sr_clear2.max('time', keep_attrs=True).astype('int16')
+        sr_max = sr_clear2.max('time', keep_attrs=True, skipna=True).astype('int16')
         sr_max.rename({'blue': 'blue_max',
                         'green': 'green_max',
                         'red': 'red_max',
@@ -75,7 +75,7 @@ def run(tile, gwf, center_dt):
                         'swir1': 'swir1_max',
                         'swir2': 'swir2_max',
                         'ndvi': 'ndvi_max'}, inplace=True)
-        sr_std = sr_clear2.std('time', keep_attrs=True).astype('int16')
+        sr_std = sr_clear2.std('time', keep_attrs=True, skipna=True).astype('int16')
         sr_std.rename({'blue': 'blue_std',
                         'green': 'green_std',
                         'red': 'red_std',
