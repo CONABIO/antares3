@@ -1,4 +1,5 @@
 import xarray as xr
+from xarray import DataArray
 import numpy as np
 
 def to_float(x):
@@ -74,6 +75,6 @@ def to_int(x):
         >>> print(xset_int)
         >>> assert_identical(xset, xset_int)
     """
-    x[np.isnan(x)] = x.attrs['nodata']
-    return x.astype('int16')
+    x_int = x.where(DataArray.isnull(x), x.attrs['nodata'])
+    return x_int.astype('int16')
 
