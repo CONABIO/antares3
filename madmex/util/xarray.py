@@ -75,6 +75,6 @@ def to_int(x):
         >>> print(xset_int)
         >>> assert_identical(xset, xset_int)
     """
-    x_int = x.where(DataArray.isnull(x), x.attrs['nodata'])
+    x_int = x.where(DataArray.notnull(x), x.attrs['nodata'])
     return x_int.astype('int16')
 

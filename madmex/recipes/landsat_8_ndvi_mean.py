@@ -6,6 +6,8 @@ import xarray as xr
 import numpy as np
 import dask
 
+from madmex.util.xarray import to_int
+
 dask.set_options(get=dask.get)
 
 from datetime import datetime
@@ -41,9 +43,11 @@ def run(tile, gwf, center_dt):
         ndvi = sr.drop(['pixel_qa', 'blue', 'red', 'green', 'nir', 'swir1', 'swir2'])
         ndvi_clear = ndvi.where(clear)
         # Run temporal reductions and rename DataArrays
-        ndvi_mean = ndvi_clear.mean('time', keep_attrs=True).astype('int16')
-        ndvi_mean.attrs['crs'] = sr.attrs['crs']
-        write_dataset_to_netcdf(ndvi_mean, nc_filename,
+        ndvi_mean = ndvi_clear.mean('time', keep_attrs=True)
+        ndvi_mean['ndvi'].attrs['nodata'] = -9999
+        ndvi_mean_int = ndvi_mean.apply(to_int)
+        ndvi_mean_int.attrs['crs'] = sr.attrs['crs']
+        write_dataset_to_netcdf(ndvi_mean_int, nc_filename,
                                 netcdfparams={'zlib': True})
         return nc_filename
     except Exception as e:
