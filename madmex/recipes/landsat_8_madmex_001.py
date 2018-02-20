@@ -6,6 +6,8 @@ import xarray as xr
 import numpy as np
 import dask
 
+from madmex.util.xarray import to_float, to_int
+
 from datetime import datetime
 
 from madmex.util import randomword
@@ -31,27 +33,32 @@ def run(tile, gwf, center_dt):
         str: The filename of the netcdf file created
     """
     try:
-        dc = datacube.Datacube(app = 'landsat_madmex_001_%s' % randomword(5))
         center_dt = center_dt.strftime("%Y-%m-%d")
         # TODO: Need a more dynamic way to handle this filename (e.g.: global variable for the path up to datacube_ingest)
         nc_filename = os.path.expanduser('~/datacube_ingest/recipes/landsat_8_madmex_001/madmex_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         # Load Landsat sr
         if os.path.isfile(nc_filename):
             raise ValueError('%s already exist' % nc_filename)
-        sr = gwf.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
+        sr_0 = gwf.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
         # Load terrain metrics using same spatial parameters than sr
-        terrain = dc.load(product='srtm_cgiar_mexico', like=sr,
+        dc = datacube.Datacube(app = 'landsat_madmex_001_%s' % randomword(5))
+        terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
                           time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
                           dask_chunks={'x': 1667, 'y': 1667})
-        # Compute ndvi
-        sr['ndvi'] = (sr.nir - sr.red) / (sr.nir + sr.red)
+        dc.close()
         # Mask clouds, shadow, water, ice,... and drop qa layer
-        invalid = masking.make_mask(sr.pixel_qa, cloud=True, cloud_shadow=True,
-                                    snow=True, fill=True)
-        sr_clear = sr.where(~invalid)
-        sr_clear2 = sr_clear.drop('pixel_qa')
+        clear = masking.make_mask(sr_0.pixel_qa, cloud=False, cloud_shadow=False,
+                                    snow=False)
+        #TODO: That may be the other way around
+        sr_1 = sr_0.where(clear)
+        sr_2 = sr_1.drop('pixel_qa')
+        # Convert Landsat data to float (nodata values are converted to np.Nan)
+        sr_3 = sr_2.apply(func=to_float, keep_attrs=True)
+        # Compute ndvi
+        sr_3['ndvi'] = ((sr_3.nir - sr_3.red) / (sr_3.nir + sr_3.red)) * 10000
+        sr_3['ndvi'].attrs['nodata'] = -9999
         # Run temporal reductions and rename DataArrays
-        sr_mean = sr_clear2.mean('time', keep_attrs=True, skipna=True).astype('int16')
+        sr_mean = sr_3.mean('time', keep_attrs=True, skipna=True)
         sr_mean.rename({'blue': 'blue_mean',
                         'green': 'green_mean',
                         'red': 'red_mean',
@@ -59,7 +66,7 @@ def run(tile, gwf, center_dt):
                         'swir1': 'swir1_mean',
                         'swir2': 'swir2_mean',
                         'ndvi': 'ndvi_mean'}, inplace=True)
-        sr_min = sr_clear2.min('time', keep_attrs=True, skipna=True).astype('int16')
+        sr_min = sr_3.min('time', keep_attrs=True, skipna=True)
         sr_min.rename({'blue': 'blue_min',
                         'green': 'green_min',
                         'red': 'red_min',
@@ -67,7 +74,7 @@ def run(tile, gwf, center_dt):
                         'swir1': 'swir1_min',
                         'swir2': 'swir2_min',
                         'ndvi': 'ndvi_min'}, inplace=True)
-        sr_max = sr_clear2.max('time', keep_attrs=True, skipna=True).astype('int16')
+        sr_max = sr_3.max('time', keep_attrs=True, skipna=True)
         sr_max.rename({'blue': 'blue_max',
                         'green': 'green_max',
                         'red': 'red_max',
@@ -75,7 +82,7 @@ def run(tile, gwf, center_dt):
                         'swir1': 'swir1_max',
                         'swir2': 'swir2_max',
                         'ndvi': 'ndvi_max'}, inplace=True)
-        sr_std = sr_clear2.std('time', keep_attrs=True, skipna=True).astype('int16')
+        sr_std = sr_3.std('time', keep_attrs=True, skipna=True)
         sr_std.rename({'blue': 'blue_std',
                         'green': 'green_std',
                         'red': 'red_std',
@@ -84,12 +91,15 @@ def run(tile, gwf, center_dt):
                         'swir2': 'swir2_std',
                         'ndvi': 'ndvi_std'}, inplace=True)
         # Merge dataarrays
-        combined = xr.merge([sr_mean, sr_min, sr_max, sr_std, terrain])
-        combined.attrs['crs'] = sr.attrs['crs']
+        combined = xr.merge([sr_mean.apply(to_int),
+                             sr_min.apply(to_int),
+                             sr_max.apply(to_int),
+                             sr_std.apply(to_int), terrain])
+        combined.attrs['crs'] = sr_0.attrs['crs']
         write_dataset_to_netcdf(combined, nc_filename)
         return nc_filename
     except Exception as e:
-        logger.info('Tile (%d, %d) not processed. %s' % (tile[0][0], tile[0][1], e))
+        logger.warning('Tile (%d, %d) not processed. %s' % (tile[0][0], tile[0][1], e))
         return None
 
 

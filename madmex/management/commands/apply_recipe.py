@@ -98,7 +98,7 @@ python madmex.py apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-
         dc = datacube.Datacube()
         gwf = GridWorkflow(dc.index, product=product)
         tile_dict = gwf.list_cells(product=product, time=(begin, end),
-                                   x=long, y=lat)
+                                   x=long, y=lat, group_by='solar_day')
         # Iterable (dictionary view (analog to list of tuples))
         iterable = tile_dict.items()
 
