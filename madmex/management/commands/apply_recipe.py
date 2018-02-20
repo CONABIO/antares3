@@ -11,8 +11,6 @@ import logging
 from datetime import datetime
 
 from dask.distributed import Client, LocalCluster
-from datacube.index.postgres._connections import PostgresDb
-from datacube.index._api import Index
 from datacube.api import GridWorkflow
 import datacube
 
@@ -97,9 +95,8 @@ python madmex.py apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-
         center_dt = mid_date(begin, end)
 
         # GridWorkflow object
-        db = PostgresDb.from_config()
-        i = Index(db)
-        gwf = GridWorkflow(i, product=product)
+        dc = datacube.Datacube()
+        gwf = GridWorkflow(dc.index, product=product)
         tile_dict = gwf.list_cells(product=product, time=(begin, end),
                                    x=long, y=lat)
         # Iterable (dictionary view (analog to list of tuples))
