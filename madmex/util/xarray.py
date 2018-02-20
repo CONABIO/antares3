@@ -5,7 +5,9 @@ import numpy as np
 def to_float(x):
     """TAkes a DataArray, converts data flagged as nodata to Nan and return corresponding array in float
 
-    Meant to be used with Dataset.apply() to apply to all the DataArrays of a Dataset
+    Meant to be used with Dataset.apply() to apply to all the DataArrays of a Dataset.
+    Note that the input DataArray may already be of type float, in which case the
+    effect of the function is to convert nodata values to Nan.
 
     Args:
         x (xarray.DataArray): Input DataArray. Must have a nodata flag written to
