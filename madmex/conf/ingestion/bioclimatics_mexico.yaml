@@ -69,8 +69,6 @@ measurements:
       attrs:
           long_name: "Minimum temperature January"
           alias: "tmin_jan"
-
-measurements:
     - name: 'tmax_feb'
       dtype: float32
       nodata: -3.40282e+38
@@ -98,7 +96,6 @@ measurements:
       attrs:
           long_name: "Minimum temperature February"
           alias: "tmin_feb"
-measurements:
     - name: 'tmax_mar'
       dtype: float32
       nodata: -3.40282e+38
@@ -126,7 +123,6 @@ measurements:
       attrs:
           long_name: "Minimum temperature March"
           alias: "tmin_mar"
-measurements:
     - name: 'tmax_apr'
       dtype: float32
       nodata: -3.40282e+38
@@ -154,7 +150,6 @@ measurements:
       attrs:
           long_name: "Minimum temperature April"
           alias: "tmin_apr"
-measurements:
     - name: 'tmax_may'
       dtype: float32
       nodata: -3.40282e+38
@@ -182,7 +177,6 @@ measurements:
       attrs:
           long_name: "Minimum temperature May"
           alias: "tmin_may"
-measurements:
     - name: 'tmax_jun'
       dtype: float32
       nodata: -3.40282e+38
@@ -210,7 +204,6 @@ measurements:
       attrs:
           long_name: "Minimum temperature June"
           alias: "tmin_june"
-measurements:
     - name: 'tmax_jul'
       dtype: float32
       nodata: -3.40282e+38
@@ -238,7 +231,6 @@ measurements:
       attrs:
           long_name: "Minimum temperature July"
           alias: "tmin_jul"
-measurements:
     - name: 'tmax_aug'
       dtype: float32
       nodata: -3.40282e+38
@@ -266,7 +258,6 @@ measurements:
       attrs:
           long_name: "Minimum temperature August"
           alias: "tmin_aug"
-measurements:
     - name: 'tmax_sep'
       dtype: float32
       nodata: -3.40282e+38
@@ -294,7 +285,6 @@ measurements:
       attrs:
           long_name: "Minimum temperature September"
           alias: "tmin_sep"
-measurements:
     - name: 'tmax_oct'
       dtype: float32
       nodata: -3.40282e+38
@@ -322,7 +312,6 @@ measurements:
       attrs:
           long_name: "Minimum temperature October"
           alias: "tmin_oct"
-measurements:
     - name: 'tmax_nov'
       dtype: float32
       nodata: -3.40282e+38
@@ -350,7 +339,6 @@ measurements:
       attrs:
           long_name: "Minimum temperature November"
           alias: "tmin_nov"
-measurements:
     - name: 'tmax_dec'
       dtype: float32
       nodata: -3.40282e+38
