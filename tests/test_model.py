@@ -9,7 +9,7 @@ import unittest
 from sklearn_xarray.data import load_digits_dataarray
 from sklearn_xarray.target import Target
 
-from madmex.model.supervised import rf
+from madmex.modeling.supervised import rf
 from madmex.settings import TEMP_DIR
 
 

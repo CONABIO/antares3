@@ -9,7 +9,7 @@ from sklearn.ensemble.forest import RandomForestClassifier
 from sklearn.externals import joblib
 from sklearn_xarray.common.wrappers import wrap
 
-from madmex.model.base import BaseModel
+from madmex.modeling import BaseModel
 
 
 class Model(BaseModel):

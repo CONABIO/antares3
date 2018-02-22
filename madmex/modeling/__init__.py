@@ -4,8 +4,6 @@ Created on Nov 24, 2016
 @author: agutierrez
 '''
 
-from __future__ import unicode_literals
-
 import abc
 import logging
 
