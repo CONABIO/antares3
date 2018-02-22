@@ -26,13 +26,14 @@ class VectorDb(AntaresDb):
                 the datacube load method (GridWorkflow or Datacube clases)
 
         Return:
-            list: A feature collection in the CRS in which it is stored in the database
+            list: A feature collection reprojected to the CRS of the xarray Dataset
         """
         from madmex.models import TrainObject
         geobox = dataset.geobox
+        crs = str(dataset.crs)
         poly = Polygon.from_geobox(geobox)
         query_set = TrainObject.objects.filter(the_geom__contained=poly)
-        fc = [querySet_to_fc(x) for x in query_set]
+        fc = [querySet_to_fc(x, crs) for x in query_set]
         return fc
 
     def load_from_extent(self, table, extent):
