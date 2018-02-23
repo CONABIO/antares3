@@ -1,6 +1,7 @@
 import json
 from affine import Affine
 from rasterio.features import rasterize
+import numpy as np
 
 def rasterize_xarray(fc, dataset):
     """Rasterize a feature collection using an xarray dataset as target
@@ -25,7 +26,9 @@ def rasterize_xarray(fc, dataset):
     aff = Affine(*list(dataset.affine)[0:6])
     # Rasterize
     fc_raster = rasterize(iterable, transform=aff,
-                          out_shape=(dataset.sizes['y'], dataset.sizes['x']))
+                          out_shape=(dataset.sizes['y'], dataset.sizes['x']),
+                          dtype='float64')
+    fc_raster[fc_raster == 0] = np.nan
     return fc_raster
 
 def rasterize_numpy(fc, arr, transform, crs):
