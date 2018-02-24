@@ -15,6 +15,12 @@ storage:
     resolution:
         x: 30
         y: -30
+    tile_size:
+        x: 100020
+        y: 100020
+    origin:
+        x: 977160 
+        y: 2426720
 
 measurements:
     - name: 'blue_mean'
