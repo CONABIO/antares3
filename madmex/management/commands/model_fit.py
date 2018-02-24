@@ -20,6 +20,8 @@ from madmex.management.base import AntaresBaseCommand
 from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_netcdf
 from madmex.util import yaml_to_dict, mid_date
 from madmex.recipes import RECIPES
+from madmex.io.vector_db import VectorDb
+from madmex.overlay.extractions import zonal_stats_xarray
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,9 @@ class Command(AntaresBaseCommand):
 --------------
 Example usage:
 --------------
+# Extract data for an area covering more or less Jalisco and fit a random forest model to the extracted data
+python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level_2 -t chips_jalisco -lat 19 23 -long -106 -101 --name rf_landsat_madmex_001_jalisco_2017 -sp mean
+
 """
     def add_arguments(self, parser):
         parser.add_argument('-model', '--model',
@@ -43,6 +48,10 @@ Example usage:
                             type=str,
                             required=True,
                             help='Training data database identifier')
+        parser.add_argument('-f', '--field',
+                            type=str,
+                            required=True,
+                            help='Feature collection property to use for assigning labels')
         parser.add_argument('-lat', '--lat',
                             type=float,
                             nargs=2,
@@ -68,20 +77,21 @@ Example usage:
         product = options['product']
         model = options['model']
         training = options['name']
+        field = options['field']
         sp = options['spatial_aggregation']
         lat = tuple(options['lat'])
         long = tuple(options['long'])
 
         # Load model class
         try:
-            module = import_module('madmex.model.supervised.%s' % model)
-            from module import Model
+            module = import_module('madmex.modeling.supervised.%s' % model)
+            Model = module.Model
         except ImportError as e:
             raise ValueError('Invalid model argument')
 
         # Fitting function to iterate over 'iterable'
         # Must take 
-        def fun(tile, gwf, training, sp):
+        def fun(tile, gwf, field, sp):
             """FUnction to extract data under trining geometries for a given tile
 
             Meant to be called within a dask.distributed.Cluster.map() over a list of tiles
@@ -90,17 +100,24 @@ Example usage:
             Args:
                 tile: Datacube tile as returned by GridWorkflow.list_cells()
                 gwf: GridWorkflow object
-                training: Identifier to locate the training data in the database
+                field (str): Feature collection property to use for assigning labels
                 sp: Spatial aggregation function
 
             Returns:
-                A numpy array (or is it two?)
+                A list of predictors and target values arrays
             """
-            # Load tile as Dataset
-            xr_dataset = gwf.load(tile[1])
-            # Query the training geometries fitting into the extent of xr_dataset
-            # Overlay geometries and xr_dataset and perform extraction combined with spatial aggregation
-            # Return the extracted array (or a list of two arrays?)
+            try:
+                # Load tile as Dataset
+                xr_dataset = gwf.load(tile[1])
+                # Query the training geometries fitting into the extent of xr_dataset
+                db = VectorDb()
+                fc = db.load_training_from_dataset(xr_dataset)
+                # Overlay geometries and xr_dataset and perform extraction combined with spatial aggregation
+                extract = zonal_stats_xarray(xr_dataset, fc, field, sp)
+                # Return the extracted array (or a list of two arrays?)
+                return extract
+            except Exception as e:
+                return [None, None]
 
         # GridWorkflow object
         dc = datacube.Datacube()
@@ -112,15 +129,27 @@ Example usage:
         # Start cluster and run 
         client = Client()
         C = client.map(fun, iterable, **{'gwf': gwf,
-                                         'training': training,
+                                         'field': field,
                                          'sp': sp})
         arr_list = client.gather(C)
 
-        # Merge the list of arrays into a single array
-        X, y = np.concatenate(...)
-        # Instantiate Model class
-        m = Model()
-        # Fit the model
-        m.fit(X, y)
+        # Zip list of predictors, target into two lists
+        X_list, y_list = zip(*arr_list)
+
+        # Filter Nones
+        X_list = [x for x in X_list if x is not None]
+        y_list = [x for x in y_list if x is not None]
+
+        # Concatenate the lists
+        X = np.concatenate(X_list)
+        y = np.concatenate(y_list)
+
+        print("Fitting model for %d observations" % y.shape[0])
+
+        # Fit model
+        from sklearn.ensemble import RandomForestClassifier
+        clf = RandomForestClassifier(n_estimators=150,n_jobs=8)
+        clf.fit(X, y)
         # Write the fitted model to the database
+        print(clf)
 
