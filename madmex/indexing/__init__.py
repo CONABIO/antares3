@@ -174,6 +174,7 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
         var_list = [x.name for x in var_list]
     # Convert projected corner coordinates to longlat
     p = Proj(wkt_to_proj4(crs_wkt))
+    # TODO: This (below) is wrong. Each corner must be computed independently
     long_min, lat_min = p(xmin, ymin, inverse=True)
     long_max, lat_max = p(xmax, ymax, inverse=True)
     out = {
