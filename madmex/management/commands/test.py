@@ -3,148 +3,70 @@ Created on Jan 17, 2018
 
 @author: agutierrez
 '''
-
+from _collections import OrderedDict
 import json
-import logging
 import os
 
-from django.contrib.gis.geos.geometry import GEOSGeometry
-from django.contrib.gis.geos.polygon import Polygon
-from fiona import transform
-import geojson
-import numpy
-from pandas.compat import lrange
-import rasterio
-from rasterio.features import rasterize
-import scipy.ndimage
-from shapely.geometry.geo import shape
-import xarray
-from xarray.core.dataset import Dataset
-from xarray.core.formatting import pretty_print
+from sentinelsat.sentinel import geojson_to_wkt, read_geojson, SentinelAPI
 
 from madmex.management.base import AntaresBaseCommand
-from madmex.model.supervised import rf
-from madmex.models import TrainObject
-from madmex.orm.queries import example_query, get_datacube_objects, \
-    get_datacube_chunks
-from madmex.settings import TEMP_DIR
+from madmex.models import Region
+from madmex.settings import SCIHUB_USER, SCIHUB_PASSWORD
+from madmex.util.local import basename
 
-
-logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument('-d', '--dest',
+                            type=str,
+                            required=True,
+                            help='Directory containing the scenes or tiles for which metadata have to be generated')
+        parser.add_argument('-r', '--region',
+                            type=str,
+                            required=True,
+                            help='Directory containing the scenes or tiles for which metadata have to be generated')
     def handle(self, **options):
-        print('hello world')
-        '''
-        from sklearn_xarray.data import load_digits_dataarray
-        from sklearn_xarray import Target
-        X = load_digits_dataarray()
-        y = Target(coord='digit')(X)
-        model_path = TEMP_DIR
-        print(model_path)
-        my_model = rf.Model()
-        my_model.fit(X,y)
-        print('Model has been persisted.') 
-        my_model.save(model_path)
-        del(my_model)
-        my_model = rf.Model()
-        my_model.load(model_path)
-        print('Model has been loaded.')
-        print('Model score.')
-        print(my_model.score(X,y))
-        '''
-        base = '/LUSTRE/MADMEX/tasks/2018_tasks/datacube_madmex/datacube_directories_mapping_docker_2'
-
-        for s in get_datacube_chunks('ls8_espa_mexico_uncompressed'):            
-            name = '%s%s' % (base, s[0][19:])
-            dataset = xarray.open_dataset(name).attrs['geospatial_bounds']
-
-            print(dataset)
-            #print(polygon_wkt)
+        destination = options['dest']
+        region = options['region']
+        print(destination)
+        print(region)
         
-        '''
-        xr_array = xarray.open_dataset('/LUSTRE/MADMEX/datacube_ingest/LS8_espa/mexico/LS8_espa_12_-16_20171221172432088372.nc')
+        api = SentinelAPI(SCIHUB_USER, SCIHUB_PASSWORD)
         
         
-        print(xr_array)
+        region = Region.objects.get(name=region)
+        footprint = region.convex_hull()
         
-
+        # Will query filtering using the convex hull but then we will filter the retrieved tiles using the polygon
         
-        plygn_wkt = xr_array.attrs['geospatial_bounds']
-        
-        
-        GEOSGeometry(plygn_wkt)
-        
-        shapes = [(json.loads(obj.the_geom.geojson), p + 2) for p, obj in enumerate(Object.objects.filter(the_geom__intersects=GEOSGeometry(plygn_wkt)))]
-        
-        print('the number if objects is: %s' % len(shapes))
-        
-        #my_str = json.loads(shapes[0].geojson)
-        
-        #my_shape = shape(my_str)
-        
-        #print(my_str)
+        ##footprint = geojson_to_wkt(read_geojson('/Users/agutierrez/Documents/baja.geojson'))
+        products = api.query(footprint,date=('20180101','NOW'),platformname='Sentinel-2')
         
         
+        print(type(products))
+        
+        #api.download_all(products)
+        
+        downloaded = []
+        final = OrderedDict()
+        
+        for file in os.listdir('/Users/agutierrez/Development/antares3'):
+            if file.endswith('.zip'):
+                downloaded.append(basename(file, False))
         
         
+        print(len(downloaded))
         
+        for key, value in products.items():
+            print(value)
+            if value['title'] not in downloaded:
+                final[key] = value
         
-        ulx = xr_array.attrs['geospatial_lon_min']
+        print(len(final))
+        #api.download_all(final)
         
-        uly = xr_array.attrs['geospatial_lat_max']
+        #print(json.dumps(value,indent=4))
         
-        brx = xr_array.attrs['geospatial_lon_max']
-        
-        bry = xr_array.attrs['geospatial_lat_min']
-        
-        
-        
-        from affine import Affine
-        
-        size = 3334
-        
-        shifted_affine = Affine((brx - ulx) / size, 0, ulx, 0, (bry-uly) / size, uly)
-        
-        
-        print(shifted_affine)
-        mask = rasterize(shapes, out_shape=(size,size), transform = shifted_affine)
-        
-        test_file_name = os.path.join(TEMP_DIR, 'new.tif')
-        
-        print(test_file_name)
-
-        with rasterio.open(test_file_name, 'w', driver='GTiff', height=mask.shape[0],
-                   width=mask.shape[1], count=1, dtype=mask.dtype,
-                   crs='+proj=latlong', transform=shifted_affine) as dst:
-            dst.write(mask, 1)
-        print(mask.shape)
-        
-        
-        print(scipy.ndimage.measurements.mean(xr_array.green.values.reshape(size,size), mask, numpy.unique(mask)))
-        print(scipy.ndimage.measurements.minimum(xr_array.green.values.reshape(size,size), mask, numpy.unique(mask)))
-        print(scipy.ndimage.measurements.maximum(xr_array.green.values.reshape(size,size), mask, numpy.unique(mask)))
-        print(scipy.ndimage.measurements.sum(xr_array.green.values.reshape(size,size), mask, numpy.unique(mask)))
-        print(scipy.ndimage.measurements.standard_deviation(xr_array.green.values.reshape(size,size), mask, numpy.unique(mask)))
-        print(scipy.ndimage.measurements.variance(xr_array.green.values.reshape(size,size), mask, numpy.unique(mask)))
-        print(scipy.ndimage.measurements.median(xr_array.green.values.reshape(size,size), mask, numpy.unique(mask)))
-        
-        xr_array
-        
-        #print(numpy.unique(result, return_counts=True))
-        
-        
-        
-        import math
-        Polygon()
-        for obj in Object.objects.all()[:10] :
-            print(obj.the_geom.transform(3785, clone=True))
-        
-        for obj in Object.objects.filter(the_geom__intersects=GEOSGeometry(plygn_wkt)):
-            print(obj)
-    
-        for row in example_query():
-            print(row)
-        '''
-        
-        
+        #for product in products:
+            
+        #   
