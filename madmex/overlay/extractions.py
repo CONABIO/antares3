@@ -9,6 +9,8 @@ import logging
 import numpy as np
 import xarray as xr
 
+from madmex.overlay.conversions import rasterize_xarray
+
 logger = logging.getLogger(__name__)
 
 def calculate_zonal_statistics(array, labels, index, statistics):
@@ -37,29 +39,41 @@ def calculate_zonal_statistics(array, labels, index, statistics):
     return zonal_statistics
 
 
-def zonal_stats_xarray(arr, dataset, aggregation='mean'):
+def zonal_stats_xarray(dataset, fc, field, aggregation='mean'):
     """Perform extraction and grouping using xarray groupby method
 
     Args:
-        arr (numpy.array): Array as returned by madmex.overlay.transform.rasterize_xarray
-            Of float type and with non overlayed pixels set to np.nan
         dataset (xarray.Dataset): The Dataset from which the data have to be extracted
             Each dataarray should not have more than two dimensions
-        aggregation (str): Spatial aggregation function to use (mean (default), median, std)
+        fc (list): Feature collection to use for extraction
+        field (str): Feature collection property to use for assigning labels
+        aggregation (str): Spatial aggregation function to use (mean (default),
+            median, std, min, max)
 
     Return:
-        Don't know yet
+        list: A list of [0] predictors array, and [2] target values [X, y]
     """
+    # Rasterize feature collection
+    arr = rasterize_xarray(fc, dataset)
     # Convert arr to a dataArray
     xr_arr = xr.DataArray(arr, dims=['x', 'y'], name='features_id')
     # Combine the Dataset with the DataArray
     combined = xr.merge([xr_arr, dataset])
+    # Perform groupby aggregation
     if aggregation == 'mean':
         groups_xr = combined.groupby('features_id').mean()
     elif aggregation == 'median':
         groups_xr = combined.groupby('features_id').median()
     elif aggregation == 'std':
         groups_xr = combined.groupby('features_id').std()
+    elif aggregation == 'min':
+        groups_xr = combined.groupby('features_id').min()
+    elif aggregation == 'max':
+        groups_xr = combined.groupby('features_id').max()
     else:
         raise ValueError('Unsuported aggregation function')
-    return groups_xr
+    # Extract predictors and target values arrays
+    X = groups_xr.to_array().values.transpose()
+    ids = list(groups_xr.features_id.values.astype('uint32') - 1)
+    y = [fc[x]['properties'][field] for x in ids]
+    return [X, y]

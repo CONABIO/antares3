@@ -27,8 +27,7 @@ def rasterize_xarray(fc, dataset):
     # Rasterize
     fc_raster = rasterize(iterable, transform=aff,
                           out_shape=(dataset.sizes['y'], dataset.sizes['x']),
-                          dtype='float64')
-    fc_raster[fc_raster == 0] = np.nan
+                          dtype='float64', fill=np.nan)
     return fc_raster
 
 def rasterize_numpy(fc, arr, transform, crs):
