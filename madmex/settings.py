@@ -164,6 +164,9 @@ USGS_PASSWORD = os.getenv('USGS_PASSWORD')
 SCIHUB_USER = os.getenv('SCIHUB_USER')
 SCIHUB_PASSWORD = os.getenv('SCIHUB_PASSWORD')
 
+# A directory to store serialized objects
+SERIALIZED_OBJECTS_DIR = os.getenv('SERIALIZED_OBJECTS_DIR')
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
