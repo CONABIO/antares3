@@ -44,7 +44,7 @@ class Model(models.Model):
     name = models.CharField(max_length=100, unique=True)
     path = models.CharField(max_length=100, unique=True)
     training_set = models.CharField(max_length=100, unique=True)
-    recipe = models.CharField(max_length=100, unique=True, default=None)
+    recipe = models.CharField(max_length=100, default=None)
     added = models.DateTimeField(auto_now_add=True)
     
 class TrainTag(models.Model):
@@ -73,6 +73,7 @@ class TrainObject(models.Model):
     regions = models.ManyToManyField(Region)
     training_tags = models.ManyToManyField(TrainTag)
     dataset = models.CharField(max_length=100, default=None)
+    training_set = models.CharField(max_length=100, default='')
 
 class PredictObject(models.Model):
     '''This table holds objects that will be used for training. They must be related to
