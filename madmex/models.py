@@ -44,6 +44,7 @@ class Model(models.Model):
     name = models.CharField(max_length=100, unique=True)
     path = models.CharField(max_length=100, unique=True)
     training_set = models.CharField(max_length=100, unique=True)
+    recipe = models.CharField(max_length=100, unique=True, default=None)
     added = models.DateTimeField(auto_now_add=True)
     
 class TrainTag(models.Model):
