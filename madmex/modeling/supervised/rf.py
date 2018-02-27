@@ -18,6 +18,13 @@ class Model(BaseModel):
 
     def __init__(self):
         '''
+        Example:
+            >>> from madmex.modeling.supervised.rf import Model
+            >>> rf = Model()
+            >>> # Write model to db
+            >>> rf.to_db(name='test_model', recipe='mexmad', training_set='no')
+            >>> # Read model from db
+            >>> rf2 = Model.from_db('test_model')
         '''
         self.model = RandomForestClassifier(n_estimators=150,n_jobs=8)
         self.model_name = 'rf'

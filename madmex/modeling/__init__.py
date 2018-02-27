@@ -57,7 +57,7 @@ class BaseModel(object):
         '''
         Read model from file
         '''
-        with open(filepath) as src:
+        with open(filepath, 'rb') as src:
             mod = pickle.load(src)
         self.model = mod
 
@@ -82,7 +82,7 @@ class BaseModel(object):
             training_set (str): Name of the training set used to fit the model
         """
         # Save to file
-        filename = '%s_%s.pkl' % (name, randomword)
+        filename = '%s_%s.pkl' % (name, randomword(5))
         filepath = os.path.join(SERIALIZED_OBJECTS_DIR, filename)
         self.save(filepath)
         # Create database entry
