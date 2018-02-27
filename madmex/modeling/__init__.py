@@ -21,7 +21,7 @@ from madmex.util import randomword
 
 LOGGER = logging.getLogger(__name__)
 
-class BaseModel(object):
+class _BaseModel(object):
     '''
     This class works as a wrapper to have a single interface to several
     models and machine learning packages. This will hide the complexity
@@ -38,13 +38,13 @@ class BaseModel(object):
         '''
         This method will train the classifier with given data.
         '''
-        raise NotImplementedError('subclasses of BaseModel must provide a fit() method')
+        raise NotImplementedError('subclasses of _BaseModel must provide a fit() method')
 
     def predict(self, X):
         '''
         When the model is created, this method lets the user predict on unseen data.
         '''
-        raise NotImplementedError('subclasses of BaseModel must provide a predict() method')
+        raise NotImplementedError('subclasses of _BaseModel must provide a predict() method')
 
     def save(self, filepath):
         '''
@@ -94,7 +94,7 @@ class BaseModel(object):
         '''
         Lets the user load a previously trained model to predict with it.
         '''
-        raise NotImplementedError('subclasses of BaseModel must provide a score() method')
+        raise NotImplementedError('subclasses of _BaseModel must provide a score() method')
 
     def create_report(self, expected, predicted, filepath='report.txt'):
         '''

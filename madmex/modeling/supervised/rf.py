@@ -8,10 +8,10 @@ import os
 from sklearn.ensemble.forest import RandomForestClassifier
 from sklearn.externals import joblib
 
-from madmex.modeling import BaseModel
+from madmex.modeling import _BaseModel
 
 
-class Model(BaseModel):
+class Model(_BaseModel):
     '''
     classdocs
     '''
