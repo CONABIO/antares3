@@ -320,7 +320,7 @@ class ScihubApi():
     
     def _consume_api_requests(self, query, data=None):
         '''
-        This method hides the complexity of making a request to usgs,
+        This method hides the complexity of making a request to scihub,
         depending on whether data parameter is given or not, it makes
         a GET or a POST request. It requires an endpoint to query the
         api if an invalid request is given, then the aip will answer
@@ -338,6 +338,9 @@ class ScihubApi():
             response = self.session.post(url, data, auth=self.session.auth)
         data = response
         return data
+    
+    def geo_query(self):
+        return self._consume_api_requests('/%s/resampling-methods' % espa_version)
     
     def test(self):
         data = {'q': '*'}
