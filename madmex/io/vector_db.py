@@ -18,12 +18,14 @@ Polygon.from_geobox = from_geobox
 
 class VectorDb(AntaresDb):
     """Query, read and write geometries between python's memory and the database"""
-    def load_training_from_dataset(self, dataset):
+    def load_training_from_dataset(self, dataset, training_set):
         """Retieves training data from the database based on intersection with an xr Dataset
 
         Args:
             dataset (xarray.Dataset): Typical Dataset object generated using one of
                 the datacube load method (GridWorkflow or Datacube clases)
+            training_set (str): Name of the training set identifier to select the right
+                training data
 
         Return:
             list: A feature collection reprojected to the CRS of the xarray Dataset
@@ -32,7 +34,8 @@ class VectorDb(AntaresDb):
         geobox = dataset.geobox
         crs = str(dataset.crs)
         poly = Polygon.from_geobox(geobox)
-        query_set = TrainObject.objects.filter(the_geom__contained=poly)
+        query_set = TrainObject.objects.filter(the_geom__contained=poly,
+                                               training_set=training_set)
         fc = [querySet_to_fc(x, crs) for x in query_set]
         return fc
 
