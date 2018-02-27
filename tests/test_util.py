@@ -13,6 +13,7 @@ from madmex import util
 import madmex.util.xarray as xutils
 from madmex.settings import TEMP_DIR
 from madmex.util.local import aware_make_dir
+from madmex.util import parser_extra_args
 
 import numpy as np
 import xarray as xr
@@ -68,5 +69,11 @@ class TestUtil(unittest.TestCase):
         self.assertIsNone(xr.testing.assert_equal(xset_in_int, xset_out_int))
         self.assertIsNone(xr.testing.assert_allclose(xset_out_float_0, xset_out_float_1))
 
+    def test_parse_extra_args(self):
+        extra_args = ['arg0=madmex', 'arg1=True', 'arg2=False', 'arg3=12',
+                      'arg4=12.3']
+        transformed_args = {'arg0': 'madmex', 'arg1': True, 'arg2': False,
+                            'arg3': 12, 'arg4': 12.3}
+        self.assertEqual(parser_extra_args(extra_args), transformed_args)
 if __name__ == '__main__':
     unittest.main()

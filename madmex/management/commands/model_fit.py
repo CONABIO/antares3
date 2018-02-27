@@ -18,7 +18,7 @@ import numpy as np
 from madmex.management.base import AntaresBaseCommand
 
 from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_netcdf
-from madmex.util import yaml_to_dict, mid_date
+from madmex.util import yaml_to_dict, mid_date, parser_extra_args
 from madmex.recipes import RECIPES
 from madmex.io.vector_db import VectorDb
 from madmex.overlay.extractions import zonal_stats_xarray
@@ -27,6 +27,17 @@ logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
     help = """
+Command line for training a statistical model over a given extent using:
+    - A training set of geometries with attributes stored in the database
+    - A datacube product
+    - One of the models implemented in madmex.modeling
+
+The steps of the process are for each tile of the datacube product to:
+    - Load the data as an xarray Dataset
+    - Query and load the corresponding training geometries from the database
+    - Perform data extraction and spatial aggregation for the geometries overlay
+All extracted data are then concatenated and used to train a statistical model. The model is then
+saved to the database
 
 --------------
 Example usage:
@@ -35,6 +46,8 @@ Example usage:
 python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level_2 -t chips_jalisco -lat 19 23 -long -106 -101 --name rf_landsat_madmex_001_jalisco_2017 -sp mean
 
 """
+#TODO: Pass kwargs to the command line (e.g. and extra_args with unlimited number of values),
+# Pass it as -extra n_estimators=500 n_jobs=12, split it on =, try converting to int/float, prepare dict
     def add_arguments(self, parser):
         parser.add_argument('-model', '--model',
                             type=str,
@@ -71,6 +84,12 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level
                             required=False,
                             default='mean',
                             help='Function to use for spatially aggregating the pixels over the training geometries')
+        parser.add_argument('-extra', '--extra_kwargs',
+                            type=str,
+                            nargs='*',
+                            help='''
+Additional named arguments passed to the selected model class constructor. These arguments have
+to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 arg2=median''')
 
     def handle(self, *args, **options):
         # Unpack variables
@@ -82,6 +101,7 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level
         sp = options['spatial_aggregation']
         lat = tuple(options['lat'])
         long = tuple(options['long'])
+        kwargs = parser_extra_args(options['extra_kwargs'])
 
         # Load model class
         try:
@@ -137,6 +157,8 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level
                                          'training_set': training})
         arr_list = client.gather(C)
 
+        print('Completed extraction of training data from %d tiles' % len(arr_list))
+
         # Zip list of predictors, target into two lists
         X_list, y_list = zip(*arr_list)
 
@@ -148,11 +170,10 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level
         X = np.concatenate(X_list)
         y = np.concatenate(y_list)
 
-        print("Fitting model for %d observations" % y.shape[0])
+        print("Fitting %s model for %d observations" % (model, y.shape[0]))
 
         # Fit model
-        # TODO: PAss some kwargs collected from the command line in the init
-        mod = Model()
+        mod = Model(**kwargs)
         mod.fit(X, y)
         # Write the fitted model to the database
         mod.to_db(name=name, recipe=product, training_set=training)

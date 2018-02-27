@@ -36,3 +36,49 @@ def mid_date(date0, date1):
     delta = (date0 - date1) / 2
     return date0 + delta
 
+def parser_extra_args(x):
+    """Helper to parse extra args passed to argparse
+
+    nargs= must be set to '*' in add_argument
+
+    Args:
+        x (list): A list of strings. Each string must be a key=value pair
+
+    Return:
+        dict: Kwargs style dictionary
+
+    Example:
+        a = ['arg0=12', 'arg1=madmex']
+    """
+    def to_bool(s):
+        if s.lower() == 'true':
+            return True
+        elif s.lower() == 'false':
+            return False
+        else:
+            raise ValueError('Cannot be coerced to boolean')
+
+    def change_type(s):
+        try:
+            r = to_bool(s)
+            return r
+        except ValueError as e:
+            pass
+
+        try:
+            r = int(s)
+            return r
+        except ValueError as e:
+            pass
+
+        try:
+            r = float(s)
+            return r
+        except ValueError as e:
+            pass
+
+        return s
+
+    d0 = dict(item.split('=') for item in x)
+    d1 = {k: change_type(v) for k, v in d0.items()}
+    return d1
