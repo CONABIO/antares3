@@ -28,6 +28,7 @@ class Footprint(models.Model):
     '''
     name = models.CharField(max_length=50, unique=True)
     the_geom = models.PolygonField()
+    sensor = models.CharField(max_length=50, default='')
     added = models.DateTimeField(auto_now_add=True)
 
 class Order(models.Model):
@@ -42,8 +43,8 @@ class Model(models.Model):
     '''A database entry that handles the models that we train.
     '''
     name = models.CharField(max_length=100, unique=True)
-    path = models.CharField(max_length=100, unique=True)
-    training_set = models.CharField(max_length=100, unique=True)
+    path = models.CharField(max_length=300, unique=True)
+    training_set = models.CharField(max_length=100)
     recipe = models.CharField(max_length=100, default=None)
     added = models.DateTimeField(auto_now_add=True)
 
@@ -68,11 +69,11 @@ class TrainObject(models.Model):
     regions and each object should have an assigned tag which is the ground truth for
     it.
     '''
+    models.GeometryField
     the_geom = models.PolygonField()
     added = models.DateTimeField(auto_now_add=True)
     regions = models.ManyToManyField(Region)
     training_tags = models.ManyToManyField(TrainTag)
-    dataset = models.CharField(max_length=100, default=None)
     training_set = models.CharField(max_length=100, default='')
 
 class PredictObject(models.Model):
@@ -84,7 +85,7 @@ class PredictObject(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     regions = models.ManyToManyField(Region)
     prediction_tags = models.ManyToManyField(PredictTag, default=None)
-    dataset = models.CharField(max_length=100, default=None)
+    training_set = models.CharField(max_length=100, default='')
 
 def ingest_countries_from_shape(path, mapping):
     '''Ingestion function for countries to database.
