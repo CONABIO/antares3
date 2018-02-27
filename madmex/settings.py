@@ -124,6 +124,10 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
+        'null': {
+            'level': 'DEBUG',
+            'class':'logging.NullHandler',
+        },
     },
     'loggers': {
         'django': {
@@ -134,6 +138,11 @@ LOGGING = {
             'handlers': ['console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             'formatter': 'simple',
+        },
+        'django.db.backends': {
+            'handlers': ['null'],  # Quiet by default!
+            'propagate': False,
+            'level':'DEBUG',
         },
     },
 }
@@ -163,6 +172,9 @@ USGS_PASSWORD = os.getenv('USGS_PASSWORD')
 
 SCIHUB_USER = os.getenv('SCIHUB_USER')
 SCIHUB_PASSWORD = os.getenv('SCIHUB_PASSWORD')
+
+# A directory to store serialized objects
+SERIALIZED_OBJECTS_DIR = os.getenv('SERIALIZED_OBJECTS_DIR')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/

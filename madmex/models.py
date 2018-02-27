@@ -47,13 +47,13 @@ class Model(models.Model):
     training_set = models.CharField(max_length=100)
     recipe = models.CharField(max_length=100, default=None)
     added = models.DateTimeField(auto_now_add=True)
-    
+
 class TrainTag(models.Model):
     '''To keep a deeper control over the tags that we can handle. 
     '''
     key = models.CharField(max_length=50, default=None)
     value = models.CharField(max_length=150, default=None)
-    
+
     def __unicode__(self):
         return self.value
     

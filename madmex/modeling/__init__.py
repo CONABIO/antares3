@@ -6,14 +6,22 @@ Created on Nov 24, 2016
 
 import abc
 import logging
+import pickle
 
 import numpy
 from sklearn import metrics
 
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "madmex.settings")
+import django
+django.setup()
+from madmex.models import Model
+from madmex.settings import SERIALIZED_OBJECTS_DIR
+from madmex.util import randomword
 
 LOGGER = logging.getLogger(__name__)
 
-class BaseModel(object):
+class _BaseModel(object):
     '''
     This class works as a wrapper to have a single interface to several
     models and machine learning packages. This will hide the complexity
@@ -30,31 +38,64 @@ class BaseModel(object):
         '''
         This method will train the classifier with given data.
         '''
-        raise NotImplementedError('subclasses of BaseModel must provide a fit() method')
+        raise NotImplementedError('subclasses of _BaseModel must provide a fit() method')
 
     def predict(self, X):
         '''
         When the model is created, this method lets the user predict on unseen data.
         '''
-        raise NotImplementedError('subclasses of BaseModel must provide a predict() method')
+        raise NotImplementedError('subclasses of _BaseModel must provide a predict() method')
 
     def save(self, filepath):
         '''
-        This method lets the user persist a trained model to disc.
+        Write model to file
         '''
-        raise NotImplementedError('subclasses of BaseModel must provide a save() method')
+        with open(filepath, 'wb') as dst:
+            pickle.dump(self.model, dst)
+
     def load(self, filepath):
         '''
-        Lets the user load a previously trained model to predict with it. 
+        Read model from file
         '''
-        raise NotImplementedError('subclasses of BaseModel must provide a load() method')
+        with open(filepath, 'rb') as src:
+            mod = pickle.load(src)
+        self.model = mod
+
+    @classmethod
+    def from_db(cls, name):
+        inst = cls()
+        model_row = Model.objects.get(name=name)
+        filepath = model_row.path
+        inst.load(filepath)
+        return inst
+
+    def to_db(self, name, recipe=None, training_set=None):
+        """Write a model to the database
+
+        In reality the model is written to file after being serialized and a reference
+        to that file is written to the database.
+
+        Args:
+            name (str): Name/unique identifier to give to the model
+            recipe (str): Name of the recipe used to fit the model (more like name of
+                the product)
+            training_set (str): Name of the training set used to fit the model
+        """
+        # Save to file
+        filename = '%s_%s.pkl' % (name, randomword(5))
+        filepath = os.path.join(SERIALIZED_OBJECTS_DIR, filename)
+        self.save(filepath)
+        # Create database entry
+        m = Model(name=name, path=filepath, training_set=training_set,
+                   recipe=recipe)
+        m.save()
 
     def score(self, filepath):
         '''
-        Lets the user load a previously trained model to predict with it. 
+        Lets the user load a previously trained model to predict with it.
         '''
-        raise NotImplementedError('subclasses of BaseModel must provide a score() method')
-    
+        raise NotImplementedError('subclasses of _BaseModel must provide a score() method')
+
     def create_report(self, expected, predicted, filepath='report.txt'):
         '''
         Creates a report in the given filepath, it includes the confusion

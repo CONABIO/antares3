@@ -76,7 +76,8 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level
         # Unpack variables
         product = options['product']
         model = options['model']
-        training = options['name']
+        name = options['name']
+        training = options['training']
         field = options['field']
         sp = options['spatial_aggregation']
         lat = tuple(options['lat'])
@@ -91,7 +92,7 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level
 
         # Fitting function to iterate over 'iterable'
         # Must take 
-        def fun(tile, gwf, field, sp):
+        def fun(tile, gwf, field, sp, training_set):
             """FUnction to extract data under trining geometries for a given tile
 
             Meant to be called within a dask.distributed.Cluster.map() over a list of tiles
@@ -102,6 +103,7 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level
                 gwf: GridWorkflow object
                 field (str): Feature collection property to use for assigning labels
                 sp: Spatial aggregation function
+                training_set (str): Training data identifier (training_set field)
 
             Returns:
                 A list of predictors and target values arrays
@@ -111,7 +113,8 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level
                 xr_dataset = gwf.load(tile[1])
                 # Query the training geometries fitting into the extent of xr_dataset
                 db = VectorDb()
-                fc = db.load_training_from_dataset(xr_dataset)
+                fc = db.load_training_from_dataset(xr_dataset,
+                                                   training_set=training_set)
                 # Overlay geometries and xr_dataset and perform extraction combined with spatial aggregation
                 extract = zonal_stats_xarray(xr_dataset, fc, field, sp)
                 # Return the extracted array (or a list of two arrays?)
@@ -130,7 +133,8 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level
         client = Client()
         C = client.map(fun, iterable, **{'gwf': gwf,
                                          'field': field,
-                                         'sp': sp})
+                                         'sp': sp,
+                                         'training_set': training})
         arr_list = client.gather(C)
 
         # Zip list of predictors, target into two lists
@@ -147,9 +151,9 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level
         print("Fitting model for %d observations" % y.shape[0])
 
         # Fit model
-        from sklearn.ensemble import RandomForestClassifier
-        clf = RandomForestClassifier(n_estimators=150,n_jobs=8)
-        clf.fit(X, y)
+        # TODO: PAss some kwargs collected from the command line in the init
+        mod = Model()
+        mod.fit(X, y)
         # Write the fitted model to the database
-        print(clf)
+        mod.to_db(name=name, recipe=product, training_set=training)
 
