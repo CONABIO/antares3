@@ -16,7 +16,7 @@ class Model(BaseModel):
     classdocs
     '''
 
-    def __init__(self):
+    def __init__(self, n_estimators=50, n_jobs=-1):
         '''
         Example:
             >>> from madmex.modeling.supervised.rf import Model
@@ -26,7 +26,8 @@ class Model(BaseModel):
             >>> # Read model from db
             >>> rf2 = Model.from_db('test_model')
         '''
-        self.model = RandomForestClassifier(n_estimators=150,n_jobs=8)
+        self.model = RandomForestClassifier(n_estimators=n_estimators,
+                                            n_jobs=-1)
         self.model_name = 'rf'
 
     def fit(self, X, y):

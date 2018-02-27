@@ -92,7 +92,7 @@ class BaseModel(object):
 
     def score(self, filepath):
         '''
-        Lets the user load a previously trained model to predict with it. 
+        Lets the user load a previously trained model to predict with it.
         '''
         raise NotImplementedError('subclasses of BaseModel must provide a score() method')
 
