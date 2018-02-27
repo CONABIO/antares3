@@ -76,7 +76,8 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level
         # Unpack variables
         product = options['product']
         model = options['model']
-        training = options['name']
+        name = options['name']
+        training = options['training']
         field = options['field']
         sp = options['spatial_aggregation']
         lat = tuple(options['lat'])
@@ -147,9 +148,9 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level
         print("Fitting model for %d observations" % y.shape[0])
 
         # Fit model
-        from sklearn.ensemble import RandomForestClassifier
-        clf = RandomForestClassifier(n_estimators=150,n_jobs=8)
-        clf.fit(X, y)
+        # TODO: PAss some kwargs collected from the command line in the init
+        mod = Model()
+        mod.fit(X, y)
         # Write the fitted model to the database
-        print(clf)
+        mod.to_db(name=name, recipe=product, training_set=training)
 
