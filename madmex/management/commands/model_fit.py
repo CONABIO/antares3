@@ -45,9 +45,9 @@ Example usage:
 # Extract data for an area covering more or less Jalisco and fit a random forest model to the extracted data
 python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level_2 -t chips_jalisco -lat 19 23 -long -106 -101 --name rf_landsat_madmex_001_jalisco_2017 -sp mean
 
+# With extra args passed to the random forest object constructor
+python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f level_2 -t jalisco_chips -lat 19 23 -long -106 -101 --name rf_landsat_madmex_001_jalisco_2017_jalisco_chips -sp mean -extra n_estimators=60 n_jobs=15
 """
-#TODO: Pass kwargs to the command line (e.g. and extra_args with unlimited number of values),
-# Pass it as -extra n_estimators=500 n_jobs=12, split it on =, try converting to int/float, prepare dict
     def add_arguments(self, parser):
         parser.add_argument('-model', '--model',
                             type=str,
