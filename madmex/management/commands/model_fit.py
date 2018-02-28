@@ -14,6 +14,7 @@ from dask.distributed import Client, LocalCluster
 from datacube.api import GridWorkflow
 import datacube
 import numpy as np
+from sklearn import preprocessing
 
 from madmex.management.base import AntaresBaseCommand
 
@@ -84,6 +85,10 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f lev
                             required=False,
                             default='mean',
                             help='Function to use for spatially aggregating the pixels over the training geometries')
+        parser.add_argument('--encode',
+                            type='store_true',
+                            help=('Perform numeric encoding of the dependent variable. This is useful when using a character field for later'
+                                 'running a pixel based prediction'))
         parser.add_argument('-extra', '--extra_kwargs',
                             type=str,
                             nargs='*',
@@ -102,6 +107,7 @@ to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 
         lat = tuple(options['lat'])
         long = tuple(options['long'])
         kwargs = parser_extra_args(options['extra_kwargs'])
+        encode = options['encode']
 
         # Load model class
         try:
@@ -169,6 +175,11 @@ to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 
         # Concatenate the lists
         X = np.concatenate(X_list)
         y = np.concatenate(y_list)
+
+        # Convert str labels to integers
+        if encode:
+            le = preprocessing.LabelEncoder()
+            y = le.fit_transform(y)
 
         print("Fitting %s model for %d observations" % (model, y.shape[0]))
 
