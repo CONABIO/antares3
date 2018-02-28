@@ -9,6 +9,7 @@ from functools import partial
 import logging
 
 from django.contrib.gis.geos.geometry import GEOSGeometry
+from django.db.utils import IntegrityError
 import fiona
 import pyproj
 from shapely.geometry.geo import shape
@@ -29,12 +30,14 @@ class Command(AntaresBaseCommand):
         parser.add_argument('--shape', nargs=1, help='The name of the shape to ingest.')
         parser.add_argument('--sensor', nargs=1, help='The name of the sensor for these footprints.')
         parser.add_argument('--country', nargs=1, help='Country to filter the footprints.')
+        parser.add_argument('--column', nargs=1, help='Column of interest in shapefile.')
     
     def handle(self, **options):
         
         shape_file = options['shape'][0]
         sensor = options['sensor'][0]
         country = options['country'][0]
+        column = options['column'][0]
         
         country_object = Country.objects.get(name=country)
         
@@ -43,6 +46,7 @@ class Command(AntaresBaseCommand):
             print(source.crs)
             for feat in source:
                 s1 = shape(feat['geometry'])
+                
                 if source.crs['init'] !=  'epsg:4326':
                     project = partial(
                         pyproj.transform,
@@ -52,7 +56,13 @@ class Command(AntaresBaseCommand):
                 else:
                     s2 = s1
                 geom = GEOSGeometry(s2.wkt)
+                
                 if country_object.the_geom.intersects(geom):
-                    o = Footprint(the_geom = geom, sensor=sensor, name=feat['properties']['Name'])
-                    o.save()
+                    name = feat['properties'][column] 
+                    if name:
+                        try:
+                            o = Footprint(the_geom = geom, sensor=sensor, name=name)
+                            o.save()
+                        except IntegrityError:
+                            logger.error('Name %s already exists.' % name)
                 
