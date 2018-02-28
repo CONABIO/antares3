@@ -5,7 +5,8 @@ Created on Jan 22, 2018
 '''
 
 from rest_framework import serializers
-from madmex.models import TrainObject
+
+from madmex.models import TrainObject, Footprint
 
 
 class ObjectSerializer(serializers.HyperlinkedModelSerializer):
@@ -20,5 +21,11 @@ class ObjectSerializer(serializers.HyperlinkedModelSerializer):
         model = TrainObject
         fields = ('added', 'id', 'regions', 'training_tags', 'the_geom', 'ones')
         
+class FootprintSerializer(serializers.ModelSerializer):
+    
+
+    class Meta:
+        model = Footprint
+        fields = ('name', 'the_geom', 'sensor')
 
         

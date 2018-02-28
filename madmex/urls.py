@@ -23,6 +23,7 @@ from madmex.rest import views
 
 router = routers.DefaultRouter()
 router.register(r'objects', views.ObjectViewSet)
+router.register(r'footprints', views.FootprintViewSet)
 
 urlpatterns = [
     path('datacube_landsat_tiles/', views.datacube_chunks, name='datacube_chunks'),

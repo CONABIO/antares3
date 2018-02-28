@@ -13,9 +13,9 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import RetrieveModelMixin
 import xarray
 
-from madmex.models import TrainObject
+from madmex.models import TrainObject, Footprint
 from madmex.orm.queries import get_datacube_objects, get_datacube_chunks
-from madmex.rest.serializers import ObjectSerializer
+from madmex.rest.serializers import ObjectSerializer, FootprintSerializer
 
 
 class ObjectViewSet(viewsets.ModelViewSet):
@@ -47,6 +47,23 @@ class ObjectViewSet(viewsets.ModelViewSet):
     queryset = TrainObject.objects.all()
     serializer_class = ObjectSerializer
     
+class FootprintViewSet(viewsets.ModelViewSet):
+    
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = Footprint.objects.all()
+        sensor = self.request.query_params['sensor']
+        if sensor is not None:
+            queryset = queryset.filter(sensor=sensor)
+        return queryset
+    
+    
+    queryset = Footprint.objects.all()
+    serializer_class = FootprintSerializer
+
     
 
 def datacube_landsat_tiles(request):
