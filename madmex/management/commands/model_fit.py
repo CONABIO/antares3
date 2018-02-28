@@ -86,7 +86,7 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f lev
                             default='mean',
                             help='Function to use for spatially aggregating the pixels over the training geometries')
         parser.add_argument('--encode',
-                            type='store_true',
+                            action='store_true',
                             help=('Perform numeric encoding of the dependent variable. This is useful when using a character field for later'
                                  'running a pixel based prediction'))
         parser.add_argument('-extra', '--extra_kwargs',
