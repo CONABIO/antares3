@@ -58,7 +58,7 @@ class Command(AntaresBaseCommand):
                 geom = GEOSGeometry(s2.wkt)
                 
                 if country_object.the_geom.intersects(geom):
-                    name = feat['properties'][column] 
+                    name = '%03d%03d' % (feat['properties']['PATH'], feat['properties']['ROW'])
                     if name:
                         try:
                             o = Footprint(the_geom = geom, sensor=sensor, name=name)
