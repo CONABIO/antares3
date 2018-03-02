@@ -11,8 +11,6 @@ import logging
 from datetime import datetime
 
 from dask.distributed import Client, LocalCluster
-from datacube.api import GridWorkflow
-import datacube
 import numpy as np
 from sklearn import preprocessing
 
@@ -21,7 +19,7 @@ from madmex.management.base import AntaresBaseCommand
 from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_netcdf
 from madmex.util import yaml_to_dict, mid_date, parser_extra_args
 from madmex.recipes import RECIPES
-from madmex.wrappers import extract_tile_db
+from madmex.wrappers import extract_tile_db, gwf_query
 
 logger = logging.getLogger(__name__)
 
@@ -45,8 +43,8 @@ Example usage:
 # Extract data for an area covering more or less Jalisco and fit a random forest model to the extracted data
 python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017 -f level_2 -t chips_jalisco -lat 19 23 -long -106 -101 --name rf_landsat_madmex_001_jalisco_2017 -sp mean
 
-# With extra args passed to the random forest object constructor
-python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f level_2 -t jalisco_chips -lat 19 23 -long -106 -101 --name rf_landsat_madmex_001_jalisco_2017_jalisco_chips -sp mean -extra n_estimators=60 n_jobs=15
+# With extra args passed to the random forest object constructor, use region name instead of lat long bounding box
+python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f level_2 -t jalisco_chips --region Jalisco --name rf_landsat_madmex_001_jalisco_2017_jalisco_chips -sp mean -extra n_estimators=60 n_jobs=15
 """
     def add_arguments(self, parser):
         parser.add_argument('-model', '--model',
@@ -68,13 +66,17 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f lev
         parser.add_argument('-lat', '--lat',
                             type=float,
                             nargs=2,
-                            required=True,
+                            default=None,
                             help='minimum and maximum latitude of the bounding box over which the model should be trained')
         parser.add_argument('-long', '--long',
                             type=float,
                             nargs=2,
-                            required=True,
+                            default=None,
                             help='minimum and maximum longitude of the bounding box over which the model should be trained')
+        parser.add_argument('-region', '--region',
+                            type=str,
+                            default=None,
+                            help='Name of the region over which the model should be trained. The geometry of the region should be present in the madmex-region table of the database (Overrides lat and long when present)')
         parser.add_argument('-name', '--name',
                             type=str,
                             required=True,
@@ -103,8 +105,6 @@ to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 
         training = options['training']
         field = options['field']
         sp = options['spatial_aggregation']
-        lat = tuple(options['lat'])
-        long = tuple(options['long'])
         kwargs = parser_extra_args(options['extra_kwargs'])
         encode = options['encode']
 
@@ -115,15 +115,9 @@ to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 
         except ImportError as e:
             raise ValueError('Invalid model argument')
 
-        # Fitting function to iterate over 'iterable'
-        # Must take 
-
-        # GridWorkflow object
-        dc = datacube.Datacube()
-        gwf = GridWorkflow(dc.index, product=product)
-        tile_dict = gwf.list_cells(product=product, x=long, y=lat)
-        # Iterable (dictionary view (analog to list of tuples))
-        iterable = tile_dict.items()
+        # datacube query
+        gwf_kwargs = { k: options[k] for k in ['product', 'lat', 'long', 'region']}
+        gwf, iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
         client = Client()

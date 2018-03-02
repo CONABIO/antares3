@@ -42,7 +42,7 @@ Example usage:
 python madmex.py apply_recipe -recipe landsat_8_madmex_001 -b 2016-01-01 -e 2016-12-31 -lat 19 23 -long -106 -101 --name landsat_8_madmex_001_jalisco_2016
 
 # Apply landsat_8_ndvi_mean recipe (The datacube must contain the ls8_espa_mexico)
-python madmex.py apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-12-31 -lat 19 23 -long -106 -101 --name landsat_ndvi_jalisco_2017
+python madmex.py apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-12-31 --region Jalisco --name landsat_ndvi_jalisco_2017
 """
     def add_arguments(self, parser):
         # Recipe is a positional argument
