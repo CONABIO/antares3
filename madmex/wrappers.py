@@ -141,9 +141,6 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None):
 
     Wrapper function to call at the begining of nearly all spatial processing command lines
 
-    TODO: Use dict comprehension in command line to build a dict of arguments to pass to this function
-    kwargs = { k: options[k] for k in ['product', 'lat', 'long', 'region', 'begin', 'end']}
-
     Args:
         product (str): Name of an ingested datacube product. The product to query
         lat (tuple): OPtional. For coordinate based spatial query. Tuple of min and max
@@ -158,6 +155,19 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None):
     Returns:
         List: List of [0] GridWorkflow object and [1] dictionary view of Tile index, Tile
         key value pair
+
+    Example:
+
+        >>> from madmex.wrappers import gwf_query
+
+        >>> # Using region name, time unbounded
+        >>> gwf, tiles_list = gwf_query(product='ls8_espa_mexico', region='Jalisco')
+        >>> # Using region name, time windowed
+        >>> gwf, tiles_list = gwf_query(product='ls8_espa_mexico', region='Jalisco',
+        ...                             begin = '2017-01-01', end='2017-03-31')
+        >>> # Using lat long box, time windowed
+        >>> gwf, tiles_list = gwf_query(product='ls8_espa_mexico', lat=[19, 22], long=[-104, -102],
+        ...                             begin = '2017-01-01', end='2017-03-31')
     """
     query_params = {'product': product}
     if region is not None:
@@ -175,7 +185,7 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None):
     if begin is not None and end is not None:
         begin = datetime.strptime(begin, "%Y-%m-%d")
         end = datetime.strptime(end, "%Y-%m-%d")
-        query_params.update('time': (begin, end))
+        query_params.update(time=(begin, end))
 
     # GridWorkflow object
     dc = datacube.Datacube()
