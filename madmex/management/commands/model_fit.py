@@ -14,14 +14,14 @@ from dask.distributed import Client, LocalCluster
 from datacube.api import GridWorkflow
 import datacube
 import numpy as np
+from sklearn import preprocessing
 
 from madmex.management.base import AntaresBaseCommand
 
 from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_netcdf
 from madmex.util import yaml_to_dict, mid_date, parser_extra_args
 from madmex.recipes import RECIPES
-from madmex.io.vector_db import VectorDb
-from madmex.overlay.extractions import zonal_stats_xarray
+from madmex.wrappers import extract_tile_db
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +84,10 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f lev
                             required=False,
                             default='mean',
                             help='Function to use for spatially aggregating the pixels over the training geometries')
+        parser.add_argument('--encode',
+                            action='store_true',
+                            help=('Perform numeric encoding of the dependent variable. This is useful when using a character field for later'
+                                 'running a pixel based prediction'))
         parser.add_argument('-extra', '--extra_kwargs',
                             type=str,
                             nargs='*',
@@ -102,6 +106,7 @@ to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 
         lat = tuple(options['lat'])
         long = tuple(options['long'])
         kwargs = parser_extra_args(options['extra_kwargs'])
+        encode = options['encode']
 
         # Load model class
         try:
@@ -112,35 +117,6 @@ to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 
 
         # Fitting function to iterate over 'iterable'
         # Must take 
-        def fun(tile, gwf, field, sp, training_set):
-            """FUnction to extract data under trining geometries for a given tile
-
-            Meant to be called within a dask.distributed.Cluster.map() over a list of tiles
-            returned by GridWorkflow.list_cells
-
-            Args:
-                tile: Datacube tile as returned by GridWorkflow.list_cells()
-                gwf: GridWorkflow object
-                field (str): Feature collection property to use for assigning labels
-                sp: Spatial aggregation function
-                training_set (str): Training data identifier (training_set field)
-
-            Returns:
-                A list of predictors and target values arrays
-            """
-            try:
-                # Load tile as Dataset
-                xr_dataset = gwf.load(tile[1])
-                # Query the training geometries fitting into the extent of xr_dataset
-                db = VectorDb()
-                fc = db.load_training_from_dataset(xr_dataset,
-                                                   training_set=training_set)
-                # Overlay geometries and xr_dataset and perform extraction combined with spatial aggregation
-                extract = zonal_stats_xarray(xr_dataset, fc, field, sp)
-                # Return the extracted array (or a list of two arrays?)
-                return extract
-            except Exception as e:
-                return [None, None]
 
         # GridWorkflow object
         dc = datacube.Datacube()
@@ -151,10 +127,11 @@ to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 
 
         # Start cluster and run 
         client = Client()
-        C = client.map(fun, iterable, **{'gwf': gwf,
-                                         'field': field,
-                                         'sp': sp,
-                                         'training_set': training})
+        C = client.map(extract_tile_db,
+                       iterable, **{'gwf': gwf,
+                                    'field': field,
+                                    'sp': sp,
+                                    'training_set': training})
         arr_list = client.gather(C)
 
         print('Completed extraction of training data from %d tiles' % len(arr_list))
@@ -169,6 +146,11 @@ to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 
         # Concatenate the lists
         X = np.concatenate(X_list)
         y = np.concatenate(y_list)
+
+        # Convert str labels to integers
+        if encode:
+            le = preprocessing.LabelEncoder()
+            y = le.fit_transform(y)
 
         print("Fitting %s model for %d observations" % (model, y.shape[0]))
 
