@@ -11,14 +11,13 @@ import logging
 from datetime import datetime
 
 from dask.distributed import Client, LocalCluster
-from datacube.api import GridWorkflow
-import datacube
 
 from madmex.management.base import AntaresBaseCommand
 
 from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_netcdf
 from madmex.util import yaml_to_dict, mid_date
 from madmex.recipes import RECIPES
+from madmex.wrappers import gwf_query
 
 logger = logging.getLogger(__name__)
 
@@ -53,22 +52,26 @@ python madmex.py apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-
                             help='Name of the recipe to apply to the dataset. The recipe must exist in madmex.recipes and the required products must be available in the datacube deployment.')
         parser.add_argument('-b', '--begin',
                             type=str,
-                            required=True,
+                            default=None,
                             help='Begin date used for temporal reduction')
         parser.add_argument('-e', '--end',
                             type=str,
-                            required=True,
+                            default=None,
                             help='End date used for temporal reduction')
         parser.add_argument('-lat', '--lat',
                             type=float,
                             nargs=2,
-                            required=True,
+                            default=None,
                             help='minimum and maximum latitude of the bounding box over which the recipe should be applied')
         parser.add_argument('-long', '--long',
                             type=float,
                             nargs=2,
-                            required=True,
+                            default=None,
                             help='minimum and maximum longitude of the bounding box over which the recipe should be applied')
+        parser.add_argument('-region', '--region',
+                            type=str,
+                            default=None,
+                            help='Name of the region over which the recipe should be applied. The geometry of the region should be present in the madmex-region table of the database (Overrides lat and long when present)')
         parser.add_argument('-name', '--name',
                             type=str,
                             required=True,
@@ -87,20 +90,15 @@ python madmex.py apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-
         product = recipe_meta['product']
         fun = recipe_meta['fun']
         yaml_file = recipe_meta['config_file']
-        lat = tuple(options['lat'])
-        long = tuple(options['long'])
         begin = datetime.strptime(options['begin'], '%Y-%m-%d')
         end = datetime.strptime(options['end'], '%Y-%m-%d')
         time = (begin, end)
         center_dt = mid_date(begin, end)
 
-        # GridWorkflow object
-        dc = datacube.Datacube()
-        gwf = GridWorkflow(dc.index, product=product)
-        tile_dict = gwf.list_cells(product=product, time=(begin, end),
-                                   x=long, y=lat, group_by='solar_day')
-        # Iterable (dictionary view (analog to list of tuples))
-        iterable = tile_dict.items()
+        # database query
+        gwf_kwargs = { k: options[k] for k in ['lat', 'long', 'region', 'begin', 'end']}
+        gwf_kwargs.update(product=product)
+        gwf, iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
         client = Client()
@@ -111,7 +109,6 @@ python madmex.py apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-
         logger.info('Processing done, %d tiles written to disk' % n_tiles)
 
         # Add product
-        # TODO: What happens if product already exist
         product_description = yaml_to_dict(yaml_file)
         pr, dt = add_product_from_yaml(yaml_file, options['name'])
         # Function to run on the list of filenames returned by Client.map()
