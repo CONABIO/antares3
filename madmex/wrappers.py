@@ -1,3 +1,7 @@
+import rasterio
+import numpy as np
+import os
+from datacube.helpers import write_geotiff
 from importlib import import_module
 from madmex.util.xarray import to_float
 from madmex.io.vector_db import VectorDb
@@ -8,7 +12,7 @@ The wrapper module gathers functions that are typically called by
 command lines
 """
 
-def predict_pixel_tile(tile, gwf, model_id, model):
+def predict_pixel_tile(tile, gwf, model_id, model, outdir=None):
     """Run a model in prediction mode and generates a raster file written to disk
 
     Meant to be called within a dask.distributed.Cluster.map() over a list of tiles
@@ -23,34 +27,67 @@ def predict_pixel_tile(tile, gwf, model_id, model):
             (See --encode flag in model_fit command line)
         model (str): Type of model (must be a model implemented in madmex.modeling)
         #TODO: The argument above is redundant, find a way to avoid repeating model type
+        outdir (str): Directory where output data should be written. Only makes sense
+            when generating unregistered geotiffs. The directory must already exist,
+            it is therefore a good idea to generate it in the command line function
+            before sending the tasks
 
     Return:
         str: The function is used for its side effect of generating a predicted
         array and writting it to a raster file (GeoTiff or NetCDF). OPtionally the file is registered as a storage unit in the datacube database.
     """
-    # Load model class corresponding to the right model
+    # TODO: How to handle data type. When ran in classification mode int16 would always
+    # be fine, but this function could potentially also be ran in regression mode
     try:
-        module = import_module('madmex.modeling.supervised.%s' % model)
-        Model = module.Model
-        trained_model = Model.from_db(model_id)
-    except ImportError as e:
-        raise ValueError('Invalid model argument')
-    # Load tile
-    xr_dataset = gwf.load(tile[1])
-    # Convert it to float?
-    xr_dataset_float = xr_dataset.apply(func=to_float, keep_attrs=True)
-    # Transform file to nd array
-    arr_3d = xr_dataset_float.to_array().values
-    2d_shape = (arr_3d.shape[0], arr_3d.shape[1] * arr_3d.shape[2])
-    arr_2d = arr_3d.reshape(2d_shape)
-    # predict
-    predicted_array = trained_model.predict(arr_2d)
-    # Reshape back to 2D
-    predicted_array = predicted_array.reshape((arr_3d.shape[1], arr_3d.shape[2]))
-    # Coerce back to xarray with all spatial parameters properly set
-    # Build output filename
-    # Write to filename
-    # Register to database
+        # Load model class corresponding to the right model
+        try:
+            module = import_module('madmex.modeling.supervised.%s' % model)
+            Model = module.Model
+            trained_model = Model.from_db(model_id)
+        except ImportError as e:
+            raise ValueError('Invalid model argument')
+        try:
+            # Avoid opening several threads in each process
+            trained_model.model.n_jobs = 1
+        except Exception as e:
+            pass
+        # Generate filename
+        filename = os.path.join(outdir, 'prediction_%s_%d_%d.tif' % (model_id, tile[0][0], tile[0][1]))
+        # Load tile
+        xr_dataset = gwf.load(tile[1])
+        # Convert it to float?
+        # xr_dataset = xr_dataset.apply(func=to_float, keep_attrs=True)
+        # Transform file to nd array
+        arr_3d = xr_dataset.to_array().squeeze().values
+        arr_3d = np.moveaxis(arr_3d, 0, 2)
+        shape_2d = (arr_3d.shape[0] * arr_3d.shape[1], arr_3d.shape[2])
+        arr_2d = arr_3d.reshape(shape_2d)
+        # predict
+        predicted_array = trained_model.predict(arr_2d)
+        # Reshape back to 2D
+        predicted_array = predicted_array.reshape((arr_3d.shape[0], arr_3d.shape[1]))
+        # Write array to geotiff
+        rasterio_meta = {'width': predicted_array.shape[1],
+                         'height': predicted_array.shape[0],
+                         'affine': xr_dataset.affine,
+                         'crs': xr_dataset.crs.crs_str,
+                         'count': 1,
+                         'dtype': 'int16',
+                         'compress': 'lzw',
+                         'driver': 'GTiff'}
+        with rasterio.open(filename, 'w', **rasterio_meta) as dst:
+            dst.write(predicted_array.astype('int16'), 1)
+        # Coerce back to xarray with all spatial parameters properly set
+        # xr_out = xr_dataset.drop(xr_dataset.data_vars)
+        # Build output filename
+        # xr_out['predicted'] = (('y', 'x'), predicted_array)
+        # Write to filename
+        # write_geotiff(filename=filename, dataset=xr_out)
+        # Register to database
+        return filename
+    except Exception as e:
+        print(e)
+        return None
 
 
 
