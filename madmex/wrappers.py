@@ -1,11 +1,21 @@
 import rasterio
 import numpy as np
 import os
-from datacube.helpers import write_geotiff
+import json
+from datetime import datetime
+import datacube
+from datacube.api import GridWorkflow
+from datacube.utils.geometry import Geometry, CRS
 from importlib import import_module
 from madmex.util.xarray import to_float
 from madmex.io.vector_db import VectorDb
 from madmex.overlay.extractions import zonal_stats_xarray
+
+# Django stuff
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "madmex.settings")
+import django
+django.setup()
+from madmex.models import Region
 
 """
 The wrapper module gathers functions that are typically called by
@@ -124,3 +134,53 @@ def extract_tile_db(tile, gwf, field, sp, training_set):
         return extract
     except Exception as e:
         return [None, None]
+
+
+def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None):
+    """Run a spatial query on a datacube product using either coordinates or a region name
+
+    Wrapper function to call at the begining of nearly all spatial processing command lines
+
+    TODO: Use dict comprehension in command line to build a dict of arguments to pass to this function
+    kwargs = { k: options[k] for k in ['product', 'lat', 'long', 'region', 'begin', 'end']}
+
+    Args:
+        product (str): Name of an ingested datacube product. The product to query
+        lat (tuple): OPtional. For coordinate based spatial query. Tuple of min and max
+            latitudes in decimal degreees.
+        long (tuple): OPtional. For coordinate based spatial query. Tuple of min and max
+            longitudes in decimal degreees.
+        region (str): Optional name of a region whose geometry is present in the database
+            region table. Overrides lat and long when present (not None)
+        begin (str): Date string in the form '%Y-%m-%d'. For temporally bounded queries
+        end (str): Date string in the form '%Y-%m-%d'. For temporally bounded queries
+
+    Returns:
+        List: List of [0] GridWorkflow object and [1] dictionary view of Tile index, Tile
+        key value pair
+    """
+    query_params = {'product': product}
+    if region is not None:
+       # Query database and build a datacube.utils.Geometry(geopolygon)
+       query_set = Region.objects.get(name=region)
+       region_json = json.loads(query_set.the_geom.geojson)
+       crs = CRS('EPSG:%d' % query_set.the_geom.srid)
+       geom = Geometry(region_json, crs)
+       query_params.update(geopolygon=geom)
+    elif lat is not None and long is not None:
+        query_params.update(x=long, y=lat)
+    else:
+        raise ValueError('Either a region name or a lat and long must be provided')
+
+    if begin is not None and end is not None:
+        begin = datetime.strptime(begin, "%Y-%m-%d")
+        end = datetime.strptime(end, "%Y-%m-%d")
+        query_params.update('time': (begin, end))
+
+    # GridWorkflow object
+    dc = datacube.Datacube()
+    gwf = GridWorkflow(dc.index, product=product)
+    tile_dict = gwf.list_cells(**query_params)
+    # Iterable (dictionary view (analog to list of tuples))
+    tiles_view = tile_dict.items()
+    return [gwf, tiles_view]
