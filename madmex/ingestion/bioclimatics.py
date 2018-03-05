@@ -75,11 +75,11 @@ def metadata_convert(path):
     tmin_dec = os.path.join(path, 'tmin_12.tif')
     
     # Check that these files exist
-    check_exist = [os.path.isfile(x) for x in [tmax_1, tmean_1, tmin_1]]
+    check_exist = [os.path.isfile(x) for x in [tmax_jan, tmean_jan, tmin_jan]]
     if not all(check_exist):
         raise ValueError('Target directory must at least contain the 3 following files (tmax_1.tif, tmean_1.tif, tmin_1.tif)')
     
-    with rasterio.open(tmax_1) as src:
+    with rasterio.open(tmax_jan) as src:
         crs = src.crs
         bounds = src.bounds
     meta_out = {
@@ -93,42 +93,42 @@ def metadata_convert(path):
         'ul_lon': bounds.left,
         'ur_lon': bounds.right,
         'crs': crs.wkt,
-        'tmax_jan': tmax_1,
-        'tmean_jan': tmean_1,
-        'tmin_jan': tmin_1,
-        'tmax_feb': tmax_2,
-        'tmean_feb': tmean_2,
-        'tmin_feb': tmin_2,
-        'tmax_mar': tmax_3,
-        'tmean_mar': tmean_3,
-        'tmin_mar': tmin_3,
-        'tmax_apr': tmax_4,
-        'tmean_apr': tmean_4,
-        'tmin_apr': tmin_4,
-        'tmax_may': tmax_5,
-        'tmean_may': tmean_5,
-        'tmin_may': tmin_5,
-        'tmax_jun': tmax_6,
-        'tmean_jun': tmean_6,
-        'tmin_jun': tmin_6,
-        'tmax_jul': tmax_7,
-        'tmean_jul': tmean_7,
-        'tmin_jul': tmin_7,
-        'tmax_aug': tmax_8,
-        'tmean_aug': tmean_8,
-        'tmin_aug': tmin_8,
-        'tmax_sep': tmax_9,
-        'tmean_sep': tmean_9,
-        'tmin_sep': tmin_9,
-        'tmax_oct': tmax_10,
-        'tmean_oct': tmean_10,
-        'tmin_oct': tmin_10,
-        'tmax_nov': tmax_11,
-        'tmean_nov': tmean_11,
-        'tmin_nov': tmin_11,
-        'tmax_dec': tmax_12,
-        'tmean_dec': tmean_12,
-        'tmin_dec': tmin_12,
+        'tmax_1': tmax_1,
+        'tmean_1': tmean_1,
+        'tmin_1': tmin_1,
+        'tmax_2': tmax_2,
+        'tmean_2': tmean_2,
+        'tmin_2': tmin_2,
+        'tmax_3': tmax_3,
+        'tmean_3': tmean_3,
+        'tmin_3': tmin_3,
+        'tmax_4': tmax_4,
+        'tmean_4': tmean_4,
+        'tmin_4': tmin_4,
+        'tmax_5': tmax_5,
+        'tmean_5': tmean_5,
+        'tmin_5': tmin_5,
+        'tmax_6': tmax_6,
+        'tmean_6': tmean_6,
+        'tmin_6': tmin_6,
+        'tmax_7': tmax_7,
+        'tmean_7': tmean_7,
+        'tmin_7': tmin_7,
+        'tmax_8': tmax_8,
+        'tmean_8': tmean_8,
+        'tmin_8': tmin_8,
+        'tmax_9': tmax_9,
+        'tmean_9': tmean_9,
+        'tmin_9': tmin_9,
+        'tmax_10': tmax_10,
+        'tmean_10': tmean_10,
+        'tmin_10': tmin_10,
+        'tmax_11': tmax_11,
+        'tmean_11': tmean_11,
+        'tmin_11': tmin_11,
+        'tmax_12': tmax_12,
+        'tmean_12': tmean_12,
+        'tmin_12': tmin_12,
     }
     # Load template
     env = Environment(loader=PackageLoader('madmex', 'templates'))
