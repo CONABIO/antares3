@@ -10,6 +10,7 @@ from importlib import import_module
 from madmex.util.xarray import to_float
 from madmex.io.vector_db import VectorDb
 from madmex.overlay.extractions import zonal_stats_xarray
+from madmex.modeling import BaseModel
 
 # Django stuff
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "madmex.settings")
@@ -22,7 +23,7 @@ The wrapper module gathers functions that are typically called by
 command lines
 """
 
-def predict_pixel_tile(tile, gwf, model_id, model, outdir=None):
+def predict_pixel_tile(tile, gwf, model_id, outdir=None):
     """Run a model in prediction mode and generates a raster file written to disk
 
     Meant to be called within a dask.distributed.Cluster.map() over a list of tiles
@@ -35,8 +36,6 @@ def predict_pixel_tile(tile, gwf, model_id, model, outdir=None):
         model_id (str): Database identifier of trained model to use. The model
             must have been trained against a numeric dependent variable.
             (See --encode flag in model_fit command line)
-        model (str): Type of model (must be a model implemented in madmex.modeling)
-        #TODO: The argument above is redundant, find a way to avoid repeating model type
         outdir (str): Directory where output data should be written. Only makes sense
             when generating unregistered geotiffs. The directory must already exist,
             it is therefore a good idea to generate it in the command line function
@@ -50,12 +49,7 @@ def predict_pixel_tile(tile, gwf, model_id, model, outdir=None):
     # be fine, but this function could potentially also be ran in regression mode
     try:
         # Load model class corresponding to the right model
-        try:
-            module = import_module('madmex.modeling.supervised.%s' % model)
-            Model = module.Model
-            trained_model = Model.from_db(model_id)
-        except ImportError as e:
-            raise ValueError('Invalid model argument')
+        trained_model = BaseModel.from_db(model_id)
         try:
             # Avoid opening several threads in each process
             trained_model.model.n_jobs = 1

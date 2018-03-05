@@ -26,7 +26,7 @@ One raster file per tile covered by the selected spatial extent is produced.
 Example usage:
 --------------
 # Predict using a random forest model trained against chips jalisco for product rf_int_landsat_madmex_001_jalisco_2017_jalisco_chips
-python madmex.py model_predict --region Jalisco -p landsat_madmex_001_jalisco_2017_2 -id rf_int_landsat_madmex_001_jalisco_2017_jalisco_chips -type rf -dir /home/madmex_user/datacube_ingest/lc_jalisco/
+python madmex.py model_predict --region Jalisco -p landsat_madmex_001_jalisco_2017_2 -id rf_int_landsat_madmex_001_jalisco_2017_jalisco_chips -dir /home/madmex_user/datacube_ingest/lc_jalisco/
 """
     def add_arguments(self, parser):
         parser.add_argument('-p', '--product',
@@ -52,10 +52,6 @@ python madmex.py model_predict --region Jalisco -p landsat_madmex_001_jalisco_20
                             type=str,
                             required=True,
                             help='Unique model identifier under which the model is registered in the database. Note that this model must have been trained against a numeric variable')
-        parser.add_argument('-type', '--model_type',
-                            type=str,
-                            required=True,
-                            help='Type of model that was previously trained (e.g.: rf). TODO: Redundant, find a way around that')
         parser.add_argument('-dir', '--out_dir',
                             type=str,
                             required=True,
@@ -64,7 +60,6 @@ python madmex.py model_predict --region Jalisco -p landsat_madmex_001_jalisco_20
     def handle(self, *args, **options):
         # Unpack variables
         model_id = options['model_id']
-        model_type = options['model_type']
         out_dir = options['out_dir']
 
         # Create output dir if does not exist
@@ -80,7 +75,6 @@ python madmex.py model_predict --region Jalisco -p landsat_madmex_001_jalisco_20
         C = client.map(predict_pixel_tile,
                        iterable, **{'gwf': gwf,
                                     'model_id': model_id,
-                                    'model': model_type,
                                     'outdir': out_dir})
         filename_list = client.gather(C)
         print(filename_list)
