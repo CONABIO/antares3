@@ -10,6 +10,7 @@ import dill
 
 import numpy
 from sklearn import metrics
+from sklearn.preprocessing import OneHotEncoder
 
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "madmex.settings")
@@ -29,22 +30,48 @@ class BaseModel(object):
     to be used with the xarray package.
     '''
     __metaclass__ = abc.ABCMeta
-    def __init__(self, params):
+    def __init__(self, categorical_features=None):
         '''
         Constructor
-        '''
 
+        Args:
+            categorical_features (list): Indices of categorical variables
+        '''
+        self.categorical_features = categorical_features
+
+    @abc.abstractmethod
     def fit(self, X, y):
         '''
         This method will train the classifier with given data.
         '''
         raise NotImplementedError('subclasses of BaseModel must provide a fit() method')
 
+    @abc.abstractmethod
     def predict(self, X):
         '''
         When the model is created, this method lets the user predict on unseen data.
         '''
         raise NotImplementedError('subclasses of BaseModel must provide a predict() method')
+
+    def hot_encode(self, X):
+        """Apply one hot encoding to one or several predictors determined by the list
+        of indices of the hot_encode attribute
+
+        In case no encoding is required (self.categorical_features is None),
+        simply returns the input array
+
+        Args:
+            X (array): The array of predictors
+
+        Return:
+            array: The array of predictors with specified variables encoded
+        """
+        if self.categorical_features is not None:
+            enc = OneHotEncoder(categorical_features=self.categorical_features,
+                                sparse=False)
+            X = enc.fit_transform(X)
+        return X
+
 
     def save(self, filepath):
         '''
