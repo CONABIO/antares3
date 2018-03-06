@@ -1,63 +1,63 @@
 id: {{ id }}
- extent:
-   center_dt: '1903-01-01'
-   coord:
-     ll: {lat: {{ ll_lat }}, lon: {{  ll_lon }} }
-     lr: {lat: {{ lr_lat }}, lon: {{  lr_lon }} }
-     ul: {lat: {{ ul_lat }}, lon: {{  ul_lon }} }
-     ur: {lat: {{ ur_lat }}, lon: {{  ur_lon }} }
-   from_dt: '1903-01-01'
-   to_dt: '2011-12-31'
- format: {name: GEOTIFF}
- grid_spatial:
-   projection:
-     geo_ref_points:
-       ll: {x: {{ ll_lon }}, y: {{ ll_lat }} }
-       lr: {x: {{ lr_lon }}, y: {{ lr_lat }} }
-       ul: {x: {{ ul_lon }}, y: {{ ul_lat }} }
-       ur: {x: {{ ur_lon }}, y: {{ ur_lat }} }
-     spatial_reference: {{ crs }}
- image:
-   bands:
-     tmax_jan: {layer: 1, path: {{ tmax_jan }} }
-     tmean_jan: {layer: 1, path: {{ tmean_jan }} }
-     tmin_jan: {layer: 1, path: {{ tmin_jan }} }  
-     tmax_feb: {layer: 1, path: {{ tmax_feb }} }
-     tmean_feb: {layer: 1, path: {{ tmean_feb }} }
-     tmin_feb: {layer: 1, path: {{ tmin_feb }} }
-     tmax_mar: {layer: 1, path: {{ tmax_mar }} }
-     tmean_mar: {layer: 1, path: {{ tmean_mar }} }
-     tmin_mar: {layer: 1, path: {{ tmin_mar }} }
-     tmax_apr: {layer: 1, path: {{ tmax_apr }} }
-     tmean_apr: {layer: 1, path: {{ tmean_apr }} }
-     tmin_apr: {layer: 1, path: {{ tmin_apr }} }
-     tmax_may: {layer: 1, path: {{ tmax_may }} }
-     tmean_may: {layer: 1, path: {{ tmean_may }} }
-     tmin_may: {layer: 1, path: {{ tmin_may }} }
-     tmax_jun: {layer: 1, path: {{ tmax_jun }} }
-     tmean_jun: {layer: 1, path: {{ tmean_jun }} }
-     tmin_jun: {layer: 1, path: {{ tmin_jun }} }
-     tmax_jul: {layer: 1, path: {{ tmax_jul }} }
-     tmean_jul: {layer: 1, path: {{ tmean_jul }} }
-     tmin_jul: {layer: 1, path: {{ tmin_jul }} }
-     tmax_aug: {layer: 1, path: {{ tmax_aug }} }
-     tmean_aug: {layer: 1, path: {{ tmean_aug }} }
-     tmin_aug: {layer: 1, path: {{ tmin_aug }} }
-     tmax_sep: {layer: 1, path: {{ tmax_sep }} }
-     tmean_sep: {layer: 1, path: {{ tmean_sep }} }
-     tmin_sep: {layer: 1, path: {{ tmin_sep }} }
-     tmax_oct: {layer: 1, path: {{ tmax_oct }} }
-     tmean_oct: {layer: 1, path: {{ tmean_oct }} }
-     tmin_oct: {layer: 1, path: {{ tmin_oct }} }
-     tmax_nov: {layer: 1, path: {{ tmax_nov }} }
-     tmean_nov: {layer: 1, path: {{ tmean_nov }} }
-     tmin_nov: {layer: 1, path: {{ tmin_nov }} }
-     tmax_dec: {layer: 1, path: {{ tmax_dec }} }
-     tmean_dec: {layer: 1, path: {{ tmean_dec }} }
-     tmin_dec: {layer: 1, path: {{ tmin_dec }} }
- instrument: {name: SIR}
- lineage:
-   source_datasets: {}
- platform: {code: Servicio Meteorologico Nacional} 
- processing_level: modelled
- product_type: BIO 
+extent:
+  center_dt: '1957-07-01'
+  coord:
+    ll: {lat: {{ ll_lat }}, lon: {{  ll_lon }} }
+    lr: {lat: {{ lr_lat }}, lon: {{  lr_lon }} }
+    ul: {lat: {{ ul_lat }}, lon: {{  ul_lon }} }
+    ur: {lat: {{ ur_lat }}, lon: {{  ur_lon }} }
+  from_dt: '1903-01-01'
+  to_dt: '2011-12-31'
+format: {name: GEOTIFF}
+grid_spatial:
+  projection:
+    geo_ref_points:
+      ll: {x: {{ ll_lon }}, y: {{ ll_lat }} }
+      lr: {x: {{ lr_lon }}, y: {{ lr_lat }} }
+      ul: {x: {{ ul_lon }}, y: {{ ul_lat }} }
+      ur: {x: {{ ur_lon }}, y: {{ ur_lat }} }
+    spatial_reference: {{ crs }}
+image:
+  bands:
+    tmax_jan: {layer: 1, path: {{ tmax_jan }} }
+    tmean_jan: {layer: 1, path: {{ tmean_jan }} }
+    tmin_jan: {layer: 1, path: {{ tmin_jan }} }  
+    tmax_feb: {layer: 1, path: {{ tmax_feb }} }
+    tmean_feb: {layer: 1, path: {{ tmean_feb }} }
+    tmin_feb: {layer: 1, path: {{ tmin_feb }} }
+    tmax_mar: {layer: 1, path: {{ tmax_mar }} }
+    tmean_mar: {layer: 1, path: {{ tmean_mar }} }
+    tmin_mar: {layer: 1, path: {{ tmin_mar }} }
+    tmax_apr: {layer: 1, path: {{ tmax_apr }} }
+    tmean_apr: {layer: 1, path: {{ tmean_apr }} }
+    tmin_apr: {layer: 1, path: {{ tmin_apr }} }
+    tmax_may: {layer: 1, path: {{ tmax_may }} }
+    tmean_may: {layer: 1, path: {{ tmean_may }} }
+    tmin_may: {layer: 1, path: {{ tmin_may }} }
+    tmax_jun: {layer: 1, path: {{ tmax_jun }} }
+    tmean_jun: {layer: 1, path: {{ tmean_jun }} }
+    tmin_jun: {layer: 1, path: {{ tmin_jun }} }
+    tmax_jul: {layer: 1, path: {{ tmax_jul }} }
+    tmean_jul: {layer: 1, path: {{ tmean_jul }} }
+    tmin_jul: {layer: 1, path: {{ tmin_jul }} }
+    tmax_aug: {layer: 1, path: {{ tmax_aug }} }
+    tmean_aug: {layer: 1, path: {{ tmean_aug }} }
+    tmin_aug: {layer: 1, path: {{ tmin_aug }} }
+    tmax_sep: {layer: 1, path: {{ tmax_sep }} }
+    tmean_sep: {layer: 1, path: {{ tmean_sep }} }
+    tmin_sep: {layer: 1, path: {{ tmin_sep }} }
+    tmax_oct: {layer: 1, path: {{ tmax_oct }} }
+    tmean_oct: {layer: 1, path: {{ tmean_oct }} }
+    tmin_oct: {layer: 1, path: {{ tmin_oct }} }
+    tmax_nov: {layer: 1, path: {{ tmax_nov }} }
+    tmean_nov: {layer: 1, path: {{ tmean_nov }} }
+    tmin_nov: {layer: 1, path: {{ tmin_nov }} }
+    tmax_dec: {layer: 1, path: {{ tmax_dec }} }
+    tmean_dec: {layer: 1, path: {{ tmean_dec }} }
+    tmin_dec: {layer: 1, path: {{ tmin_dec }} }
+instrument: {name: Weather station}
+lineage:
+  source_datasets: {}
+platform: {code: WorldClim (1950-2000) and the daily climatological base (1902-2011)} 
+processing_level: modelled
+product_type: BIO 
