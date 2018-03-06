@@ -20,6 +20,7 @@ from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_ne
 from madmex.util import yaml_to_dict, mid_date, parser_extra_args
 from madmex.recipes import RECIPES
 from madmex.wrappers import extract_tile_db, gwf_query
+from madmex.util.datacube import var_to_ind
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +91,11 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f lev
                             action='store_true',
                             help=('Perform numeric encoding of the dependent variable. This is useful when using a character field for later'
                                  'running a pixel based prediction'))
+        parser.add_argument('--categorical_variables', '-categorical_variables',
+                            type=str,
+                            nargs='*',
+                            default=None,
+                            help='List of categorical variables to be encoded using One Hot Encoding before model fit')
         parser.add_argument('-extra', '--extra_kwargs',
                             type=str,
                             nargs='*',
@@ -107,6 +113,11 @@ to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 
         sp = options['spatial_aggregation']
         kwargs = parser_extra_args(options['extra_kwargs'])
         encode = options['encode']
+        categorical_variables = options['categorical_variables']
+
+        # Prepare encoding of categorical variables if any specified
+        if categorical_variables is not None:
+            kwargs.update(categorical_features=var_to_ind(categorical_variables))
 
         # Load model class
         try:

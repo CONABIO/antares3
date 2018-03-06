@@ -94,10 +94,6 @@ def predict_pixel_tile(tile, gwf, model_id, outdir=None):
         return None
 
 
-
-
-
-
 def extract_tile_db(tile, gwf, field, sp, training_set):
     """FUnction to extract data under training geometries for a given tile
 
