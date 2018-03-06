@@ -18,6 +18,7 @@ from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_ne
 from madmex.util import yaml_to_dict, mid_date
 from madmex.recipes import RECIPES
 from madmex.wrappers import gwf_query
+from madmex.settings import INGESTION_PATH
 
 logger = logging.getLogger(__name__)
 
@@ -78,8 +79,7 @@ python madmex.py apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-
                             help='Name under which the product should be referenced in the datacube')
 
     def handle(self, *args, **options):
-        # TODO: Make this path more dynamic. MAybe with a variable defined in .env
-        path = os.path.expanduser(os.path.join('~/datacube_ingest/recipes/', options['recipe']))
+        path = os.path.join(INGESTION_PATH, 'recipes', options['name'])
         if not os.path.exists(path):
             os.makedirs(path)
         # Prepare a few variables
@@ -103,7 +103,8 @@ python madmex.py apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-
         # Start cluster and run 
         client = Client()
         C = client.map(fun, iterable, **{'gwf': gwf,
-                                         'center_dt': center_dt})
+                                         'center_dt': center_dt,
+                                         'path': path})
         nc_list = client.gather(C)
         n_tiles = len([x for x in nc_list if x is not None])
         logger.info('Processing done, %d tiles written to disk' % n_tiles)

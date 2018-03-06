@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 dask.set_options(get=dask.get)
 
-def run(tile, gwf, center_dt):
+def run(tile, gwf, center_dt, path):
     """Basic datapreparation recipe 001
 
     Combines temporal statistics of surface reflectance and ndvi with terrain
@@ -28,14 +28,14 @@ def run(tile, gwf, center_dt):
         gwf (GridWorkflow): GridWorkflow object instantiated with the corresponding
             product
         center_dt (datetime): Date to be used in making the filename
+        path (str): Directory where files generated are to be written
 
     Return:
         str: The filename of the netcdf file created
     """
     try:
         center_dt = center_dt.strftime("%Y-%m-%d")
-        # TODO: Need a more dynamic way to handle this filename (e.g.: global variable for the path up to datacube_ingest)
-        nc_filename = os.path.expanduser('~/datacube_ingest/recipes/landsat_8_madmex_001/madmex_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
+        nc_filename = os.path.join(path, 'madmex_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         # Load Landsat sr
         if os.path.isfile(nc_filename):
             raise ValueError('%s already exist' % nc_filename)
@@ -49,7 +49,6 @@ def run(tile, gwf, center_dt):
         # Mask clouds, shadow, water, ice,... and drop qa layer
         clear = masking.make_mask(sr_0.pixel_qa, cloud=False, cloud_shadow=False,
                                     snow=False)
-        #TODO: That may be the other way around
         sr_1 = sr_0.where(clear)
         sr_2 = sr_1.drop('pixel_qa')
         # Convert Landsat data to float (nodata values are converted to np.Nan)
