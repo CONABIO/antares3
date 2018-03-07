@@ -70,7 +70,7 @@ class TrainObject(models.Model):
     it.
     '''
     models.GeometryField
-    the_geom = models.PolygonField()
+    the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
     regions = models.ManyToManyField(Region)
     training_tags = models.ManyToManyField(TrainTag)
@@ -81,7 +81,7 @@ class PredictObject(models.Model):
     regions and each object should have an assigned tag which is the ground truth for
     it.
     '''
-    the_geom = models.PolygonField()
+    the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
     regions = models.ManyToManyField(Region)
     prediction_tags = models.ManyToManyField(PredictTag, default=None)
