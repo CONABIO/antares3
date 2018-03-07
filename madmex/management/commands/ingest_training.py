@@ -46,14 +46,10 @@ class Command(AntaresBaseCommand):
             object_list = [(TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt), training_set=dataset), feat['properties']) for feat in source]
 
         TrainObject.objects.bulk_create(list(map(lambda x: x[0], object_list)))
-        
-                
+
         for tup in object_list:
             o = tup[0]
             p = tup[1]
-            for region in Region.objects.filter(the_geom__intersects=o.the_geom):
-                o.regions.add(region)
-                
             for prop in properties:
                 key = prop
                 value = p[prop].lower()

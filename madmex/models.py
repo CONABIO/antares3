@@ -72,7 +72,6 @@ class TrainObject(models.Model):
     models.GeometryField
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
-    regions = models.ManyToManyField(Region)
     training_tags = models.ManyToManyField(TrainTag)
     training_set = models.CharField(max_length=100, default='')
 
@@ -83,7 +82,6 @@ class PredictObject(models.Model):
     '''
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
-    regions = models.ManyToManyField(Region)
     prediction_tags = models.ManyToManyField(PredictTag, default=None)
     training_set = models.CharField(max_length=100, default='')
 
