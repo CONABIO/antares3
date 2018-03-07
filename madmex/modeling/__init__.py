@@ -89,7 +89,7 @@ class BaseModel(object):
             dill.dump(self, dst)
 
     @staticmethod
-    def load(self, filepath):
+    def load(filepath):
         '''
         Read object from file
         '''
