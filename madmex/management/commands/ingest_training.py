@@ -9,12 +9,13 @@ import logging
 
 from django.contrib.gis.geos.geometry import GEOSGeometry
 import fiona
-import pyproj
 from shapely.geometry.geo import shape
 from shapely.ops import transform
 
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import Region, TrainTag, TrainObject
+from madmex.util.local import basename
+import pyproj
 
 
 logger = logging.getLogger(__name__)
@@ -37,13 +38,14 @@ class Command(AntaresBaseCommand):
         
         print(properties)
 
+        filename = basename(shape_file, False)
 
         with fiona.open(shape_file) as source:
             project = partial(
                 pyproj.transform,
                 pyproj.Proj(source.crs),
                 pyproj.Proj(init='EPSG:4326'))
-            object_list = [(TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt), training_set=dataset), feat['properties']) for feat in source]
+            object_list = [(TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt, filename=filename), training_set=dataset), feat['properties']) for feat in source]
 
         TrainObject.objects.bulk_create(list(map(lambda x: x[0], object_list)))
 

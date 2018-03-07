@@ -73,6 +73,7 @@ class TrainObject(models.Model):
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
     training_tags = models.ManyToManyField(TrainTag)
+    filename = models.CharField(max_length=200, default='')
     training_set = models.CharField(max_length=100, default='')
 
 class PredictObject(models.Model):
