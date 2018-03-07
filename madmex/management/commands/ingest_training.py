@@ -50,7 +50,7 @@ class Command(AntaresBaseCommand):
 
  
                 
-                o = TrainObject(the_geom = geom, dataset=dataset)
+                o = TrainObject(the_geom = geom, training_set=dataset)
                 o.save()
                 for region in Region.objects.filter(the_geom__intersects=geom):
                     o.regions.add(region)
