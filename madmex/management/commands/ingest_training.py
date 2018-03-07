@@ -37,35 +37,29 @@ class Command(AntaresBaseCommand):
         
         print(properties)
 
-        objects = []
 
         with fiona.open(shape_file) as source:
-            for feat in source:
-                s1 = shape(feat['geometry'])
-                project = partial(
-                    pyproj.transform,
-                    pyproj.Proj(source.crs),
-                    pyproj.Proj(init='EPSG:4326'))
-                s2 = transform(project, s1)
-                geom = GEOSGeometry(s2.wkt)
+            project = partial(
+                pyproj.transform,
+                pyproj.Proj(source.crs),
+                pyproj.Proj(init='EPSG:4326'))
+            object_list = [TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt), training_set=dataset) for feat in source]
 
- 
+        TrainObject.objects.bulk_create(object_list)
+        
                 
-                o = TrainObject(the_geom = geom, training_set=dataset)
-                o.save()
-                for region in Region.objects.filter(the_geom__intersects=geom):
-                    o.regions.add(region)
+        for o in object_list:
+            for region in Region.objects.filter(the_geom__intersects=o.the_geom):
+                o.regions.add(region)
                 
-                for prop in properties:
-                    key = prop
-                    value = feat['properties'][prop].lower()
-                    try:
-                        tag = TrainTag.objects.get(key=key,value=value)
-                    except TrainTag.DoesNotExist:
-                        tag = TrainTag(key=key,value=value)
-                        tag.save()
-                    o.training_tags.add(tag)
-                objects.append(o)
-            
-        TrainObject.objects.bulk_create(objects)
+            for prop in properties:
+                key = prop
+                value = feat['properties'][prop].lower()
+                try:
+                    tag = TrainTag.objects.get(key=key,value=value)
+                except TrainTag.DoesNotExist:
+                    tag = TrainTag(key=key,value=value)
+                    tag.save()
+                o.training_tags.add(tag)
+            o.save()
                 
