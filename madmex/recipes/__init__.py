@@ -5,8 +5,8 @@ from .landsat_8_ndvi_mean import run as landsat_8_ndvi_mean
 """
 Adding recipes:
     - Write the recipe function. The function should accept 4 arguments
-    (tile, gwf, center_dt). tile is a tuple as returned by gwd.list_cells(),
-    gwf is a GridWorkflow instance and center_dt is a datetime. The function
+    (tile, gwf, center_dt, path). tile is a tuple as returned by gwd.list_cells(),
+    gwf is a GridWorkflow instance, center_dt is a datetime, and path is a string. The function
     should write to a netcdf file and return the path (str) of the file created.
     - Write a product configuration file and place it in madmex/conf/indexing
     - Add an entry to the RECIPES dictionary below (product is the datacube product to

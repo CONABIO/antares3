@@ -14,7 +14,7 @@ from datetime import datetime
 import logging
 logger = logging.getLogger(__name__)
 
-def run(tile, gwf, center_dt):
+def run(tile, gwf, center_dt, path):
     """Basic datapreparation recipe 001
 
     Computes mean NDVI for a landsat collection over a given time frame
@@ -25,14 +25,14 @@ def run(tile, gwf, center_dt):
         gwf (GridWorkflow): GridWorkflow object instantiated with the corresponding
             product
         center_dt (datetime): Date to be used in making the filename
+        path (str): Directory where files generated are to be written
 
     Return:
         str: The filename of the netcdf file created
     """
     try:
         center_dt = center_dt.strftime("%Y-%m-%d")
-        # TODO: Need a more dynamic way to handle this filename (e.g.: global variable for the path up to datacube_ingest)
-        nc_filename = os.path.expanduser('~/datacube_ingest/recipes/landsat_8_ndvi_mean/ndvi_mean_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
+        nc_filename = os.path.join(path, 'ndvi_mean_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         if os.path.isfile(nc_filename):
             raise ValueError('%s already exist' % nc_filename)
         # Load Landsat sr

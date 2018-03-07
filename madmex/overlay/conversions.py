@@ -53,14 +53,12 @@ def querySet_to_fc(x, crs=None):
     Return:
         list: A feature collection
     """
-    attr = x.training_tags.values_list()
-    # TODO: I have no idea why attr is made of tupples of 3 or what the first element
-    # of each tuple correspond to (loic)
-    attr = [a[1:3] for a in attr]
+    attr = x.training_tags.values_list('key', 'value')
     if crs is None:
         geometry = json.loads(x.the_geom.geojson)
     else:
         geometry = json.loads(x.the_geom.transform(crs, clone=True).geojson)
+    # TODO: Building the feature is super slow...
     feature = {
         "type": "Feature",
         "geometry": geometry,

@@ -176,6 +176,9 @@ SCIHUB_PASSWORD = os.getenv('SCIHUB_PASSWORD')
 # A directory to store serialized objects
 SERIALIZED_OBJECTS_DIR = os.getenv('SERIALIZED_OBJECTS_DIR')
 
+# Ingestion path
+INGESTION_PATH = os.getenv('INGESTION_PATH')
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 

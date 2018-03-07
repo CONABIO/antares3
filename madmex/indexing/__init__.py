@@ -174,9 +174,11 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
         var_list = [x.name for x in var_list]
     # Convert projected corner coordinates to longlat
     p = Proj(wkt_to_proj4(crs_wkt))
-    # TODO: This (below) is wrong. Each corner must be computed independently
-    long_min, lat_min = p(xmin, ymin, inverse=True)
-    long_max, lat_max = p(xmax, ymax, inverse=True)
+    # Every geographical corner has to be computed independently cause CRS are not parallels
+    ul_long, ul_lat = p(xmin, ymax, inverse=True)
+    ur_long, ur_lat = p(xmax, ymax, inverse=True)
+    lr_long, lr_lat = p(xmax, ymin, inverse=True)
+    ll_long, ll_lat = p(xmin, ymin, inverse=True)
     out = {
         'id': str(uuid.uuid5(uuid.NAMESPACE_URL, file)),
         'creation_dt': creation_dt,
@@ -186,10 +188,10 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
         'format': description['metadata']['format'],
         'extent': {
             'coord': {
-                'll': {'lat': lat_min, 'lon': long_min},
-                'lr': {'lat': lat_min, 'lon': long_max},
-                'ul': {'lat': lat_max, 'lon': long_min},
-                'ur': {'lat': lat_max, 'lon': long_max}
+                'll': {'lat': ll_lat, 'lon': ll_long},
+                'lr': {'lat': lr_lat, 'lon': lr_long},
+                'ul': {'lat': ul_lat, 'lon': ul_long},
+                'ur': {'lat': ur_lat, 'lon': ur_long},
             },
             'from_dt': from_dt.strftime('%Y-%m-%d'),
             'center_dt': center_dt.strftime('%Y-%m-%d'),

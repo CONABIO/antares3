@@ -75,11 +75,11 @@ def metadata_convert(path):
     tmin_dec = os.path.join(path, 'tmin_12.tif')
     
     # Check that these files exist
-    #check_exist = [os.path.isfile(x) for x in [tmax, tmean, tmin]]
+    #check_exist = [os.path.isfile(x) for x in [tmax_jan, tmean_jan, tmin_jan]]
     #if not all(check_exist):
-    #    raise ValueError('Target directory must at least contain the 3 following files (tmax.tif, tmean.tif, tmin.tif)')
+    #    raise ValueError('Target directory must at least contain the 3 following files (tmax_1.tif, tmean_1.tif, tmin_1.tif)')
     
-    with rasterio.open(elevation) as src:
+    with rasterio.open(tmax_jan) as src:
         crs = src.crs
         bounds = src.bounds
     meta_out = {
