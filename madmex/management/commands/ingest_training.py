@@ -43,18 +43,20 @@ class Command(AntaresBaseCommand):
                 pyproj.transform,
                 pyproj.Proj(source.crs),
                 pyproj.Proj(init='EPSG:4326'))
-            object_list = [TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt), training_set=dataset) for feat in source]
+            object_list = [(TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt), training_set=dataset), feat['properties']) for feat in source]
 
-        TrainObject.objects.bulk_create(object_list)
+        TrainObject.objects.bulk_create(list(map(lambda x: x[0], object_list)))
         
                 
-        for o in object_list:
+        for tup in object_list:
+            o = tup[0]
+            p = tup[1]
             for region in Region.objects.filter(the_geom__intersects=o.the_geom):
                 o.regions.add(region)
                 
             for prop in properties:
                 key = prop
-                value = feat['properties'][prop].lower()
+                value = p[prop].lower()
                 try:
                     tag = TrainTag.objects.get(key=key,value=value)
                 except TrainTag.DoesNotExist:
