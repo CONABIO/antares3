@@ -53,7 +53,7 @@ class BaseModel(object):
         '''
         raise NotImplementedError('subclasses of BaseModel must provide a predict() method')
 
-    def hot_encode(self, X):
+    def hot_encode_training(self, X):
         """Apply one hot encoding to one or several predictors determined by the list
         of indices of the hot_encode attribute
 
@@ -69,7 +69,15 @@ class BaseModel(object):
         if self.categorical_features is not None:
             enc = OneHotEncoder(categorical_features=self.categorical_features,
                                 sparse=False)
-            X = enc.fit_transform(X)
+            self.enc = enc.fit(X)
+            X = enc.transform(X)
+        return X
+
+    def hot_encode_predict(self, X):
+        """Hot Encode data on which prediction is to be performed
+        """
+        if self.categorical_features is not None:
+            X = self.enc.transform(X)
         return X
 
 

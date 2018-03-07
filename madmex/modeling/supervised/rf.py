@@ -32,14 +32,14 @@ class Model(BaseModel):
         self.model_name = 'rf'
 
     def fit(self, X, y):
-        X = self.hot_encode(X)
+        X = self.hot_encode_training(X)
         self.model.fit(X,y)
 
     def predict(self, X):
         '''
         Simply passes down the prediction from the underlying model.
         '''
-        X = self.hot_encode(X)
+        X = self.hot_encode_predict(X)
         return self.model.predict(X)
 
     def score(self, X, y):
