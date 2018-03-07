@@ -37,6 +37,7 @@ class Command(AntaresBaseCommand):
         
         print(properties)
 
+        objects = []
 
         with fiona.open(shape_file) as source:
             for feat in source:
@@ -64,5 +65,7 @@ class Command(AntaresBaseCommand):
                         tag = TrainTag(key=key,value=value)
                         tag.save()
                     o.training_tags.add(tag)
-                o.save()
+                objects.append(o)
+            
+        TrainObject.objects.bulk_create(objects)
                 
