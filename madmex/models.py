@@ -47,22 +47,14 @@ class Model(models.Model):
     training_set = models.CharField(max_length=100)
     recipe = models.CharField(max_length=100, default=None)
     added = models.DateTimeField(auto_now_add=True)
-
-class TrainTag(models.Model):
+    
+class Tag(models.Model):
     '''To keep a deeper control over the tags that we can handle. 
     '''
+    scheme = models.CharField(max_length=50, default=None)
     key = models.CharField(max_length=50, default=None)
     value = models.CharField(max_length=150, default=None)
-
-    def __unicode__(self):
-        return self.value
-    
-class PredictTag(models.Model):
-    '''To keep a the tags assigned to an object by a specific model. 
-    '''
-    key = models.CharField(max_length=50, default=None)
-    value = models.CharField(max_length=150, default=None)
-    model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='model', default=None)
+    numeric_code = models.IntegerField(default=-1)
 
 class TrainObject(models.Model):
     '''This table holds objects that will be used for training. They must be related to
@@ -72,9 +64,9 @@ class TrainObject(models.Model):
     models.GeometryField
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
-    training_tags = models.ManyToManyField(TrainTag)
+    training_tags = models.ManyToManyField(Tag, through='TrainClassification')
     filename = models.CharField(max_length=200, default='')
-    training_set = models.CharField(max_length=100, default='')
+    creation_year = models.CharField(max_length=20, default='2015')
 
 class PredictObject(models.Model):
     '''This table holds objects that will be used for training. They must be related to
@@ -83,8 +75,24 @@ class PredictObject(models.Model):
     '''
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
-    prediction_tags = models.ManyToManyField(PredictTag, default=None)
+    prediction_tags = models.ManyToManyField(Tag, through='PredictClassification')
+
+class TrainClassification(models.Model):
+    '''This tables relates the train objects with a tag, we add information about the
+    dataset from which the object was taken.
+    '''
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    train_object = models.ForeignKey(TrainObject, on_delete=models.CASCADE)
     training_set = models.CharField(max_length=100, default='')
+    
+class PredictClassification(models.Model):
+    '''This table relates predict object and a tag as a many to many table. We created an
+    specific table for this to add information about the model.
+    '''
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    predict_object = models.ForeignKey(PredictObject, on_delete=models.CASCADE)
+    model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='model', default=None)
+
 
 def ingest_countries_from_shape(path, mapping):
     '''Ingestion function for countries to database.
