@@ -45,7 +45,7 @@ class Command(AntaresBaseCommand):
                 pyproj.transform,
                 pyproj.Proj(source.crs),
                 pyproj.Proj(init='EPSG:4326'))
-            object_list = [(TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt, filename=filename), training_set=dataset), feat['properties']) for feat in source]
+            object_list = [(TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt), training_set=dataset, filename=filename), feat['properties']) for feat in source]
 
         TrainObject.objects.bulk_create(list(map(lambda x: x[0], object_list)))
 
