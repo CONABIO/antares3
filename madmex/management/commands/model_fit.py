@@ -77,7 +77,9 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f lev
         parser.add_argument('-region', '--region',
                             type=str,
                             default=None,
-                            help='Name of the region over which the model should be trained. The geometry of the region should be present in the madmex-region table of the database (Overrides lat and long when present)')
+                            help=('Name of the region over which the recipe should be applied. The geometry of the region should be present '
+                                  'in the madmex-region or the madmex-country table of the database (Overrides lat and long when present) '
+                                  'Use ISO country code for country name'))
         parser.add_argument('-name', '--name',
                             type=str,
                             required=True,
