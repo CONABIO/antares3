@@ -27,21 +27,21 @@ class Command(AntaresBaseCommand):
         Adds arguments for this command.
         '''
         parser.add_argument('--shape', nargs=1, help='The name of the shape to ingest.')
-        parser.add_argument('--properties', nargs='*', help='The name of the shape to ingest.')
-        parser.add_argument('--dataset', nargs='*', help='The name of the shape to ingest.')
-        parser.add_argument('--year', nargs='*', help='The creation year for this objects.')
-        parser.add_argument('--scheme', nargs='*', help='Classification scheme.')
+        parser.add_argument('--interpret', nargs='?', default=None, help='The name of the shape to ingest.')
+        parser.add_argument('--predict', nargs=1, help='The name of the shape to ingest.')
+        parser.add_argument('--dataset', nargs=1, help='The name of the shape to ingest.')
+        parser.add_argument('--year', nargs=1, help='The creation year for this objects.')
+        parser.add_argument('--scheme', nargs=1, help='Classification scheme.')
     
     def handle(self, **options):
         
         shape_file = options['shape'][0]
-        properties = options['properties']
+        interpret = options['interpret']
+        predict = options['predict'][0]
         dataset = options['dataset'][0]
         year = options['year'][0]
         scheme = options['scheme'][0]
         
-        print(properties)
-
         filename = basename(shape_file, False)
 
         with fiona.open(shape_file) as source:
@@ -63,19 +63,32 @@ class Command(AntaresBaseCommand):
         for tup in object_list:
             o = tup[0]
             p = tup[1]
-            for prop in properties:
-                key = prop
-                value = p[prop].lower()
-                tag = tag_map.get(value)                
-                if not tag:
+            
+            value = p[interpret]
+            interpret_tag = tag_map.get(value)                
+            if not interpret_tag:
+                try:
+                    interpret_tag = Tag.objects.get(numeric_code=value, scheme=scheme)
+                except Tag.DoesNotExist:
+                    interpret_tag = Tag.objects.get(numeric_code=value, scheme=scheme)
+                    interpret_tag.save()
+                tag_map[value] = interpret_tag
+            
+            predict_tag = None
+            if predict is not None:
+                value = p[predict]
+                predict_tag = tag_map.get(value)
+                if not predict_tag:
                     try:
-                        tag = Tag.objects.get(key=key, value=value, scheme=scheme)
+                        predict_tag = Tag.objects.get(numeric_code=value, scheme=scheme)
                     except Tag.DoesNotExist:
-                        tag = Tag(key=key, value=value, scheme=scheme)
-                        tag.save()
-                    tag_map[value] = tag
-                train_classification_objects.append(TrainClassification(train_object=o,
-                                                           tag=tag,
+                        predict_tag = Tag.objects.get(numeric_code=value, scheme=scheme)
+                        predict_tag.save()
+                    tag_map[value] = predict_tag
+            
+            train_classification_objects.append(TrainClassification(train_object=o,
+                                                           predict_tag=predict_tag,
+                                                           interpret_tag=interpret_tag,
                                                            training_set=dataset))
         TrainClassification.objects.bulk_create(train_classification_objects)
         

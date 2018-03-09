@@ -52,9 +52,9 @@ class Tag(models.Model):
     '''To keep a deeper control over the tags that we can handle. 
     '''
     scheme = models.CharField(max_length=50, default=None)
-    key = models.CharField(max_length=50, default=None)
     value = models.CharField(max_length=150, default=None)
     numeric_code = models.IntegerField(default=-1)
+    color = models.CharField(max_length=7, default='')
 
 class TrainObject(models.Model):
     '''This table holds objects that will be used for training. They must be related to
@@ -64,7 +64,9 @@ class TrainObject(models.Model):
     models.GeometryField
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
-    training_tags = models.ManyToManyField(Tag, through='TrainClassification')
+    training_tags = models.ManyToManyField(Tag, 
+                                           through='TrainClassification', 
+                                           through_fields=('train_object', 'interpret_tag'))
     filename = models.CharField(max_length=200, default='')
     creation_year = models.CharField(max_length=20, default='2015')
 
@@ -81,7 +83,8 @@ class TrainClassification(models.Model):
     '''This tables relates the train objects with a tag, we add information about the
     dataset from which the object was taken.
     '''
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    predict_tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name="classification_predict", default=None)
+    interpret_tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
     train_object = models.ForeignKey(TrainObject, on_delete=models.CASCADE)
     training_set = models.CharField(max_length=100, default='')
     

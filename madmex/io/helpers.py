@@ -12,5 +12,5 @@ def tag_dictionary(scheme):
     '''
     dictionary = {}
     for o in Tag.objects.filter(scheme=scheme):
-        dictionary[o.id] = o.value
+        dictionary[o.numeric_code] = o.value
     return dictionary
