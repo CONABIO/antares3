@@ -57,6 +57,8 @@ class Command(AntaresBaseCommand):
 
         
         train_classification_objects = []
+        
+        tag_map = {}
 
         for tup in object_list:
             o = tup[0]
@@ -64,11 +66,14 @@ class Command(AntaresBaseCommand):
             for prop in properties:
                 key = prop
                 value = p[prop].lower()
-                try:
-                    tag = Tag.objects.get(key=key, value=value, scheme=scheme)
-                except Tag.DoesNotExist:
-                    tag = Tag(key=key, value=value, scheme=scheme)
-                    tag.save()
+                tag = tag_map.get(value)                
+                if not tag:
+                    try:
+                        tag = Tag.objects.get(key=key, value=value, scheme=scheme)
+                    except Tag.DoesNotExist:
+                        tag = Tag(key=key, value=value, scheme=scheme)
+                        tag.save()
+                    tag_map[value] = tag
                 train_classification_objects.append(TrainClassification(train_object=o,
                                                            tag=tag,
                                                            training_set=dataset))
