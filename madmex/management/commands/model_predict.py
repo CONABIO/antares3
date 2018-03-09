@@ -32,7 +32,7 @@ python madmex.py model_predict --region Jalisco -p landsat_madmex_001_jalisco_20
         parser.add_argument('-p', '--product',
                             type=str,
                             required=True,
-                            help=('Name of the datacube product on which prediction should be ran.'
+                            help=('Name of the datacube product on which prediction should be ran. '
                                   'Must have the same variables than the product on which the model was trained.'))
         parser.add_argument('-lat', '--lat',
                             type=float,
@@ -43,11 +43,13 @@ python madmex.py model_predict --region Jalisco -p landsat_madmex_001_jalisco_20
                             type=float,
                             nargs=2,
                             default=None,
-                            help='minimum and maximum longitude of the bounding box over which data will be predicted')
+                            help='minimum and maximum longitude of the bounding box over which the model should be trained')
         parser.add_argument('-region', '--region',
                             type=str,
                             default=None,
-                            help='Name of the region over which data will be predicted. The geometry of the region should be present in the madmex-region table of the database (Overrides lat and long when present)')
+                            help=('Name of the region over which the recipe should be applied. The geometry of the region should be present '
+                                  'in the madmex-region or the madmex-country table of the database (Overrides lat and long when present) '
+                                  'Use ISO country code for country name'))
         parser.add_argument('-id', '--model_id',
                             type=str,
                             required=True,

@@ -16,7 +16,7 @@ from madmex.modeling import BaseModel
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "madmex.settings")
 import django
 django.setup()
-from madmex.models import Region
+from madmex.models import Region, Country
 
 """
 The wrapper module gathers functions that are typically called by
@@ -137,8 +137,9 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None):
             latitudes in decimal degreees.
         long (tuple): OPtional. For coordinate based spatial query. Tuple of min and max
             longitudes in decimal degreees.
-        region (str): Optional name of a region whose geometry is present in the database
-            region table. Overrides lat and long when present (not None)
+        region (str): Optional name of a region or country whose geometry is present in the database
+            region  or country table. Overrides lat and long when present (not None).
+            Countries must be queried using ISO code (e.g.: 'MEX' for Mexico)
         begin (str): Date string in the form '%Y-%m-%d'. For temporally bounded queries
         end (str): Date string in the form '%Y-%m-%d'. For temporally bounded queries
 
@@ -162,7 +163,10 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None):
     query_params = {'product': product}
     if region is not None:
        # Query database and build a datacube.utils.Geometry(geopolygon)
-       query_set = Region.objects.get(name=region)
+       try:
+           query_set = Country.objects.get(name=region)
+       except Country.DoesNotExist:
+           query_set = Region.objects.get(name=region)
        region_json = json.loads(query_set.the_geom.geojson)
        crs = CRS('EPSG:%d' % query_set.the_geom.srid)
        geom = Geometry(region_json, crs)

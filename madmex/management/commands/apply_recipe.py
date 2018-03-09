@@ -72,7 +72,9 @@ python madmex.py apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-
         parser.add_argument('-region', '--region',
                             type=str,
                             default=None,
-                            help='Name of the region over which the recipe should be applied. The geometry of the region should be present in the madmex-region table of the database (Overrides lat and long when present)')
+                            help=('Name of the region over which the recipe should be applied. The geometry of the region should be present '
+                                  'in the madmex-region or the madmex-country table of the database (Overrides lat and long when present) '
+                                  'Use ISO country code for country name'))
         parser.add_argument('-name', '--name',
                             type=str,
                             required=True,
