@@ -4,6 +4,8 @@ Created on Jan 22, 2018
 @author: agutierrez
 '''
 import json
+import math
+import os
 
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.contrib.gis.geos.polygon import Polygon
@@ -16,6 +18,7 @@ import xarray
 from madmex.models import TrainObject, Footprint
 from madmex.orm.queries import get_datacube_objects, get_datacube_chunks
 from madmex.rest.serializers import ObjectSerializer, FootprintSerializer
+from madmex.settings import TEMP_DIR
 
 
 class ObjectViewSet(viewsets.ModelViewSet):
@@ -111,3 +114,40 @@ def datacube_chunks(request):
     response['count'] = len(datacube_landsat_tiles)
     response['results'] = datacube_landsat_tiles
     return JsonResponse(response)
+
+
+def tile_ul(x, y, z):
+    n = 2.0 ** z
+    lon_deg = x / n * 360.0 - 180.0
+    lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * y / n)))
+    lat_deg = math.degrees(lat_rad)
+    return  lon_deg,lat_deg
+
+def get_tile(z,x,y):
+    xmin,ymin = tile_ul(x, y, z)
+    xmax,ymax = tile_ul(x + 1, y + 1, z)
+    
+    tile = None
+    
+    tilefolder = "{}/{}/{}".format(TEMP_DIR,z,x)
+    tilepath = "{}/{}.pbf".format(tilefolder,y)
+    
+    
+    print(xmin, ymin)
+    print(xmax,ymax)
+    
+    return tile
+
+
+def training_objects(request, z, x, y):
+
+    print(dir(request))
+
+    print(z,x,y)
+    tile = get_tile(z, x, y)
+    
+    response = {'Hello':'World'}
+
+    
+    return JsonResponse(response)
+
