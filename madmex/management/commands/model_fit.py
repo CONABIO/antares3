@@ -60,10 +60,6 @@ python madmex.py model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f lev
                             type=str,
                             required=True,
                             help='Training data database identifier')
-        parser.add_argument('-f', '--field',
-                            type=str,
-                            required=True,
-                            help='Feature collection property to use for assigning labels')
         parser.add_argument('-lat', '--lat',
                             type=float,
                             nargs=2,
@@ -111,7 +107,6 @@ to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 
         model = options['model']
         name = options['name']
         training = options['training']
-        field = options['field']
         sp = options['spatial_aggregation']
         kwargs = parser_extra_args(options['extra_kwargs'])
         encode = options['encode']
@@ -136,7 +131,6 @@ to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 
         client = Client()
         C = client.map(extract_tile_db,
                        iterable, **{'gwf': gwf,
-                                    'field': field,
                                     'sp': sp,
                                     'training_set': training})
         arr_list = client.gather(C)

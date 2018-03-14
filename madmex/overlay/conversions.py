@@ -53,15 +53,14 @@ def querySet_to_fc(x, crs=None):
     Return:
         list: A feature collection
     """
-    attr = x.training_tags.values_list('key', 'value')
+    attr = {'class': x.interpret_tag.value}
     if crs is None:
-        geometry = json.loads(x.the_geom.geojson)
+        geometry = json.loads(x.train_object.the_geom.geojson)
     else:
-        geometry = json.loads(x.the_geom.transform(crs, clone=True).geojson)
-    # TODO: Building the feature is super slow...
+        geometry = json.loads(x.train_object.the_geom.transform(crs, clone=True).geojson)
     feature = {
         "type": "Feature",
         "geometry": geometry,
-        "properties": dict(attr)
+        "properties": attr
     }
     return feature

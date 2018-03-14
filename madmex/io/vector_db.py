@@ -30,12 +30,12 @@ class VectorDb(AntaresDb):
         Return:
             list: A feature collection reprojected to the CRS of the xarray Dataset
         """
-        from madmex.models import TrainObject
+        from madmex.models import TrainClassification
         geobox = dataset.geobox
         crs = str(dataset.crs)
         poly = Polygon.from_geobox(geobox)
-        query_set = TrainObject.objects.filter(the_geom__contained=poly,
-                                               training_set=training_set)
+        query_set = TrainClassification.objects.filter(train_object__the_geom__contained=poly,
+                                                       training_set=training_set).prefetch_related('train_object', 'interpret_tag')
         fc = [querySet_to_fc(x, crs) for x in query_set]
         return fc
 
