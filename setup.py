@@ -47,7 +47,7 @@ setup(name='madmex',
           'pyyaml',
           'djangorestframework',
           'django-cors-headers'],
-      scripts=['madmex.py'],
+      scripts=['antares'],
       include_package_data=True,
       test_suite="tests",
       extras_require=extra_reqs)
