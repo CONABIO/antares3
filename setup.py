@@ -1,5 +1,9 @@
 from setuptools import setup, find_packages
 import itertools
+import os
+
+# allow setup.py to be run from any path
+os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 # Parse the version from the main __init__.py
 with open('madmex/__init__.py') as f:
@@ -47,7 +51,10 @@ setup(name='madmex',
           'pyyaml',
           'djangorestframework',
           'django-cors-headers'],
-      scripts=['madmex.py'],
+      # scripts=['madmex.py'],
+      entry_points={'console_scripts': [
+          'antares_model_fit = madmex.scripts.model_fit:main'
+      ]},
       include_package_data=True,
       test_suite="tests",
       extras_require=extra_reqs)
