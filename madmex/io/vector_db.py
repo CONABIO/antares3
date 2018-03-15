@@ -1,5 +1,6 @@
 from . import AntaresDb
 from madmex.overlay.conversions import querySet_to_fc
+from madmex.models import TrainClassification
 
 from django.contrib.gis.geos import Polygon
 
@@ -30,7 +31,6 @@ class VectorDb(AntaresDb):
         Return:
             list: A feature collection reprojected to the CRS of the xarray Dataset
         """
-        from madmex.models import TrainClassification
         geobox = dataset.geobox
         crs = str(dataset.crs)
         poly = Polygon.from_geobox(geobox)

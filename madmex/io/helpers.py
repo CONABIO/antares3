@@ -3,10 +3,6 @@ Created on Mar 7, 2018
 
 @author: agutierrez
 '''
-import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "madmex.settings")
-import django
-django.setup()
 from madmex.models import Tag
 
 

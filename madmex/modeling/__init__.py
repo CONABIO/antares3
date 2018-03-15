@@ -13,9 +13,6 @@ from sklearn import metrics
 from sklearn.preprocessing import OneHotEncoder
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "madmex.settings")
-import django
-django.setup()
 from madmex.models import Model
 from madmex.settings import SERIALIZED_OBJECTS_DIR
 from madmex.util import randomword
