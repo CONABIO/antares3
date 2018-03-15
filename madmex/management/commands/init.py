@@ -25,7 +25,7 @@ it will download shapes for Mexico including its regions.
 Example usage:
 --------------
 # Triggers the download and executes the shape ingestion.
-python madmex.py init
+antares init
 '''
     def handle(self, **options):
         '''

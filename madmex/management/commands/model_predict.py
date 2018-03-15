@@ -26,7 +26,7 @@ One raster file per tile covered by the selected spatial extent is produced.
 Example usage:
 --------------
 # Predict using a random forest model trained against chips jalisco for product rf_int_landsat_madmex_001_jalisco_2017_jalisco_chips
-python madmex.py model_predict --region Jalisco -p landsat_madmex_001_jalisco_2017_2 -id rf_int_landsat_madmex_001_jalisco_2017_jalisco_chips -dir /home/madmex_user/datacube_ingest/lc_jalisco/
+antares model_predict --region Jalisco -p landsat_madmex_001_jalisco_2017_2 -id rf_int_landsat_madmex_001_jalisco_2017_jalisco_chips -dir /home/madmex_user/datacube_ingest/lc_jalisco/
 """
     def add_arguments(self, parser):
         parser.add_argument('-p', '--product',

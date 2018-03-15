@@ -21,10 +21,10 @@ to a standard system location (~/.config/madmex) or a user defined location
 Example usage:
 --------------
 # Write configuration files to standard location
-python madmex.py conf_setup
+antares conf_setup
 
 # Write config files to user defined location
-python madmex.py conf_setup --dir /home/user/madmex_conf_files
+antares conf_setup --dir /home/user/madmex_conf_files
 """
     def add_arguments(self, parser):
         parser.add_argument('-d', '--dir',

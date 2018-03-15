@@ -26,7 +26,7 @@ contents of the order.
 Example usage:
 --------------
 # Downloads the orders found in the database that have not been downloaded yet.
-python madmex.py download_order
+antares download_order
 '''
     def handle(self, **options):
         client = EspaApi()
