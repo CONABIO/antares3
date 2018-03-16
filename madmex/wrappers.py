@@ -12,10 +12,6 @@ from madmex.io.vector_db import VectorDb
 from madmex.overlay.extractions import zonal_stats_xarray
 from madmex.modeling import BaseModel
 
-# Django stuff
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "madmex.settings")
-import django
-django.setup()
 from madmex.models import Region, Country
 
 """
