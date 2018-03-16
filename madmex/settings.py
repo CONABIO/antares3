@@ -10,13 +10,23 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
+import logging
 import os
-from os.path import join, dirname
+from os.path import join, dirname, expanduser
+import sys
 
 from dotenv.main import load_dotenv
 
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
+
+logger = logging.getLogger(__name__)
+
+dotenv_path = join(expanduser('~'),'.antares')
+
+if os.path.isfile(dotenv_path):
+    load_dotenv(dotenv_path)
+else:
+    logger.error('Configuration file %s missing.' % dotenv_path)
+    sys.exit(0)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
