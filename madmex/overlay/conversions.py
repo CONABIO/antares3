@@ -53,7 +53,7 @@ def querySet_to_fc(x, crs=None):
     Return:
         list: A feature collection
     """
-    attr = {'class': x.interpret_tag.value}
+    attr = {'class': x.interpret_tag.numeric_code}
     if crs is None:
         geometry = json.loads(x.train_object.the_geom.geojson)
     else:

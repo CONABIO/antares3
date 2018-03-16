@@ -94,7 +94,7 @@ def predict_pixel_tile(tile, gwf, model_id, outdir=None):
         return None
 
 
-def extract_tile_db(tile, gwf, sp, training_set):
+def extract_tile_db(tile, gwf, sp, training_set, sample):
     """FUnction to extract data under training geometries for a given tile
 
     Meant to be called within a dask.distributed.Cluster.map() over a list of tiles
@@ -106,6 +106,7 @@ def extract_tile_db(tile, gwf, sp, training_set):
         gwf: GridWorkflow object
         sp: Spatial aggregation function
         training_set (str): Training data identifier (training_set field)
+        sample (float): Proportion of training data to sample from the complete set
 
     Returns:
         A list of predictors and target values arrays
@@ -116,7 +117,8 @@ def extract_tile_db(tile, gwf, sp, training_set):
         # Query the training geometries fitting into the extent of xr_dataset
         db = VectorDb()
         fc = db.load_training_from_dataset(xr_dataset,
-                                           training_set=training_set)
+                                           training_set=training_set,
+                                           sample=sample)
         # fc is a feature collection with one property (class)
         # Overlay geometries and xr_dataset and perform extraction combined with spatial aggregation
         extract = zonal_stats_xarray(xr_dataset, fc, field='class', aggregation=sp)
