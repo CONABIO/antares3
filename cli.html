@@ -168,22 +168,71 @@
   <div class="section" id="command-line-interface">
 <h1>Command line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
 <p>All command line interface start with the prefix <code class="docutils literal notranslate"><span class="pre">antares</span></code>. Simply running <code class="docutils literal notranslate"><span class="pre">antares</span></code> in a terminal will give a list of all available commands. Detailed help of each command line can be accessed by running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">command_line</span> <span class="pre">--help</span></code>. For instance running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_fit</span> <span class="pre">--help</span></code> returns:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Traceback (most recent call last):
-  File &quot;/Users/ldutrieux/.virtualenvs/antares3/bin/antares&quot;, line 6, in &lt;module&gt;
-    from pkg_resources import load_entry_point
-  File &quot;/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/pkg_resources/__init__.py&quot;, line 3195, in &lt;module&gt;
-    @_call_aside
-  File &quot;/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/pkg_resources/__init__.py&quot;, line 3179, in _call_aside
-    f(*args, **kwargs)
-  File &quot;/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/pkg_resources/__init__.py&quot;, line 3208, in _initialize_master_working_set
-    working_set = WorkingSet._build_master()
-  File &quot;/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/pkg_resources/__init__.py&quot;, line 681, in _build_master
-    ws.require(__requires__)
-  File &quot;/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/pkg_resources/__init__.py&quot;, line 999, in require
-    needed = self.resolve(parse_requirements(requirements))
-  File &quot;/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/pkg_resources/__init__.py&quot;, line 885, in resolve
-    raise DistributionNotFound(req, requirers)
-pkg_resources.DistributionNotFound: The &#39;madmex&#39; distribution was not found and is required by the application
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
+  &quot;&quot;&quot;)
+usage: antares model_fit [-h] [--version] [-v {0,1,2,3}] [--settings SETTINGS]
+                         [--pythonpath PYTHONPATH] [--traceback] [--no-color]
+                         -model MODEL -p PRODUCT -t TRAINING [-lat LAT LAT]
+                         [-long LONG LONG] [-region REGION] [-sample SAMPLE]
+                         -name NAME [-sp SPATIAL_AGGREGATION]
+                         [-categorical_variables [CATEGORICAL_VARIABLES [CATEGORICAL_VARIABLES ...]]]
+                         [-extra [EXTRA_KWARGS [EXTRA_KWARGS ...]]]
+
+Command line for training a statistical model over a given extent using:
+    - A training set of geometries with attributes stored in the database
+    - A datacube product
+    - One of the models implemented in madmex.modeling
+
+The steps of the process are for each tile of the datacube product to:
+    - Load the data as an xarray Dataset
+    - Query and load the corresponding training geometries from the database
+    - Perform data extraction and spatial aggregation for the geometries overlay
+All extracted data are then concatenated and used to train a statistical model. The model is then
+saved to the database
+
+--------------
+Example usage:
+--------------
+# Extract data for an area covering more or less Jalisco and fit a random forest model to the extracted data
+antares model_fit -model rf -p landsat_madmex_001_jalisco_2017 -t chips_jalisco -lat 19 23 -long -106 -101 --name rf_landsat_madmex_001_jalisco_2017 -sp mean
+
+# With extra args passed to the random forest object constructor, use region name instead of lat long bounding box
+antares model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f level_2 -t jalisco_chips --region Jalisco --name rf_landsat_madmex_001_jalisco_2017_jalisco_chips -sp mean -extra n_estimators=60 n_jobs=15
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program&#39;s version number and exit
+  -v {0,1,2,3}, --verbosity {0,1,2,3}
+                        Verbosity level; 0=minimal output, 1=normal output, 2=verbose output, 3=very verbose output
+  --settings SETTINGS   The Python path to a settings module, e.g. &quot;myproject.settings.main&quot;. If this isn&#39;t provided, the DJANGO_SETTINGS_MODULE environment variable will be used.
+  --pythonpath PYTHONPATH
+                        A directory to add to the Python path, e.g. &quot;/home/djangoprojects/myproject&quot;.
+  --traceback           Raise on CommandError exceptions
+  --no-color            Don&#39;t colorize the command output.
+  -model MODEL, --model MODEL
+                        Name of the model to apply to the dataset
+  -p PRODUCT, --product PRODUCT
+                        Name of the datacube product to use for model fitting
+  -t TRAINING, --training TRAINING
+                        Training data database identifier
+  -lat LAT LAT, --lat LAT LAT
+                        minimum and maximum latitude of the bounding box over which the model should be trained
+  -long LONG LONG, --long LONG LONG
+                        minimum and maximum longitude of the bounding box over which the model should be trained
+  -region REGION, --region REGION
+                        Name of the region over which the recipe should be applied. The geometry of the region should be present in the madmex-region or the madmex-country table of the database (Overrides lat and long when present) Use ISO country code for country name
+  -sample SAMPLE, --sample SAMPLE
+                        Proportion of the training data to use. Must be float between 0 and 1. A random sampling of the training objects is performed.
+  -name NAME, --name NAME
+                        Name under which the produced model should be referenced in the database
+  -sp SPATIAL_AGGREGATION, --spatial_aggregation SPATIAL_AGGREGATION
+                        Function to use for spatially aggregating the pixels over the training geometries
+  -categorical_variables [CATEGORICAL_VARIABLES [CATEGORICAL_VARIABLES ...]], --categorical_variables [CATEGORICAL_VARIABLES [CATEGORICAL_VARIABLES ...]]
+                        List of categorical variables to be encoded using One Hot Encoding before model fit
+  -extra [EXTRA_KWARGS [EXTRA_KWARGS ...]], --extra_kwargs [EXTRA_KWARGS [EXTRA_KWARGS ...]]
+                        
+                        Additional named arguments passed to the selected model class constructor. These arguments have
+                        to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 arg2=median
 </pre></div>
 </div>
 </div>
