@@ -30,6 +30,8 @@ before_install:
   - pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
   - ./travis_setup.py
 
+env:
+  - SECRET_KEY=key
 
 install:
   - pip install -e .

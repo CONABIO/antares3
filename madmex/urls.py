@@ -13,9 +13,23 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import url
 from django.contrib.gis import admin
 from django.urls import path, include
+from rest_framework import routers
+
+from madmex.rest import views
+
+
+router = routers.DefaultRouter()
+router.register(r'objects', views.ObjectViewSet)
+router.register(r'footprints', views.FootprintViewSet)
 
 urlpatterns = [
+    path('datacube_landsat_tiles/', views.datacube_chunks, name='datacube_chunks'),
+    path('datacube/', views.datacube_landsat_tiles, name='datacube_landsat_tiles'),
+    path('training_objects/<int:z>/<int:x>/<int:y>/', views.training_objects, name='training_objects'),
     path('admin/', admin.site.urls),
+    url(r'^', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

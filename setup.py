@@ -14,7 +14,8 @@ with open('madmex/__init__.py') as f:
 extra_reqs = {'docs': ['sphinx',
                        'sphinx-rtd-theme',
                        'sphinxcontrib-programoutput'],
-              'multi': ['cloudpickle']}
+              'multi': ['cloudpickle',
+                        'distributed']}
 extra_reqs['all'] = list(set(itertools.chain(*extra_reqs.values())))
 
 setup(name='madmex',
@@ -32,11 +33,22 @@ setup(name='madmex',
           'Django',
           'xarray',
           'pyproj',
+          'affine',
+          'netCDF4',
           'jinja2',
           'requests',
-          'psycopg2',
-          'datacube'],
-      scripts=['madmex.py'],
+          'datacube',
+          'sklearn',
+          'scipy',
+          'fiona',
+          'shapely',
+          'dill',
+          'pyyaml',
+          'djangorestframework',
+          'django-cors-headers'],
+      entry_points={'console_scripts': [
+          'antares = entry:main',
+      ]},
       include_package_data=True,
       test_suite="tests",
       extras_require=extra_reqs)

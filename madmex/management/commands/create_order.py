@@ -31,7 +31,7 @@ command must be used to download the scenes.
 Example usage:
 --------------
 # Downloads the Landsat 8 scenes that intersect the state of Jalisco and where taken during 2017.
-create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '2017-12-31' --landsat 8 
+antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '2017-12-31' --landsat 8
 '''
     def add_arguments(self, parser):
         '''
@@ -44,7 +44,7 @@ create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '2017-12-31
 
     def handle(self, **options):
         '''This method takes a given shape names and queries the usgs api for available scenes.
-        
+
         Using two api clients for the usgs and espa we query for a given shape and create an order
         to download the landsat scenes for a specific temporal window.
         '''
