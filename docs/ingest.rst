@@ -2,6 +2,8 @@
 Ingesting data
 **************
 
+Running large scale workflows requires that the data be ingested in the datacube. Ingested collections are reprojected to a common grid whose characteristics is defined by the user (coordinate reference system, resolution, tiling). The example below consists of ingesting a Surface reflectance Landsat 8 data downloaded from the espa platform.
+
 Landsat 8 example
 =================
 
