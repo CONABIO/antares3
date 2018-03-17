@@ -1,0 +1,6 @@
+madmex.modeling.BaseModel.hot\_encode\_predict
+==============================================
+
+.. currentmodule:: madmex.modeling
+
+.. automethod:: BaseModel.hot_encode_predict

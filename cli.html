@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Command line interface &mdash; antares3 0.0.1 documentation</title>
+  <title>Command line interface &mdash; antares3 0.1.0 documentation</title>
   
 
   
@@ -35,8 +35,9 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="antares3 0.0.1 documentation" href="index.html"/>
-        <link rel="prev" title="madmex API" href="api/index.html"/> 
+    <link rel="top" title="antares3 0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="Downloading data" href="download.html"/>
+        <link rel="prev" title="Setup/first time use" href="setup.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -65,7 +66,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.0
               </div>
             
           
@@ -89,14 +90,18 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-</ul>
-<p class="caption"><span class="caption-text">User guide</span></p>
+              <p class="caption"><span class="caption-text">User guide</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/index.html">madmex API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup/first time use</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="download.html">Downloading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ingest.html">Ingesting data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developper guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="extend.html">Extending the system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
 </ul>
 
             
@@ -162,7 +167,25 @@
             
   <div class="section" id="command-line-interface">
 <h1>Command line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
-<p>TODO</p>
+<p>All command line interface start with the prefix <code class="docutils literal notranslate"><span class="pre">antares</span></code>. Simply running <code class="docutils literal notranslate"><span class="pre">antares</span></code> in a terminal will give a list of all available commands. Detailed help of each command line can be accessed by running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">command_line</span> <span class="pre">--help</span></code>. For instance running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_fit</span> <span class="pre">--help</span></code> returns:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Traceback (most recent call last):
+  File &quot;/Users/ldutrieux/.virtualenvs/antares3/bin/antares&quot;, line 6, in &lt;module&gt;
+    from pkg_resources import load_entry_point
+  File &quot;/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/pkg_resources/__init__.py&quot;, line 3195, in &lt;module&gt;
+    @_call_aside
+  File &quot;/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/pkg_resources/__init__.py&quot;, line 3179, in _call_aside
+    f(*args, **kwargs)
+  File &quot;/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/pkg_resources/__init__.py&quot;, line 3208, in _initialize_master_working_set
+    working_set = WorkingSet._build_master()
+  File &quot;/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/pkg_resources/__init__.py&quot;, line 681, in _build_master
+    ws.require(__requires__)
+  File &quot;/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/pkg_resources/__init__.py&quot;, line 999, in require
+    needed = self.resolve(parse_requirements(requirements))
+  File &quot;/Users/ldutrieux/.virtualenvs/antares3/lib/python3.6/site-packages/pkg_resources/__init__.py&quot;, line 885, in resolve
+    raise DistributionNotFound(req, requirers)
+pkg_resources.DistributionNotFound: The &#39;madmex&#39; distribution was not found and is required by the application
+</pre></div>
+</div>
 </div>
 
 
@@ -175,8 +198,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="download.html" class="btn btn-neutral float-right" title="Downloading data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="api/index.html" class="btn btn-neutral" title="madmex API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="setup.html" class="btn btn-neutral" title="Setup/first time use" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -207,7 +232,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.1',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -1,0 +1,6 @@
+madmex.io.vector\_db.from\_geobox
+=================================
+
+.. currentmodule:: madmex.io
+
+.. autoattribute:: vector_db.from_geobox

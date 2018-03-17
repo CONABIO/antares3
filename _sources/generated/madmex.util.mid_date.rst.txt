@@ -1,0 +1,6 @@
+madmex.util.mid\_date
+=====================
+
+.. currentmodule:: madmex.util
+
+.. autofunction:: mid_date
