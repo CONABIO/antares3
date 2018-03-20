@@ -1,3 +1,2 @@
 recursive-include madmex/conf *.yaml
 recursive-include madmex/templates *.yaml
-include entry.py
