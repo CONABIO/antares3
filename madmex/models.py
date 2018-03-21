@@ -56,6 +56,7 @@ class Tag(models.Model):
     numeric_code = models.IntegerField(default=-1)
     color = models.CharField(max_length=7, default='')
 
+
 class TrainObject(models.Model):
     '''This table holds objects that will be used for training. They must be related to
     regions and each object should have an assigned tag which is the ground truth for
@@ -69,6 +70,15 @@ class TrainObject(models.Model):
                                            through_fields=('train_object', 'interpret_tag'))
     filename = models.CharField(max_length=200, default='')
     creation_year = models.CharField(max_length=20, default='2015')
+    
+class SegmentationInformation(models.Model):
+    '''This table will store information for a given segmentation object so it does not
+    repeat for each polygon in the segmentation.
+    '''
+    algorithm = models.CharField(max_length=200, default='')
+    datasource = models.CharField(max_length=200, default='')
+    parameters = models.CharField(max_length=200, default='')
+    datasource_year = models.CharField(max_length=20, default='2015')    
 
 class PredictObject(models.Model):
     '''This table holds objects that will be used for training. They must be related to
@@ -78,14 +88,15 @@ class PredictObject(models.Model):
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
     prediction_tags = models.ManyToManyField(Tag, through='PredictClassification')
+    segmentation_information = models.ForeignKey(SegmentationInformation, on_delete=models.CASCADE, default=-1)
 
 class TrainClassification(models.Model):
     '''This tables relates the train objects with a tag, we add information about the
     dataset from which the object was taken.
     '''
-    predict_tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name="classification_predict", default=None)
-    interpret_tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-    train_object = models.ForeignKey(TrainObject, on_delete=models.CASCADE)
+    predict_tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='classification_predict', default=None)
+    interpret_tag = models.ForeignKey(Tag, related_name='interpret_tag', on_delete=models.CASCADE)
+    train_object = models.ForeignKey(TrainObject, related_name='train_object', on_delete=models.CASCADE)
     training_set = models.CharField(max_length=100, default='')
     
 class PredictClassification(models.Model):

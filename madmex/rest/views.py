@@ -15,7 +15,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import RetrieveModelMixin
 import xarray
 
-from madmex.models import TrainObject, Footprint
+from madmex.models import TrainObject, Footprint, TrainClassification
 from madmex.orm.queries import get_datacube_objects, get_datacube_chunks
 from madmex.rest.serializers import ObjectSerializer, FootprintSerializer
 from madmex.settings import TEMP_DIR
@@ -29,27 +29,17 @@ class ObjectViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         return RetrieveModelMixin.retrieve(self, request, *args, **kwargs)
 
-
-    def get_queryset(self):
-        
-        
+    def get_queryset(self):    
         wkt = self.request.query_params.get('polygon', None)
-        
-        print(wkt)
-        
         queryset = GenericAPIView.get_queryset(self)
-        
         if wkt is not None:
-            
             polygon = GEOSGeometry(wkt)
-            queryset = queryset.filter(the_geom__intersects=polygon)
-
+            queryset = queryset.filter(train_object__the_geom__intersects=polygon)
         return queryset
 
-    #pagination_class = None       
-    queryset = TrainObject.objects.all()
+    queryset = TrainClassification.objects.all()
     serializer_class = ObjectSerializer
-    
+
 class FootprintViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
