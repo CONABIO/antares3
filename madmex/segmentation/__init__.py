@@ -79,7 +79,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             return fc_out
         fc_out = [to_feature(x) for x in geom_collection]
         if crs_out is not None:
-            fc_out = [feature_transform(x, self.crs, crs_out) for x in fc_out]
+            fc_out = [feature_transform(x, crs_out=crs_out, crs_in=self.crs) for x in fc_out]
         self.fc = fc_out
 
     def _get_params(self):
