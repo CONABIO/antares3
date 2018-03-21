@@ -108,6 +108,24 @@ Overlay operations: conversions (vector to raster to vector) and extractions
    overlay.extractions.zonal_stats_xarray
 
 
+Segmentation
+============
+
+Interface to various segmentation algorithms operating on numpy arrays and xarray ```Dataset``s
+
+Base class
+----------
+
+.. autosummary::
+   :toctree: generated
+
+   segmentation.BaseSegmentation
+   segmentation.BaseSegmentation.from_geoarray
+   segmentation.BaseSegmentation.segment
+   segmentation.BaseSegmentation.polygonize
+   segmentation.BaseSegmentation.to_db
+
+
 Wrappers
 ========
 
@@ -142,3 +160,4 @@ Various utils
    util.local.filter_files_from_folder
    util.xarray.to_float
    util.xarray.to_int
+   util.spatial.feature_transform
