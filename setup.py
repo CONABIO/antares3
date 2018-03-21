@@ -47,7 +47,7 @@ setup(name='madmex',
           'djangorestframework',
           'django-cors-headers'],
       entry_points={'console_scripts': [
-          'antares = entry:main',
+          'antares = madmex.entry:main',
       ]},
       include_package_data=True,
       test_suite="tests",
