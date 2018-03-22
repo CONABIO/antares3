@@ -20,7 +20,8 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         """Parent class to run spatial segmentation
 
         Args:
-            array (numpy.array): A 3 dimensional numpy array (TODO: Specify dimension ordering)
+            array (numpy.array): A 3 dimensional numpy array. Dimention order should
+                be (x, y, bands)
             affine (affine.Affine): Affine transform
             crs (str): Proj4 string corresponding to the array's CRS
         """
@@ -32,16 +33,20 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         self.algorithm = None
 
     @classmethod
-    def from_geoarray(cls, geoarray):
+    def from_geoarray(cls, geoarray, **kwargs):
         """Instantiate class from a geoarray (xarray read with datacube.load)
 
-        geoarray (xarray.Dataset): a Dataset with crs and affine attribute. Typically
-            coming from a call to Datacube.load or GridWorkflow.load
+        Args:
+            geoarray (xarray.Dataset): a Dataset with crs and affine attribute. Typically
+                coming from a call to Datacube.load or GridWorkflow.load
+            **kwargs: Additional arguments. Allow children class to set algorithm specific
+                parameters during instantiation
         """
         array = geoarray.to_array().values
+        array = np.moveaxis(array, 0, 2)
         affine = Affine(*list(geoarray.affine)[0:6])
         crs = geoarray.crs._crs.ExportToProj4()
-        return cls(array=array, affine=affine, crs=crs)
+        return cls(array=array, affine=affine, crs=crs, **kwargs)
 
     @abc.abstractmethod
     def segment(self):
@@ -65,7 +70,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
                                           transform=self.affine)
         # Make it a valid featurecollection
         def to_feature(feature):
-            """Tranforms the results of the results of rasterio.feature.shape to a feature"""
+            """Tranforms the results of rasterio.feature.shape to a feature"""
             fc_out = {
                 "type": "Feature",
                 "geometry": {
@@ -89,18 +94,32 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         """
         pass
 
-    def to_db(self, year, data_source):
+    def to_db(self, meta_object):
         """Write the result of a segmentation to the database
 
         Args:
-            year (int): Year of the data used for the segmentation
-            data_source (str): Identifier for the data used as input for this segmentation
+            meta_object (madmex.models.SegmentationInformation.object): The python mapping
+                of a django object containing segmentation metadata information
 
+        Example:
+            >>> from madmex.models import SegmentationInformation
+            >>> from madmex.segmentation.bis import Segmentation
+
+            >>> Seg = Segmentation.from_geoarray(geoarray, compactness=12)
+            >>> Seg.segment()
+            >>> Seg.polygonize()
+
+            >>> meta = SegmentationInformation(algorithm='bis', datasource='sentinel2',
+            >>>                                parameters="{'compactness': 12}",
+            >>>                                datasource_year='2018')
+            >>> meta.save()
+
+            >>> Seg.to_db(meta)
         """
         if self.fc is None:
             raise ValueError('fc (feature collection) attribute is empty, you must first run the polygonize method')
 
-        # TODO: Retrieve param string using self._get_params, and implement writing to table params, algorithm, datasource and year
+        # TODO: Util to retrieve param string using self._get_params 
 
         def predict_obj_builder(x):
             geom = GEOSGeometry(json.dumps(x['geometry']))

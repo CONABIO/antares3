@@ -16,7 +16,7 @@ class Country(models.Model):
     added = models.DateTimeField(auto_now_add=True)
 
 class Region(models.Model):
-    '''This model represents a region that can be related to a Country. 
+    '''This model represents a region that can be related to a Country.
     '''
     name = models.CharField(max_length=100, unique=True)
     the_geom = models.MultiPolygonField()
@@ -24,7 +24,7 @@ class Region(models.Model):
     added = models.DateTimeField(auto_now_add=True)
 
 class Footprint(models.Model):
-    '''This model represents a footprint. 
+    '''This model represents a footprint.
     '''
     name = models.CharField(max_length=50, unique=True)
     the_geom = models.PolygonField()
@@ -32,7 +32,7 @@ class Footprint(models.Model):
     added = models.DateTimeField(auto_now_add=True)
 
 class Order(models.Model):
-    '''This model holds the information of usgs orders. 
+    '''This model holds the information of usgs orders.
     '''
     user = models.CharField(max_length=50, default=None)
     order_id = models.CharField(max_length=100, unique=True)
@@ -47,9 +47,9 @@ class Model(models.Model):
     training_set = models.CharField(max_length=100)
     recipe = models.CharField(max_length=100, default=None)
     added = models.DateTimeField(auto_now_add=True)
-    
+
 class Tag(models.Model):
-    '''To keep a deeper control over the tags that we can handle. 
+    '''To keep a deeper control over the tags that we can handle.
     '''
     scheme = models.CharField(max_length=50, default=None)
     value = models.CharField(max_length=150, default=None)
@@ -65,12 +65,12 @@ class TrainObject(models.Model):
     models.GeometryField
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
-    training_tags = models.ManyToManyField(Tag, 
-                                           through='TrainClassification', 
+    training_tags = models.ManyToManyField(Tag,
+                                           through='TrainClassification',
                                            through_fields=('train_object', 'interpret_tag'))
     filename = models.CharField(max_length=200, default='')
     creation_year = models.CharField(max_length=20, default='2015')
-    
+
 class SegmentationInformation(models.Model):
     '''This table will store information for a given segmentation object so it does not
     repeat for each polygon in the segmentation.
@@ -78,7 +78,7 @@ class SegmentationInformation(models.Model):
     algorithm = models.CharField(max_length=200, default='')
     datasource = models.CharField(max_length=200, default='')
     parameters = models.CharField(max_length=200, default='')
-    datasource_year = models.CharField(max_length=20, default='2015')    
+    datasource_year = models.CharField(max_length=20, default='2015')
 
 class PredictObject(models.Model):
     '''This table holds objects that will be used for training. They must be related to
@@ -98,7 +98,7 @@ class TrainClassification(models.Model):
     interpret_tag = models.ForeignKey(Tag, related_name='interpret_tag', on_delete=models.CASCADE)
     train_object = models.ForeignKey(TrainObject, related_name='train_object', on_delete=models.CASCADE)
     training_set = models.CharField(max_length=100, default='')
-    
+
 class PredictClassification(models.Model):
     '''This table relates predict object and a tag as a many to many table. We created an
     specific table for this to add information about the model.
@@ -122,7 +122,7 @@ def ingest_countries_from_shape(path, mapping):
         transform=False, encoding='UTF-8 ',
     )
     layer_mapping.save()
-    
+
 def ingest_states_from_shape(path, mapping):
     '''Ingestion function for countries to database.
 
