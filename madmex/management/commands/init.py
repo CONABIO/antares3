@@ -6,6 +6,9 @@ Created on Dec 12, 2017
 
 import logging
 import os
+from glob import glob
+import pkg_resources as pr
+from distutils.dir_util import copy_tree
 
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import ingest_countries_from_shape, ingest_states_from_shape
@@ -18,39 +21,73 @@ logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
     help = '''
-Will download and ingest the basic shape files needed for the system. By default,
-it will download shapes for Mexico including its regions.
+Command line to setup the antares system directly following a fresh installation or update an existing setup.
+Standard setup consists in:
+    - Creating tables required by antares in the specified database. Can be disabled
+    using the --no-create-tables flag.
+    - Downloading and ingesting in the database countriy and regions administrative boundaries
+    of the selected countries. --countries argurment can be left empty in which case no countries are ingested
+    - Writing configuration files (used for data indexing and ingestion) to a standard system
+    location (~/.config/madmex). Can be disabled using the --no-conf-setup flag
+    - Setting or updating BIS licence setup (must be set as a variable in ~/.antares configuration file)
 
 --------------
 Example usage:
 --------------
-# Triggers the download and executes the shape ingestion.
-antares init
+# Basic setup with ingestion of mexico and guatemala administrative boundaries
+antares init -c mex gtm
 '''
-    def handle(self, **options):
-        '''
-        We retrieve the names given in the command line input and greet
-        each one of them.
-        '''
-        #url = 'http://thematicmapping.org/downloads/TM_WORLD_BORDERS-0.3.zip'
-        url = 'http://data.biogeo.ucdavis.edu/data/gadm2.8/shp/%s_adm_shp.zip' % 'MEX'
-        filepath = aware_download(url, TEMP_DIR)
-        unzipdir = extract_zip(filepath, TEMP_DIR)
-        os.listdir(unzipdir)
-        shape_name = filter_files_from_folder(unzipdir, regex=r'.*adm0.shp')[0]
-        shape_file = os.path.join(unzipdir, shape_name)
-        logger.info('This %s shape file will be ingested.' % shape_file)
-        mapping = {
-            'name' : 'ISO',
-            'the_geom' : 'MULTIPOLYGON'
-        }
-        ingest_countries_from_shape(shape_file, mapping)
-        shape_name = filter_files_from_folder(unzipdir, regex=r'.*adm1.shp')[0]
-        shape_file = os.path.join(unzipdir, shape_name)
-        logger.info('This %s shape file will be ingested.' % shape_file)
-        mapping = {
-            'country': {'name': 'ISO'},
-            'name' : 'NAME_1',
-            'the_geom' : 'MULTIPOLYGON'
-        }
-        ingest_states_from_shape(shape_file, mapping)
+    def add_arguments(self, parser):
+        parser.add_argument('-c', '--countries',
+                            nargs='*',
+                            default=None,
+                            help='List of country iso codes to ingest')
+
+        parser.add_argument('--no-create-tables', dest='create_tables',
+                            action='store_false',
+                            help='Disable creation of antares database tables')
+
+        parser.add_argument('--no-conf-setup', dest='conf_setup',
+                            action='store_false',
+                            help='Disable setup/overwriting of ingestion and indexing configuration files')
+
+    def handle(self, *args, **options):
+        # unpack arguments
+        countries = options['countries']
+        create_tables = options['create_tables']
+        conf_setup = options['conf_setup']
+
+        # Create antares tables
+        if create_tables:
+            pass
+
+        # Ingest geometries of selected countries in database
+        if countries is not None:
+            for country in countries:
+                url = 'http://data.biogeo.ucdavis.edu/data/gadm2.8/shp/%s_adm_shp.zip' % country.upper()
+                filepath = aware_download(url, TEMP_DIR)
+                unzipdir = extract_zip(filepath, TEMP_DIR)
+                country_file = glob(os.path.join(unzipdir, '*adm0.shp'))[0]
+                logger.info('This %s shape file will be ingested.' % country_file)
+                mapping = {
+                    'name' : 'ISO',
+                    'the_geom' : 'MULTIPOLYGON'
+                }
+                ingest_countries_from_shape(country_file, mapping)
+                # Ingest first level of adm boundaries (e.g.: regions, states)
+                regions_file = glob(os.path.join(unzipdir, '*adm1.shp'))[0]
+                logger.info('This %s shape file will be ingested.' % regions_file)
+                mapping = {
+                    'country': {'name': 'ISO'},
+                    'name' : 'NAME_1',
+                    'the_geom' : 'MULTIPOLYGON'
+                }
+                ingest_states_from_shape(regions_file, mapping)
+
+        # Move config files from package to standard system location
+        if conf_setup:
+            dir_out = os.path.expanduser('~/.config/madmex')
+            if not os.path.exists(dir_out):
+                os.makedirs(dir_out)
+            conf_dir = pr.resource_filename('madmex', 'conf')
+            copy_tree(conf_dir, dir_out)
