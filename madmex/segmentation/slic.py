@@ -28,7 +28,7 @@ class Segmentation(BaseSegmentation):
             >>> meta.save()
             >>> Seg.to_db()
         """
-        super().__init__(self, array=array, affine=affine, crs=crs)
+        super().__init__(array=array, affine=affine, crs=crs)
         self.algorithm = 'slic'
         self.n_segments = n_segments
         self.compactness = compactness

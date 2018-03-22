@@ -2,6 +2,7 @@
 
 
 import abc
+import json
 from affine import Affine
 import numpy as np
 from rasterio import features
@@ -123,7 +124,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
 
         def predict_obj_builder(x):
             geom = GEOSGeometry(json.dumps(x['geometry']))
-            obj = PredictObject(the_geom=geom)
+            obj = PredictObject(the_geom=geom, segmentation_information=meta_object)
             return obj
 
         obj_list = [predict_obj_builder(x) for x in self.fc]
