@@ -26,9 +26,8 @@ Antares setup consists of enabling the postgis extension for the database, setti
 
 .. code-block:: bash
 	
-	# Replace yourdatabase by the name of the database
-	psql -d yourdatabase -c "CREATE EXTENSION postgis;"
-	antares init
-    antares conf_setup
+    # Replace yourdatabase by the name of the database
+    psql -d yourdatabase -c "CREATE EXTENSION postgis;"
+    antares init -c mex
 
 This will create a ``madmex`` directory under ``~/.config/`` where ingestion files for all different suported dataset will be stored.
