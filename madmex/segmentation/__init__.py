@@ -43,7 +43,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             **kwargs: Additional arguments. Allow children class to set algorithm specific
                 parameters during instantiation
         """
-        array = geoarray.to_array().values
+        array = geoarray.squeeze().to_array().values
         array = np.moveaxis(array, 0, 2)
         affine = Affine(*list(geoarray.affine)[0:6])
         crs = geoarray.crs._crs.ExportToProj4()

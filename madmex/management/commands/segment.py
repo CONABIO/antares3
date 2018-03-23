@@ -28,7 +28,7 @@ Command line for running segmentation over a given extent using
 Example usage:
 --------------
 # Run BIS segmentation
-antares segment -algorithm bis -p landsat_madmex_001_jalisco_2017 -r Jalisco -b blue green red nir swir1 swir2 -extra t=10 s=0.5 c=0.5 --datasource landsat8 --year 2017
+antares segment --algorithm slic -p landsat_madmex_001_jalisco_2017_2 -r Jalisco -b green_mean red_mean ndvi_mean nir_mean swir1_mean swir2_mean --datasource landsat8 --year 2017 -extra compactness=0.01 n_segments=300000
 """
     def add_arguments(self, parser):
         parser.add_argument('-a', '--algorithm',
@@ -85,7 +85,7 @@ to be passed in the form of key=value pairs. e.g.: antares segment ... -extra ar
         year = options['year']
 
         # Build segmentation meta object
-        meta, created = SegmentationInformation.objects.get_or_create(
+        meta, _ = SegmentationInformation.objects.get_or_create(
             algorithm=algorithm, datasource=datasource,
             parameters=json.dumps(extra_args),
             datasource_year=year,
@@ -106,4 +106,4 @@ to be passed in the form of key=value pairs. e.g.: antares segment ... -extra ar
         result = client.gather(C)
 
         print('Successfully ran segmentation on %d tiles' % sum(result))
-        print('%d tiles failed' % sum(not(result)))
+        print('%d tiles failed' % result.count(False))
