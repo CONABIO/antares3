@@ -125,6 +125,14 @@ Base class
    segmentation.BaseSegmentation.polygonize
    segmentation.BaseSegmentation.to_db
 
+Implemented algorithms
+----------------------
+
+.. autosummary::
+   :toctree: generated
+
+   segmentation.slic.Segmentation
+
 
 Wrappers
 ========
@@ -137,6 +145,7 @@ Wrapper functions to be called in scripts and command lines
    wrappers.predict_pixel_tile
    wrappers.extract_tile_db
    wrappers.gwf_query
+   wrappers.segment
 
 
 
