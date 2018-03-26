@@ -5,6 +5,7 @@ Created on Jan 31, 2018
 '''
 from importlib import import_module
 import logging
+from collections import OrderedDict
 
 import numpy as np
 import xarray as xr
@@ -75,5 +76,42 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean'):
     # Extract predictors and target values arrays
     X = groups_xr.to_array().values.transpose()
     ids = list(groups_xr.features_id.values.astype('uint32') - 1)
+    y = [fc[x]['properties'][field] for x in ids]
+    return [X, y]
+
+def zonal_stats_pandas(dataset, fc, field, aggregation='mean',
+                       categorical_variables=None):
+    """Perform extraction and grouping using xarray groupby method
+
+    Data are first coerced to pandas dataframe and pandas' groupby method is used
+    to perform spatial aggregation
+
+    Args:
+        dataset (xarray.Dataset): The Dataset from which the data have to be extracted
+            Each dataarray should not have more than two dimensions
+        fc (list): Feature collection to use for extraction
+        field (str): Feature collection property to use for assigning labels
+        aggregation (str): Spatial aggregation function to use (mean (default),
+            median, std, min, max)
+        categorical_variable (list): A list of strings corresponding to the names
+            of the categorical_variables
+
+    Return:
+        list: A list of [0] predictors array, and [2] target values [X, y]
+    """
+    # Build spatial aggregation mapping
+    var_list = list(dataset.data_vars)
+    agg_list = [(k, aggregation) if k not in categorical_variables else (k, 'first') for k in var_list]
+    agg_ordered_dict = OrderedDict(agg_list)
+    # Rasterize feature collection
+    arr = rasterize_xarray(fc, dataset)
+    # Convert arr to a dataArray
+    xr_arr = xr.DataArray(arr, dims=['x', 'y'], name='features_id')
+    # Combine the Dataset with the DataArray
+    combined = xr.merge([xr_arr, dataset])
+    # Coerce to pandas dataframe
+    df = combined.to_dataframe().groupby('features_id').agg(agg_ordered_dict)
+    X = df.values
+    ids = list(df.index.values.astype('uint32') - 1)
     y = [fc[x]['properties'][field] for x in ids]
     return [X, y]
