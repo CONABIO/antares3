@@ -40,46 +40,7 @@ def calculate_zonal_statistics(array, labels, index, statistics):
     return zonal_statistics
 
 
-def zonal_stats_xarray(dataset, fc, field, aggregation='mean'):
-    """Perform extraction and grouping using xarray groupby method
-
-    Args:
-        dataset (xarray.Dataset): The Dataset from which the data have to be extracted
-            Each dataarray should not have more than two dimensions
-        fc (list): Feature collection to use for extraction
-        field (str): Feature collection property to use for assigning labels
-        aggregation (str): Spatial aggregation function to use (mean (default),
-            median, std, min, max)
-
-    Return:
-        list: A list of [0] predictors array, and [2] target values [X, y]
-    """
-    # Rasterize feature collection
-    arr = rasterize_xarray(fc, dataset)
-    # Convert arr to a dataArray
-    xr_arr = xr.DataArray(arr, dims=['x', 'y'], name='features_id')
-    # Combine the Dataset with the DataArray
-    combined = xr.merge([xr_arr, dataset])
-    # Perform groupby aggregation
-    if aggregation == 'mean':
-        groups_xr = combined.groupby('features_id').mean()
-    elif aggregation == 'median':
-        groups_xr = combined.groupby('features_id').median()
-    elif aggregation == 'std':
-        groups_xr = combined.groupby('features_id').std()
-    elif aggregation == 'min':
-        groups_xr = combined.groupby('features_id').min()
-    elif aggregation == 'max':
-        groups_xr = combined.groupby('features_id').max()
-    else:
-        raise ValueError('Unsuported aggregation function')
-    # Extract predictors and target values arrays
-    X = groups_xr.to_array().values.transpose()
-    ids = list(groups_xr.features_id.values.astype('uint32') - 1)
-    y = [fc[x]['properties'][field] for x in ids]
-    return [X, y]
-
-def zonal_stats_pandas(dataset, fc, field, aggregation='mean',
+def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
                        categorical_variables=None):
     """Perform extraction and grouping using xarray groupby method
 
@@ -101,6 +62,8 @@ def zonal_stats_pandas(dataset, fc, field, aggregation='mean',
     """
     # Build spatial aggregation mapping
     var_list = list(dataset.data_vars)
+    if categorical_variables is None:
+        categorical_variables = []
     agg_list = [(k, aggregation) if k not in categorical_variables else (k, 'first') for k in var_list]
     agg_ordered_dict = OrderedDict(agg_list)
     # Rasterize feature collection
