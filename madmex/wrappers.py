@@ -187,7 +187,8 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None):
     tiles_view = tile_dict.items()
     return [gwf, tiles_view]
 
-def segment(tile, gwf, algorithm, segmentation_meta, band_list, extra_args):
+def segment(tile, gwf, algorithm, segmentation_meta,
+            band_list, extra_args):
     """Run a segmentation algorithm on tile
 
     Meant to be called within a dask.distributed.Cluster.map() over a list of tiles
@@ -252,10 +253,10 @@ def predict_object(tile, gwf, model_name, segmentation_name,
     # Run prediction
     y_pred = PredModel.predict(X)
     # Build list of PredictClassification objects
-    # TODO: Finish that
     def predict_object_builder(x):
-        PredictClassification(model_id=model_id, predict_object_id=, tag_id=)
-    [predict_object_builder(x) for x in y_pred]
-    # TODO: Bulk write the objects
+        PredictClassification(model_id=model_id, predict_object_id=x[0], tag_id=x[1])
+    obj_list = [predict_object_builder(x) for x in zip(y, y_pred)]
+    PredictClassification.objects.bulk_create(obj_list)
+    return True
 
 

@@ -34,8 +34,11 @@ def rasterize_xarray(fc, dataset):
 
 
 def train_object_to_feature(x, crs=None):
-    """Convert a QuerySet as returned by sending a spatial query to the database and
-    converts it to a feature collection
+    """Convert a Django object, part of a QuerySet, to a geojson like feature
+
+    The feature contains a single ``property`` called ``class`` that corresponds to
+    the unique id of the ``madmex_tag`` table.
+    The feature is optionally reprojected to a different CRS
 
     Args:
         x (django QuerySet): QuerySet returned by sending a query to the database
@@ -45,7 +48,7 @@ def train_object_to_feature(x, crs=None):
     Return:
         list: A feature collection
     """
-    attr = {'class': x.interpret_tag.numeric_code}
+    attr = {'class': x.interpret_tag.id}
     if crs is None:
         geometry = json.loads(x.train_object.the_geom.geojson)
     else:

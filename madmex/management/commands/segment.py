@@ -28,7 +28,7 @@ Command line for running segmentation over a given extent using
 Example usage:
 --------------
 # Run BIS segmentation
-antares segment --algorithm slic -p landsat_madmex_001_jalisco_2017_2 -r Jalisco -b green_mean red_mean ndvi_mean nir_mean swir1_mean swir2_mean --datasource landsat8 --year 2017 -extra compactness=0.01 n_segments=300000
+antares segment --algorithm slic -n landsat_slic_test_2017 -p landsat_madmex_001_jalisco_2017_2 -r Jalisco -b green_mean red_mean ndvi_mean nir_mean swir1_mean swir2_mean --datasource landsat8 --year 2017 -extra compactness=0.01 n_segments=300000
 """
     def add_arguments(self, parser):
         parser.add_argument('-a', '--algorithm',
@@ -40,6 +40,10 @@ antares segment --algorithm slic -p landsat_madmex_001_jalisco_2017_2 -r Jalisco
                             default=None,
                             nargs='*',
                             help='Optional subset of bands of the product to use for running the segmentation. All bands are used if left empty')
+        parser.add_argument('-n', '--name',
+                            type=str,
+                            required=True,
+                            help='Name under which the segmentation results should be registered in the database')
         parser.add_argument('-d', '--datasource',
                             type=str,
                             default='',
@@ -83,12 +87,14 @@ to be passed in the form of key=value pairs. e.g.: antares segment ... -extra ar
         bands = options['bands']
         datasource = options['datasource']
         year = options['year']
+        name = options['name']
 
         # Build segmentation meta object
         meta, _ = SegmentationInformation.objects.get_or_create(
             algorithm=algorithm, datasource=datasource,
             parameters=json.dumps(extra_args),
             datasource_year=year,
+            name=name,
         )
 
         # datacube query
