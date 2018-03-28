@@ -1,6 +1,6 @@
 from . import AntaresDb
-from madmex.overlay.conversions import querySet_to_fc
-from madmex.models import TrainClassification
+from madmex.overlay.conversions import train_object_to_feature
+from madmex.models import TrainClassification, PredictObject
 from math import floor
 
 from django.contrib.gis.geos import Polygon
@@ -18,6 +18,7 @@ def from_geobox(cls, geobox):
 
 Polygon.from_geobox = from_geobox
 
+# TODO: Get rid of this class
 class VectorDb(AntaresDb):
     """Query, read and write geometries between python's memory and the database"""
     def load_training_from_dataset(self, dataset, training_set, sample=0.2):
@@ -43,16 +44,28 @@ class VectorDb(AntaresDb):
             nsample = floor(query_set.count() * sample)
             query_set = query_set.order_by('?')[:nsample]
 
-        fc = [querySet_to_fc(x, crs) for x in query_set]
+        fc = [train_object_to_feature(x, crs) for x in query_set]
         return fc
 
-    def load_from_extent(self, table, extent):
-        pass
+def load_segmentation_from_dataset(geoarray, segmentation_name):
+    """Retrieve a segmentation intersecting with a geoarray from the database
 
-    def load_from_sql(self, sql):
-        pass
+    Args:
+        geoarray (xarray.Dataset): Typical Dataset object generated using one of
+            the datacube load method (GridWorkflow or Datacube clases)
+        segmentation_name (str): Unique segmentation identifier
 
-    def write_fc(self, fc):
-        """Write a feature collection to the database
-        """
-        pass
+    Return:
+        list: A geojson like feature collection. See ``madmex.overlay.conversions.predict_object_to_feature``
+        for more details about the structure of each feature.
+    """
+    # TODO: We'll probably have to introduce a buffer here to account for the curving of reprojected extent
+    geobox = geoarray.geobox
+    crs = geoarray.crs._crs.ExportToProj4()
+    poly = Polygon.from_geobox(geobox)
+    # TODO: The name column does not exist yet, update according to what it's gonna be
+    query_set = PredictObject.objects.filter(the_geom__contained=poly,
+                                             name=segmentation_name)
+    fc = [predict_object_to_feature(x, crs) for x in query_set]
+    return fc
+

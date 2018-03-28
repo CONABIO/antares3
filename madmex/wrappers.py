@@ -8,11 +8,11 @@ from datacube.api import GridWorkflow
 from datacube.utils.geometry import Geometry, CRS
 from importlib import import_module
 from madmex.util.xarray import to_float
-from madmex.io.vector_db import VectorDb
+from madmex.io.vector_db import VectorDb, load_segmentation_from_dataset
 from madmex.overlay.extractions import zonal_stats_xarray
 from madmex.modeling import BaseModel
 
-from madmex.models import Region, Country
+from madmex.models import Region, Country, Model, PredictClassification
 
 """
 The wrapper module gathers functions that are typically called by
@@ -221,3 +221,41 @@ def segment(tile, gwf, algorithm, segmentation_meta, band_list, extra_args):
     except Exception as e:
         print(e)
         return False
+
+def predict_object(tile, gwf, model_name, segmentation_name,
+                   categorical_variables):
+    """Run a trained classifier in prediction mode on all objects intersection with a tile
+
+    Args:
+        tile: Datacube tile as returned by GridWorkflow.list_cells()
+        gwf: GridWorkflow object
+        model_name (str): Name under which the trained model is referenced in the
+            database
+        segmentation_name (str): Name of the segmentation to use
+        categorical_variables (list): List of strings corresponding to categorical
+            features.
+    """
+    # Load geoarray and feature collection
+    geoarray = gwf.load(tile[1])
+    fc = load_segmentation_from_dataset(geoarray, segmentation_name)
+    # Extract array of features
+    X, y = zonal_stats_xarray(dataset=geoarray, fc=fc, field='id',
+                              categorical_variables=categorical_variables)
+    # Load model
+    PredModel = BaseModel.from_db(model_name)
+    model_id = Model.objects.get(name=model_name).id
+    try:
+        # Avoid opening several threads in each process
+        PredModel.model.n_jobs = 1
+    except Exception as e:
+        pass
+    # Run prediction
+    y_pred = PredModel.predict(X)
+    # Build list of PredictClassification objects
+    # TODO: Finish that
+    def predict_object_builder(x):
+        PredictClassification(model_id=model_id, predict_object_id=, tag_id=)
+    [predict_object_builder(x) for x in y_pred]
+    # TODO: Bulk write the objects
+
+

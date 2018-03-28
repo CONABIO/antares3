@@ -60,6 +60,7 @@ Read and write data
    io.vector_db.from_geobox
    io.vector_db.VectorDb
    io.vector_db.VectorDb.load_training_from_dataset
+   io.vector_db.load_segmentation_from_dataset
 
 
 Modeling
@@ -103,7 +104,8 @@ Overlay operations: conversions (vector to raster to vector) and extractions
    :toctree: generated
 
    overlay.conversions.rasterize_xarray
-   overlay.conversions.querySet_to_fc
+   overlay.conversions.train_object_to_feature
+   overlay.conversions.predict_object_to_feature
    overlay.extractions.calculate_zonal_statistics
    overlay.extractions.zonal_stats_xarray
 
@@ -146,6 +148,7 @@ Wrapper functions to be called in scripts and command lines
    wrappers.extract_tile_db
    wrappers.gwf_query
    wrappers.segment
+   wrappers.predict_object
 
 
 

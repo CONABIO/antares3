@@ -3,6 +3,8 @@ from affine import Affine
 from rasterio.features import rasterize
 import numpy as np
 
+from madmex.util.spatial import feature_transform
+
 def rasterize_xarray(fc, dataset):
     """Rasterize a feature collection using an xarray dataset as target
 
@@ -30,18 +32,8 @@ def rasterize_xarray(fc, dataset):
                           dtype='float64', fill=np.nan)
     return fc_raster
 
-def rasterize_numpy(fc, arr, transform, crs):
-    """
-    """
-    pass
 
-
-def vectorize_numpy(x, transform):
-    """Trans
-    """
-    pass
-
-def querySet_to_fc(x, crs=None):
+def train_object_to_feature(x, crs=None):
     """Convert a QuerySet as returned by sending a spatial query to the database and
     converts it to a feature collection
 
@@ -63,4 +55,29 @@ def querySet_to_fc(x, crs=None):
         "geometry": geometry,
         "properties": attr
     }
+    return feature
+
+
+def predict_object_to_feature(x, crs=None):
+    """Convert a PredictObject to a feature
+
+    This function is often meant to be called in a list comprehension whose iterator
+    is a django QuerySet.
+    The feature has a single attribute corresponding to the database object id
+
+    Args:
+        x (PredictObject): Object extracted from the database
+        crs (str): proj4 string to reproject to. Can be extrated from a geoarray using
+            ``geoarray.crs._crs.ExportToProj4()``. Default to None in which case no
+            reprojection is performed. Data in the database must be stored in 4326 crs
+
+    Return:
+        dict: A geojson like feature
+    """
+    geometry = json.loads(x.the_geom.geojson)
+    feature = {'type': 'feature',
+               'geometry': geometry,
+               'properties': {'id': x.id}}
+    if crs is not None:
+        feature = feature_transform(feature, crs)
     return feature
