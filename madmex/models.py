@@ -79,6 +79,7 @@ class SegmentationInformation(models.Model):
     datasource = models.CharField(max_length=200, default='')
     parameters = models.CharField(max_length=200, default='')
     datasource_year = models.CharField(max_length=20, default='2015')
+    name = models.CharField(max_length=200, default='')
 
 class PredictObject(models.Model):
     '''This table holds objects that will be used for training. They must be related to
