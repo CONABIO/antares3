@@ -224,7 +224,7 @@ def segment(tile, gwf, algorithm, segmentation_meta,
         return False
 
 def predict_object(tile, gwf, model_name, segmentation_name,
-                   categorical_variables):
+                   categorical_variables, aggregation):
     """Run a trained classifier in prediction mode on all objects intersection with a tile
 
     Args:
@@ -235,28 +235,33 @@ def predict_object(tile, gwf, model_name, segmentation_name,
         segmentation_name (str): Name of the segmentation to use
         categorical_variables (list): List of strings corresponding to categorical
             features.
+        aggregation (str): Spatial aggregation method to use
     """
-    # Load geoarray and feature collection
-    geoarray = gwf.load(tile[1])
-    fc = load_segmentation_from_dataset(geoarray, segmentation_name)
-    # Extract array of features
-    X, y = zonal_stats_xarray(dataset=geoarray, fc=fc, field='id',
-                              categorical_variables=categorical_variables)
-    # Load model
-    PredModel = BaseModel.from_db(model_name)
-    model_id = Model.objects.get(name=model_name).id
     try:
-        # Avoid opening several threads in each process
-        PredModel.model.n_jobs = 1
+        # Load geoarray and feature collection
+        geoarray = gwf.load(tile[1])
+        fc = load_segmentation_from_dataset(geoarray, segmentation_name)
+        # Extract array of features
+        X, y = zonal_stats_xarray(dataset=geoarray, fc=fc, field='id',
+                                  categorical_variables=categorical_variables,
+                                  aggregation=aggregation)
+        # Load model
+        PredModel = BaseModel.from_db(model_name)
+        model_id = Model.objects.get(name=model_name).id
+        try:
+            # Avoid opening several threads in each process
+            PredModel.model.n_jobs = 1
+        except Exception as e:
+            pass
+        # Run prediction
+        y_pred = PredModel.predict(X)
+        # Build list of PredictClassification objects
+        def predict_object_builder(x):
+            return PredictClassification(model_id=model_id, predict_object_id=x[0], tag_id=x[1])
+        obj_list = [predict_object_builder(x) for x in zip(y, y_pred)]
+        PredictClassification.objects.bulk_create(obj_list)
+        return True
     except Exception as e:
-        pass
-    # Run prediction
-    y_pred = PredModel.predict(X)
-    # Build list of PredictClassification objects
-    def predict_object_builder(x):
-        PredictClassification(model_id=model_id, predict_object_id=x[0], tag_id=x[1])
-    obj_list = [predict_object_builder(x) for x in zip(y, y_pred)]
-    PredictClassification.objects.bulk_create(obj_list)
-    return True
+        return False
 
 

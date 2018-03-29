@@ -1,5 +1,5 @@
 from . import AntaresDb
-from madmex.overlay.conversions import train_object_to_feature
+from madmex.overlay.conversions import train_object_to_feature, predict_object_to_feature
 from madmex.models import TrainClassification, PredictObject
 from math import floor
 

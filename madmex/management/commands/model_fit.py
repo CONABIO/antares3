@@ -44,7 +44,7 @@ Example usage:
 antares model_fit -model rf -p landsat_madmex_001_jalisco_2017 -t chips_jalisco -lat 19 23 -long -106 -101 --name rf_landsat_madmex_001_jalisco_2017 -sp mean
 
 # With extra args passed to the random forest object constructor, use region name instead of lat long bounding box
-antares model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f level_2 -t jalisco_chips --region Jalisco --name rf_landsat_madmex_001_jalisco_2017_jalisco_chips -sp mean -extra n_estimators=60 n_jobs=15
+antares model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -t jalisco_chips --region Jalisco --name rf_landsat_madmex_001_jalisco_2017_jalisco_chips -sp mean -extra n_estimators=60 n_jobs=15
 """
     def add_arguments(self, parser):
         parser.add_argument('-model', '--model',
@@ -78,7 +78,7 @@ antares model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f level_2 -t j
         parser.add_argument('-sample', '--sample',
                             type=float,
                             default=0.2,
-                            help='Proportion of the training data to use. Must be float between 0 and 1. A random sampling of the training objects is performed.')
+                            help='Proportion of the training data to use. Must be float between 0 and 1. A random sampling of the training objects is performed (defaults to 0.2).')
         parser.add_argument('-name', '--name',
                             type=str,
                             required=True,
@@ -87,7 +87,7 @@ antares model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -f level_2 -t j
                             type=str,
                             required=False,
                             default='mean',
-                            help='Function to use for spatially aggregating the pixels over the training geometries')
+                            help='Function to use for spatially aggregating the pixels over the training geometries (defaults to mean)')
         parser.add_argument('-categorical_variables', '--categorical_variables',
                             type=str,
                             nargs='*',
