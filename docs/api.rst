@@ -164,6 +164,7 @@ Various utils
    util.yaml_to_dict
    util.mid_date
    util.parser_extra_args
+   util.chunk
    util.datacube.var_to_ind
    util.local.aware_download
    util.local.extract_zip
