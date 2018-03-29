@@ -22,6 +22,6 @@ class TestExtract(unittest.TestCase):
                                   categorical_variables='cover')
         expected_X = np.array([[4., 22., 1],
                               [23., 3., 2]], dtype='float32')
-        self.assertListEqual(y, ['water', 'forest'])
+        self.assertListEqual(list(y), ['water', 'forest'])
         np.testing.assert_allclose(X, expected_X)
 

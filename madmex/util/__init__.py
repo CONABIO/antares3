@@ -82,3 +82,9 @@ def parser_extra_args(x):
     d0 = dict(item.split('=') for item in x)
     d1 = {k: change_type(v) for k, v in d0.items()}
     return d1
+
+def chunk(x, chunk_size=10000):
+    """Splits a list into chunks"""
+    for i in range(0, len(x), chunk_size):
+        yield x[i:i+chunk_size]
+

@@ -11,6 +11,7 @@ import numpy as np
 import xarray as xr
 
 from madmex.overlay.conversions import rasterize_xarray
+from madmex.util import chunk
 
 logger = logging.getLogger(__name__)
 
@@ -66,16 +67,22 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
         categorical_variables = []
     agg_list = [(k, aggregation) if k not in categorical_variables else (k, 'first') for k in var_list]
     agg_ordered_dict = OrderedDict(agg_list)
-    # Rasterize feature collection
-    arr = rasterize_xarray(fc, dataset)
-    # Convert arr to a dataArray
-    xr_arr = xr.DataArray(arr, dims=['x', 'y'], name='features_id')
-    # Combine the Dataset with the DataArray
-    combined = xr.merge([xr_arr, dataset])
-    # Coerce to pandas dataframe
-    df = combined.to_dataframe().groupby('features_id').agg(agg_ordered_dict)
-    X = df.values
-    # TODO: Use numpy.array instead of list here to reduce memory footprint (see np.vectorize)
-    ids = list(df.index.values.astype('uint32') - 1)
-    y = [fc[x]['properties'][field] for x in ids]
+    # Divide extraction in chunks to avoid blowing memory
+    X_list = []
+    y_list = []
+    for fc_sub in chunk(fc, 60000):
+        # Rasterize feature collection
+        arr = rasterize_xarray(fc_sub, dataset)
+        # Convert arr to a dataArray
+        xr_arr = xr.DataArray(arr, dims=['x', 'y'], name='features_id')
+        # Combine the Dataset with the DataArray
+        combined = xr.merge([xr_arr, dataset])
+        # Coerce to pandas dataframe
+        df = combined.to_dataframe().groupby('features_id').agg(agg_ordered_dict)
+        X_list.append(df.values)
+        # TODO: Use numpy.array instead of list here to reduce memory footprint (see np.vectorize)
+        ids = list(df.index.values.astype('uint32') - 1)
+        y_list.append(np.array([fc[x]['properties'][field] for x in ids]))
+    y = np.concatenate(y_list)
+    X = np.concatenate(X_list, axis=0)
     return [X, y]
