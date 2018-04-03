@@ -23,9 +23,9 @@ Select an instance with AMI ``Ubuntu 16.04 LTS``
 
 The following bash script can be used in **User data** configuration of an instance to:
 
-* Install AWS cli and package to use RunCommand service of EC2 (this is not necessary neither for antares3, Sun Grid Engine nor datacube).
-* Tag your instance with name defined in ``name_instance``.
-* Install dependencies for Sun Grid Engine, antares3 and datacube.
+	* Install AWS cli and package to use RunCommand service of EC2 (RunCommand service is not a mandatory installation neither for antares3, Sun Grid Engine nor datacube).
+	* Tag your instance with name defined in ``name_instance``.
+	* Install dependencies for Sun Grid Engine, antares3 and datacube.
 
 
 (modify with your appropiate region of AWS on variable ``region`` and tagging for your instance at ``name_instance`` variable):
