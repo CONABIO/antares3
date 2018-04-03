@@ -15,13 +15,11 @@ Cloud
 Amazon Web Services
 -------------------
 
-Modify with appropiate region of AWS on variable ``region``
-
 
 Sun Grid Engine
 ^^^^^^^^^^^^^^^
 
-On **User data** of an instance:
+On **User data** of an instance modify with appropiate region of AWS on variable ``region``:
 
 .. code-block:: bash
 
