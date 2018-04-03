@@ -19,19 +19,33 @@ Amazon Web Services
 Sun Grid Engine
 ^^^^^^^^^^^^^^^
 
-On **User data** of an instance modify with appropiate region of AWS on variable ``region``:
+Select an instance with AMI ``Ubuntu 16.04 LTS``
+
+The following bash script can be used in **User data** configuration of an instance to:
+
+* Install AWS cli and package to use RunCommand service of EC2 (this is not necessary neither for antares3, Sun Grid Engine nor datacube).
+* Tag your instance with name defined in ``name_instance``.
+* Install dependencies for Sun Grid Engine, antares3 and datacube.
+
+
+(modify with your appropiate region of AWS on variable ``region`` and tagging for your instance at ``name_instance`` variable):
 
 .. code-block:: bash
 
 	#!/bin/bash
 	#To create AMI of AWS for master and nodes:
+	#variables:
 	region=us-west-2
+	name_instance=conabio-dask-sge
+	#awscli
 	apt-get update
 	apt-get install -y awscli
+	#tag instance
 	INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
 	PUBLIC_IP_LOCAL=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 	PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-	aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=conabio-dask-sge-$PUBLIC_IP --region=$region
+	aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
+	#dependencies for sge, antares3 and datacube
 	apt-get install -y nfs-common openssh-server openjdk-8-jre xsltproc apache2 git htop postgresql \
 	python-software-properties \
 	libssl-dev \
@@ -46,7 +60,7 @@ On **User data** of an instance modify with appropiate region of AWS on variable
 	wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
 	dpkg -i amazon-ssm-agent.deb
 	systemctl enable amazon-ssm-agent
-	#for gridengine
+	#for web sge 
 	echo "<VirtualHost *:80>
 	    ServerAdmin webmaster@localhost
 	    DocumentRoot /var/www/
@@ -66,12 +80,12 @@ On **User data** of an instance modify with appropiate region of AWS on variable
 	sed -i '/tools/s/./#./' /var/www/qstat/config.sh
 	a2enmod cgid
 	service apache2 start
-	#install gridengine
+	#install gridengine non interactively
 	export DEBIAN_FRONTEND=noninteractive
 	apt-get install -q -y gridengine-client gridengine-exec gridengine-master
 	/etc/init.d/gridengine-master restart
 	service apache2 restart
-	#python stuff
+	#python virtualenv
 	pip install --upgrade pip
 	pip install virtualenv virtualenvwrapper
 	pip3 install virtualenv virtualenvwrapper
@@ -94,13 +108,14 @@ On **User data** of an instance modify with appropiate region of AWS on variable
 	pip3 install python-dateutil
 	#Shared volume
 	mkdir /LUSTRE_compartido
-
+	#directories for antares3 and locale settings for datacube
 	mkdir -p /home/ubuntu/.virtualenvs
 	mkdir -p /home/ubuntu/git && mkdir -p /home/ubuntu/sandbox
 	echo 'source /usr/local/bin/virtualenvwrapper.sh' >> /home/ubuntu/.bash_aliases
 	echo "alias python=python3" >> /home/ubuntu/.bash_aliases
 	echo "export LC_ALL=C.UTF-8" >> /home/ubuntu/.profile
 	echo "export LANG=C.UTF-8" >> /home/ubuntu/.profile
+	#setting variable mount_point
 	echo "export mount_point=/LUSTRE_compartido" >> /home/ubuntu/.profile
 
 
