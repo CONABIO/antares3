@@ -26,8 +26,10 @@ MPI
 Coming Soon
 
 
-.... code-block:: bash
+.. code-block:: bash
 
-    echo hello world
+    echo "hello world"
 
+
+another line
 
