@@ -135,7 +135,7 @@ The following bash script can be used in **User data** configuration of an insta
 	echo "export mount_point=/LUSTRE_compartido" >> /home/ubuntu/.profile
 
 
-2. Create an Autoscaling group of AWS.
+2. Configure an Autoscaling group of AWS.
 
 Once created the AMI of step 1, we use the following bash script to configure an autoscaling group tagged with **Key**: ``Type`` and **Value**: ``Node-dask-sge``. See `Tagging Autoscaling groups and Instances`_ 
 
