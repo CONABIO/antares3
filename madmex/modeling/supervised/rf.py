@@ -12,9 +12,9 @@ from madmex.modeling import BaseModel
 
 
 class Model(BaseModel):
-    '''
-    classdocs
-    '''
+    """Antares implementation of scikit learn random forest classifier
+
+    """
 
     def __init__(self, categorical_features=None, n_estimators=50, n_jobs=-1,
                  max_depth=10):

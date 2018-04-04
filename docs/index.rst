@@ -21,11 +21,19 @@ Antares
    cli
    download
    ingest
+   
 
 .. toctree::
    :maxdepth: 1
    :hidden:
-   :caption: Developper guide
+   :caption: Cluster mode
+
+   setup_cluster
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Developer guide
 
    extend
    api

@@ -34,7 +34,8 @@ antares segment --algorithm slic -n landsat_slic_test_2017 -p landsat_madmex_001
         parser.add_argument('-a', '--algorithm',
                             type=str,
                             required=True,
-                            help='Name of the segmentation algorithm to use')
+                            help=('Name of the segmentation algorithm to use. The list of implemented segmentation algorithms '
+                                  'can be retrieved using the antares segmentation_params command line'))
         parser.add_argument('-b', '--bands',
                             type=str,
                             default=None,
@@ -77,7 +78,9 @@ antares segment --algorithm slic -n landsat_slic_test_2017 -p landsat_madmex_001
                             nargs='*',
                             help='''
 Additional named arguments passed to the selected segmentation class constructor. These arguments have
-to be passed in the form of key=value pairs. e.g.: antares segment ... -extra arg1=12 arg2=0.2''')
+to be passed in the form of key=value pairs. e.g.: antares segment ... -extra arg1=12 arg2=0.2
+The list of parameters corresponding to every implemented segmentation algorithm can be retrieved
+using the antares segment_params command line''')
 
     def handle(self, *args, **options):
         # Unpack variables

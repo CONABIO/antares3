@@ -5,9 +5,8 @@ from madmex.modeling import BaseModel
 
 
 class Model(BaseModel):
-    '''
-    classdocs
-    '''
+    """Antares implementation of Microsoft's Light Boost classifier
+    """
 
     def __init__(self, categorical_features=None, n_estimators=50, n_jobs=-1,
                  max_depth=30, learning_rate=0.1, reg_alpha=0,

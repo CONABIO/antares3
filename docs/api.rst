@@ -93,6 +93,8 @@ Implemented models
    :toctree: generated
 
    modeling.supervised.rf.Model
+   modeling.supervised.xgb.Model
+   modeling.supervised.lgb.Model
 
 
 Overlay
@@ -165,6 +167,7 @@ Various utils
    util.mid_date
    util.parser_extra_args
    util.chunk
+   util.pprint_args
    util.datacube.var_to_ind
    util.local.aware_download
    util.local.extract_zip

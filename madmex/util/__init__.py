@@ -1,5 +1,6 @@
 import random
 import string
+import inspect
 
 import yaml
 
@@ -84,7 +85,53 @@ def parser_extra_args(x):
     return d1
 
 def chunk(x, chunk_size=10000):
-    """Splits a list into chunks"""
+    """Splits a list into chunks
+
+    Args:
+        x (list): A list
+        chunk_size (int): The chunking size
+
+    Return:
+        A chunks generator
+    """
     for i in range(0, len(x), chunk_size):
         yield x[i:i+chunk_size]
+
+
+def pprint_args(fun, exclude=None):
+    """Retrieves the arguments and default parameters of a function and prints a formated table
+
+    Args:
+        fun: A function or method
+        exclude (list): List of string. Arguments to exclude from the report
+
+    Example:
+        >>> from madmex.util import pprint_args
+        >>> from madmex.modeling.supervised.lgb import Model
+
+        >>> pprint_args(Model, exclude=['categorical_features'])
+
+    """
+    def get_default(s, x):
+        if s.parameters[x].default is s.parameters[x].empty:
+            return '-'
+        else:
+            return str(s.parameters[x].default)
+    s = inspect.signature(fun)
+    params = list(s.parameters)
+    if exclude is not None:
+        if not isinstance(exclude, list):
+            exclude = [exclude]
+        for item in exclude:
+            try:
+                params.remove(item)
+            except Exception as e:
+                pass
+    table = [(x, get_default(s, x)) for x in params]
+    row_format = '{:>25} | {:<25}'
+    print(row_format.format('Argument', 'Default value'))
+    print(row_format.format('==================', '=============='))
+    for row in table:
+        print(row_format.format(*row))
+
 
