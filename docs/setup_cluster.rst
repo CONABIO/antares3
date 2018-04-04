@@ -32,7 +32,7 @@ The following bash script can be used in **User data** configuration of an insta
 
 .. note:: 
  
-  Nor aws cli neither RunCommand service are a mandatory installation for antares3, Open Datacube or SGE, we use it for it's simplicity to execute commands on all of the instances, see more at `RunCommand`_. You can use instead `clusterssh`_  or other tool for cluster management.
+  RunCommand service is not a mandatory installation for antares3, Open Datacube nor SGE, we use it for it's simplicity to execute commands on all of the instances (see  `RunCommand`_). You can use instead `clusterssh`_  or other tool for cluster management.
 
 .. _clusterssh: https://github.com/duncs/clusterssh
 
@@ -44,15 +44,16 @@ The following bash script can be used in **User data** configuration of an insta
 
 .. note:: 
 
-	Modify variables ``region`` and ``name_instance`` with your own configuration.
+	Modify variables ``region``, ``name_instance``, ``shared_volume`` with your own configuration.
 
 .. code-block:: bash
 
 	#!/bin/bash
 	##Bash script to create AMI of AWS for master and nodes:
 	##variables:
-	region=us-west-2
+	region=<region>
 	name_instance=conabio-dask-sge
+	shared_volume=/shared_volume
 	##Install awscli
 	apt-get update
 	apt-get install -y awscli
@@ -123,7 +124,7 @@ The following bash script can be used in **User data** configuration of an insta
 	##Install missing package for open datacube:
 	pip3 install --upgrade python-dateutil
 	##Create shared volume
-	mkdir /LUSTRE_compartido
+	mkdir $shared_volume
 	##Create directories for antares3 and locale settings for open datacube
 	mkdir -p /home/ubuntu/.virtualenvs
 	mkdir -p /home/ubuntu/git && mkdir -p /home/ubuntu/sandbox
@@ -132,7 +133,7 @@ The following bash script can be used in **User data** configuration of an insta
 	echo "export LC_ALL=C.UTF-8" >> /home/ubuntu/.profile
 	echo "export LANG=C.UTF-8" >> /home/ubuntu/.profile
 	##Set variable mount_point
-	echo "export mount_point=/LUSTRE_compartido" >> /home/ubuntu/.profile
+	echo "export mount_point=$shared_volume" >> /home/ubuntu/.profile
 
 
 2. Configure an Autoscaling group of AWS.
@@ -156,7 +157,7 @@ Once created the AMI of step 1, use the following bash script to configure an au
 .. code-block:: bash
 
 	#!/bin/bash
-	region=us-west-2
+	region=<region>
 	name_instance=conabio-dask-sge-node
 	#To tag instances of type node
 	INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
@@ -175,7 +176,7 @@ Once created the AMI of step 1, use the following bash script to configure an au
 .. code-block:: bash
 
 	#!/bin/bash
-	region=us-west-2
+	region=<region>
 	name_instance=conabio-dask-sge-node
 	#To tag instances of type node
 	INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
@@ -185,9 +186,135 @@ Once created the AMI of step 1, use the following bash script to configure an au
 	/bin/bash -c "alias python=python3 && pip3 install numpy && pip3 install cloudpickle && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0a12 && pip3 install scipy && pip3 install boto3 && pip3 install SharedArray && pip3 install pathos && pip3 install zstandard && pip3 install git+https://github.com/CONABIO/datacube-core.git@develop && cd /home/ubuntu/git/antares3 && pip3 install -e ."
 
 
-3. RunCommand on an instance (doesn't matter which one)
+3. RunCommand on an instance (doesn't matter which one).
+
+Run the following bash script using RunCommand or login to an instance to run it. The instance where  the bash script is executed will be the **master node** of our cluster.
+ 
+We use an elastic IP for the node that will be the **master node**, so change variable ``eip`` according to your ``Allocation ID`` (see `Elastic IP Addresses`_ ).
+ 
+ .. _Elastic IP Addresses: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html
+
+We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic File System`_), which multiple Amazon EC2 instances running in multiple Availability Zones (AZs) within the same region can access it, change variable ``efs_dns`` according to your ``DNS name``.
+ 
+ .. _Amazon Elastic File System: https://aws.amazon.com/efs/ 
+
+.. note:: 
+
+	Modify variables ``region``, ``name_instance``, ``efs_dns`` with your own configuration. Variable ``type_value`` has the value configured in step **2. Configure an Autoscaling group of AWS**. Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example.
+
+.. code-block:: bash
+
+	#!/bin/bash
+	##variables
+	eip=<Allocation ID of Elastic IP>
+	region=<region>
+	name_instance=conabio-dask-sge-master
+	efs_dns=<DNS name of EFS>
+	type_value=Node-dask-sge
+	##Mount EFS according to variable mount_point defined on bash script of step 1
+	mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 $efs_dns:/ $mount_point
+	##Tag instance
+	INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+	PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+	PUBLIC_IP_LOCAL=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
+	aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $eip --region $region
+	aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
+	##commands for SGE
+	qconf -am ubuntu
+	##queue of SGE, this needs to be executed for registering nodes:
+	echo -e "group_name @allhosts\nhostlist NONE" > $mount_point/host_group_sge.txt
+	qconf -Ahgrp $mount_point/host_group_sge.txt
+	echo -e "qname                 miqueue.q\nhostlist              NONE\nseq_no                0\nload_thresholds       np_load_avg=1.75\nsuspend_thresholds    NONE\nnsuspend              1\nsuspend_interval      00:05:00\npriority              0\nmin_cpu_interval      00:05:00\nprocessors            UNDEFINED\nqtype                 BATCH INTERACTIVE\nckpt_list             NONE\npe_list               make\nrerun                 FALSE\nslots                 1\ntmpdir                /tmp\nshell                 /bin/csh\nprolog                NONE\nepilog                NONE\nshell_start_mode      posix_compliant\nstarter_method        NONE\nsuspend_method        NONE\nresume_method         NONE\nterminate_method      NONE\nnotify                00:00:60\nowner_list            NONE\nuser_lists            NONE\nxuser_lists           NONE\nsubordinate_list      NONE\ncomplex_values        NONE\nprojects              NONE\nxprojects             NONE\ncalendar              NONE\ninitial_state         default\ns_rt                  INFINITY\nh_rt                  INFINITY\ns_cpu                 INFINITY\nh_cpu                 INFINITY\ns_fsize               INFINITY\nh_fsize               INFINITY\ns_data                INFINITY\nh_data                INFINITY\ns_stack               INFINITY\nh_stack               INFINITY\ns_core                INFINITY\nh_core                INFINITY\ns_rss                 INFINITY\nh_rss                 INFINITY\ns_vmem                INFINITY\nh_vmem                INFINITY" > $mount_point/queue_name_sge.txt
+	qconf -Aq $mount_point/queue_name_sge.txt
+	qconf -aattr queue hostlist @allhosts miqueue.q
+	##We just use one slot for every instance
+	qconf -aattr queue slots "1" miqueue.q
+	qconf -aattr hostgroup hostlist $HOSTNAME @allhosts
+	##Get IP's of instances using awscli
+	aws ec2 describe-instances --region=$region --filter Name=tag:Type,Values=$type_value --query 'Reservations[].Instances[].PrivateDnsName' |grep compute| cut -d'"' -f2 > $mount_point/nodes.txt
+	/bin/sh -c 'for ip in $(cat $mount_point/nodes.txt);do qconf -as $ip;done'
+	/bin/sh -c 'for ip in $(cat $mount_point/nodes.txt);do echo "hostname $ip \nload_scaling NONE\ncomplex_values NONE\nuser_lists NONE \nxuser_lists NONE\nprojects NONE\nxprojects NONE\nusage_scaling NONE\nreport_variables NONE " > $mount_point/ips_nodos_format_sge.txt; qconf -Ae $mount_point/ips_nodos_format_sge.txt ; qconf -aattr hostgroup hostlist $ip @allhosts ;done'
+	##echo IP of node master
+	echo $(hostname).$region.compute.internal > $mount_point/ip_master.txt
    
+
+4. RunCommand on nodes with type Node-dask-sge.
+ 
+Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` configured in step **2. Configure an Autoscaling group of AWS**, or use a tool for cluster management like `clusterssh`_ . 
+
+
+Modify variables ``region``, ``efs_dns`` with your own configuration.
+
+.. code-block:: bash
+
+	#!/bin/bash
+	efs_dns=<DNS name of EFS>
+	region=<region>
+	mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 $efs_dns:/ $mount_point
+	master_dns=$(cat $mount_point/ip_master.txt)
+	#Gridengine master
+	echo $master_dns > /var/lib/gridengine/default/common/act_qmaster
+	/etc/init.d/gridengine-exec restart
+
+
+5. Run SGE commands to init cluster.
    
+Login to master node and execute:
+
+.. code-block:: bash
+
+	qsub -b y -l h=$HOSTNAME dask-scheduler --scheduler-file $mount_point/scheduler.json
+
+If your group of autoscaling has 3 nodes, then execute:
+
+.. code-block:: bash
+
+	# Start 2 dask-worker processes in an array job pointing to the same file
+	qsub -b y -t 1-2 dask-worker --scheduler-file $mount_point/scheduler.json
+
+You can view the web SGE on the page:
+
+<public DNS of master>/qstat/qstat.cgi
+
+and the state of your cluster with `bokeh`_  at:
+
+.. _bokeh: https://bokeh.pydata.org/en/latest/
+
+<public DNS of master>:8787
+
+6. Run an example.
+   
+On master or node execute:
+
+.. code-block:: python3
+
+	from dask.distributed import Client
+	client = Client(scheduler_file='$mount_point/scheduler.json')
+
+	def square(x):
+	    return x ** 2
+
+	def neg(x):
+	    return -x
+
+	A = client.map(square, range(10))
+	B = client.map(neg, A)
+	total = client.submit(sum, B)
+	total.result()
+
+	total
+
+	client.gather(A)
+
+
+7. Stop cluster.
+
+On master or node execute:
+
+.. code-block:: bash
+
+	qdel 1 2
+
 
 
 MPI
