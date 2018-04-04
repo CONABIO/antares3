@@ -1,6 +1,6 @@
-************
-Cluster mode
-************
+*************
+Setup cluster
+*************
 
 
 Local
@@ -32,7 +32,7 @@ The following bash script can be used in **User data** configuration of an insta
 
 .. note:: 
  
-  RunCommand service is not a mandatory installation neither for antares3, Open Datacube nor SGE, we use it for it's simplicity to execute commands on all of the instances, see more at `RunCommand`_. You can use instead `clusterssh`_  or other tool for cluster management.
+  Nor aws cli neither RunCommand service are a mandatory installation for antares3, Open Datacube or SGE, we use it for it's simplicity to execute commands on all of the instances, see more at `RunCommand`_. You can use instead `clusterssh`_  or other tool for cluster management.
 
 .. _clusterssh: https://github.com/duncs/clusterssh
 
@@ -61,7 +61,7 @@ The following bash script can be used in **User data** configuration of an insta
 	PUBLIC_IP_LOCAL=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 	PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
 	aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
-	##Dependencies for sge, antares3 and datacube
+	##Dependencies for sge, antares3 and open datacube
 	apt-get install -y nfs-common openssh-server openjdk-8-jre xsltproc apache2 git htop postgresql \
 	python-software-properties \
 	libssl-dev \
@@ -120,7 +120,7 @@ The following bash script can be used in **User data** configuration of an insta
 	pip3 install dask distributed --upgrade
 	pip install bokeh
 	pip3 install bokeh
-	##Install missing package for datacube:
+	##Install missing package for open datacube:
 	pip3 install --upgrade python-dateutil
 	##Create shared volume
 	mkdir /LUSTRE_compartido
@@ -137,7 +137,7 @@ The following bash script can be used in **User data** configuration of an insta
 
 2. Configure an Autoscaling group of AWS.
 
-Once created the AMI of step 1, we use the following bash script to configure an autoscaling group tagged with **Key**: ``Type`` and **Value**: ``Node-dask-sge``. See `Tagging Autoscaling groups and Instances`_ 
+Once created the AMI of step 1, use the following bash script to configure an autoscaling group tagged with **Key**: ``Type`` and **Value**: ``Node-dask-sge``. See `Tagging Autoscaling groups and Instances`_ 
 
 .. _Tagging Autoscaling groups and Instances: https://docs.aws.amazon.com/autoscaling/ec2/userguide/autoscaling-tagging.html
 
@@ -185,6 +185,9 @@ Once created the AMI of step 1, we use the following bash script to configure an
 	/bin/bash -c "alias python=python3 && pip3 install numpy && pip3 install cloudpickle && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0a12 && pip3 install scipy && pip3 install boto3 && pip3 install SharedArray && pip3 install pathos && pip3 install zstandard && pip3 install git+https://github.com/CONABIO/datacube-core.git@develop && cd /home/ubuntu/git/antares3 && pip3 install -e ."
 
 
+3. RunCommand on an instance (doesn't matter which one)
+   
+   
 
 
 MPI
@@ -193,13 +196,5 @@ MPI
 Coming Soon
 
 
-.. code-block:: bash
-
-    echo "hello world"
-
-
-another line
-
-`url <https://www.gob.mx/conabio>`_
 
 
