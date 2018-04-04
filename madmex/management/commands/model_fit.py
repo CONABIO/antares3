@@ -50,7 +50,8 @@ antares model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -t jalisco_chip
         parser.add_argument('-model', '--model',
                             type=str,
                             required=True,
-                            help='Name of the model to apply to the dataset')
+                            help=('Name of the model to apply to the dataset. It is posible to retrieve a list '
+                                  'of implemented models using the antares model_params command line'))
         parser.add_argument('-p', '--product',
                             type=str,
                             required=True,

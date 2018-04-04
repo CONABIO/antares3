@@ -4,9 +4,8 @@ from madmex.modeling import BaseModel
 
 
 class Model(BaseModel):
-    '''
-    classdocs
-    '''
+    """Antares implementation of Gradient Boost classifier
+    """
 
     def __init__(self, categorical_features=None, n_estimators=50, n_jobs=-1,
                  max_depth=10, learning_rate=0.1, gamma=0, reg_alpha=0,

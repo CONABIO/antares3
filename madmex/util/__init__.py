@@ -128,12 +128,10 @@ def pprint_args(fun, exclude=None):
             except Exception as e:
                 pass
     table = [(x, get_default(s, x)) for x in params]
-    row_format = '{:>25}{:>25}'
+    row_format = '{:>25} | {:<25}'
     print(row_format.format('Argument', 'Default value'))
-    print(row_format.format('==================', '=================='))
+    print(row_format.format('==================', '=============='))
     for row in table:
         print(row_format.format(*row))
-        print(row_format.format('------------------', '------------------'))
-
 
 
