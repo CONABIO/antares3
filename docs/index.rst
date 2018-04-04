@@ -21,7 +21,14 @@ Antares
    cli
    download
    ingest
-   cluster
+   
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Cluster mode
+
+   setup_cluster
 
 .. toctree::
    :maxdepth: 1
