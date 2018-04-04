@@ -4,17 +4,19 @@ Created on Dec 12, 2017
 @author: agutierrez
 '''
 
+from distutils.dir_util import copy_tree
+from glob import glob
 import logging
 import os
-from glob import glob
-import pkg_resources as pr
-from distutils.dir_util import copy_tree
+
+from django.core.management import call_command
 
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import ingest_countries_from_shape, ingest_states_from_shape
 from madmex.settings import TEMP_DIR
 from madmex.util.local import aware_download, extract_zip, aware_make_dir, \
     filter_files_from_folder
+import pkg_resources as pr
 
 
 logger = logging.getLogger(__name__)
@@ -59,8 +61,8 @@ antares init -c mex gtm
 
         # Create antares tables
         if create_tables:
-            pass
-
+            call_command('makemigrations', interactive=False)
+            call_command('migrate', interactive=False)
         # Ingest geometries of selected countries in database
         if countries is not None:
             for country in countries:
@@ -75,14 +77,17 @@ antares init -c mex gtm
                 }
                 ingest_countries_from_shape(country_file, mapping)
                 # Ingest first level of adm boundaries (e.g.: regions, states)
-                regions_file = glob(os.path.join(unzipdir, '*adm1.shp'))[0]
-                logger.info('This %s shape file will be ingested.' % regions_file)
-                mapping = {
-                    'country': {'name': 'ISO'},
-                    'name' : 'NAME_1',
-                    'the_geom' : 'MULTIPOLYGON'
-                }
-                ingest_states_from_shape(regions_file, mapping)
+                
+                filter = glob(os.path.join(unzipdir, '*adm1.shp'))
+                if len(filter) > 0:
+                    regions_file = filter[0]
+                    logger.info('This %s shape file will be ingested.' % regions_file)
+                    mapping = {
+                        'country': {'name': 'ISO'},
+                        'name' : 'NAME_1',
+                        'the_geom' : 'MULTIPOLYGON'
+                    }
+                    ingest_states_from_shape(regions_file, mapping)
 
         # Move config files from package to standard system location
         if conf_setup:
