@@ -136,6 +136,7 @@ Implemented algorithms
    :toctree: generated
 
    segmentation.slic.Segmentation
+   segmentation.bis.Segmentation
 
 
 Wrappers
