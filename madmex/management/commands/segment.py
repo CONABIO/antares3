@@ -75,6 +75,7 @@ antares segment --algorithm slic -n landsat_slic_test_2017 -p landsat_madmex_001
                                   'Use ISO country code for country name'))
         parser.add_argument('-extra', '--extra_kwargs',
                             type=str,
+                            default='',
                             nargs='*',
                             help='''
 Additional named arguments passed to the selected segmentation class constructor. These arguments have
