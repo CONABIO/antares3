@@ -13,7 +13,7 @@ from django.core.management import call_command
 
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import ingest_countries_from_shape, ingest_states_from_shape
-from madmex.settings import TEMP_DIR
+from madmex.settings import TEMP_DIR, BIS_LICENSE
 from madmex.util.local import aware_download, extract_zip, aware_make_dir, \
     filter_files_from_folder
 import pkg_resources as pr
@@ -98,4 +98,10 @@ antares init -c mex gtm
             copy_tree(conf_dir, dir_out)
 
         # Setup bis license
+        bis_module = pr.resource_filename('madmex', 'bin/bis')
+        license_file = os.path.join(bis_module, 'license.txt')
+        with open(license_file, 'w') as dst:
+            dst.write(BIS_LICENSE)
+
+
 

@@ -1,5 +1,6 @@
 madmex.egg-info/*
 docs/_build/*
+madmex/bin/bis/license.txt
 *.swp
 *.pyc
 *.pyc[cod]
