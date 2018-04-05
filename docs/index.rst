@@ -29,6 +29,7 @@ Antares
    :caption: Cluster mode
 
    setup_cluster
+   setup_database
 
 .. toctree::
    :maxdepth: 1
