@@ -1,5 +1,5 @@
 *************
-Setup cluster
+Setup Cluster
 *************
 
 
@@ -38,7 +38,7 @@ Sun Grid Engine
 \* (Not mandatory but useful) Configure an `Elastic IP Addresses`_  on AWS. Master node will have this elastic ip.
 
 
-1. Create AMI of AWS from bash cript.
+1. Create AMI of AWS from bash script.
 
 Select an instance with AMI ``Ubuntu 16.04 LTS``
 
@@ -154,7 +154,7 @@ Once created the AMI of step 1, use the following bash script to configure insta
 
 .. attention:: 
 
-	Open Datacube supports NETCDF CF and S3 drivers for storage (see `Open DataCube Ingestion Config`_). Different dependencies are required for different drivers. Choose one of the drivers supported by OpendataCube according to your application and select appropiate bash script to configure the autoscaling group. 
+	Open Datacube supports NETCDF CF and S3 drivers for storage (see `Open DataCube Ingestion Config`_). Different software dependencies are required for different drivers. Choose one of the drivers supported by Open DataCube according to your application and select appropiate bash script to configure the autoscaling group. 
 
 .. _Open DataCube Ingestion Config: https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config
 
