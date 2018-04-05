@@ -77,10 +77,10 @@ antares init -c mex gtm
                 }
                 ingest_countries_from_shape(country_file, mapping)
                 # Ingest first level of adm boundaries (e.g.: regions, states)
-                
-                filter = glob(os.path.join(unzipdir, '*adm1.shp'))
-                if len(filter) > 0:
-                    regions_file = filter[0]
+                filtered = glob(os.path.join(unzipdir, '*adm1.shp'))
+                # First adm level may not exist for small countries/islands
+                if len(filtered) > 0:
+                    regions_file = filtered[0]
                     logger.info('This %s shape file will be ingested.' % regions_file)
                     mapping = {
                         'country': {'name': 'ISO'},
@@ -96,3 +96,6 @@ antares init -c mex gtm
                 os.makedirs(dir_out)
             conf_dir = pr.resource_filename('madmex', 'conf')
             copy_tree(conf_dir, dir_out)
+
+        # Setup bis license
+

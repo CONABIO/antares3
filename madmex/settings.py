@@ -189,6 +189,10 @@ SERIALIZED_OBJECTS_DIR = os.getenv('SERIALIZED_OBJECTS_DIR')
 # Ingestion path
 INGESTION_PATH = os.getenv('INGESTION_PATH')
 
+# Berkeley image segmentation license number
+BIS_LICENSE = os.getenv('BIS_LICENSE', '1-319-527-2680')
+
+# Static files (CSS, JavaScript, Images)
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
