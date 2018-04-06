@@ -108,6 +108,7 @@ class PredictClassification(models.Model):
     predict_object = models.ForeignKey(PredictObject, on_delete=models.CASCADE)
     model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='model', default=None)
     name = models.CharField(max_length=200, default='')
+    confidence = models.FloatField(default=-1.0)
 
 def ingest_countries_from_shape(path, mapping):
     '''Ingestion function for countries to database.
