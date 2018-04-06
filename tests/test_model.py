@@ -43,11 +43,17 @@ class TestModel(unittest.TestCase):
             self.assertTrue(os.path.isfile(filename))
             pred = model.predict([[1,2,3,4,5,6,7,8,9,10],
                                   [10,9,8,7,6,5,4,3,2,1]])
+            conf = model.predict_confidence([[1,2,3,4,5,6,7,8,9,10],
+                                             [10,9,8,7,6,5,4,3,2,1]])
             self.assertTrue(len(pred) == 2)
+            self.assertTrue(len(conf) == 2)
         for model in fitted_models_encode:
             pred = model.predict([[1,2,3,4,5,6,7,8,9,10],
                                   [10,9,8,7,6,5,4,3,2,1]])
+            conf = model.predict_confidence([[1,2,3,4,5,6,7,8,9,10],
+                                             [10,9,8,7,6,5,4,3,2,1]])
             self.assertTrue(len(pred) == 2)
+            self.assertTrue(len(conf) == 2)
 
 
 if __name__ == "__main__":

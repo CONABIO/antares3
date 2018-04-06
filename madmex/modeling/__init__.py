@@ -19,14 +19,13 @@ from madmex.util import randomword
 
 LOGGER = logging.getLogger(__name__)
 
-class BaseModel(object):
+class BaseModel(abc.ABC):
     '''
     This class works as a wrapper to have a single interface to several
     models and machine learning packages. This will hide the complexity
     of the different ways in which the algorithms are used. This is inteded
     to be used with the xarray package.
     '''
-    __metaclass__ = abc.ABCMeta
     def __init__(self, categorical_features=None):
         '''
         Constructor
@@ -41,14 +40,21 @@ class BaseModel(object):
         '''
         This method will train the classifier with given data.
         '''
-        raise NotImplementedError('subclasses of BaseModel must provide a fit() method')
+        pass
 
     @abc.abstractmethod
     def predict(self, X):
         '''
         When the model is created, this method lets the user predict on unseen data.
         '''
-        raise NotImplementedError('subclasses of BaseModel must provide a predict() method')
+        pass
+
+    @abc.abstractmethod
+    def predict_confidence(self, X):
+        '''
+        For every unseen observation, get the highest probability
+        '''
+        pass
 
     def hot_encode_training(self, X):
         """Apply one hot encoding to one or several predictors determined by the list

@@ -43,6 +43,12 @@ class Model(BaseModel):
         X = self.hot_encode_predict(X)
         return self.model.predict(X)
 
+    def predict_confidence(self, X):
+        """Get confidence of every prediction
+        """
+        X = self.hot_encode_predict(X)
+        return self.model.predict_proba(X).max(axis=1)
+
     def score(self, X, y):
         '''
         Test the model given a dataset and a target vector.
