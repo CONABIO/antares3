@@ -20,22 +20,18 @@ Amazon Web Services
 Sun Grid Engine
 ^^^^^^^^^^^^^^^
 
-*0. Prerequisites*
+**0. Prerequisites**
 
 \* Configure `Amazon Virtual Private Cloud`_ on AWS with properly `VPCs and Subnets`_ configured according to your application.
 
-.. _VPCs and Subnets: https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html
-
-.. _Amazon Virtual Private Cloud: https://aws.amazon.com/vpc/
 
 \* Configure `Security Groups for Your VPC`_  with ports 6444 TCP and 6445 UDP for communication within instances via SGE and port 80 for web SGE, port 2043 for `Amazon Elastic File System`_ service on AWS and port 22 to ssh to instances from your machine.
 
-.. _Security Groups for Your VPC: https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html
 
 \* Configure `Amazon Elastic File System`_ service on AWS (shared volume via Network File System -NFS-).
 
 
-\* (Not mandatory but useful) Configure an `Elastic IP Addresses`_  on AWS. Master node will have this elastic ip.
+\* **(Not mandatory but useful)** Configure an `Elastic IP Addresses`_  on AWS. Master node will have this elastic ip.
 
 
 1. Create AMI of AWS from bash script.
@@ -52,9 +48,6 @@ The following bash script can be used in **User data** configuration of an insta
  
   RunCommand service is not a mandatory installation for antares3, Open Datacube nor SGE, we use it for it's simplicity to execute commands on all of the instances (see  `RunCommand`_). You can use instead `clusterssh`_  or other tool for cluster management.
 
-.. _clusterssh: https://github.com/duncs/clusterssh
-
-.. _RunCommand: https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html
 
 \* Tag your instance with **Key** ``Name`` and **Value** ``$name_instance``.
 
@@ -156,7 +149,6 @@ Once created the AMI of step 1, use the following bash script to configure insta
 
 	Open Datacube supports NETCDF CF and S3 drivers for storage (see `Open DataCube Ingestion Config`_). Different software dependencies are required for different drivers. Choose one of the drivers supported by Open DataCube according to your application and select appropiate bash script to configure the autoscaling group. 
 
-.. _Open DataCube Ingestion Config: https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config
 
 \* NETCDF CF driver of Open Datacube
 
@@ -208,11 +200,9 @@ Run the following bash script using `RunCommand`_ or login to an instance to run
  
 We use an elastic IP provided by AWS for the node that will be the **master node**, so change variable ``eip`` according to your ``Allocation ID`` (see `Elastic IP Addresses`_ ).
  
- .. _Elastic IP Addresses: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html
 
 We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic File System`_), which multiple Amazon EC2 instances running in multiple Availability Zones (AZs) within the same region can access it. Change variable ``efs_dns`` according to your ``DNS name``.
  
- .. _Amazon Elastic File System: https://aws.amazon.com/efs/ 
 
 .. note:: 
 
@@ -301,7 +291,6 @@ You can view the web SGE on the page:
 
 and the state of your cluster with `bokeh`_  at:
 
-.. _bokeh: https://bokeh.pydata.org/en/latest/
 
 **<public DNS of master>:8787**
 
@@ -350,6 +339,21 @@ MPI
 
 Coming Soon
 
+.. _bokeh: https://bokeh.pydata.org/en/latest/
 
+.. _clusterssh: https://github.com/duncs/clusterssh
 
+.. _RunCommand: https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html
+
+.. _Security Groups for Your VPC: https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html
+
+.. _VPCs and Subnets: https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html
+
+.. _Amazon Virtual Private Cloud: https://aws.amazon.com/vpc/
+
+.. _Open DataCube Ingestion Config: https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config
+
+.. _Amazon Elastic File System: https://aws.amazon.com/efs/ 
+
+.. _Elastic IP Addresses: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html
 
