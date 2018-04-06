@@ -224,7 +224,7 @@ def segment(tile, gwf, algorithm, segmentation_meta,
         return False
 
 def predict_object(tile, gwf, model_name, segmentation_name,
-                   categorical_variables, aggregation):
+                   categorical_variables, aggregation, name):
     """Run a trained classifier in prediction mode on all objects intersection with a tile
 
     Args:
@@ -255,10 +255,12 @@ def predict_object(tile, gwf, model_name, segmentation_name,
             pass
         # Run prediction
         y_pred = PredModel.predict(X)
+        y_conf = PredModel.predict_confidence(X)
         # Build list of PredictClassification objects
         def predict_object_builder(x):
-            return PredictClassification(model_id=model_id, predict_object_id=x[0], tag_id=x[1])
-        obj_list = [predict_object_builder(x) for x in zip(y, y_pred)]
+            return PredictClassification(model_id=model_id, predict_object_id=x[0],
+                                         tag_id=x[1], confidence=x[2], name=name)
+        obj_list = [predict_object_builder(x) for x in zip(y, y_pred, y_conf)]
         PredictClassification.objects.bulk_create(obj_list)
         return True
     except Exception as e:

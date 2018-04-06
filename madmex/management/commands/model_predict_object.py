@@ -95,6 +95,7 @@ antares model_predict_object -p landsat_madmex_001_jalisco_2017_2 -m rf_madmex_0
                                     'segmentation_name': segmentation,
                                     'categorical_variables': categorical_variables,
                                     'aggregation': spatial_aggregation,
+                                    'name': name,
                                    })
         result = client.gather(C)
 
