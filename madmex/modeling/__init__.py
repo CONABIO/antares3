@@ -35,26 +35,23 @@ class BaseModel(abc.ABC):
         '''
         self.categorical_features = categorical_features
 
-    @abc.abstractmethod
     def fit(self, X, y):
         '''
         This method will train the classifier with given data.
         '''
-        pass
+        NotImplementedError('Children of BaseModel need to implement their own fit method')
 
-    @abc.abstractmethod
     def predict(self, X):
         '''
         When the model is created, this method lets the user predict on unseen data.
         '''
-        pass
+        NotImplementedError('Children of BaseModel need to implement their own predict method')
 
-    @abc.abstractmethod
     def predict_confidence(self, X):
         '''
         For every unseen observation, get the highest probability
         '''
-        pass
+        NotImplementedError('Children of BaseModel need to implement their own predict_confidence method')
 
     def hot_encode_training(self, X):
         """Apply one hot encoding to one or several predictors determined by the list

@@ -257,13 +257,15 @@ def predict_object(tile, gwf, model_name, segmentation_name,
         y_pred = PredModel.predict(X)
         y_conf = PredModel.predict_confidence(X)
         # Build list of PredictClassification objects
-        def predict_object_builder(x):
-            return PredictClassification(model_id=model_id, predict_object_id=x[0],
-                                         tag_id=x[1], confidence=x[2], name=name)
-        obj_list = [predict_object_builder(x) for x in zip(y, y_pred, y_conf)]
+        def predict_object_builder(i, pred, conf):
+            return PredictClassification(model_id=model_id, predict_object_id=i,
+                                         tag_id=pred, confidence=conf, name=name)
+        obj_list = [predict_object_builder(i,pred,conf) for i, pred, conf in
+                    zip(y, y_pred, y_conf)]
         PredictClassification.objects.bulk_create(obj_list)
         return True
     except Exception as e:
+        print('Prediction failed because: %s' % e)
         return False
 
 
