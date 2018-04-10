@@ -2,10 +2,64 @@
 Setup/first time use
 ********************
 
+
 Initial setup of both ``datacube`` (used as backend for antares) and ``antares`` itself requires a few one time actions.
 
-Datacube
-========
+
+
+Configuration Files
+===================
+
+Both ``datacube`` and ``antares`` require configuration files to operate. In both cases these configuration files must be placed at the root of the user's home directory (``~/``).
+
+Open DataCube
+-------------
+
+In the case of datacube, the configuration file must be named ``.datacube.conf`` and contains database connection specifications. See `datacube doc <http://datacube-core.readthedocs.io/en/stable/ops/db_setup.html#create-configuration-file>`_ for more details.
+
+::
+
+    [datacube]
+    db_database: <database_name>
+
+    # A blank host will use a local socket. Specify a hostname (such as localhost) to use TCP.
+    db_hostname: <database_host>
+
+    # Credentials are optional: you might have other Postgres authentication configured.
+    # The default username otherwise is the current user id.
+    db_username: <database_user>
+    db_password: <database_password>
+
+
+Antares3
+--------
+
+The configuration file used by antares contain various fields related to data location, password and database details, and must be named ``.antares``. Place it at the root of the user's home directory (``~/``). Depending on the ``antares`` functionalities you are planning to use, some field may be left empty. For instance ``SCIHUB_USER`` and ``SCIHUB_PASSWORD`` are not required if you are not planning to query or download sentinel data.
+
+::
+
+    SECRET_KEY=
+    DEBUG=True
+    DJANGO_LOG_LEVEL=DEBUG
+    DATABASE_NAME=
+    DATABASE_USER=
+    DATABASE_PASSWORD=
+    DATABASE_HOST=
+    DATABASE_PORT=
+    SERIALIZED_OBJECTS_DIR=
+    USGS_USER=
+    USGS_PASSWORD=
+    SCIHUB_USER=
+    SCIHUB_PASSWORD=
+    TEMP_DIR=
+    INGESTION_PATH=
+
+
+Local
+======
+
+Open DataCube
+-------------
 
 .. code-block:: bash
 
@@ -19,8 +73,8 @@ Check that datacube is properly setup by running
     datacube system check
 
 
-Antares
-=======
+Antares3
+--------
 
 Antares setup consists of enabling the postgis extension for the database, setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.
 
@@ -31,3 +85,112 @@ Antares setup consists of enabling the postgis extension for the database, setti
     antares init -c mex
 
 This will create a ``madmex`` directory under ``~/.config/`` where ingestion files for all different suported dataset will be stored.
+
+
+
+Cloud deployment
+================
+
+This section uses configuration files at the top of this page.
+
+Amazon Web Services
+-------------------
+
+Open DataCube
+^^^^^^^^^^^^^
+
+Once configuration file for ``datacube`` was created, execute in an instance of `Auto Scaling Groups`_ configured in `Dependencies-Cloud Deployment`_ in step 2:
+
+.. attention:: 
+
+	Open Datacube supports NETCDF CF and S3 drivers for storage (see `Open DataCube Ingestion Config`_). Different software dependencies are required for different drivers and different ``datacube system init`` command.
+
+
+\* NETCDF CF
+
+.. code-block:: bash
+
+    datacube -v system init --no-init-users 
+
+
+\* S3 
+
+.. code-block:: bash
+
+    datacube -v system init -s3 --no-init-users 
+
+
+.. note:: 
+
+	The ``--no-init-users`` flag is necessary for both drivers so we don't have errors related to permissions. See `this question in StackOverFlow`_ .
+
+
+
+For both drivers you can execute the following to check that Open DataCube is properly setup:
+
+.. code-block:: bash
+
+    datacube system check
+
+
+.. note:: 
+
+	For S3 driver additionally you can check the following tables are created in your database: 
+
+	.. code-block:: psql
+
+		\dt agdc.*
+
+		s3_dataset
+		s3_dataset_chunk
+		s3_dataset_mapping
+
+
+
+Antares3
+^^^^^^^^
+
+Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.
+
+Log in to an instance and copy paste in ``$mount_point/.antares`` the configuration file for ``antares``.
+
+Also create a ``$mount_point/license.txt`` file. (Check if this is correct)
+
+.. note::
+
+    if shared volume is not mounted do:
+
+	.. code-block:: bash	
+
+	     source /home/ubuntu/.profile
+	     sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 $efs_dns:/ $mount_point #with properly value of variable efs_dns
+
+ 
+Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` configured in `Dependencies-Cloud Deployment`_ in step 2, or use a tool for cluster management like `clusterssh`_ . 
+
+
+
+.. code-block:: bash
+
+    #!/bin/bash
+    source /home/ubuntu/.profile
+    ln -sf $mount_point/.antares /home/ubuntu/.antares
+    #ln -sf $mount_point/license.txt /home/ubuntu/git/antares3/madmex/bin/bis/license.txt
+    antares init
+
+This will create a ``madmex`` directory under ``/home/ubuntu/.config/`` where ingestion files for all different suported dataset will be stored.
+
+
+
+.. _Auto Scaling Groups: https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html
+
+
+.. _this question in StackOverFlow: https://stackoverflow.com/questions/46981873/permission-denied-to-set-session-authorization-on-amazon-postgres-rds
+
+
+.. _Open DataCube Ingestion Config: https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config
+.. _clusterssh: https://github.com/duncs/clusterssh
+
+.. _RunCommand: https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html
+
+
