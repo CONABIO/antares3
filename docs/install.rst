@@ -33,7 +33,7 @@ Activate a ``python3`` virtual environmemt and run:
     pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
     pip install rasterio==1.0a12
     # Install antares and all its dependencies (square brackets need to be escaped in zsh)
-    pip install git+https://github.com/CONABIO/antares3.git[all]
+    pip install git+https://github.com/CONABIO/antares3.git#egg=antares3[all]
 
 
 
