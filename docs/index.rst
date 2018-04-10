@@ -16,6 +16,7 @@ Antares
    :hidden:
    :caption: User guide
 
+   dependencies
    install
    setup
    cli
