@@ -8,10 +8,12 @@ Purpose: Retrieve and display list of models, segmentations and training sets
 """
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import Model, SegmentationInformation, TrainClassification
+from madmex.models import PredictClassification
 
 class Command(AntaresBaseCommand):
     help = """
-Helper command line to inspect models, segmentations and training sets present in the database
+Helper command line to inspect models, segmentations, classifications
+and training sets present in the database
 
 --------------
 Example usage:
@@ -24,6 +26,9 @@ antares list training_sets
 
 # Get the list of previously ran segmentations
 antares list segmentations
+
+# Get the list of generated object based classifications
+antares list classifications
 """
     def add_arguments(self, parser):
         parser.add_argument('key',
@@ -43,6 +48,9 @@ antares list segmentations
         elif key == 'segmentations':
             fields = ['name', 'algorithm']
             qs = SegmentationInformation.objects.values_list(*fields).distinct()
+        elif key == 'classifications':
+            fields = ['name']
+            qs = PredictClassification.objects.values_list(*fields).distinct()
         else:
             print('Unknown command argument')
             return
