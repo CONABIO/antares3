@@ -96,6 +96,8 @@ This section uses configuration files at the top of this page.
 Amazon Web Services
 -------------------
 
+It's assumed that a Cluster is already configured and variable ``mount_point`` is set to path of shared volume.
+
 Open DataCube
 ^^^^^^^^^^^^^
 
@@ -155,15 +157,6 @@ Antares setup consists of setting up the database schemas, ingesting country bor
 Log in to an instance and copy paste in ``$mount_point/.antares`` the configuration file for ``antares``.
 
 Also create a ``$mount_point/license.txt`` file. (Check if this is correct)
-
-.. note::
-
-    if shared volume is not mounted do:
-
-	.. code-block:: bash	
-
-	     source /home/ubuntu/.profile
-	     sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 $efs_dns:/ $mount_point #with properly value of variable efs_dns
 
  
 Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` configured in `Dependencies-Cloud Deployment`_ in step 2, or use a tool for cluster management like `clusterssh`_ . 
