@@ -2,85 +2,178 @@
 Installation
 ************
 
-System libraries
-================
-
-The system requires gdal, postgres, postgis and libnetcdf. The instructions below refer to a deployment on Ubuntu or Ubuntu derivatives.
-  
-.. code-block:: bash
-
-    sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
-    sudo apt-get update
-    # Datacube system dependencies (gdal and netcdf)
-    sudo apt-get install libhdf5-serial-dev libnetcdf-dev libgdal1-dev
-    # Postgres
-    sudo apt-get install postgresql postgresql-contrib postgis
-    # Python3
-    sudo apt-get install python3 python3-dev python3-pip python3-virtualenv
-    # Other
-    sudo pip install virtualenvwrapper
-    # Source virtualenvwrapper installation directory in your .bashrc
-
-
-Python package
-==============
-
 Activate a ``python3`` virtual environmemt and run:
 
 .. code-block:: bash
 
-    pip install numpy
-    pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
-    pip install rasterio==1.0a12
     # Install antares and all its dependencies (square brackets need to be escaped in zsh)
     pip install git+https://github.com/CONABIO/antares3.git#egg=antares3[all]
 
 
+Cluster mode
+============
 
-Configuration files
-===================
+Amazon Web Services
+-------------------
 
-Both ``datacube`` and ``antares`` require configuration files to operate. In both cases these configuration files must be placed at the root of the user's home directory (``~/``).
+Sun Grid Engine
+^^^^^^^^^^^^^^^
 
-Datacube
---------
+1. Init Cluster, example with one master and two nodes. Install Open DataCube and Antares3.
+ 
 
-In the case of datacube, the configuration file must be named ``.datacube.conf`` and contains database connection specifications. See `datacube doc <http://datacube-core.readthedocs.io/en/stable/ops/db_setup.html#create-configuration-file>`_ for more details.
+Using instances of `Auto Scaling Groups`_ configured in `Dependencies-Cloud Deployment`_ in step 2 we have to configure SGE queue on master node and register nodes on this queue:
+   
+**Asing Elastic IP to master node and create Sun Grid Engine queue**
+   
+Run the following bash script using `RunCommand`_ or login to an instance from your autoscaling group to run it (doesn't matter which one). The instance where  the bash script is executed will be the **master node** of our cluster.
+ 
+We use an elastic IP provided by AWS for the node that will be the **master node**, so change variable ``eip`` according to your ``Allocation ID`` (see `Elastic IP Addresses`_).
+ 
 
-::
+We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic File System`_), which multiple Amazon EC2 instances running in multiple Availability Zones (AZs) within the same region can access it. Change variable ``efs_dns`` according to your ``DNS name``.
+ 
 
-    [datacube]
-    db_database: datacube
+.. note:: 
 
-    # A blank host will use a local socket. Specify a hostname (such as localhost) to use TCP.
-    db_hostname:
+    Modify variables ``eip``, ``name_instance``, ``efs_dns``, ``queue_name`` and ``slots`` with your own configuration.  Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example.
 
-    # Credentials are optional: you might have other Postgres authentication configured.
-    # The default username otherwise is the current user id.
-    # db_username: 
-    # db_password:
+.. code-block:: bash
 
-antares
--------
+    #!/bin/bash
+    ##variables
+    source /home/ubuntu/.profile
+    eip=<Allocation ID of Elastic IP>
+    name_instance=conabio-dask-sge-master
+    efs_dns=<DNS name of EFS>
+    ##Name of the queue that will be used by dask-scheduler and dask-workers
+    queue_name=dask-queue.q
+    ##We use one slot for every instance
+    slots=1
+    region=$region
+    type_value=$type_value
+    ##Mount shared volume
+    mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 $efs_dns:/ $mount_point
+    ##Tag instance
+    INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+    PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+    ##Assing elastic IP where this bash script is executed
+    aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $eip --region $region
+    ##Tag instance where this bash script is executed
+    aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
+    ##Execute bash script create-dask-sge-queue already created on Dependencies-Cloud Deployment
+    bash $mount_point/create-dask-sge-queue.sh $queue_name $slots
 
-The configuration file used by antares contain various fields related to data location, password and database details, and must be named ``.antares``. Place it at the root of the user's home directory. Depending on the ``antares`` functionalities you are planning to use, some field may be left empty. For instance ``SCIHUB_USER`` and ``SCIHUB_PASSWORD`` are not required if you are not planning to query or download sentinel data.
+   
+**Restart gridengine-exec on nodes and install OpenDataCube and Antares3**
+ 
 
-::
+Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` already configured in `Dependencies-Cloud Deployment`_ in step 2, or use a tool for cluster management like `clusterssh`_ . (You can also have the lines that install OpenDataCube and Antares3 on the bash script configured in `Dependencies-Cloud Deployment`_ in step 2 in instances of AutoScalingGroup)
 
-    SECRET_KEY=
-    DEBUG=True
-    DJANGO_LOG_LEVEL=DEBUG
-    DATABASE_NAME=
-    DATABASE_USER=
-    DATABASE_PASSWORD=
-    DATABASE_HOST=
-    DATABASE_PORT=
-    SERIALIZED_OBJECTS_DIR=
-    USGS_USER=
-    USGS_PASSWORD=
-    SCIHUB_USER=
-    SCIHUB_PASSWORD=
-    TEMP_DIR=
-    INGESTION_PATH=
-    SERIALIZED_OBJECTS_DIR=
+
+.. code-block:: bash
+
+    #!/bin/bash
+    source /home/ubuntu/.profile
+    efs_dns=<DNS name of EFS>
+    mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 $efs_dns:/ $mount_point
+    ##Ip for sun grid engine master
+    master_dns=$(cat $mount_point/ip_master.txt)
+    echo $master_dns > /var/lib/gridengine/default/common/act_qmaster
+    /etc/init.d/gridengine-exec restart
+    #clone develop branch of antares3
+    cd /home/ubuntu/git && git clone https://github.com/CONABIO/antares3.git && cd antares3 && git checkout -b develop origin/develop
+    ##Install open datacube and antares3
+    /bin/bash -c "alias python=python3 && pip3 install git+https://github.com/CONABIO/datacube-core.git@develop && cd /home/ubuntu/git/antares3 && pip3 install -e ."
+    chmod -R gou+wx /home/ubuntu/git/antares3
+
+
+
+
+**Run SGE commands to init cluster.**
+   
+Login to master node and execute:
+
+.. code-block:: bash
+
+    # Start dask-scheduler on master node. The file scheduler.json will be created on $mount_point (shared_volume) of EFS
+    qsub -b y -l h=$HOSTNAME dask-scheduler --scheduler-file $mount_point/scheduler.json
+
+If your group of autoscaling has 3 nodes, then execute:
+
+.. code-block:: bash
+
+    # Start 2 dask-worker processes in an array job pointing to the same file
+    qsub -b y -t 1-2 dask-worker --scheduler-file $mount_point/scheduler.json
+
+You can view the web SGE on the page:
+
+**<public DNS of master>/qstat/qstat.cgi**
+
+and the state of your cluster with `bokeh`_  at:
+
+
+**<public DNS of master>:8787**
+
+or
+
+**<public DNS of worker>:8789** 
+
+**Run an example.**
+   
+On master or node execute:
+
+.. code-block:: python3
+
+    from dask.distributed import Client
+    import os
+    client = Client(scheduler_file=os.environ['mount_point']+'/scheduler.json')
+
+    def square(x):
+        return x ** 2
+
+    def neg(x):
+        return -x
+
+    A = client.map(square, range(10))
+    B = client.map(neg, A)
+    total = client.submit(sum, B)
+    total.result()
+    -285
+    total
+    <Future: status: finished, type: int, key: sum-ccdc2c162ed26e26fc2dc2f47e0aa479>
+    client.gather(A)
+    [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+
+.. note::
+
+    To stop cluster on master or node execute:
+
+    .. code-block:: bash
+
+        qdel 1 2
+
+
+
+MPI
+"""
+
+Coming Soon
+
+
+.. _Auto Scaling Groups: https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html
+
+.. _bokeh: https://bokeh.pydata.org/en/latest/
+
+.. _clusterssh: https://github.com/duncs/clusterssh
+
+.. _RunCommand: https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html
+
+.. _Open DataCube Ingestion Config: https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config
+
+.. _Amazon Elastic File System: https://aws.amazon.com/efs/ 
+
+.. _Elastic IP Addresses: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html
+
 
