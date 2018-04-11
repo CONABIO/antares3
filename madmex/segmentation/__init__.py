@@ -10,6 +10,7 @@ from django.contrib.gis.geos.geometry import GEOSGeometry
 
 from madmex.util.spatial import feature_transform
 from madmex.models import PredictObject
+from madmex.util import chunk
 
 class BaseSegmentation(metaclass=abc.ABCMeta):
     """
@@ -83,9 +84,9 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
                 }
             }
             return fc_out
-        fc_out = [to_feature(x) for x in geom_collection]
+        fc_out = (to_feature(x) for x in geom_collection)
         if crs_out is not None:
-            fc_out = [feature_transform(x, crs_out=crs_out, crs_in=self.crs) for x in fc_out]
+            fc_out = (feature_transform(x, crs_out=crs_out, crs_in=self.crs) for x in fc_out)
         self.fc = fc_out
 
     def _get_params(self):
@@ -127,7 +128,8 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             obj = PredictObject(the_geom=geom, segmentation_information=meta_object)
             return obj
 
-        obj_list = [predict_obj_builder(x) for x in self.fc]
-        PredictObject.objects.bulk_create(obj_list)
+        for fc_chunk in chunk(self.fc, 50000):
+            obj_list = [predict_obj_builder(x) for x in fc_chunk]
+            PredictObject.objects.bulk_create(obj_list)
 
 
