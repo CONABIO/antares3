@@ -43,7 +43,7 @@ It's assumed you have created a bucket in S3.
     
 	datacube -v product add /home/ubuntu/.config/madmex/indexing/landsat_8_espa_scenes.yaml
 
-	#right now is not dynamic, so copy and modify container entry of ls8_espa_mexico_s3.yaml with name of bucket
+	#right now is not dynamic, so copy and modify container entry of ls8_espa_mexico_s3.yaml with name of bucket. Next line is to copy already file created
 
 	#cp /shared_volume/datacube/madmex_conf_files/ingestion/ls8_espa_mexico_s3.yaml /home/ubuntu/.config/madmex/ingestion/
 
