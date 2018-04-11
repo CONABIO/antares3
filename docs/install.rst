@@ -10,8 +10,8 @@ Activate a ``python3`` virtual environmemt and run:
     pip install git+https://github.com/CONABIO/antares3.git#egg=antares3[all]
 
 
-Cluster mode
-============
+Cloud Deployment
+================
 
 Amazon Web Services
 -------------------
@@ -19,10 +19,11 @@ Amazon Web Services
 Sun Grid Engine
 ^^^^^^^^^^^^^^^
 
-1. Init Cluster, example with one master and two nodes. Install Open DataCube and Antares3.
- 
 
-Using instances of `Auto Scaling Groups`_ configured in `Dependencies-Cloud Deployment`_ in step 2 we have to configure SGE queue on master node and register nodes on this queue:
+Init Cluster, example with one master and two nodes. Install Open DataCube and Antares3 in all nodes.
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
+
+Using instances of `Auto Scaling Groups`_ configured in `Dependencies-Cloud Deployment`_ in step 2 we have to configure SGE queue on master node and register nodes on this queue.
    
 **Asing Elastic IP to master node and create Sun Grid Engine queue**
    
@@ -68,7 +69,7 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
 **Restart gridengine-exec on nodes and install OpenDataCube and Antares3**
  
 
-Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` already configured in `Dependencies-Cloud Deployment`_ in step 2, or use a tool for cluster management like `clusterssh`_ . (You can also have the lines that install OpenDataCube and Antares3 on the bash script configured in `Dependencies-Cloud Deployment`_ in step 2 in instances of AutoScalingGroup)
+Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` already configured in `Dependencies-Cloud Deployment`_ in step 2, or use a tool for cluster management like `clusterssh`_ . (You can also have the line that install OpenDataCube and Antares3 on the bash script configured in `Dependencies-Cloud Deployment`_ in step 2 in instances of AutoScalingGroup)
 
 
 .. code-block:: bash
@@ -81,13 +82,8 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
     master_dns=$(cat $mount_point/ip_master.txt)
     echo $master_dns > /var/lib/gridengine/default/common/act_qmaster
     /etc/init.d/gridengine-exec restart
-    #clone develop branch of antares3
-    cd /home/ubuntu/git && git clone https://github.com/CONABIO/antares3.git && cd antares3 && git checkout -b develop origin/develop
     ##Install open datacube and antares3
     /bin/bash -c "alias python=python3 && pip3 install git+https://github.com/CONABIO/datacube-core.git@develop && cd /home/ubuntu/git/antares3 && pip3 install -e ."
-    chmod -R gou+wx /home/ubuntu/git/antares3
-
-
 
 
 **Run SGE commands to init cluster.**
