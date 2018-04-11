@@ -1,6 +1,7 @@
 import random
 import string
 import inspect
+from itertools import chain, islice
 
 import yaml
 
@@ -84,18 +85,20 @@ def parser_extra_args(x):
     d1 = {k: change_type(v) for k, v in d0.items()}
     return d1
 
-def chunk(x, chunk_size=10000):
-    """Splits a list into chunks
+
+def chunk(iterable, size=10000):
+    """Splits an iterable into chunks
 
     Args:
-        x (list): A list
+        x (list): A list or generator
         chunk_size (int): The chunking size
 
     Return:
         A chunks generator
     """
-    for i in range(0, len(x), chunk_size):
-        yield x[i:i+chunk_size]
+    iterator = iter(iterable)
+    for first in iterator:
+        yield chain([first], islice(iterator, size - 1))
 
 
 def pprint_args(fun, exclude=None):
