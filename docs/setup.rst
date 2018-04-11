@@ -96,12 +96,12 @@ This section uses configuration files at the top of this page.
 Amazon Web Services
 -------------------
 
-It's assumed that a Cluster is already configured and variable ``mount_point`` is set to path of shared volume.
+It's assumed that a Cluster is already configured and variable ``mount_point`` is set to path of shared volume. See `Installation-Cloud Deployment`_ .
 
 Open DataCube
 ^^^^^^^^^^^^^
 
-Once configuration file for ``datacube`` was created, execute in an instance of `Auto Scaling Groups`_ configured in `Dependencies-Cloud Deployment`_ in step 2:
+Log in to an instance of `Auto Scaling Groups`_ configured in `Dependencies-Cloud Deployment`_ in step 2, create on that instance the configuration file for ``datacube`` and execute:
 
 .. attention:: 
 
@@ -155,8 +155,7 @@ Antares3
 Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.
 
 Log in to an instance and copy paste in ``$mount_point/.antares`` the configuration file for ``antares``.
-
-Also create a ``$mount_point/license.txt`` file. (Check if this is correct)
+Also create a ``$mount_point/license.txt`` file.
 
  
 Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` configured in `Dependencies-Cloud Deployment`_ in step 2, or use a tool for cluster management like `clusterssh`_ . 
@@ -168,7 +167,7 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
     #!/bin/bash
     source /home/ubuntu/.profile
     ln -sf $mount_point/.antares /home/ubuntu/.antares
-    #ln -sf $mount_point/license.txt /home/ubuntu/git/antares3/madmex/bin/bis/license.txt
+    ln -sf $mount_point/license.txt /home/ubuntu/git/antares3/madmex/bin/bis/license.txt
     antares init
 
 This will create a ``madmex`` directory under ``/home/ubuntu/.config/`` where ingestion files for all different suported dataset will be stored.
