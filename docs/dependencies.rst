@@ -243,7 +243,7 @@ Once created an AMI of AWS from previous step, use the following bash script to 
 
 .. note:: 
 
-    Modify variables ``region``, ``name_instance`` and ``type_value`` with your own configuration. Here instances are tagged with **Key** ``Type`` and **Value** ``Node-dask-sge`` so we can use `RunCommand`_ service of AWS to execute bash scripts (for example) in instances with this tag.
+    Modify variables ``region``, ``name_instance`` and ``type_value`` with your own configuration. Here instances are tagged with **Key** ``Type`` and **Value** ``Node-dask-sge`` so we can use `RunCommand`_ service of AWS to execute bash scripts (for example) on instances with this tag.
 
 .. code-block:: bash
 
@@ -260,17 +260,19 @@ Once created an AMI of AWS from previous step, use the following bash script to 
     echo "export region=$region" >> /home/ubuntu/.profile
     echo "export type_value=$type_value" >> /home/ubuntu/.profile
     /bin/bash -c "alias python=python3 && pip3 install numpy && pip3 install cloudpickle && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0a12 && pip3 install scipy"
-    ##Uncomment next lines if you want to install also Open Datacube and Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo
-    #clone develop branch of antares3
-    #cd /home/ubuntu/git && git clone https://github.com/CONABIO/antares3.git && cd antares3 && git checkout -b develop origin/develop
+    ##clone develop branch of antares3
+    cd /home/ubuntu/git && git clone https://github.com/CONABIO/antares3.git && cd antares3 && git checkout -b develop origin/develop
+    chmod -R gou+wx /home/ubuntu/git/antares3
+    ##Uncomment next line if you want to install also Open Datacube and Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo
     #/bin/bash -c "alias python=python3 && pip3 install git+https://github.com/CONABIO/datacube-core.git@develop && cd /home/ubuntu/git/antares3 && pip3 install -e ."
-    #chmod -R gou+wx /home/ubuntu/git/antares3
+    
 
 \* S3 driver of Open Datacube
   
 .. note:: 
 
-    Modify variables ``region``, ``name_instance`` and ``type_value`` with your own configuration. Here instances are tagged with **Key** ``Type`` and **Value** ``Node-dask-sge``.
+    Modify variables ``region``, ``name_instance`` and ``type_value`` with your own configuration. Here instances are tagged with **Key** ``Type`` and **Value** ``Node-dask-sge`` so we can use `RunCommand`_ service of AWS to execute bash scripts (for example) on instances with this tag.
+
 
    
 .. code-block:: bash
@@ -283,15 +285,16 @@ Once created an AMI of AWS from previous step, use the following bash script to 
     INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
     PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
+    ##Next line is useful so RunCommand can execute bash scripts (for example) on instances with Key=Type, Value=$type_value
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Type,Value=$type_value --region=$region
     echo "export region=$region" >> /home/ubuntu/.profile
     echo "export type_value=$type_value" >> /home/ubuntu/.profile
     /bin/bash -c "alias python=python3 && pip3 install numpy && pip3 install cloudpickle && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0a12 && pip3 install scipy && pip3 install boto3 && pip3 install SharedArray && pip3 install pathos && pip3 install zstandard"
-    ##Uncomment next lines if you want to install also Open Datacube and Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo
-    #clone develop branch of antares3
-    #cd /home/ubuntu/git && git clone https://github.com/CONABIO/antares3.git && cd antares3 && git checkout -b develop origin/develop
+    ##clone develop branch of antares3
+    cd /home/ubuntu/git && git clone https://github.com/CONABIO/antares3.git && cd antares3 && git checkout -b develop origin/develop
+    chmod -R gou+wx /home/ubuntu/git/antares3
+    ##Uncomment next line if you want to install also Open Datacube and Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo
     #/bin/bash -c "alias python=python3 && pip3 install git+https://github.com/CONABIO/datacube-core.git@develop && cd /home/ubuntu/git/antares3 && pip3 install -e ."
-    #chmod -R gou+wx /home/ubuntu/git/antares3
 
 Setting DataBase
 ^^^^^^^^^^^^^^^^
