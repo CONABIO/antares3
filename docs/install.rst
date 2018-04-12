@@ -106,14 +106,40 @@ You can view the web SGE on the page:
 
 **<public DNS of master>/qstat/qstat.cgi**
 
+.. image:: https://dl.dropboxusercontent.com/s/vr2hj5m26q90std/sge_1_sphinx_docu.png?dl=0
+    :width: 400
+
+
+**<public DNS of master>/qstat/queue.cgi**
+
+
+.. image:: https://dl.dropboxusercontent.com/s/4wfmbodapxx62ql/sge_2_sphinx_docu.png?dl=0
+    :width: 400
+
+**<public DNS of master>/qstat/qstat.cgi**
+
+.. image:: https://dl.dropboxusercontent.com/s/l45t46e1lg9lolt/sge_3_sphinx_docu.png?dl=0
+    :width: 600
+
 and the state of your cluster with `bokeh`_  at:
 
 
 **<public DNS of master>:8787**
 
+.. image:: https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0
+    :width: 400
+
+**<public DNS of master>:8787/workers**
+
+.. image:: https://dl.dropboxusercontent.com/s/1q6z4z10o5tv27f/bokeh_1_workers_sphinx_docu.png?dl=0
+    :width: 600
+
 or
 
 **<public DNS of worker>:8789** 
+
+.. image:: https://dl.dropboxusercontent.com/s/rnapd51c565huij/bokeh_2_sphinx_docu.png?dl=0
+    :width: 400
 
 **Run an example.**
    
@@ -140,6 +166,14 @@ On master or node execute:
     <Future: status: finished, type: int, key: sum-ccdc2c162ed26e26fc2dc2f47e0aa479>
     client.gather(A)
     [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+
+from **<public DNS of master>:8787/graph** we have:
+
+.. image:: https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0
+    :width: 600
+
+
 
 
 .. note::
