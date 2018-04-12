@@ -1,6 +1,0 @@
-madmex.util.xarray.to\_int
-==========================
-
-.. currentmodule:: madmex.util.xarray
-
-.. autofunction:: to_int

@@ -1,6 +1,0 @@
-madmex.io.vector\_db.VectorDb.load\_training\_from\_dataset
-===========================================================
-
-.. currentmodule:: madmex.io.vector_db
-
-.. automethod:: VectorDb.load_training_from_dataset

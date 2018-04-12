@@ -1,6 +1,0 @@
-madmex.util.local.aware\_download
-=================================
-
-.. currentmodule:: madmex.util.local
-
-.. autofunction:: aware_download

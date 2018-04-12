@@ -1,6 +1,0 @@
-madmex.util.local.filter\_files\_from\_folder
-=============================================
-
-.. currentmodule:: madmex.util.local
-
-.. autofunction:: filter_files_from_folder

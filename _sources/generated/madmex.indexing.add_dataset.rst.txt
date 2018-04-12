@@ -1,6 +1,0 @@
-madmex.indexing.add\_dataset
-============================
-
-.. currentmodule:: madmex.indexing
-
-.. autofunction:: add_dataset

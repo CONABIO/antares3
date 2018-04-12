@@ -1,6 +1,0 @@
-madmex.ingestion.bioclimatics.metadata\_convert
-===============================================
-
-.. currentmodule:: madmex.ingestion.bioclimatics
-
-.. autofunction:: metadata_convert

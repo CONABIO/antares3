@@ -1,6 +1,0 @@
-madmex.util.parser\_extra\_args
-===============================
-
-.. currentmodule:: madmex.util
-
-.. autofunction:: parser_extra_args

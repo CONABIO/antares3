@@ -1,6 +1,0 @@
-madmex.ingestion.landsat\_espa.metadata\_convert
-================================================
-
-.. currentmodule:: madmex.ingestion.landsat_espa
-
-.. autofunction:: metadata_convert

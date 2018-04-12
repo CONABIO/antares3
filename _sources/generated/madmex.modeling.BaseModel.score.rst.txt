@@ -1,6 +1,0 @@
-madmex.modeling.BaseModel.score
-===============================
-
-.. currentmodule:: madmex.modeling
-
-.. automethod:: BaseModel.score

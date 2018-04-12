@@ -1,6 +1,0 @@
-madmex.modeling.BaseModel.fit
-=============================
-
-.. currentmodule:: madmex.modeling
-
-.. automethod:: BaseModel.fit

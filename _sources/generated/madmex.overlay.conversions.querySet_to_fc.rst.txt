@@ -1,6 +1,0 @@
-madmex.overlay.conversions.querySet\_to\_fc
-===========================================
-
-.. currentmodule:: madmex.overlay.conversions
-
-.. autofunction:: querySet_to_fc

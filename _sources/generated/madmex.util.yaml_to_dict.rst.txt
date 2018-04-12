@@ -1,6 +1,0 @@
-madmex.util.yaml\_to\_dict
-==========================
-
-.. currentmodule:: madmex.util
-
-.. autofunction:: yaml_to_dict
