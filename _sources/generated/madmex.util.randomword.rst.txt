@@ -1,0 +1,6 @@
+madmex.util.randomword
+======================
+
+.. currentmodule:: madmex.util
+
+.. autofunction:: randomword

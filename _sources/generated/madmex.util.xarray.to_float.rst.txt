@@ -1,0 +1,6 @@
+madmex.util.xarray.to\_float
+============================
+
+.. currentmodule:: madmex.util.xarray
+
+.. autofunction:: to_float

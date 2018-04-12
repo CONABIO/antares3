@@ -1,0 +1,6 @@
+madmex.util.chunk
+=================
+
+.. currentmodule:: madmex.util
+
+.. autofunction:: chunk

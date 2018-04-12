@@ -1,0 +1,569 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>madmex.api.remote &mdash; antares3 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> antares3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dependencies.html">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup.html">Setup/first time use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../download.html">Downloading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ingest.html">Ingesting data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../extend.html">Extending the system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">antares3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>madmex.api.remote</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for madmex.api.remote</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Created on Dec 13, 2017</span>
+
+<span class="sd">@author: agutierrez</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">from</span> <span class="nn">madmex.settings</span> <span class="k">import</span> <span class="n">USGS_USER</span><span class="p">,</span> <span class="n">USGS_PASSWORD</span><span class="p">,</span> <span class="n">SCIHUB_USER</span><span class="p">,</span> \
+    <span class="n">SCIHUB_PASSWORD</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">espa_version</span> <span class="o">=</span> <span class="s1">&#39;v1&#39;</span>
+<span class="n">usgs_version</span> <span class="o">=</span> <span class="s1">&#39;stable&#39;</span>
+
+<div class="viewcode-block" id="UsgsApi"><a class="viewcode-back" href="../../../generated/madmex.api.remote.UsgsApi.html#madmex.api.remote.UsgsApi">[docs]</a><span class="k">class</span> <span class="nc">UsgsApi</span><span class="p">():</span>
+<div class="viewcode-block" id="UsgsApi.__init__"><a class="viewcode-back" href="../../../generated/madmex.api.remote.UsgsApi.html#madmex.api.remote.UsgsApi.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This is the constructor, it creates an object that holds</span>
+<span class="sd">        credentials to usgs portal. </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">USGS_USER</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">USGS_PASSWORD</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">USGS_USER</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">USGS_PASSWORD</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;https://earthexplorer.usgs.gov/inventory/json/v/</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">usgs_version</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Please add the usgs credentials to the .env file.&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_consume_api_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Method to hide the http call from the user.</span>
+<span class="sd">        </span>
+<span class="sd">        This method hides the complexity of making a request to usgs,</span>
+<span class="sd">        depending on whether data parameter is given or not, it makes</span>
+<span class="sd">        a GET or a POST request. It requires an endpoint to query the</span>
+<span class="sd">        api if an invalid request is given, then the aip will answer</span>
+<span class="sd">        with a 404 error message.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            endpoint: The endpoint to be consumed.</span>
+<span class="sd">            payload: Data to be included in the request, if None, a GET method is used if present a POST method is used.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary representing the json response.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">+</span> <span class="n">endpoint</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">payload</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># a POST request</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+    
+    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Function to log into the USGS query service.</span>
+
+<span class="sd">        The USGS api requires a key to return data. In order to get the key, valid</span>
+<span class="sd">        user name and password must be provided to the login endpoint. This key is ephimeral</span>
+<span class="sd">        and will be valid only for one hour.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the login was successful; False otherwise.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">USGS_USER</span><span class="p">,</span>
+                <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="n">USGS_PASSWORD</span><span class="p">}</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;jsonRequest&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)}</span>
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="s1">&#39;/login&#39;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Successfully logged in to earth explorer USGS api.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="s1">&#39;EE&#39;</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">starting_number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_results</span><span class="o">=</span><span class="mi">50000</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Queries the USGS api for images in a given extent.</span>
+
+<span class="sd">        This service requires to be logged into USGS. It is limited to an extent of interest which</span>
+<span class="sd">        must be a square and it is not suited for more complex polygons. It paginates automatically</span>
+<span class="sd">        so in order to pull a big set, the query can be split. This behaviour can be controlled by using</span>
+<span class="sd">        the max results and starting number attributes. Temporal queries are available by</span>
+<span class="sd">        providing a time window. Several collections are available, as of the moment of writing this, only</span>
+<span class="sd">        collection 1 items are available, so the query must be suffixed with that information, for example:</span>
+<span class="sd">        LANDSAT_8_C1 would be a valid collection. Details on the api can be found in https://earthexplorer.usgs.gov/inventory</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            extent: The extent of the query in a tuple such as (min_lon, min_lat, max_lon, max_lat)</span>
+<span class="sd">            collection: A string that represents the collection of interest for example LANDSAT_8_C1</span>
+<span class="sd">            node: A service provider, can be one of: &quot;CWIC&quot;, &quot;EE&quot;, &quot;HDDS&quot;, &quot;LPVS&quot;</span>
+<span class="sd">            start_date: The start date for the temporal window in a format yyyy-mm-dd.</span>
+<span class="sd">            end_date: The end date for the temporal window in a format yyyy-mm-dd.</span>
+<span class="sd">            starting_number: An int representing where the query should start.</span>
+<span class="sd">            max_results: The maximum number of scenes that the request will return.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The response from the service.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1">#(-118.404167, 14.550547, -86.701401, 32.718456)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;apiKey&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">,</span>
+                    <span class="s1">&#39;node&#39;</span><span class="p">:</span> <span class="n">node</span><span class="p">,</span>
+                    <span class="s1">&#39;datasetName&#39;</span><span class="p">:</span> <span class="n">collection</span><span class="p">,</span>
+                    <span class="s1">&#39;lowerLeft&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                    <span class="s1">&#39;latitude&#39;</span><span class="p">:</span> <span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                    <span class="s1">&#39;longitude&#39;</span><span class="p">:</span> <span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                            <span class="p">},</span>
+                    <span class="s1">&#39;upperRight&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                    <span class="s1">&#39;latitude&#39;</span><span class="p">:</span> <span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                                    <span class="s1">&#39;longitude&#39;</span><span class="p">:</span> <span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                            <span class="p">}</span>
+                    <span class="p">}</span>
+            <span class="k">if</span> <span class="n">start_date</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;startDate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_date</span>
+
+            <span class="k">if</span> <span class="n">end_date</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;endDate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_date</span>
+
+            <span class="k">if</span> <span class="n">max_results</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;maxResults&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_results</span>
+
+            <span class="k">if</span> <span class="n">starting_number</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;startingNumber&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">starting_number</span>
+
+            <span class="n">payload</span><span class="o">=</span> <span class="p">{</span><span class="s1">&#39;jsonRequest&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)}</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+            <span class="n">endpoint</span> <span class="o">=</span> <span class="s1">&#39;/search&#39;</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;The client is not logged in, or the key has expired.&#39;</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;error&#39;</span><span class="p">:</span><span class="s1">&#39;Must log into the USGS service in order to use this function.&#39;</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">def</span> <span class="nf">logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Function to log out the USGS query service.</span>
+
+<span class="sd">        When the instance of this class is not useful anymore, this method must be called</span>
+<span class="sd">        to invalidate the key.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the login was successful; False otherwise.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">:</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;apiKey&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">}</span>
+            <span class="n">endpoint</span> <span class="o">=</span> <span class="s1">&#39;/logout?jsonRequest=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Successfully logged out of earth explorer usgs api.&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;The key was no longer valid.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;You need to log in first in order to log out!.&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EspaApi"><a class="viewcode-back" href="../../../generated/madmex.api.remote.EspaApi.html#madmex.api.remote.EspaApi">[docs]</a><span class="k">class</span> <span class="nc">EspaApi</span><span class="p">():</span>
+<div class="viewcode-block" id="EspaApi.__init__"><a class="viewcode-back" href="../../../generated/madmex.api.remote.EspaApi.html#madmex.api.remote.EspaApi.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This is the constructor, it creates an object that holds</span>
+<span class="sd">        credentials to usgs portal. </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">USGS_USER</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">USGS_PASSWORD</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">USGS_USER</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">USGS_PASSWORD</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;https://espa.cr.usgs.gov&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Please add the usgs credentials to the .env file.&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_consume_api_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This method hides the complexity of making a request to usgs,</span>
+<span class="sd">        depending on whether data parameter is given or not, it makes</span>
+<span class="sd">        a GET or a POST request. It requires an endpoint to query the</span>
+<span class="sd">        api if an invalid request is given, then the aip will answer</span>
+<span class="sd">        with a 404 error message.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">+</span> <span class="s1">&#39;/api&#39;</span> <span class="o">+</span> <span class="n">endpoint</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">USGS_USER</span><span class="p">,</span><span class="n">USGS_PASSWORD</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># a POST request</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">USGS_USER</span><span class="p">,</span><span class="n">USGS_PASSWORD</span><span class="p">))</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">get_functions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Obtains the functions available in the api.</span>
+<span class="sd">        </span>
+<span class="sd">        Will query the api for the valid functions that it exposes.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            The dictionary representation of the api response.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">espa_version</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_projections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Returns the available projections that the api supports.</span>
+<span class="sd">        </span>
+<span class="sd">        Just queries the api to obtain the available projections.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary with the projections.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/projections&#39;</span> <span class="o">%</span> <span class="n">espa_version</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_available_products</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene_id</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Returns the available products that the api offers.</span>
+<span class="sd">        </span>
+<span class="sd">        Given a scene id, this method returns the available products</span>
+<span class="sd">        that can be requested in an order.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary with the available products.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/available-products/</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">espa_version</span><span class="p">,</span> <span class="n">scene_id</span><span class="p">))</span>
+    
+    <span class="k">def</span> <span class="nf">get_formats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Lists the available formats for the data.</span>
+<span class="sd">        </span>
+<span class="sd">        Retrieves the available formats in which the data can be requested. This formats</span>
+<span class="sd">        include the type of raster the system can handle.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A list with the formats.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/formats&#39;</span> <span class="o">%</span> <span class="n">espa_version</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">products</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Creates an order in the ESPA api.</span>
+<span class="sd">        </span>
+<span class="sd">        This is the only method implementing a post request. Data about which</span>
+<span class="sd">        scenes are requested and which products are needed is required on </span>
+<span class="sd">        this method calling. More complex querying is supported, we are keeping</span>
+<span class="sd">        this simple for now.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary object with the order id.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">request_json</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;format&#39;</span><span class="p">:</span><span class="s1">&#39;gtiff&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;note&#39;</span><span class="p">:</span><span class="s1">&#39;testing&#39;</span><span class="p">,</span>
+                        <span class="n">collection</span><span class="p">:{</span>
+                                <span class="s1">&#39;inputs&#39;</span><span class="p">:</span><span class="n">inputs</span><span class="p">,</span>
+                                <span class="s1">&#39;products&#39;</span><span class="p">:</span><span class="n">products</span>
+                            <span class="p">}</span>
+                        <span class="p">}</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request_json</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/order&#39;</span> <span class="o">%</span> <span class="n">espa_version</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">get_list_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Queries the orders that have been requested.</span>
+<span class="sd">        </span>
+<span class="sd">        This method returns the status of the orders that have been posted. When</span>
+<span class="sd">        the orders are ready the download may start.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary object with the orders and status.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/list-orders&#39;</span> <span class="o">%</span> <span class="n">espa_version</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_resampling_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Lists the resampling methods available.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns the resampling methods available when the products are</span>
+<span class="sd">        requested in a different resolution that the standard one. Default</span>
+<span class="sd">        value will be nearest neighbors.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary object with the resampling methods.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/resampling-methods&#39;</span> <span class="o">%</span> <span class="n">espa_version</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_user_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Information of the key and password holders.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns information about the user that the credentials that this</span>
+<span class="sd">        object holds.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary object with the user&#39;s information.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/user&#39;</span> <span class="o">%</span> <span class="n">espa_version</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_list_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_id</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Retrieves the status of an order</span>
+<span class="sd">        </span>
+<span class="sd">        Queries the system for the status of the given order id.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary object with the order&#39;s status.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/item-status/</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">espa_version</span><span class="p">,</span> <span class="n">order_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="n">url</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScihubApi"><a class="viewcode-back" href="../../../generated/madmex.api.remote.ScihubApi.html#madmex.api.remote.ScihubApi">[docs]</a><span class="k">class</span> <span class="nc">ScihubApi</span><span class="p">():</span>
+<div class="viewcode-block" id="ScihubApi.__init__"><a class="viewcode-back" href="../../../generated/madmex.api.remote.ScihubApi.html#madmex.api.remote.ScihubApi.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This is the constructor, it creates an object that holds</span>
+<span class="sd">        credentials to usgs portal. </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">SCIHUB_USER</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">SCIHUB_PASSWORD</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">SCIHUB_USER</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">SCIHUB_PASSWORD</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="s1">&#39;https://scihub.copernicus.eu&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="p">(</span><span class="n">SCIHUB_USER</span><span class="p">,</span> <span class="n">SCIHUB_PASSWORD</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_agent</span> <span class="o">=</span> <span class="s1">&#39;sentinelsat/0.12.1&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;User-Agent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_agent</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Please add the scihub credentials to the .env file.&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+    
+    <span class="k">def</span> <span class="nf">_consume_api_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This method hides the complexity of making a request to scihub,</span>
+<span class="sd">        depending on whether data parameter is given or not, it makes</span>
+<span class="sd">        a GET or a POST request. It requires an endpoint to query the</span>
+<span class="sd">        api if an invalid request is given, then the aip will answer</span>
+<span class="sd">        with a 404 error message.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">+</span> <span class="s1">&#39;/dhus/search?start=0&amp;rows=100&#39;</span> 
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">((</span><span class="n">SCIHUB_USER</span><span class="p">,</span> <span class="n">SCIHUB_PASSWORD</span><span class="p">))</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">SCIHUB_USER</span><span class="p">,</span> <span class="n">SCIHUB_PASSWORD</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># a POST request</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">auth</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span>
+        <span class="k">return</span> <span class="n">data</span>
+    
+    <span class="k">def</span> <span class="nf">geo_query</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/resampling-methods&#39;</span> <span class="o">%</span> <span class="n">espa_version</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;q&#39;</span><span class="p">:</span> <span class="s1">&#39;*&#39;</span><span class="p">}</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_consume_api_requests</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.0',
+            LANGUAGE:'en',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

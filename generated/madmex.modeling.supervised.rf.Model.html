@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>madmex.modeling.supervised.rf.Model &mdash; antares3 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="madmex.modeling.supervised.xgb.Model" href="madmex.modeling.supervised.xgb.Model.html" />
+    <link rel="prev" title="madmex.modeling.BaseModel.create_report" href="madmex.modeling.BaseModel.create_report.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> antares3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup/first time use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../download.html">Downloading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ingest.html">Ingesting data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../extend.html">Extending the system</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#api">Api</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#indexing">Indexing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#ingestion">Ingestion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#i-o">I/O</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#modeling">Modeling</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../api.html#base-class">Base class</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../api.html#implemented-models">Implemented models</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">madmex.modeling.supervised.rf.Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.supervised.xgb.Model.html">madmex.modeling.supervised.xgb.Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.supervised.lgb.Model.html">madmex.modeling.supervised.lgb.Model</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#overlay">Overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#wrappers">Wrappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#utils">Utils</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">antares3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API reference</a> &raquo;</li>
+        
+      <li>madmex.modeling.supervised.rf.Model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/generated/madmex.modeling.supervised.rf.Model.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="madmex-modeling-supervised-rf-model">
+<h1>madmex.modeling.supervised.rf.Model<a class="headerlink" href="#madmex-modeling-supervised-rf-model" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="madmex.modeling.supervised.rf.Model">
+<em class="property">class </em><code class="descclassname">madmex.modeling.supervised.rf.</code><code class="descname">Model</code><span class="sig-paren">(</span><em>categorical_features=None</em>, <em>n_estimators=50</em>, <em>n_jobs=-1</em>, <em>max_depth=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/modeling/supervised/rf.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.modeling.supervised.rf.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Antares implementation of scikit learn random forest classifier</p>
+<dl class="method">
+<dt id="madmex.modeling.supervised.rf.Model.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>categorical_features=None</em>, <em>n_estimators=50</em>, <em>n_jobs=-1</em>, <em>max_depth=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/modeling/supervised/rf.html#Model.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.modeling.supervised.rf.Model.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.modeling.supervised.rf</span> <span class="k">import</span> <span class="n">Model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rf</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Write model to db</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rf</span><span class="o">.</span><span class="n">to_db</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;test_model&#39;</span><span class="p">,</span> <span class="n">recipe</span><span class="o">=</span><span class="s1">&#39;mexmad&#39;</span><span class="p">,</span> <span class="n">training_set</span><span class="o">=</span><span class="s1">&#39;no&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Read model from db</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rf2</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">from_db</span><span class="p">(</span><span class="s1">&#39;test_model&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#madmex.modeling.supervised.rf.Model.__init__" title="madmex.modeling.supervised.rf.Model.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([categorical_features,&nbsp;…])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_report</span></code>(expected,&nbsp;predicted[,&nbsp;filepath])</td>
+<td>Creates a report in the given filepath, it includes the confusion matrix, and information about the score.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(X,&nbsp;y)</td>
+<td>This method will train the classifier with given data.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_db</span></code>(name)</td>
+<td>Instantiate an object from a children class of BaseModel reading it from the database</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hot_encode_predict</span></code>(X)</td>
+<td>Hot Encode data on which prediction is to be performed</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hot_encode_training</span></code>(X)</td>
+<td>Apply one hot encoding to one or several predictors determined by the list of indices of the hot_encode attribute</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>()</td>
+<td>Read object from file</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(X)</td>
+<td>Simply passes down the prediction from the underlying model.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_confidence</span></code>(X)</td>
+<td>Get confidence of every prediction</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(filepath)</td>
+<td>Write entire object to file</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code>(X,&nbsp;y)</td>
+<td>Test the model given a dataset and a target vector.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_db</span></code>(name[,&nbsp;recipe,&nbsp;training_set])</td>
+<td>Write the instance of the class to the datbase</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="madmex.modeling.supervised.xgb.Model.html" class="btn btn-neutral float-right" title="madmex.modeling.supervised.xgb.Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="madmex.modeling.BaseModel.create_report.html" class="btn btn-neutral" title="madmex.modeling.BaseModel.create_report" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.0',
+            LANGUAGE:'en',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+madmex.segmentation.BaseSegmentation.from\_geoarray
+===================================================
+
+.. currentmodule:: madmex.segmentation
+
+.. automethod:: BaseSegmentation.from_geoarray

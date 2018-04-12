@@ -1,0 +1,26 @@
+madmex.segmentation.BaseSegmentation
+====================================
+
+.. currentmodule:: madmex.segmentation
+
+.. autoclass:: BaseSegmentation
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BaseSegmentation.__init__
+      ~BaseSegmentation.from_geoarray
+      ~BaseSegmentation.polygonize
+      ~BaseSegmentation.segment
+      ~BaseSegmentation.to_db
+   
+   
+
+   
+   
+   

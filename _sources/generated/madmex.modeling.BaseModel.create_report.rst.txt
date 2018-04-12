@@ -1,0 +1,6 @@
+madmex.modeling.BaseModel.create\_report
+========================================
+
+.. currentmodule:: madmex.modeling
+
+.. automethod:: BaseModel.create_report

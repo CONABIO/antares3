@@ -1,0 +1,6 @@
+madmex.overlay.extractions.calculate\_zonal\_statistics
+=======================================================
+
+.. currentmodule:: madmex.overlay.extractions
+
+.. autofunction:: calculate_zonal_statistics

@@ -1,0 +1,31 @@
+madmex.api.remote.EspaApi
+=========================
+
+.. currentmodule:: madmex.api.remote
+
+.. autoclass:: EspaApi
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~EspaApi.__init__
+      ~EspaApi.get_available_products
+      ~EspaApi.get_formats
+      ~EspaApi.get_functions
+      ~EspaApi.get_list_order
+      ~EspaApi.get_list_orders
+      ~EspaApi.get_projections
+      ~EspaApi.get_resampling_methods
+      ~EspaApi.get_user_info
+      ~EspaApi.order
+   
+   
+
+   
+   
+   

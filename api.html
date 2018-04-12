@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="madmex.api.remote.UsgsApi" href="generated/madmex.api.remote.UsgsApi.html" />
     <link rel="prev" title="Extending the system" href="extend.html" /> 
 
   
@@ -95,35 +96,71 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="extend.html">Extending the system</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#api">Api</a><ul class="simple">
+<li class="toctree-l2"><a class="reference internal" href="#api">Api</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.api.remote.UsgsApi.html">madmex.api.remote.UsgsApi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.api.remote.EspaApi.html">madmex.api.remote.EspaApi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.api.remote.ScihubApi.html">madmex.api.remote.ScihubApi</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#indexing">Indexing</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#ingestion">Ingestion</a><ul class="simple">
+<li class="toctree-l2"><a class="reference internal" href="#ingestion">Ingestion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.ingestion.bioclimatics.metadata_convert.html">madmex.ingestion.bioclimatics.metadata_convert</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.ingestion.landsat_espa.metadata_convert.html">madmex.ingestion.landsat_espa.metadata_convert</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.ingestion.srtm_cgiar.metadata_convert.html">madmex.ingestion.srtm_cgiar.metadata_convert</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#i-o">I/O</a><ul class="simple">
+<li class="toctree-l2"><a class="reference internal" href="#i-o">I/O</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.io.helpers.get_label_encoding.html">madmex.io.helpers.get_label_encoding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.io.vector_db.from_geobox.html">madmex.io.vector_db.from_geobox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.io.vector_db.VectorDb.html">madmex.io.vector_db.VectorDb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.io.vector_db.VectorDb.load_training_from_dataset.html">madmex.io.vector_db.VectorDb.load_training_from_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.io.vector_db.load_segmentation_from_dataset.html">madmex.io.vector_db.load_segmentation_from_dataset</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#modeling">Modeling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#base-class">Base class</a><ul class="simple">
+<li class="toctree-l3"><a class="reference internal" href="#base-class">Base class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.html">madmex.modeling.BaseModel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.fit.html">madmex.modeling.BaseModel.fit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.predict.html">madmex.modeling.BaseModel.predict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.load.html">madmex.modeling.BaseModel.load</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.save.html">madmex.modeling.BaseModel.save</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.from_db.html">madmex.modeling.BaseModel.from_db</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.to_db.html">madmex.modeling.BaseModel.to_db</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.hot_encode_training.html">madmex.modeling.BaseModel.hot_encode_training</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.hot_encode_predict.html">madmex.modeling.BaseModel.hot_encode_predict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.score.html">madmex.modeling.BaseModel.score</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.create_report.html">madmex.modeling.BaseModel.create_report</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#implemented-models">Implemented models</a><ul class="simple">
+<li class="toctree-l3"><a class="reference internal" href="#implemented-models">Implemented models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.supervised.rf.Model.html">madmex.modeling.supervised.rf.Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.supervised.xgb.Model.html">madmex.modeling.supervised.xgb.Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.supervised.lgb.Model.html">madmex.modeling.supervised.lgb.Model</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#overlay">Overlay</a><ul class="simple">
+<li class="toctree-l2"><a class="reference internal" href="#overlay">Overlay</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.overlay.conversions.rasterize_xarray.html">madmex.overlay.conversions.rasterize_xarray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.overlay.conversions.train_object_to_feature.html">madmex.overlay.conversions.train_object_to_feature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.overlay.conversions.predict_object_to_feature.html">madmex.overlay.conversions.predict_object_to_feature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.overlay.extractions.calculate_zonal_statistics.html">madmex.overlay.extractions.calculate_zonal_statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.overlay.extractions.zonal_stats_xarray.html">madmex.overlay.extractions.zonal_stats_xarray</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#segmentation">Segmentation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id5">Base class</a><ul class="simple">
+<li class="toctree-l3"><a class="reference internal" href="#id5">Base class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.html">madmex.segmentation.BaseSegmentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.from_geoarray.html">madmex.segmentation.BaseSegmentation.from_geoarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.segment.html">madmex.segmentation.BaseSegmentation.segment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.polygonize.html">madmex.segmentation.BaseSegmentation.polygonize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.to_db.html">madmex.segmentation.BaseSegmentation.to_db</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#implemented-algorithms">Implemented algorithms</a><ul class="simple">
+<li class="toctree-l3"><a class="reference internal" href="#implemented-algorithms">Implemented algorithms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.slic.Segmentation.html">madmex.segmentation.slic.Segmentation</a></li>
 </ul>
 </li>
 </ul>
@@ -131,7 +168,21 @@
 <li class="toctree-l2"><a class="reference internal" href="#wrappers">Wrappers</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#utils">Utils</a><ul class="simple">
+<li class="toctree-l2"><a class="reference internal" href="#utils">Utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.randomword.html">madmex.util.randomword</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.yaml_to_dict.html">madmex.util.yaml_to_dict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.mid_date.html">madmex.util.mid_date</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.parser_extra_args.html">madmex.util.parser_extra_args</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.chunk.html">madmex.util.chunk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.pprint_args.html">madmex.util.pprint_args</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.local.aware_download.html">madmex.util.local.aware_download</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.local.extract_zip.html">madmex.util.local.extract_zip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.local.aware_make_dir.html">madmex.util.local.aware_make_dir</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.local.basename.html">madmex.util.local.basename</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.local.filter_files_from_folder.html">madmex.util.local.filter_files_from_folder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.xarray.to_float.html">madmex.util.xarray.to_float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.xarray.to_int.html">madmex.util.xarray.to_int</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.spatial.feature_transform.html">madmex.util.spatial.feature_transform</a></li>
 </ul>
 </li>
 </ul>
@@ -211,13 +262,13 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.remote.UsgsApi</span></code></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.api.remote.UsgsApi.html#madmex.api.remote.UsgsApi" title="madmex.api.remote.UsgsApi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.remote.UsgsApi</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.remote.EspaApi</span></code></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.api.remote.EspaApi.html#madmex.api.remote.EspaApi" title="madmex.api.remote.EspaApi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.remote.EspaApi</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.remote.ScihubApi</span></code></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.api.remote.ScihubApi.html#madmex.api.remote.ScihubApi" title="madmex.api.remote.ScihubApi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.remote.ScihubApi</span></code></a>()</td>
 <td></td>
 </tr>
 </tbody>
@@ -262,14 +313,14 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.bioclimatics.metadata_convert</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.ingestion.bioclimatics.metadata_convert.html#madmex.ingestion.bioclimatics.metadata_convert" title="madmex.ingestion.bioclimatics.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.bioclimatics.metadata_convert</span></code></a>(path)</td>
+<td>Prepare metadata prior to datacube indexing</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.landsat_espa.metadata_convert</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.ingestion.landsat_espa.metadata_convert.html#madmex.ingestion.landsat_espa.metadata_convert" title="madmex.ingestion.landsat_espa.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.landsat_espa.metadata_convert</span></code></a>(path)</td>
+<td>Prepare metatdata prior to datacube indexing</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.srtm_cgiar.metadata_convert</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.ingestion.srtm_cgiar.metadata_convert.html#madmex.ingestion.srtm_cgiar.metadata_convert" title="madmex.ingestion.srtm_cgiar.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.srtm_cgiar.metadata_convert</span></code></a>(path)</td>
+<td>Prepare metadata prior to datacube indexing</td>
 </tr>
 </tbody>
 </table>
@@ -283,20 +334,20 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.helpers.get_label_encoding</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.io.helpers.get_label_encoding.html#madmex.io.helpers.get_label_encoding" title="madmex.io.helpers.get_label_encoding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.helpers.get_label_encoding</span></code></a>(scheme[,&nbsp;inverse])</td>
+<td>Get label –&gt; Numeric code correspondance for a given classification scheme as a dictionary</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.vector_db.from_geobox</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.io.vector_db.from_geobox.html#madmex.io.vector_db.from_geobox" title="madmex.io.vector_db.from_geobox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.vector_db.from_geobox</span></code></a></td>
+<td>classmethod(function) -&gt; method</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.vector_db.VectorDb</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.io.vector_db.VectorDb.html#madmex.io.vector_db.VectorDb" title="madmex.io.vector_db.VectorDb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.vector_db.VectorDb</span></code></a>()</td>
+<td>Query, read and write geometries between python’s memory and the database</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.vector_db.VectorDb.load_training_from_dataset</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.io.vector_db.VectorDb.load_training_from_dataset.html#madmex.io.vector_db.VectorDb.load_training_from_dataset" title="madmex.io.vector_db.VectorDb.load_training_from_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.vector_db.VectorDb.load_training_from_dataset</span></code></a>(…)</td>
+<td>Retieves training data from the database based on intersection with an xr Dataset</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.vector_db.load_segmentation_from_dataset</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.io.vector_db.load_segmentation_from_dataset.html#madmex.io.vector_db.load_segmentation_from_dataset" title="madmex.io.vector_db.load_segmentation_from_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">io.vector_db.load_segmentation_from_dataset</span></code></a>(…)</td>
+<td>Retrieve a segmentation intersecting with a geoarray from the database</td>
 </tr>
 </tbody>
 </table>
@@ -312,38 +363,38 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.html#madmex.modeling.BaseModel" title="madmex.modeling.BaseModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel</span></code></a>([categorical_features])</td>
+<td>This class works as a wrapper to have a single interface to several models and machine learning packages.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.fit</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.fit.html#madmex.modeling.BaseModel.fit" title="madmex.modeling.BaseModel.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.fit</span></code></a>(X,&nbsp;y)</td>
+<td>This method will train the classifier with given data.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.predict</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.predict.html#madmex.modeling.BaseModel.predict" title="madmex.modeling.BaseModel.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.predict</span></code></a>(X)</td>
+<td>When the model is created, this method lets the user predict on unseen data.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.load</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.load.html#madmex.modeling.BaseModel.load" title="madmex.modeling.BaseModel.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.load</span></code></a>()</td>
+<td>Read object from file</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.save</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.save.html#madmex.modeling.BaseModel.save" title="madmex.modeling.BaseModel.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.save</span></code></a>(filepath)</td>
+<td>Write entire object to file</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.from_db</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.from_db.html#madmex.modeling.BaseModel.from_db" title="madmex.modeling.BaseModel.from_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.from_db</span></code></a>(name)</td>
+<td>Instantiate an object from a children class of BaseModel reading it from the database</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.to_db</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.to_db.html#madmex.modeling.BaseModel.to_db" title="madmex.modeling.BaseModel.to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.to_db</span></code></a>(name[,&nbsp;recipe,&nbsp;…])</td>
+<td>Write the instance of the class to the datbase</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.hot_encode_training</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.hot_encode_training.html#madmex.modeling.BaseModel.hot_encode_training" title="madmex.modeling.BaseModel.hot_encode_training"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.hot_encode_training</span></code></a>(X)</td>
+<td>Apply one hot encoding to one or several predictors determined by the list of indices of the hot_encode attribute</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.hot_encode_predict</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.hot_encode_predict.html#madmex.modeling.BaseModel.hot_encode_predict" title="madmex.modeling.BaseModel.hot_encode_predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.hot_encode_predict</span></code></a>(X)</td>
+<td>Hot Encode data on which prediction is to be performed</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.score</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.score.html#madmex.modeling.BaseModel.score" title="madmex.modeling.BaseModel.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.score</span></code></a>(filepath)</td>
+<td>Lets the user load a previously trained model to predict with it.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.create_report</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.create_report.html#madmex.modeling.BaseModel.create_report" title="madmex.modeling.BaseModel.create_report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.create_report</span></code></a>(expected,&nbsp;…)</td>
+<td>Creates a report in the given filepath, it includes the confusion matrix, and information about the score.</td>
 </tr>
 </tbody>
 </table>
@@ -356,14 +407,14 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.supervised.rf.Model</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.modeling.supervised.rf.Model.html#madmex.modeling.supervised.rf.Model" title="madmex.modeling.supervised.rf.Model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.supervised.rf.Model</span></code></a>([…])</td>
+<td>Antares implementation of scikit learn random forest classifier</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.supervised.xgb.Model</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.modeling.supervised.xgb.Model.html#madmex.modeling.supervised.xgb.Model" title="madmex.modeling.supervised.xgb.Model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.supervised.xgb.Model</span></code></a>([…])</td>
+<td>Antares implementation of Gradient Boost classifier</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.supervised.lgb.Model</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.modeling.supervised.lgb.Model.html#madmex.modeling.supervised.lgb.Model" title="madmex.modeling.supervised.lgb.Model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.supervised.lgb.Model</span></code></a>([…])</td>
+<td>Antares implementation of Microsoft’s Light Boost classifier</td>
 </tr>
 </tbody>
 </table>
@@ -378,20 +429,20 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">overlay.conversions.rasterize_xarray</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.overlay.conversions.rasterize_xarray.html#madmex.overlay.conversions.rasterize_xarray" title="madmex.overlay.conversions.rasterize_xarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">overlay.conversions.rasterize_xarray</span></code></a>(fc,&nbsp;dataset)</td>
+<td>Rasterize a feature collection using an xarray dataset as target</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">overlay.conversions.train_object_to_feature</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.overlay.conversions.train_object_to_feature.html#madmex.overlay.conversions.train_object_to_feature" title="madmex.overlay.conversions.train_object_to_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">overlay.conversions.train_object_to_feature</span></code></a>(x)</td>
+<td>Convert a Django object, part of a QuerySet, to a geojson like feature</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">overlay.conversions.predict_object_to_feature</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.overlay.conversions.predict_object_to_feature.html#madmex.overlay.conversions.predict_object_to_feature" title="madmex.overlay.conversions.predict_object_to_feature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">overlay.conversions.predict_object_to_feature</span></code></a>(x)</td>
+<td>Convert a PredictObject to a feature</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">overlay.extractions.calculate_zonal_statistics</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.overlay.extractions.calculate_zonal_statistics.html#madmex.overlay.extractions.calculate_zonal_statistics" title="madmex.overlay.extractions.calculate_zonal_statistics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">overlay.extractions.calculate_zonal_statistics</span></code></a>(…)</td>
+<td>Receives an array with labels and indexes for those labels.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">overlay.extractions.zonal_stats_xarray</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.overlay.extractions.zonal_stats_xarray.html#madmex.overlay.extractions.zonal_stats_xarray" title="madmex.overlay.extractions.zonal_stats_xarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">overlay.extractions.zonal_stats_xarray</span></code></a>(…)</td>
+<td>Perform extraction and grouping using xarray groupby method</td>
 </tr>
 </tbody>
 </table>
@@ -407,20 +458,20 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.BaseSegmentation</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.html#madmex.segmentation.BaseSegmentation" title="madmex.segmentation.BaseSegmentation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.BaseSegmentation</span></code></a>(array,&nbsp;affine,&nbsp;crs)</td>
+<td>Parent class implementing generic methods related to running spatial segmentation algorithms on raster data, converting input and output data and interacting with the database.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.BaseSegmentation.from_geoarray</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.from_geoarray.html#madmex.segmentation.BaseSegmentation.from_geoarray" title="madmex.segmentation.BaseSegmentation.from_geoarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.BaseSegmentation.from_geoarray</span></code></a>(…)</td>
+<td>Instantiate class from a geoarray (xarray read with datacube.load)</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.BaseSegmentation.segment</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.segment.html#madmex.segmentation.BaseSegmentation.segment" title="madmex.segmentation.BaseSegmentation.segment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.BaseSegmentation.segment</span></code></a>()</td>
+<td>Run segmentation</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.BaseSegmentation.polygonize</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.polygonize.html#madmex.segmentation.BaseSegmentation.polygonize" title="madmex.segmentation.BaseSegmentation.polygonize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.BaseSegmentation.polygonize</span></code></a>([…])</td>
+<td>Transform the raster result of a segmentation to a feature collection</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.BaseSegmentation.to_db</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.to_db.html#madmex.segmentation.BaseSegmentation.to_db" title="madmex.segmentation.BaseSegmentation.to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.BaseSegmentation.to_db</span></code></a>(meta_object)</td>
+<td>Write the result of a segmentation to the database</td>
 </tr>
 </tbody>
 </table>
@@ -433,8 +484,8 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.slic.Segmentation</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.segmentation.slic.Segmentation.html#madmex.segmentation.slic.Segmentation" title="madmex.segmentation.slic.Segmentation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.slic.Segmentation</span></code></a>(array,&nbsp;…[,&nbsp;…])</td>
+<td>Antares implementation of scikit-image’s SLIC segmentation algorithm</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.bis.Segmentation</span></code></td>
 <td></td>
@@ -479,50 +530,50 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.randomword</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.randomword.html#madmex.util.randomword" title="madmex.util.randomword"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.randomword</span></code></a>(length)</td>
+<td>Generate a random string of desired length</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.yaml_to_dict</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.yaml_to_dict.html#madmex.util.yaml_to_dict" title="madmex.util.yaml_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.yaml_to_dict</span></code></a>(filename)</td>
+<td>Load the content of a yaml file as a python dictionary</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.mid_date</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.mid_date.html#madmex.util.mid_date" title="madmex.util.mid_date"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.mid_date</span></code></a>(date0,&nbsp;date1)</td>
+<td>FInd the mid point between two dates</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.parser_extra_args</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.parser_extra_args.html#madmex.util.parser_extra_args" title="madmex.util.parser_extra_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.parser_extra_args</span></code></a>(x)</td>
+<td>Helper to parse extra args passed to argparse</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.chunk</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.chunk.html#madmex.util.chunk" title="madmex.util.chunk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.chunk</span></code></a>(iterable[,&nbsp;size])</td>
+<td>Splits an iterable into chunks</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.pprint_args</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.pprint_args.html#madmex.util.pprint_args" title="madmex.util.pprint_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.pprint_args</span></code></a>(fun[,&nbsp;exclude])</td>
+<td>Retrieves the arguments and default parameters of a function and prints a formated table</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.datacube.var_to_ind</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.aware_download</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.local.aware_download.html#madmex.util.local.aware_download" title="madmex.util.local.aware_download"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.aware_download</span></code></a>(url,&nbsp;directory)</td>
+<td>Download function that only executes when the file has not been downloaded.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.extract_zip</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.local.extract_zip.html#madmex.util.local.extract_zip" title="madmex.util.local.extract_zip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.extract_zip</span></code></a>(filepath,&nbsp;directory)</td>
+<td>Extracts zip file to the given directory.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.aware_make_dir</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.local.aware_make_dir.html#madmex.util.local.aware_make_dir" title="madmex.util.local.aware_make_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.aware_make_dir</span></code></a>(directory)</td>
+<td>Helper function to create a directory if it does not exists.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.basename</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.local.basename.html#madmex.util.local.basename" title="madmex.util.local.basename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.basename</span></code></a>(filename[,&nbsp;suffix])</td>
+<td>Get base name of a file with or without its suffix.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.filter_files_from_folder</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.local.filter_files_from_folder.html#madmex.util.local.filter_files_from_folder" title="madmex.util.local.filter_files_from_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.filter_files_from_folder</span></code></a>(directory)</td>
+<td>Returns a list with the files found in the given directory filtered by the given regex.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.xarray.to_float</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.xarray.to_float.html#madmex.util.xarray.to_float" title="madmex.util.xarray.to_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.xarray.to_float</span></code></a>(x)</td>
+<td>TAkes a DataArray, converts data flagged as nodata to Nan and return corresponding array in float</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.xarray.to_int</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.xarray.to_int.html#madmex.util.xarray.to_int" title="madmex.util.xarray.to_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.xarray.to_int</span></code></a>(x)</td>
+<td>TAkes a DataArray in float and converts it to int, converting Nan to nodata flags</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.feature_transform</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.spatial.feature_transform.html#madmex.util.spatial.feature_transform" title="madmex.util.spatial.feature_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.feature_transform</span></code></a>(feature,&nbsp;crs_out)</td>
+<td>Reproject a feature</td>
 </tr>
 </tbody>
 </table>
@@ -536,6 +587,8 @@
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="generated/madmex.api.remote.UsgsApi.html" class="btn btn-neutral float-right" title="madmex.api.remote.UsgsApi" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="extend.html" class="btn btn-neutral" title="Extending the system" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

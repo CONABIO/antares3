@@ -1,0 +1,6 @@
+madmex.util.local.extract\_zip
+==============================
+
+.. currentmodule:: madmex.util.local
+
+.. autofunction:: extract_zip

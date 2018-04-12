@@ -1,0 +1,26 @@
+madmex.segmentation.slic.Segmentation
+=====================================
+
+.. currentmodule:: madmex.segmentation.slic
+
+.. autoclass:: Segmentation
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Segmentation.__init__
+      ~Segmentation.from_geoarray
+      ~Segmentation.polygonize
+      ~Segmentation.segment
+      ~Segmentation.to_db
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+madmex.modeling.BaseModel.from\_db
+==================================
+
+.. currentmodule:: madmex.modeling
+
+.. automethod:: BaseModel.from_db

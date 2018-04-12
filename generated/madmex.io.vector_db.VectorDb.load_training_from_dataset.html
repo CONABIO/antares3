@@ -1,0 +1,285 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>madmex.io.vector_db.VectorDb.load_training_from_dataset &mdash; antares3 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="madmex.io.vector_db.load_segmentation_from_dataset" href="madmex.io.vector_db.load_segmentation_from_dataset.html" />
+    <link rel="prev" title="madmex.io.vector_db.VectorDb" href="madmex.io.vector_db.VectorDb.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> antares3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup/first time use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../download.html">Downloading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ingest.html">Ingesting data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../extend.html">Extending the system</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#api">Api</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#indexing">Indexing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#ingestion">Ingestion</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#i-o">I/O</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="madmex.io.helpers.get_label_encoding.html">madmex.io.helpers.get_label_encoding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.io.vector_db.from_geobox.html">madmex.io.vector_db.from_geobox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.io.vector_db.VectorDb.html">madmex.io.vector_db.VectorDb</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.io.vector_db.VectorDb.load_training_from_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.io.vector_db.load_segmentation_from_dataset.html">madmex.io.vector_db.load_segmentation_from_dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#modeling">Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#overlay">Overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#wrappers">Wrappers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#utils">Utils</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">antares3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API reference</a> &raquo;</li>
+        
+      <li>madmex.io.vector_db.VectorDb.load_training_from_dataset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/generated/madmex.io.vector_db.VectorDb.load_training_from_dataset.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="madmex-io-vector-db-vectordb-load-training-from-dataset">
+<h1>madmex.io.vector_db.VectorDb.load_training_from_dataset<a class="headerlink" href="#madmex-io-vector-db-vectordb-load-training-from-dataset" title="Permalink to this headline">¶</a></h1>
+<dl class="method">
+<dt id="madmex.io.vector_db.VectorDb.load_training_from_dataset">
+<code class="descclassname">VectorDb.</code><code class="descname">load_training_from_dataset</code><span class="sig-paren">(</span><em>dataset</em>, <em>training_set</em>, <em>sample=0.2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/io/vector_db.html#VectorDb.load_training_from_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.io.vector_db.VectorDb.load_training_from_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retieves training data from the database based on intersection with an xr Dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dataset</strong> (<em>xarray.Dataset</em>) – Typical Dataset object generated using one of
+the datacube load method (GridWorkflow or Datacube clases)</li>
+<li><strong>training_set</strong> (<em>str</em>) – Name of the training set identifier to select the right
+training data</li>
+<li><strong>sample</strong> (<em>float</em>) – Float between 0 and 1. Proportion of intersection geometry to sample.
+Performs random sampling of the geometries</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A feature collection reprojected to the CRS of the xarray Dataset</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="madmex.io.vector_db.load_segmentation_from_dataset.html" class="btn btn-neutral float-right" title="madmex.io.vector_db.load_segmentation_from_dataset" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="madmex.io.vector_db.VectorDb.html" class="btn btn-neutral" title="madmex.io.vector_db.VectorDb" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.0',
+            LANGUAGE:'en',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+madmex.overlay.conversions.rasterize\_xarray
+============================================
+
+.. currentmodule:: madmex.overlay.conversions
+
+.. autofunction:: rasterize_xarray
