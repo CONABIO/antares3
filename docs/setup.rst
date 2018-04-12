@@ -46,6 +46,7 @@ The configuration file used by antares contain various fields related to data lo
     DATABASE_PASSWORD=
     DATABASE_HOST=
     DATABASE_PORT=
+    ALLOWED_HOSTS=
     SERIALIZED_OBJECTS_DIR=
     USGS_USER=
     USGS_PASSWORD=
@@ -53,6 +54,7 @@ The configuration file used by antares contain various fields related to data lo
     SCIHUB_PASSWORD=
     TEMP_DIR=
     INGESTION_PATH=
+    BIS_LICENSE=
 
 
 Local
@@ -155,8 +157,6 @@ Antares3
 Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.
 
 Log in to an instance and copy paste in ``$mount_point/.antares`` the configuration file for ``antares``.
-Also create a ``$mount_point/license.txt`` file.
-
  
 Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` configured in `Dependencies-Cloud Deployment`_ in step 2, or use a tool for cluster management like `clusterssh`_ . 
 
@@ -167,7 +167,6 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
     #!/bin/bash
     source /home/ubuntu/.profile
     ln -sf $mount_point/.antares /home/ubuntu/.antares
-    ln -sf $mount_point/license.txt /home/ubuntu/git/antares3/madmex/bin/bis/license.txt
     antares init
 
 This will create a ``madmex`` directory under ``/home/ubuntu/.config/`` where ingestion files for all different suported dataset will be stored.
