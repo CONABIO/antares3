@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.ingestion.bioclimatics.metadata_convert &mdash; antares3 0.1.0 documentation</title>
+  <title>madmex.wrappers.predict_pixel_tile &mdash; antares3 0.1.0 documentation</title>
   
 
   
@@ -29,8 +29,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="madmex.ingestion.landsat_espa.metadata_convert" href="madmex.ingestion.landsat_espa.metadata_convert.html" />
-    <link rel="prev" title="madmex.indexing.metadict_from_netcdf" href="madmex.indexing.metadict_from_netcdf.html" /> 
+    <link rel="next" title="madmex.wrappers.extract_tile_db" href="madmex.wrappers.extract_tile_db.html" />
+    <link rel="prev" title="madmex.segmentation.bis.Segmentation" href="madmex.segmentation.bis.Segmentation.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -98,17 +98,19 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../api.html#api">Api</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#indexing">Indexing</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api.html#ingestion">Ingestion</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.ingestion.bioclimatics.metadata_convert</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.ingestion.landsat_espa.metadata_convert.html">madmex.ingestion.landsat_espa.metadata_convert</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.ingestion.srtm_cgiar.metadata_convert.html">madmex.ingestion.srtm_cgiar.metadata_convert</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#ingestion">Ingestion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#i-o">I/O</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#modeling">Modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#overlay">Overlay</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#segmentation">Segmentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#wrappers">Wrappers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#wrappers">Wrappers</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.wrappers.predict_pixel_tile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.wrappers.extract_tile_db.html">madmex.wrappers.extract_tile_db</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.wrappers.gwf_query.html">madmex.wrappers.gwf_query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.wrappers.segment.html">madmex.wrappers.segment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.wrappers.predict_object.html">madmex.wrappers.predict_object</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#utils">Utils</a></li>
 </ul>
 </li>
@@ -159,13 +161,13 @@
         
           <li><a href="../api.html">API reference</a> &raquo;</li>
         
-      <li>madmex.ingestion.bioclimatics.metadata_convert</li>
+      <li>madmex.wrappers.predict_pixel_tile</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/madmex.ingestion.bioclimatics.metadata_convert.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/madmex.wrappers.predict_pixel_tile.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -178,39 +180,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="madmex-ingestion-bioclimatics-metadata-convert">
-<h1>madmex.ingestion.bioclimatics.metadata_convert<a class="headerlink" href="#madmex-ingestion-bioclimatics-metadata-convert" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="madmex-wrappers-predict-pixel-tile">
+<h1>madmex.wrappers.predict_pixel_tile<a class="headerlink" href="#madmex-wrappers-predict-pixel-tile" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="madmex.ingestion.bioclimatics.metadata_convert">
-<code class="descclassname">madmex.ingestion.bioclimatics.</code><code class="descname">metadata_convert</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/ingestion/bioclimatics.html#metadata_convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.ingestion.bioclimatics.metadata_convert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prepare metadata prior to datacube indexing</p>
-<p>Given a directory containing bioclimatics raster information prepares
-a metadata string with the appropriate formating for indexing in the datacube</p>
+<dt id="madmex.wrappers.predict_pixel_tile">
+<code class="descclassname">madmex.wrappers.</code><code class="descname">predict_pixel_tile</code><span class="sig-paren">(</span><em>tile</em>, <em>gwf</em>, <em>model_id</em>, <em>outdir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/wrappers.html#predict_pixel_tile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.wrappers.predict_pixel_tile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a model in prediction mode and generates a raster file written to disk</p>
+<p>Meant to be called within a dask.distributed.Cluster.map() over a list of tiles
+returned by GridWorkflow.list_cells
+Called in model_predict command line</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) – Path of the directory containing temperature and precipitation measurements.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tile</strong> – Datacube tile as returned by GridWorkflow.list_cells()</li>
+<li><strong>gwf</strong> – GridWorkflow object</li>
+<li><strong>model_id</strong> (<em>str</em>) – Database identifier of trained model to use. The model
+must have been trained against a numeric dependent variable.
+(See –encode flag in model_fit command line)</li>
+<li><strong>outdir</strong> (<em>str</em>) – Directory where output data should be written. Only makes sense
+when generating unregistered geotiffs. The directory must already exist,
+it is therefore a good idea to generate it in the command line function
+before sending the tasks</li>
+</ul>
+</td>
 </tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.ingestion.bioclimatics</span> <span class="k">import</span> <span class="n">metadata_convert</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/path/to/bioclim/dir&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">yaml_str</span> <span class="o">=</span> <span class="n">metadata_convert</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/path/to/metadata_out.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">)</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The content of the metadata for later writing to file.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The function is used for its side effect of generating a predicted
+array and writting it to a raster file (GeoTiff or NetCDF). OPtionally the file is registered as a storage unit in the datacube database.</p>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -226,10 +227,10 @@ a metadata string with the appropriate formating for indexing in the datacube</p
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="madmex.ingestion.landsat_espa.metadata_convert.html" class="btn btn-neutral float-right" title="madmex.ingestion.landsat_espa.metadata_convert" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="madmex.wrappers.extract_tile_db.html" class="btn btn-neutral float-right" title="madmex.wrappers.extract_tile_db" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.indexing.metadict_from_netcdf.html" class="btn btn-neutral" title="madmex.indexing.metadict_from_netcdf" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.segmentation.bis.Segmentation.html" class="btn btn-neutral" title="madmex.segmentation.bis.Segmentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

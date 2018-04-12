@@ -1,0 +1,6 @@
+madmex.indexing.add\_product
+============================
+
+.. currentmodule:: madmex.indexing
+
+.. autofunction:: add_product

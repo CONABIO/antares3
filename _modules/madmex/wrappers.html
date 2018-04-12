@@ -1,0 +1,493 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>madmex.wrappers &mdash; antares3 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> antares3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dependencies.html">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">Setup/first time use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../download.html">Downloading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ingest.html">Ingesting data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../extend.html">Extending the system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">antares3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>madmex.wrappers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for madmex.wrappers</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">rasterio</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">datacube</span>
+<span class="kn">from</span> <span class="nn">datacube.api</span> <span class="k">import</span> <span class="n">GridWorkflow</span>
+<span class="kn">from</span> <span class="nn">datacube.utils.geometry</span> <span class="k">import</span> <span class="n">Geometry</span><span class="p">,</span> <span class="n">CRS</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
+<span class="kn">from</span> <span class="nn">madmex.util.xarray</span> <span class="k">import</span> <span class="n">to_float</span>
+<span class="kn">from</span> <span class="nn">madmex.io.vector_db</span> <span class="k">import</span> <span class="n">VectorDb</span><span class="p">,</span> <span class="n">load_segmentation_from_dataset</span>
+<span class="kn">from</span> <span class="nn">madmex.overlay.extractions</span> <span class="k">import</span> <span class="n">zonal_stats_xarray</span>
+<span class="kn">from</span> <span class="nn">madmex.modeling</span> <span class="k">import</span> <span class="n">BaseModel</span>
+
+<span class="kn">from</span> <span class="nn">madmex.models</span> <span class="k">import</span> <span class="n">Region</span><span class="p">,</span> <span class="n">Country</span><span class="p">,</span> <span class="n">Model</span><span class="p">,</span> <span class="n">PredictClassification</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The wrapper module gathers functions that are typically called by</span>
+<span class="sd">command lines</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="predict_pixel_tile"><a class="viewcode-back" href="../../generated/madmex.wrappers.predict_pixel_tile.html#madmex.wrappers.predict_pixel_tile">[docs]</a><span class="k">def</span> <span class="nf">predict_pixel_tile</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">gwf</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run a model in prediction mode and generates a raster file written to disk</span>
+
+<span class="sd">    Meant to be called within a dask.distributed.Cluster.map() over a list of tiles</span>
+<span class="sd">    returned by GridWorkflow.list_cells</span>
+<span class="sd">    Called in model_predict command line</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tile: Datacube tile as returned by GridWorkflow.list_cells()</span>
+<span class="sd">        gwf: GridWorkflow object</span>
+<span class="sd">        model_id (str): Database identifier of trained model to use. The model</span>
+<span class="sd">            must have been trained against a numeric dependent variable.</span>
+<span class="sd">            (See --encode flag in model_fit command line)</span>
+<span class="sd">        outdir (str): Directory where output data should be written. Only makes sense</span>
+<span class="sd">            when generating unregistered geotiffs. The directory must already exist,</span>
+<span class="sd">            it is therefore a good idea to generate it in the command line function</span>
+<span class="sd">            before sending the tasks</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        str: The function is used for its side effect of generating a predicted</span>
+<span class="sd">        array and writting it to a raster file (GeoTiff or NetCDF). OPtionally the file is registered as a storage unit in the datacube database.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: How to handle data type. When ran in classification mode int16 would always</span>
+    <span class="c1"># be fine, but this function could potentially also be ran in regression mode</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Load model class corresponding to the right model</span>
+        <span class="n">trained_model</span> <span class="o">=</span> <span class="n">BaseModel</span><span class="o">.</span><span class="n">from_db</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Avoid opening several threads in each process</span>
+            <span class="n">trained_model</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="c1"># Generate filename</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="s1">&#39;prediction_</span><span class="si">%s</span><span class="s1">_</span><span class="si">%d</span><span class="s1">_</span><span class="si">%d</span><span class="s1">.tif&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">tile</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">tile</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="c1"># Load tile</span>
+        <span class="n">xr_dataset</span> <span class="o">=</span> <span class="n">gwf</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tile</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="c1"># Convert it to float?</span>
+        <span class="c1"># xr_dataset = xr_dataset.apply(func=to_float, keep_attrs=True)</span>
+        <span class="c1"># Transform file to nd array</span>
+        <span class="n">arr_3d</span> <span class="o">=</span> <span class="n">xr_dataset</span><span class="o">.</span><span class="n">to_array</span><span class="p">()</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">arr_3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">arr_3d</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">shape_2d</span> <span class="o">=</span> <span class="p">(</span><span class="n">arr_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">arr_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">arr_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">arr_2d</span> <span class="o">=</span> <span class="n">arr_3d</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape_2d</span><span class="p">)</span>
+        <span class="c1"># predict</span>
+        <span class="n">predicted_array</span> <span class="o">=</span> <span class="n">trained_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">arr_2d</span><span class="p">)</span>
+        <span class="c1"># Reshape back to 2D</span>
+        <span class="n">predicted_array</span> <span class="o">=</span> <span class="n">predicted_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">arr_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">arr_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="c1"># Write array to geotiff</span>
+        <span class="n">rasterio_meta</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="n">predicted_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                         <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="n">predicted_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                         <span class="s1">&#39;affine&#39;</span><span class="p">:</span> <span class="n">xr_dataset</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span>
+                         <span class="s1">&#39;crs&#39;</span><span class="p">:</span> <span class="n">xr_dataset</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">crs_str</span><span class="p">,</span>
+                         <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                         <span class="s1">&#39;dtype&#39;</span><span class="p">:</span> <span class="s1">&#39;int16&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;compress&#39;</span><span class="p">:</span> <span class="s1">&#39;lzw&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;driver&#39;</span><span class="p">:</span> <span class="s1">&#39;GTiff&#39;</span><span class="p">}</span>
+        <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">rasterio_meta</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
+            <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">predicted_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int16&#39;</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Coerce back to xarray with all spatial parameters properly set</span>
+        <span class="c1"># xr_out = xr_dataset.drop(xr_dataset.data_vars)</span>
+        <span class="c1"># Build output filename</span>
+        <span class="c1"># xr_out[&#39;predicted&#39;] = ((&#39;y&#39;, &#39;x&#39;), predicted_array)</span>
+        <span class="c1"># Write to filename</span>
+        <span class="c1"># write_geotiff(filename=filename, dataset=xr_out)</span>
+        <span class="c1"># Register to database</span>
+        <span class="k">return</span> <span class="n">filename</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="extract_tile_db"><a class="viewcode-back" href="../../generated/madmex.wrappers.extract_tile_db.html#madmex.wrappers.extract_tile_db">[docs]</a><span class="k">def</span> <span class="nf">extract_tile_db</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">gwf</span><span class="p">,</span> <span class="n">sp</span><span class="p">,</span> <span class="n">training_set</span><span class="p">,</span> <span class="n">sample</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;FUnction to extract data under training geometries for a given tile</span>
+
+<span class="sd">    Meant to be called within a dask.distributed.Cluster.map() over a list of tiles</span>
+<span class="sd">    returned by GridWorkflow.list_cells</span>
+<span class="sd">    Called in model_fit command line</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tile: Datacube tile as returned by GridWorkflow.list_cells()</span>
+<span class="sd">        gwf: GridWorkflow object</span>
+<span class="sd">        sp: Spatial aggregation function</span>
+<span class="sd">        training_set (str): Training data identifier (training_set field)</span>
+<span class="sd">        sample (float): Proportion of training data to sample from the complete set</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of predictors and target values arrays</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Load tile as Dataset</span>
+        <span class="n">xr_dataset</span> <span class="o">=</span> <span class="n">gwf</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tile</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="c1"># Query the training geometries fitting into the extent of xr_dataset</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">VectorDb</span><span class="p">()</span>
+        <span class="n">fc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">load_training_from_dataset</span><span class="p">(</span><span class="n">xr_dataset</span><span class="p">,</span>
+                                           <span class="n">training_set</span><span class="o">=</span><span class="n">training_set</span><span class="p">,</span>
+                                           <span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">)</span>
+        <span class="c1"># fc is a feature collection with one property (class)</span>
+        <span class="c1"># Overlay geometries and xr_dataset and perform extraction combined with spatial aggregation</span>
+        <span class="n">extract</span> <span class="o">=</span> <span class="n">zonal_stats_xarray</span><span class="p">(</span><span class="n">xr_dataset</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="n">aggregation</span><span class="o">=</span><span class="n">sp</span><span class="p">)</span>
+        <span class="c1"># Return the extracted array (or a list of two arrays?)</span>
+        <span class="k">return</span> <span class="n">extract</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="gwf_query"><a class="viewcode-back" href="../../generated/madmex.wrappers.gwf_query.html#madmex.wrappers.gwf_query">[docs]</a><span class="k">def</span> <span class="nf">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">long</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run a spatial query on a datacube product using either coordinates or a region name</span>
+
+<span class="sd">    Wrapper function to call at the begining of nearly all spatial processing command lines</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        product (str): Name of an ingested datacube product. The product to query</span>
+<span class="sd">        lat (tuple): OPtional. For coordinate based spatial query. Tuple of min and max</span>
+<span class="sd">            latitudes in decimal degreees.</span>
+<span class="sd">        long (tuple): OPtional. For coordinate based spatial query. Tuple of min and max</span>
+<span class="sd">            longitudes in decimal degreees.</span>
+<span class="sd">        region (str): Optional name of a region or country whose geometry is present in the database</span>
+<span class="sd">            region  or country table. Overrides lat and long when present (not None).</span>
+<span class="sd">            Countries must be queried using ISO code (e.g.: &#39;MEX&#39; for Mexico)</span>
+<span class="sd">        begin (str): Date string in the form &#39;%Y-%m-%d&#39;. For temporally bounded queries</span>
+<span class="sd">        end (str): Date string in the form &#39;%Y-%m-%d&#39;. For temporally bounded queries</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List: List of [0] GridWorkflow object and [1] dictionary view of Tile index, Tile</span>
+<span class="sd">        key value pair</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; from madmex.wrappers import gwf_query</span>
+
+<span class="sd">        &gt;&gt;&gt; # Using region name, time unbounded</span>
+<span class="sd">        &gt;&gt;&gt; gwf, tiles_list = gwf_query(product=&#39;ls8_espa_mexico&#39;, region=&#39;Jalisco&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # Using region name, time windowed</span>
+<span class="sd">        &gt;&gt;&gt; gwf, tiles_list = gwf_query(product=&#39;ls8_espa_mexico&#39;, region=&#39;Jalisco&#39;,</span>
+<span class="sd">        ...                             begin = &#39;2017-01-01&#39;, end=&#39;2017-03-31&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # Using lat long box, time windowed</span>
+<span class="sd">        &gt;&gt;&gt; gwf, tiles_list = gwf_query(product=&#39;ls8_espa_mexico&#39;, lat=[19, 22], long=[-104, -102],</span>
+<span class="sd">        ...                             begin = &#39;2017-01-01&#39;, end=&#39;2017-03-31&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">query_params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;product&#39;</span><span class="p">:</span> <span class="n">product</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">region</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+       <span class="c1"># Query database and build a datacube.utils.Geometry(geopolygon)</span>
+       <span class="k">try</span><span class="p">:</span>
+           <span class="n">query_set</span> <span class="o">=</span> <span class="n">Country</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">region</span><span class="p">)</span>
+       <span class="k">except</span> <span class="n">Country</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+           <span class="n">query_set</span> <span class="o">=</span> <span class="n">Region</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">region</span><span class="p">)</span>
+       <span class="n">region_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">query_set</span><span class="o">.</span><span class="n">the_geom</span><span class="o">.</span><span class="n">geojson</span><span class="p">)</span>
+       <span class="n">crs</span> <span class="o">=</span> <span class="n">CRS</span><span class="p">(</span><span class="s1">&#39;EPSG:</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">query_set</span><span class="o">.</span><span class="n">the_geom</span><span class="o">.</span><span class="n">srid</span><span class="p">)</span>
+       <span class="n">geom</span> <span class="o">=</span> <span class="n">Geometry</span><span class="p">(</span><span class="n">region_json</span><span class="p">,</span> <span class="n">crs</span><span class="p">)</span>
+       <span class="n">query_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">geopolygon</span><span class="o">=</span><span class="n">geom</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">lat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">long</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">query_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">long</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">lat</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Either a region name or a lat and long must be provided&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">begin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">begin</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">query_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
+
+    <span class="c1"># GridWorkflow object</span>
+    <span class="n">dc</span> <span class="o">=</span> <span class="n">datacube</span><span class="o">.</span><span class="n">Datacube</span><span class="p">()</span>
+    <span class="n">gwf</span> <span class="o">=</span> <span class="n">GridWorkflow</span><span class="p">(</span><span class="n">dc</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">)</span>
+    <span class="n">tile_dict</span> <span class="o">=</span> <span class="n">gwf</span><span class="o">.</span><span class="n">list_cells</span><span class="p">(</span><span class="o">**</span><span class="n">query_params</span><span class="p">)</span>
+    <span class="c1"># Iterable (dictionary view (analog to list of tuples))</span>
+    <span class="n">tiles_view</span> <span class="o">=</span> <span class="n">tile_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">gwf</span><span class="p">,</span> <span class="n">tiles_view</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="segment"><a class="viewcode-back" href="../../generated/madmex.wrappers.segment.html#madmex.wrappers.segment">[docs]</a><span class="k">def</span> <span class="nf">segment</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">gwf</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">segmentation_meta</span><span class="p">,</span>
+            <span class="n">band_list</span><span class="p">,</span> <span class="n">extra_args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run a segmentation algorithm on tile</span>
+
+<span class="sd">    Meant to be called within a dask.distributed.Cluster.map() over a list of tiles</span>
+<span class="sd">    returned by GridWorkflow.list_cells</span>
+<span class="sd">    Called in segment command line</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tile: Datacube tile as returned by GridWorkflow.list_cells()</span>
+<span class="sd">        gwf: GridWorkflow object</span>
+<span class="sd">        algorithm (str): Name of the segmentation algorithm to apply</span>
+<span class="sd">        segmentation_meta (madmex.models.SegmentationInformation.object): Django object</span>
+<span class="sd">            relating to every segmentation object generated by this run</span>
+<span class="sd">        band_list (list): Optional subset of bands of the product to use for running the segmentation.</span>
+<span class="sd">        extra_args (dict): dictionary of additional arguments</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Load segment class</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;madmex.segmentation.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">algorithm</span><span class="p">)</span>
+        <span class="n">Segmentation</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">Segmentation</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid model argument&#39;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Load tile</span>
+        <span class="n">geoarray</span> <span class="o">=</span> <span class="n">gwf</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tile</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">measurements</span><span class="o">=</span><span class="n">band_list</span><span class="p">)</span>
+        <span class="n">seg</span> <span class="o">=</span> <span class="n">Segmentation</span><span class="o">.</span><span class="n">from_geoarray</span><span class="p">(</span><span class="n">geoarray</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_args</span><span class="p">)</span>
+        <span class="n">seg</span><span class="o">.</span><span class="n">segment</span><span class="p">()</span>
+        <span class="n">seg</span><span class="o">.</span><span class="n">polygonize</span><span class="p">()</span>
+        <span class="n">seg</span><span class="o">.</span><span class="n">to_db</span><span class="p">(</span><span class="n">segmentation_meta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="predict_object"><a class="viewcode-back" href="../../generated/madmex.wrappers.predict_object.html#madmex.wrappers.predict_object">[docs]</a><span class="k">def</span> <span class="nf">predict_object</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">gwf</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">segmentation_name</span><span class="p">,</span>
+                   <span class="n">categorical_variables</span><span class="p">,</span> <span class="n">aggregation</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run a trained classifier in prediction mode on all objects intersection with a tile</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tile: Datacube tile as returned by GridWorkflow.list_cells()</span>
+<span class="sd">        gwf: GridWorkflow object</span>
+<span class="sd">        model_name (str): Name under which the trained model is referenced in the</span>
+<span class="sd">            database</span>
+<span class="sd">        segmentation_name (str): Name of the segmentation to use</span>
+<span class="sd">        categorical_variables (list): List of strings corresponding to categorical</span>
+<span class="sd">            features.</span>
+<span class="sd">        aggregation (str): Spatial aggregation method to use</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Load geoarray and feature collection</span>
+        <span class="n">geoarray</span> <span class="o">=</span> <span class="n">gwf</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tile</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">fc</span> <span class="o">=</span> <span class="n">load_segmentation_from_dataset</span><span class="p">(</span><span class="n">geoarray</span><span class="p">,</span> <span class="n">segmentation_name</span><span class="p">)</span>
+        <span class="c1"># Extract array of features</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">zonal_stats_xarray</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">geoarray</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="n">fc</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">,</span>
+                                  <span class="n">categorical_variables</span><span class="o">=</span><span class="n">categorical_variables</span><span class="p">,</span>
+                                  <span class="n">aggregation</span><span class="o">=</span><span class="n">aggregation</span><span class="p">)</span>
+        <span class="c1"># Load model</span>
+        <span class="n">PredModel</span> <span class="o">=</span> <span class="n">BaseModel</span><span class="o">.</span><span class="n">from_db</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="n">model_id</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Avoid opening several threads in each process</span>
+            <span class="n">PredModel</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="c1"># Run prediction</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">PredModel</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">y_conf</span> <span class="o">=</span> <span class="n">PredModel</span><span class="o">.</span><span class="n">predict_confidence</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="c1"># Build list of PredictClassification objects</span>
+        <span class="k">def</span> <span class="nf">predict_object_builder</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">PredictClassification</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span> <span class="n">predict_object_id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                                         <span class="n">tag_id</span><span class="o">=</span><span class="n">pred</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="n">conf</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">obj_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">predict_object_builder</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">pred</span><span class="p">,</span><span class="n">conf</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">conf</span> <span class="ow">in</span>
+                    <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_conf</span><span class="p">)]</span>
+        <span class="n">PredictClassification</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">bulk_create</span><span class="p">(</span><span class="n">obj_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Prediction failed because: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.0',
+            LANGUAGE:'en',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

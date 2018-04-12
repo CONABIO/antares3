@@ -1,0 +1,6 @@
+madmex.indexing.add\_product\_from\_recipe
+==========================================
+
+.. currentmodule:: madmex.indexing
+
+.. autofunction:: add_product_from_recipe

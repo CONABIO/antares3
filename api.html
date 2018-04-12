@@ -102,7 +102,13 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.api.remote.ScihubApi.html">madmex.api.remote.ScihubApi</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#indexing">Indexing</a><ul class="simple">
+<li class="toctree-l2"><a class="reference internal" href="#indexing">Indexing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.indexing.add_product.html">madmex.indexing.add_product</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.indexing.add_product_from_yaml.html">madmex.indexing.add_product_from_yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.indexing.add_product_from_recipe.html">madmex.indexing.add_product_from_recipe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.indexing.add_dataset.html">madmex.indexing.add_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.indexing.wkt_to_proj4.html">madmex.indexing.wkt_to_proj4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.indexing.metadict_from_netcdf.html">madmex.indexing.metadict_from_netcdf</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#ingestion">Ingestion</a><ul>
@@ -161,11 +167,17 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#implemented-algorithms">Implemented algorithms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.slic.Segmentation.html">madmex.segmentation.slic.Segmentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.bis.Segmentation.html">madmex.segmentation.bis.Segmentation</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#wrappers">Wrappers</a><ul class="simple">
+<li class="toctree-l2"><a class="reference internal" href="#wrappers">Wrappers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.wrappers.predict_pixel_tile.html">madmex.wrappers.predict_pixel_tile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.wrappers.extract_tile_db.html">madmex.wrappers.extract_tile_db</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.wrappers.gwf_query.html">madmex.wrappers.gwf_query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.wrappers.segment.html">madmex.wrappers.segment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.wrappers.predict_object.html">madmex.wrappers.predict_object</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#utils">Utils</a><ul>
@@ -175,6 +187,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.parser_extra_args.html">madmex.util.parser_extra_args</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.chunk.html">madmex.util.chunk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.pprint_args.html">madmex.util.pprint_args</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.datacube.var_to_ind.html">madmex.util.datacube.var_to_ind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.local.aware_download.html">madmex.util.local.aware_download</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.local.extract_zip.html">madmex.util.local.extract_zip</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.local.aware_make_dir.html">madmex.util.local.aware_make_dir</a></li>
@@ -283,23 +296,23 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_product</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.indexing.add_product.html#madmex.indexing.add_product" title="madmex.indexing.add_product"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_product</span></code></a>(description,&nbsp;name)</td>
+<td>Add a new product to the database given a product description dictionary</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_product_from_yaml</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.indexing.add_product_from_yaml.html#madmex.indexing.add_product_from_yaml" title="madmex.indexing.add_product_from_yaml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_product_from_yaml</span></code></a>(description,&nbsp;name)</td>
+<td>Wrapper to add a product directly from a yaml file</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_product_from_recipe</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.indexing.add_product_from_recipe.html#madmex.indexing.add_product_from_recipe" title="madmex.indexing.add_product_from_recipe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_product_from_recipe</span></code></a>(recipe[,&nbsp;name])</td>
+<td>Wrapper to add a product from a recipe name</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_dataset</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.indexing.add_dataset.html#madmex.indexing.add_dataset" title="madmex.indexing.add_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_dataset</span></code></a>(pr,&nbsp;dt,&nbsp;metadict,&nbsp;file)</td>
+<td>Add a dataset to the datacube database</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.wkt_to_proj4</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.indexing.wkt_to_proj4.html#madmex.indexing.wkt_to_proj4" title="madmex.indexing.wkt_to_proj4"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.wkt_to_proj4</span></code></a>(wkt)</td>
+<td>Utility to convert CRS WKT to CRS in proj4 format</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.metadict_from_netcdf</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.indexing.metadict_from_netcdf.html#madmex.indexing.metadict_from_netcdf" title="madmex.indexing.metadict_from_netcdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.metadict_from_netcdf</span></code></a>(file,&nbsp;…[,&nbsp;…])</td>
+<td>Get metadata dictionary for netcdf dataset written using <code class="docutils literal notranslate"><span class="pre">write_dataset_to_netcdf</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -487,8 +500,8 @@
 <tr class="row-odd"><td><a class="reference internal" href="generated/madmex.segmentation.slic.Segmentation.html#madmex.segmentation.slic.Segmentation" title="madmex.segmentation.slic.Segmentation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.slic.Segmentation</span></code></a>(array,&nbsp;…[,&nbsp;…])</td>
 <td>Antares implementation of scikit-image’s SLIC segmentation algorithm</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.bis.Segmentation</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.segmentation.bis.Segmentation.html#madmex.segmentation.bis.Segmentation" title="madmex.segmentation.bis.Segmentation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.bis.Segmentation</span></code></a>(array,&nbsp;affine,&nbsp;crs)</td>
+<td>Antares implementation of Berkeley Image segmentation algorithm</td>
 </tr>
 </tbody>
 </table>
@@ -503,20 +516,20 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.predict_pixel_tile</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.wrappers.predict_pixel_tile.html#madmex.wrappers.predict_pixel_tile" title="madmex.wrappers.predict_pixel_tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.predict_pixel_tile</span></code></a>(tile,&nbsp;gwf,&nbsp;model_id)</td>
+<td>Run a model in prediction mode and generates a raster file written to disk</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.extract_tile_db</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.wrappers.extract_tile_db.html#madmex.wrappers.extract_tile_db" title="madmex.wrappers.extract_tile_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.extract_tile_db</span></code></a>(tile,&nbsp;gwf,&nbsp;sp,&nbsp;…)</td>
+<td>FUnction to extract data under training geometries for a given tile</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.gwf_query</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.wrappers.gwf_query.html#madmex.wrappers.gwf_query" title="madmex.wrappers.gwf_query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.gwf_query</span></code></a>(product[,&nbsp;lat,&nbsp;long,&nbsp;…])</td>
+<td>Run a spatial query on a datacube product using either coordinates or a region name</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.segment</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.wrappers.segment.html#madmex.wrappers.segment" title="madmex.wrappers.segment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.segment</span></code></a>(tile,&nbsp;gwf,&nbsp;algorithm,&nbsp;…)</td>
+<td>Run a segmentation algorithm on tile</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.predict_object</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.wrappers.predict_object.html#madmex.wrappers.predict_object" title="madmex.wrappers.predict_object"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.predict_object</span></code></a>(tile,&nbsp;gwf,&nbsp;…)</td>
+<td>Run a trained classifier in prediction mode on all objects intersection with a tile</td>
 </tr>
 </tbody>
 </table>
@@ -548,8 +561,8 @@
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.pprint_args.html#madmex.util.pprint_args" title="madmex.util.pprint_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.pprint_args</span></code></a>(fun[,&nbsp;exclude])</td>
 <td>Retrieves the arguments and default parameters of a function and prints a formated table</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.datacube.var_to_ind</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.datacube.var_to_ind.html#madmex.util.datacube.var_to_ind" title="madmex.util.datacube.var_to_ind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.datacube.var_to_ind</span></code></a>(variables,&nbsp;product)</td>
+<td>Helper to get a list of index from a list of variables names</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.local.aware_download.html#madmex.util.local.aware_download" title="madmex.util.local.aware_download"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.aware_download</span></code></a>(url,&nbsp;directory)</td>
 <td>Download function that only executes when the file has not been downloaded.</td>

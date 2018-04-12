@@ -1,0 +1,6 @@
+madmex.wrappers.predict\_pixel\_tile
+====================================
+
+.. currentmodule:: madmex.wrappers
+
+.. autofunction:: predict_pixel_tile

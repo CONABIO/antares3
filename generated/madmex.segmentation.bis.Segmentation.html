@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.segmentation.slic.Segmentation &mdash; antares3 0.1.0 documentation</title>
+  <title>madmex.segmentation.bis.Segmentation &mdash; antares3 0.1.0 documentation</title>
   
 
   
@@ -29,8 +29,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="madmex.segmentation.bis.Segmentation" href="madmex.segmentation.bis.Segmentation.html" />
-    <link rel="prev" title="madmex.segmentation.BaseSegmentation.to_db" href="madmex.segmentation.BaseSegmentation.to_db.html" /> 
+    <link rel="next" title="madmex.wrappers.predict_pixel_tile" href="madmex.wrappers.predict_pixel_tile.html" />
+    <link rel="prev" title="madmex.segmentation.slic.Segmentation" href="madmex.segmentation.slic.Segmentation.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -105,8 +105,8 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../api.html#segmentation">Segmentation</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../api.html#id5">Base class</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../api.html#implemented-algorithms">Implemented algorithms</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">madmex.segmentation.slic.Segmentation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="madmex.segmentation.bis.Segmentation.html">madmex.segmentation.bis.Segmentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="madmex.segmentation.slic.Segmentation.html">madmex.segmentation.slic.Segmentation</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">madmex.segmentation.bis.Segmentation</a></li>
 </ul>
 </li>
 </ul>
@@ -162,13 +162,13 @@
         
           <li><a href="../api.html">API reference</a> &raquo;</li>
         
-      <li>madmex.segmentation.slic.Segmentation</li>
+      <li>madmex.segmentation.bis.Segmentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/madmex.segmentation.slic.Segmentation.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/madmex.segmentation.bis.Segmentation.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -181,42 +181,41 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="madmex-segmentation-slic-segmentation">
-<h1>madmex.segmentation.slic.Segmentation<a class="headerlink" href="#madmex-segmentation-slic-segmentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="madmex-segmentation-bis-segmentation">
+<h1>madmex.segmentation.bis.Segmentation<a class="headerlink" href="#madmex-segmentation-bis-segmentation" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="madmex.segmentation.slic.Segmentation">
-<em class="property">class </em><code class="descclassname">madmex.segmentation.slic.</code><code class="descname">Segmentation</code><span class="sig-paren">(</span><em>array</em>, <em>affine</em>, <em>crs</em>, <em>n_segments=10000</em>, <em>compactness=10.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/segmentation/slic.html#Segmentation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.segmentation.slic.Segmentation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Antares implementation of scikit-image’s SLIC segmentation algorithm</p>
+<dt id="madmex.segmentation.bis.Segmentation">
+<em class="property">class </em><code class="descclassname">madmex.segmentation.bis.</code><code class="descname">Segmentation</code><span class="sig-paren">(</span><em>array</em>, <em>affine</em>, <em>crs</em>, <em>t=12</em>, <em>s=0.3</em>, <em>c=0.8</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/segmentation/bis.html#Segmentation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.segmentation.bis.Segmentation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Antares implementation of Berkeley Image segmentation algorithm</p>
 <dl class="method">
-<dt id="madmex.segmentation.slic.Segmentation.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>array</em>, <em>affine</em>, <em>crs</em>, <em>n_segments=10000</em>, <em>compactness=10.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/segmentation/slic.html#Segmentation.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.segmentation.slic.Segmentation.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>SLIC superpixel segmentation</p>
-<p>See <a class="reference external" href="http://scikit-image.org/docs/dev/api/skimage.segmentation.html#skimage.segmentation.slic">http://scikit-image.org/docs/dev/api/skimage.segmentation.html#skimage.segmentation.slic</a>
-for more details</p>
+<dt id="madmex.segmentation.bis.Segmentation.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>array</em>, <em>affine</em>, <em>crs</em>, <em>t=12</em>, <em>s=0.3</em>, <em>c=0.8</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/segmentation/bis.html#Segmentation.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.segmentation.bis.Segmentation.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>BIS segmentation algorithm</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>n_segments</strong> (<em>int</em>) – The (approximate) number of labels in the segmented output image.</li>
-<li><strong>compactness</strong> (<em>float</em>) – Balances color proximity and space proximity</li>
+<li><strong>t</strong> (<em>int</em>) – threshold. Threshold controls size, a larger threshold maps bigger objects</li>
+<li><strong>s</strong> (<em>float</em>) – Shape</li>
+<li><strong>c</strong> (<em>float</em>) – Compactness</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.segmentation.slic</span> <span class="k">import</span> <span class="n">Segmentation</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.segmentation.bis</span> <span class="k">import</span> <span class="n">Segmentation</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.models</span> <span class="k">import</span> <span class="n">SegmentationInformation</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Seg</span> <span class="o">=</span> <span class="n">Segmentation</span><span class="o">.</span><span class="n">from_geoarray</span><span class="p">(</span><span class="n">geoarray</span><span class="p">,</span> <span class="n">n_segments</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span> <span class="n">compactness</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Seg</span> <span class="o">=</span> <span class="n">Segmentation</span><span class="o">.</span><span class="n">from_geoarray</span><span class="p">(</span><span class="n">geoarray</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Seg</span><span class="o">.</span><span class="n">segment</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Seg</span><span class="o">.</span><span class="n">polygonize</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span> <span class="o">=</span> <span class="n">SegmentationInformation</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;bis&#39;</span><span class="p">,</span> <span class="n">datasource</span><span class="o">=</span><span class="s1">&#39;sentinel2&#39;</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>                               <span class="n">parameters</span><span class="o">=</span><span class="s2">&quot;{&#39;compactness&#39;: 12}&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                               <span class="n">parameters</span><span class="o">=</span><span class="s2">&quot;{&#39;t&#39;: 7, &#39;s&#39;: 0.3, &#39;c&#39;: 0.8}&quot;</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span>                               <span class="n">datasource_year</span><span class="o">=</span><span class="s1">&#39;2018&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Seg</span><span class="o">.</span><span class="n">to_db</span><span class="p">()</span>
@@ -231,8 +230,8 @@ for more details</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#madmex.segmentation.slic.Segmentation.__init__" title="madmex.segmentation.slic.Segmentation.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(array,&nbsp;affine,&nbsp;crs[,&nbsp;n_segments,&nbsp;…])</td>
-<td>SLIC superpixel segmentation</td>
+<tr class="row-odd"><td><a class="reference internal" href="#madmex.segmentation.bis.Segmentation.__init__" title="madmex.segmentation.bis.Segmentation.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(array,&nbsp;affine,&nbsp;crs[,&nbsp;t,&nbsp;s,&nbsp;c])</td>
+<td>BIS segmentation algorithm</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_geoarray</span></code>(geoarray,&nbsp;**kwargs)</td>
 <td>Instantiate class from a geoarray (xarray read with datacube.load)</td>
@@ -260,10 +259,10 @@ for more details</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="madmex.segmentation.bis.Segmentation.html" class="btn btn-neutral float-right" title="madmex.segmentation.bis.Segmentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="madmex.wrappers.predict_pixel_tile.html" class="btn btn-neutral float-right" title="madmex.wrappers.predict_pixel_tile" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.segmentation.BaseSegmentation.to_db.html" class="btn btn-neutral" title="madmex.segmentation.BaseSegmentation.to_db" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.segmentation.slic.Segmentation.html" class="btn btn-neutral" title="madmex.segmentation.slic.Segmentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
