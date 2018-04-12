@@ -166,13 +166,6 @@
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
 Traceback (most recent call last):
-  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/dask/distributed.py&quot;, line 5, in &lt;module&gt;
-    from distributed import *
-ModuleNotFoundError: No module named &#39;distributed&#39;
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
   File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/bin/antares&quot;, line 11, in &lt;module&gt;
     load_entry_point(&#39;madmex==0.1.0&#39;, &#39;console_scripts&#39;, &#39;antares&#39;)()
   File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/entry.py&quot;, line 15, in main
@@ -193,16 +186,19 @@ Traceback (most recent call last):
   File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 665, in _load_unlocked
   File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 678, in exec_module
   File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 219, in _call_with_frames_removed
-  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/management/commands/model_fit.py&quot;, line 13, in &lt;module&gt;
-    from dask.distributed import Client, LocalCluster
-  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/dask/distributed.py&quot;, line 11, in &lt;module&gt;
-    raise ImportError(msg)
-ImportError: Dask&#39;s distributed scheduler is not installed.
-
-Please either conda or pip install dask distributed:
-
-  conda install dask distributed          # either conda install
-  pip install dask distributed --upgrade  # or pip install
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/management/commands/model_fit.py&quot;, line 18, in &lt;module&gt;
+    from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_netcdf
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/indexing/__init__.py&quot;, line 6, in &lt;module&gt;
+    from datacube.index._datasets import ProductResource, MetadataTypeResource, DatasetResource
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/__init__.py&quot;, line 21, in &lt;module&gt;
+    from .api import Datacube
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/api/__init__.py&quot;, line 8, in &lt;module&gt;
+    from ._api import API
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/api/_api.py&quot;, line 26, in &lt;module&gt;
+    from ..utils import geometry
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/utils/geometry.py&quot;, line 10, in &lt;module&gt;
+    from osgeo import ogr, osr
+ModuleNotFoundError: No module named &#39;osgeo&#39;
 </pre></div>
 </div>
 </div>
