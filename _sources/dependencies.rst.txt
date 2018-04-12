@@ -296,6 +296,13 @@ Once created an AMI of AWS from previous step, use the following bash script to 
     ##Uncomment next line if you want to install also Open Datacube and Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo
     #/bin/bash -c "alias python=python3 && pip3 install git+https://github.com/CONABIO/datacube-core.git@develop && cd /home/ubuntu/git/antares3 && pip3 install -e ."
 
+
+**Example using** `RunCommand`_ **service of AWS with Tag Name and Tag Value**
+
+.. image:: https://dl.dropboxusercontent.com/s/kubf3ibnuv5axx4/aws_runcommand_sphix_docu.png?dl=0
+    :width: 600
+
+
 Setting DataBase
 ^^^^^^^^^^^^^^^^
 
