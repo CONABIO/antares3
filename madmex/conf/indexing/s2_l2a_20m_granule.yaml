@@ -1,4 +1,4 @@
-name: sentinel2_sr_20m_granule
+name: s2_l2a_20m_granule
 description: Sentinel 2 data processed with sen2cor
 metadata_type: eo
 
@@ -9,7 +9,7 @@ metadata:
         name: MSI
     product_type: sen2cor
     format:
-        name: jp2
+        name: JPEG2000
 
 measurements:
     - name: 'blue'
@@ -67,14 +67,15 @@ measurements:
             bits: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
             description: Sen2Cor Scene Classification
             values:
-                0: dark features
-                1: cloud shadows
-                2: vegetation
-                3: bare soils
-                4: water
-                5: cloud low probability
-                6: cloud medium probability
-                7: cloud high probability
-                8: thin cirrus
-                9: snow   
-                10: defective or saturated
+                0: No Data
+                1: Saturated or defective pixel
+                2: Dark features / Shadows
+                3: Cloud shadows
+                4: Vegetation
+                5: Not-vegetated
+                6: Water
+                7: Unclassified
+                8: Cloud medium probability
+                9: Cloud high probability
+                10: Thin cirrus
+                11: Snow or ice

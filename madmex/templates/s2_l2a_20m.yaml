@@ -8,7 +8,7 @@ extent:
     ur: {lat: {{ ur_lat }}, lon: {{  ur_lon }} }
   from_dt: '{{ dt }}'
   to_dt: '{{ dt }}'
-format: {name: jp2}
+format: {name: JPEG2000}
 grid_spatial:
   projection:
     geo_ref_points:

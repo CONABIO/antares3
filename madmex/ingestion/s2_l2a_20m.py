@@ -108,6 +108,6 @@ def metadata_convert(path):
     }
     # Load template
     env = Environment(loader=PackageLoader('madmex', 'templates'))
-    template = env.get_template('sentinel2_sr_20m.yaml')
+    template = env.get_template('s2_l2a_20m.yaml')
     out = template.render(**meta_out)
     return out
