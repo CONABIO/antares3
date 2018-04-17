@@ -8,25 +8,12 @@ from rasterio.crs import CRS
 from pyproj import Proj
 from jinja2 import Environment, PackageLoader
 
-LANDSAT_BANDS = {'TM': {'blue': 'sr_band1',
-                        'green': 'sr_band2',
-                        'red': 'sr_band3',
-                        'nir': 'sr_band4',
-                        'swir1': 'sr_band5',
-                        'swir2': 'sr_band7'},
-                 'OLI_TIRS': {'blue': 'sr_band2',
-                              'green': 'sr_band3',
-                              'red': 'sr_band4',
-                              'nir': 'sr_band5',
-                              'swir1': 'sr_band6',
-                              'swir2': 'sr_band7'}}
-LANDSAT_BANDS['ETM'] = LANDSAT_BANDS['TM']
 
 def metadata_convert(path):
     """Prepare metatdata prior to datacube indexing
 
-    Given a directory containing landsat surface reflectance bands and a MLT.txt
-    file, prepares a metadata string with the appropriate formating.
+    Given a directory containing sentinel2 surface reflectance bands processed
+    with sen2cor, prepares a metadata string with the appropriate formating.
 
     Args:
         path (str): Path of the directory containing data and metadata with SAFE

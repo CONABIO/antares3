@@ -1,0 +1,80 @@
+name: sentinel2_sr_20m_granule
+description: Sentinel 2 data processed with sen2cor
+metadata_type: eo
+
+metadata:
+    platform:
+        code: Sentinel
+    instrument:
+        name: MSI
+    product_type: sen2cor
+    format:
+        name: jp2
+
+measurements:
+    - name: 'blue'
+      aliases: [band_2, blue]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'green'
+      aliases: [band_3, green]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'red'
+      aliases: [band_4, red]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 're1'
+      aliases: [band_5, red_edge_1, re1]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 're2'
+      aliases: [band_6, red_edge_2, re2]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 're3'
+      aliases: [band_7, red_edge_3, re3]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'nir'
+      aliases: [band_8A, nir]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'swir1'
+      aliases: [band_11, swir1]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'swir2'
+      aliases: [band_12, swir2]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'pixel_qa'
+      aliases: [slc, qa]
+      units: '1'
+      dtype: uint16
+      nodata: 0
+      flags_definition: 
+        sca:
+            bits: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+            description: Sen2Cor Scene Classification
+            values:
+                0: dark features
+                1: cloud shadows
+                2: vegetation
+                3: bare soils
+                4: water
+                5: cloud low probability
+                6: cloud medium probability
+                7: cloud high probability
+                8: thin cirrus
+                9: snow   
+                10: defective or saturated
