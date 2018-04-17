@@ -4,7 +4,7 @@ metadata_type: eo
 
 metadata:
     platform:
-        code: Sentinel
+        code: sentinel2
     instrument:
         name: MSI
     product_type: sen2cor

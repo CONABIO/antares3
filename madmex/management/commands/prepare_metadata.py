@@ -48,6 +48,9 @@ antares prepare_metadata --path /path/to/dir/containing/scenes --dataset_name la
 
 # srtm_cgiar
 antares prepare_metadata --path /path/to/dir/containing/srtm_terrain_metrics --dataset_name srtm_cgiar --outfile metadata_srtm.yaml
+
+# Sentinel2 L2A 20m
+antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name s2_l2a_20m --outfile metadata_sentinel.yaml
 """
     def add_arguments(self, parser):
         parser.add_argument('-p', '--path',

@@ -39,7 +39,8 @@ def metadata_convert(path):
         raise ValueError('Argument path= is not a directory')
     mtl_file = glob(os.path.join(path, 'GRANULE/**/MTD_TL.xml'))[0]
     # Extract metadata from filename
-    satellite = os.path.basename(path)[:3]
+    # satellite = os.path.basename(path)[:3]
+    satellite = 'sentinel2' # using generic name for both satellite to avoid mismatch with product description
     instrument = 'MSI'
     # Start parsing xml
     root = ET.parse(mtl_file).getroot()
