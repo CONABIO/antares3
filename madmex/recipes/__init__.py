@@ -1,6 +1,7 @@
 import os
 from .landsat_8_madmex_001 import run as landsat_8_madmex_001
 from .landsat_8_ndvi_mean import run as landsat_8_ndvi_mean
+from .s2_20m_001 import run as s2_20m_001
 
 """
 Adding recipes:
@@ -25,5 +26,10 @@ RECIPES = {
         'product': 'ls8_espa_mexico',
         'fun': landsat_8_ndvi_mean,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_8_ndvi_mean.yaml'),
+    },
+    's2_20m_001': {
+        'product': 's2_l2a_20m_mexico',
+        'fun': s2_20m_001,
+        'config_file': os.path.expanduser('~/.config/madmex/indexing/s2_20m_001.yaml'),
     },
 }
