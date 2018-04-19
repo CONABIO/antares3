@@ -48,13 +48,13 @@ def run(tile, gwf, center_dt, path):
         dc.close()
         # Keep clear pixels (2: Dark features, 4: Vegetation, 5: Not vegetated,
         # 6: Water, 7: Unclassified, 11: Snow/Ice)
-        sr_1 = sr_0.where(sr.pixel_qa.isin([2,4,5,6,7,11]))
+        sr_1 = sr_0.where(sr_0.pixel_qa.isin([2,4,5,6,7,8,11]))
         sr_1 = sr_1.drop('pixel_qa')
         # Compute ndvi
         sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
         sr_1['ndvi'].attrs['nodata'] = 0
         # Compute ndmi
-        sr_1['ndmi'] = ((sr_1.nir - sr_1.swir) / (sr_1.nir + sr_1.swir)) * 10000
+        sr_1['ndmi'] = ((sr_1.nir - sr_1.swir1) / (sr_1.nir + sr_1.swir1)) * 10000
         sr_1['ndmi'].attrs['nodata'] = 0
         # Run temporal reductions and rename DataArrays
         sr_mean = sr_1.mean('time', keep_attrs=True, skipna=True)
@@ -89,7 +89,6 @@ def run(tile, gwf, center_dt, path):
                              to_int(ndvi_min),
                              to_int(ndmi_max),
                              to_int(ndmi_min),
-                             sr_std.apply(to_int),
                              terrain])
         combined.attrs['crs'] = sr_0.attrs['crs']
         write_dataset_to_netcdf(combined, nc_filename)

@@ -34,6 +34,9 @@ def metadata_convert(path):
     Returns:
         str: The content of the metadata for later writing to file.
     """
+    def get_namespace(element):
+        m = re.match('\{(.*)\}', element.tag)
+        return m.group(1) if m else ''
     # Check that path is a dir and contains appropriate files
     if not os.path.isdir(path):
         raise ValueError('Argument path= is not a directory')
@@ -44,7 +47,7 @@ def metadata_convert(path):
     instrument = 'MSI'
     # Start parsing xml
     root = ET.parse(mtl_file).getroot()
-    n1 = "https://psd-14.sentinel2.eo.esa.int/PSD/S2_PDI_Level-2A_Tile_Metadata.xsd"
+    n1 = get_namespace(root)
     date_str = root.find('n1:General_Info/SENSING_TIME',
                          namespaces={'n1': n1}).text
     dt = date_str[:-5]
