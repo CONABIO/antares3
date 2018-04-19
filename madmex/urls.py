@@ -30,6 +30,7 @@ urlpatterns = [
     path('datacube/', views.datacube_landsat_tiles, name='datacube_landsat_tiles'),
     path('training_objects/<int:z>/<int:x>/<int:y>/', views.training_objects, name='training_objects'),
     path('admin/', admin.site.urls),
-    url(r'^', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^api/', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^$', views.map, name='map'),
 ]

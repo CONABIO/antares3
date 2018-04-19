@@ -10,6 +10,7 @@ import os
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.contrib.gis.geos.polygon import Polygon
 from django.http.response import JsonResponse
+from django.template.response import TemplateResponse
 from rest_framework import viewsets
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import RetrieveModelMixin
@@ -140,4 +141,7 @@ def training_objects(request, z, x, y):
 
     
     return JsonResponse(response)
+
+def map(request):
+    return TemplateResponse(request, 'map.html', {})
 
