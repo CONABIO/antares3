@@ -32,6 +32,13 @@ Antares
    extend
    api
 
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Examples
+
+   exemple_s2_land_cover
+
 
 Indices and tables
 ==================
