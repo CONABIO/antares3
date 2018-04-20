@@ -27,8 +27,11 @@ Command line for running segmentation over a given extent using
 --------------
 Example usage:
 --------------
-# Run BIS segmentation
+# Run slic segmentation
 antares segment --algorithm slic -n landsat_slic_test_2017 -p landsat_madmex_001_jalisco_2017_2 -r Jalisco -b green_mean red_mean ndvi_mean nir_mean swir1_mean swir2_mean --datasource landsat8 --year 2017 -extra compactness=0.01 n_segments=300000
+
+# Run BIS segmentation on sentinel2
+antares segment --algorithm bis -n s2_001_jalisco_2017 -p s2_001_jalisco_2017_0 -r Jalisco -b green_mean red_mean nir_mean swir1_mean swir2_mean ndvi_mean ndmi_mean --datasource sentinel_2 --year 2017 -extra t=40 s=0.5 c=0.7
 """
     def add_arguments(self, parser):
         parser.add_argument('-a', '--algorithm',
