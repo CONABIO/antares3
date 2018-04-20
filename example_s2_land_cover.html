@@ -239,111 +239,23 @@ datacube ingest -c ~/.config/madmex/ingestion/s2_l2a_20m_mexico.yaml --executor 
 <code class="docutils literal notranslate"><span class="pre">antares</span></code> implements various segmentation algorithms that can all be operated from the <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">segment</span></code> command line. To get a list of implemented algorithms, run the <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">segment_params</span></code> command line.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;settings&#39;: None, &#39;segmentation&#39;: None, &#39;verbosity&#39;: 1, &#39;traceback&#39;: False, &#39;pythonpath&#39;: None, &#39;no_color&#39;: False}
+Command line arguments: {&#39;pythonpath&#39;: None, &#39;verbosity&#39;: 1, &#39;no_color&#39;: False, &#39;segmentation&#39;: None, &#39;settings&#39;: None, &#39;traceback&#39;: False}
+Command execution is done in 0.8273584842681885 seconds.
 Algorithm description                                                                
 --------  ---------------                                                            
-Traceback (most recent call last):
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/osgeo/gdal_array.py&quot;, line 18, in swig_import_helper
-    fp, pathname, description = imp.find_module(&#39;_gdal_array&#39;, [dirname(__file__)])
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/imp.py&quot;, line 296, in find_module
-    raise ImportError(_ERR_MSG.format(name), name=name)
-ImportError: No module named &#39;_gdal_array&#39;
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/bin/antares&quot;, line 11, in &lt;module&gt;
-    sys.exit(main())
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/entry.py&quot;, line 15, in main
-    execute_from_command_line(sys.argv)
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/django/core/management/__init__.py&quot;, line 371, in execute_from_command_line
-    utility.execute()
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/django/core/management/__init__.py&quot;, line 365, in execute
-    self.fetch_command(subcommand).run_from_argv(self.argv)
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/django/core/management/base.py&quot;, line 288, in run_from_argv
-    self.execute(*args, **cmd_options)
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/management/base.py&quot;, line 35, in execute
-    output = BaseCommand.execute(self, *args, **options)
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/django/core/management/base.py&quot;, line 335, in execute
-    output = self.handle(*args, **options)
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/management/commands/segment_params.py&quot;, line 49, in handle
-    module = import_module(&#39;madmex.segmentation.%s&#39; % algo_name)
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/importlib/__init__.py&quot;, line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 986, in _gcd_import
-  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 969, in _find_and_load
-  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 958, in _find_and_load_unlocked
-  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 673, in _load_unlocked
-  File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 665, in exec_module
-  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 222, in _call_with_frames_removed
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/segmentation/bis.py&quot;, line 2, in &lt;module&gt;
-    from madmex.bin.bis import segment_gen
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/bin/bis/__init__.py&quot;, line 1, in &lt;module&gt;
-    from .segment import segment, segment_gen
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/bin/bis/segment.py&quot;, line 31, in &lt;module&gt;
-    from . import image_gdal as image
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/bin/bis/image_gdal.py&quot;, line 12, in &lt;module&gt;
-    from osgeo import gdal_array, gdal, ogr
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/osgeo/gdal_array.py&quot;, line 28, in &lt;module&gt;
-    _gdal_array = swig_import_helper()
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/osgeo/gdal_array.py&quot;, line 20, in swig_import_helper
-    import _gdal_array
-ImportError: No module named &#39;_gdal_array&#39;
+bis       Antares implementation of Berkeley Image segmentation algorithm            
+slic      Antares implementation of scikit-image&#39;s SLIC segmentation algorithm
 </pre></div>
 </div>
 <p>We will use the Berkeley Image Segmentation (bis) for the present example. Each algorithm has different parameters, that can be inspected using the <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">segment_params</span> <span class="pre">'algorithm'</span></code> command line.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;settings&#39;: None, &#39;segmentation&#39;: None, &#39;verbosity&#39;: 1, &#39;traceback&#39;: False, &#39;pythonpath&#39;: None, &#39;no_color&#39;: False}
+Command line arguments: {&#39;pythonpath&#39;: None, &#39;verbosity&#39;: 1, &#39;no_color&#39;: False, &#39;segmentation&#39;: None, &#39;settings&#39;: None, &#39;traceback&#39;: False}
+Command execution is done in 0.8273584842681885 seconds.
 Algorithm description                                                                
 --------  ---------------                                                            
-Traceback (most recent call last):
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/osgeo/gdal_array.py&quot;, line 18, in swig_import_helper
-    fp, pathname, description = imp.find_module(&#39;_gdal_array&#39;, [dirname(__file__)])
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/imp.py&quot;, line 296, in find_module
-    raise ImportError(_ERR_MSG.format(name), name=name)
-ImportError: No module named &#39;_gdal_array&#39;
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/bin/antares&quot;, line 11, in &lt;module&gt;
-    sys.exit(main())
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/entry.py&quot;, line 15, in main
-    execute_from_command_line(sys.argv)
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/django/core/management/__init__.py&quot;, line 371, in execute_from_command_line
-    utility.execute()
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/django/core/management/__init__.py&quot;, line 365, in execute
-    self.fetch_command(subcommand).run_from_argv(self.argv)
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/django/core/management/base.py&quot;, line 288, in run_from_argv
-    self.execute(*args, **cmd_options)
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/management/base.py&quot;, line 35, in execute
-    output = BaseCommand.execute(self, *args, **options)
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/django/core/management/base.py&quot;, line 335, in execute
-    output = self.handle(*args, **options)
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/management/commands/segment_params.py&quot;, line 49, in handle
-    module = import_module(&#39;madmex.segmentation.%s&#39; % algo_name)
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/importlib/__init__.py&quot;, line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 986, in _gcd_import
-  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 969, in _find_and_load
-  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 958, in _find_and_load_unlocked
-  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 673, in _load_unlocked
-  File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 665, in exec_module
-  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 222, in _call_with_frames_removed
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/segmentation/bis.py&quot;, line 2, in &lt;module&gt;
-    from madmex.bin.bis import segment_gen
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/bin/bis/__init__.py&quot;, line 1, in &lt;module&gt;
-    from .segment import segment, segment_gen
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/bin/bis/segment.py&quot;, line 31, in &lt;module&gt;
-    from . import image_gdal as image
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/madmex/bin/bis/image_gdal.py&quot;, line 12, in &lt;module&gt;
-    from osgeo import gdal_array, gdal, ogr
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/osgeo/gdal_array.py&quot;, line 28, in &lt;module&gt;
-    _gdal_array = swig_import_helper()
-  File &quot;/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/osgeo/gdal_array.py&quot;, line 20, in swig_import_helper
-    import _gdal_array
-ImportError: No module named &#39;_gdal_array&#39;
+bis       Antares implementation of Berkeley Image segmentation algorithm            
+slic      Antares implementation of scikit-image&#39;s SLIC segmentation algorithm
 </pre></div>
 </div>
 <p>Experimenting with the data, we found <code class="docutils literal notranslate"><span class="pre">t=40</span></code>, <code class="docutils literal notranslate"><span class="pre">s=0.5</span></code> and <code class="docutils literal notranslate"><span class="pre">c=0.7</span></code> to be an appropriate set of segmentation parameters for this dataset. We can therefore start the segmentation using the floowing command. Also the command line allow to select a subset of layers to run the segmenatation. In this case we choose to use <code class="docutils literal notranslate"><span class="pre">green_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">red_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">nir_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">swir1_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">swir2_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">ndvi_mean</span></code> and <code class="docutils literal notranslate"><span class="pre">ndmi_mean</span></code>.</p>
@@ -373,8 +285,8 @@ ImportError: No module named &#39;_gdal_array&#39;
 <p>Similarly to segmentation algorithms, <code class="docutils literal notranslate"><span class="pre">antares</span></code> offers an interface to various prediction models. To get a list of the models implemented, one can run <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_params</span></code>.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;pythonpath&#39;: None, &#39;model&#39;: None, &#39;traceback&#39;: False, &#39;settings&#39;: None, &#39;verbosity&#39;: 1, &#39;no_color&#39;: False}
-Command execution is done in 0.5826976299285889 seconds.
+Command line arguments: {&#39;traceback&#39;: False, &#39;no_color&#39;: False, &#39;verbosity&#39;: 1, &#39;settings&#39;: None, &#39;model&#39;: None, &#39;pythonpath&#39;: None}
+Command execution is done in 0.6212646961212158 seconds.
 Model     description                                                                
 --------  ---------------                                                            
 lgb       Antares implementation of Microsoft&#39;s Light Boost classifier               
@@ -385,8 +297,8 @@ xgb       Antares implementation of Gradient Boost classifier
 <p>The following example uses the random forest decision tree model, which parameters can be consulted using <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_params</span> <span class="pre">rf</span></code>.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;model&#39;: &#39;rf&#39;, &#39;settings&#39;: None, &#39;verbosity&#39;: 1, &#39;no_color&#39;: False, &#39;pythonpath&#39;: None, &#39;traceback&#39;: False}
-Command execution is done in 0.5841178894042969 seconds.
+Command line arguments: {&#39;traceback&#39;: False, &#39;pythonpath&#39;: None, &#39;verbosity&#39;: 1, &#39;settings&#39;: None, &#39;model&#39;: &#39;rf&#39;, &#39;no_color&#39;: False}
+Command execution is done in 0.5871357917785645 seconds.
                  Argument | Default value            
        ================== | ==============           
              n_estimators | 50                       
