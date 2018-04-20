@@ -115,10 +115,6 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../example_s2_land_cover.html">Sentinel 2 based Land cover example</a></li>
-</ul>
 
             
           
@@ -197,11 +193,8 @@ To declare a class method, use this idiom:</p>
 <blockquote>
 <div><dl class="docutils">
 <dt>class C:</dt>
-<dd><p class="first">&#64;classmethod
-def f(cls, arg1, arg2, …):</p>
-<blockquote class="last">
-<div>…</div></blockquote>
-</dd>
+<dd>def f(cls, arg1, arg2, …): …
+f = classmethod(f)</dd>
 </dl>
 </div></blockquote>
 <p>It can be called either on the class (e.g. C.f()) or on an instance

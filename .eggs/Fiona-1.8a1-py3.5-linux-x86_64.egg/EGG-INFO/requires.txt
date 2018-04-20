@@ -1,0 +1,16 @@
+cligj
+click-plugins
+six
+munch
+
+[all]
+pytest>=3
+shapely
+pytest-cov
+
+[calc]
+shapely
+
+[test]
+pytest>=3
+pytest-cov
