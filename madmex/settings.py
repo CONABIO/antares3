@@ -20,7 +20,7 @@ from dotenv.main import load_dotenv
 
 logger = logging.getLogger(__name__)
 
-dotenv_path = join(expanduser('~'),'.antares')
+dotenv_path = join(expanduser('~'), '.antares')
 
 if os.path.isfile(dotenv_path):
     load_dotenv(dotenv_path)

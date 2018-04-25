@@ -16,19 +16,19 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import RetrieveModelMixin
 import xarray
 
-from madmex.models import TrainObject, Footprint, TrainClassification
+from madmex.models import TrainObject, Footprint, TrainClassification, \
+    PredictClassification, Tag
 from madmex.orm.queries import get_datacube_objects, get_datacube_chunks
-from madmex.rest.serializers import ObjectSerializer, FootprintSerializer
+from madmex.rest.serializers import ObjectSerializer, FootprintSerializer, \
+    PredictSerializer, TagSerializer
 from madmex.settings import TEMP_DIR
+from madmex.wrappers import predict_object
 
 
 class ObjectViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-
-    def retrieve(self, request, *args, **kwargs):
-        return RetrieveModelMixin.retrieve(self, request, *args, **kwargs)
 
     def get_queryset(self):    
         wkt = self.request.query_params.get('polygon', None)
@@ -58,7 +58,22 @@ class FootprintViewSet(viewsets.ModelViewSet):
     queryset = Footprint.objects.all()
     serializer_class = FootprintSerializer
 
-    
+class PredictViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows the client to query for the predict objects.
+    """
+    def get_queryset(self):    
+        wkt = self.request.query_params.get('polygon', None)
+        if wkt is not None:
+            polygon = GEOSGeometry(wkt)
+            queryset = PredictClassification.objects.filter(predict_object__the_geom__intersects=polygon,
+                                                            predict_object__segmentation_information_id=26,
+                                                            name='s2_001_jalisco_2017_bis_rf_0')
+        else:
+            queryset = PredictClassification.objects.all()
+        return queryset
+    queryset = PredictClassification.objects.all()
+    serializer_class = PredictSerializer
 
 def datacube_landsat_tiles(request):
     count = 0
@@ -143,5 +158,7 @@ def training_objects(request, z, x, y):
     return JsonResponse(response)
 
 def map(request):
-    return TemplateResponse(request, 'map.html', {})
+    tags_list = TagSerializer(Tag.objects.all(), many=True).data
+    tags = json.dumps(tags_list)
+    return TemplateResponse(request, 'map.html', {'tags':tags})
 

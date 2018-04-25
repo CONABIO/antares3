@@ -23,6 +23,7 @@ from madmex.rest import views
 
 router = routers.DefaultRouter()
 router.register(r'objects', views.ObjectViewSet)
+router.register(r'predict', views.PredictViewSet)
 router.register(r'footprints', views.FootprintViewSet)
 
 urlpatterns = [
