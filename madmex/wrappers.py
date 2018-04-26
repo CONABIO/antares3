@@ -91,7 +91,7 @@ def predict_pixel_tile(tile, gwf, model_id, outdir=None):
 
 
 def extract_tile_db(tile, gwf, sp, training_set, sample):
-    """FUnction to extract data under training geometries for a given tile
+    """Function to extract data under training geometries for a given tile
 
     Meant to be called within a dask.distributed.Cluster.map() over a list of tiles
     returned by GridWorkflow.list_cells
