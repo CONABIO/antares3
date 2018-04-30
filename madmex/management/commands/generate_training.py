@@ -4,6 +4,8 @@ Created on Apr 27, 2018
 @author: agutierrez
 '''
 
+import logging
+
 import fiona
 import rasterio
 from rasterio.features import shapes
@@ -13,6 +15,8 @@ import shapely.wkt
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import Country
 
+
+logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
 
@@ -30,16 +34,21 @@ class Command(AntaresBaseCommand):
         with rasterio.open(input_raster) as src:
             water = src.read(1)
         
-            water[water < 90] = 255
+            water[water < 50] = 255
             water[water <= 100] = 1
             mask = water == 1
             results = []
+            i = 0
+            my_mexico = shapely.wkt.loads(mexico.wkt)
+            logger.debug('Simplifying country shape.')
+            my_mexico = my_mexico.simplify(0.01, preserve_topology=False)
             for s in shapes(water, mask=mask, transform=src.transform):
                 my_object = shape(s[0])
-                my_mexico = shapely.wkt.loads(mexico.wkt)
+                
                 if(my_object.intersects(my_mexico)):
+                    i = i + 1
                     results.append({'properties': {'raster_val': 29}, 'geometry': mapping(my_object.intersection(my_mexico))})
-
+                    logger.debug('%s shapes processed.', i)
             with fiona.open(output,
                             'w',
                             driver='ESRI Shapefile',
