@@ -62,7 +62,6 @@ class TrainObject(models.Model):
     regions and each object should have an assigned tag which is the ground truth for
     it.
     '''
-    models.GeometryField
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
     training_tags = models.ManyToManyField(Tag,
