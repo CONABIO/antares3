@@ -108,6 +108,21 @@ class PredictClassification(models.Model):
     model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='model', default=None)
     name = models.CharField(max_length=200, default='')
     confidence = models.FloatField(default=-1.0)
+    
+class Scene(models.Model):
+    '''This table represents a satellite scene and information to build a catalalog.
+    '''
+    footprint = models.ForeignKey(Footprint, on_delete=models.CASCADE)
+    scene_id = models.CharField(max_length=50,default=None, unique=True)
+    landsat_product_id = models.CharField(max_length=50,default=None, unique=True)
+    acquisition_date = models.DateTimeField(default=None)
+    day_night = models.CharField(max_length=50, default=None)
+    image_quality = models.IntegerField(default=-1)
+    cloud_cover = models.FloatField(default=-1.0)
+    min_lat = models.FloatField(default=-1)
+    min_lon = models.FloatField(default=-1)
+    max_lat = models.FloatField(default=-1)
+    max_lon = models.FloatField(default=-1)
 
 def ingest_countries_from_shape(path, mapping):
     '''Ingestion function for countries to database.
