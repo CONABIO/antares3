@@ -71,6 +71,7 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
     X_list = []
     y_list = []
     for fc_sub in chunk(fc, 60000):
+        fc_sub = list(fc_sub)
         # Rasterize feature collection
         arr = rasterize_xarray(fc_sub, dataset)
         # Convert arr to a dataArray
