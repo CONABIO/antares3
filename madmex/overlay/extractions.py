@@ -82,7 +82,7 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
         X_list.append(df.values)
         # TODO: Use numpy.array instead of list here to reduce memory footprint (see np.vectorize)
         ids = list(df.index.values.astype('uint32') - 1)
-        y_list.append(np.array([fc[x]['properties'][field] for x in ids]))
+        y_list.append(np.array([fc_sub[x]['properties'][field] for x in ids]))
     y = np.concatenate(y_list)
     X = np.concatenate(X_list, axis=0)
     return [X, y]
