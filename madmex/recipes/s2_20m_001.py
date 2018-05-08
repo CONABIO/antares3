@@ -91,6 +91,7 @@ def run(tile, gwf, center_dt, path):
                              to_int(ndmi_min),
                              terrain])
         combined.attrs['crs'] = sr_0.attrs['crs']
+        combined = combined.compute()
         write_dataset_to_netcdf(combined, nc_filename)
         return nc_filename
     except Exception as e:
