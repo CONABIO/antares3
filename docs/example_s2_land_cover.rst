@@ -188,7 +188,7 @@ Export and visualize the result
 
 If you do not have a web-service to directly visualize the results of the classification from the database, you can export them to a vector file using the ``antares db_to_vector`` command line and visualize them in your favorite GIS software.
 
-.. image:: img/map_jalisco.jpeg
+.. image:: imgs/map_jalisco.jpeg
    :width: 200px
    :height: 200px
    :align: center
