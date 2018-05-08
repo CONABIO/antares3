@@ -75,7 +75,7 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
         # Rasterize feature collection
         arr = rasterize_xarray(fc_sub, dataset)
         # Convert arr to a dataArray
-        xr_arr = xr.DataArray(arr, dims=['x', 'y'], name='features_id')
+        xr_arr = xr.DataArray(arr, dims=['y', 'x'], name='features_id')
         # Combine the Dataset with the DataArray
         combined = xr.merge([xr_arr, dataset])
         # Coerce to pandas dataframe
