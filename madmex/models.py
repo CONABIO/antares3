@@ -116,7 +116,6 @@ class Scene(models.Model):
     scene_id = models.CharField(max_length=50,default=None, unique=True)
     landsat_product_id = models.CharField(max_length=50,default=None, unique=True)
     acquisition_date = models.DateTimeField(default=None)
-    day_night = models.CharField(max_length=50, default=None)
     image_quality = models.IntegerField(default=-1)
     cloud_cover = models.FloatField(default=-1.0)
     min_lat = models.FloatField(default=-1)
