@@ -30,5 +30,26 @@ def get_datacube_chunks(dataset_name):
         result = cursor.fetchall()
     return result
 
+def get_landsat_catalog(mission):
+    
+    query = ("SELECT f.name AS path_row, extract(year from s.acquisition_date) AS year, count(f.the_geom) AS number_of_scenes " 
+            "FROM madmex_scene AS s, madmex_footprint AS f " 
+            "WHERE f.id = s.footprint_id AND s.cloud_cover < 20 AND s.landsat_product_id like '%s' " 
+            "GROUP BY f.name, extract(year from s.acquisition_date) " 
+            "ORDER BY path_row, year")
 
+    mission_name = 'LE07%'
+
+    if int(mission) == 7:
+        mission_name = 'LE07%'  
+    elif int(mission) == 8: 
+        mission_name = 'LC08%'
+
+    print(mission_name)
+    print(query % mission_name)
+
+    with connection.cursor() as cursor:
+        cursor.execute(query % mission_name)
+        result = cursor.fetchall()
+    return result
     

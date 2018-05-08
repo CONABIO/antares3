@@ -9,6 +9,7 @@ import os
 
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.contrib.gis.geos.polygon import Polygon
+from django.core.serializers import serialize
 from django.http.response import JsonResponse
 from django.template.response import TemplateResponse
 from rest_framework import viewsets
@@ -18,7 +19,8 @@ import xarray
 
 from madmex.models import TrainObject, Footprint, TrainClassification, \
     PredictClassification, Tag
-from madmex.orm.queries import get_datacube_objects, get_datacube_chunks
+from madmex.orm.queries import get_datacube_objects, get_datacube_chunks, \
+    get_landsat_catalog
 from madmex.rest.serializers import ObjectSerializer, FootprintSerializer, \
     PredictSerializer, TagSerializer
 from madmex.settings import TEMP_DIR
@@ -156,6 +158,37 @@ def training_objects(request, z, x, y):
 
     
     return JsonResponse(response)
+
+def catalog(request, mission):
+    queryset = get_landsat_catalog(mission)
+    result = {}
+    min_year = math.inf
+    max_year = 0
+    for row in queryset:
+        path_row_id = row[0]
+        path_row = result.get(path_row_id, None)
+        if path_row == None:
+            result.update({path_row_id:{}})
+            path_row = result.get(path_row_id)
+        path_row.update({int(row[1]):row[2]})
+        
+        if int(row[1]) < min_year:
+            min_year = int(row[1])
+            
+        if int(row[1]) > max_year:
+            max_year = int(row[1])
+    
+    footprints = json.loads(serialize('geojson', Footprint.objects.filter(sensor='landsat'),
+              geometry_field='the_geom',
+              fields=('name',)))
+    for feat in footprints['features']:
+        props = feat.get('properties')
+        name = props.get('name')
+        props.update({'counts': result.get(name)})
+    
+    return TemplateResponse(request, 'catalog.html', {'footprints':json.dumps(footprints),
+                                                      'min_year':min_year,
+                                                      'max_year':max_year})
 
 def map(request):
     tags_list = TagSerializer(Tag.objects.all(), many=True).data
