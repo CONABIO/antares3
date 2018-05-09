@@ -8,7 +8,7 @@ Scalable production of land cover and land cover change information from multipl
 [Online doc](https://conabio.github.io/antares3/)
 
 
-## `.env` template
+## `~/.antares` template
 
 ```
 SECRET_KEY=
@@ -26,5 +26,6 @@ SCIHUB_USER=
 SCIHUB_PASSWORD=
 TEMP_DIR=
 INGESTION_PATH=
+BIS_LICENSE=
 ```
 
