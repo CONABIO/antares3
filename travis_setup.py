@@ -11,3 +11,5 @@ with open(os.path.expanduser('~/.datacube.conf'), 'w') as dst:
     for line in dc_conf:
         dst.write('%s\n' % line)
 
+with open(os.path.expanduser('~/.antares'), 'w') as dst:
+    dst.write('DEBUG=True')

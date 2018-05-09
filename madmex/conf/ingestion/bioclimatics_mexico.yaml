@@ -1,0 +1,368 @@
+source_type: bioclimatics 
+output_type: bioclimatics_mexico
+
+description: Climatic surface with monthly temporal resolution, interpolated at very high spatial resolution (926 m) with data quality control considering the topographic effect, from the corresponding climatic surface in the WorldClim database (1950-2000) and from the climatological basis daily (1902-2011) of more than 5,000 meteorological stations of the National Meteorological Service of the National Water Commission. 
+
+location: '/home/madmex_user/datacube_ingest'
+file_path_template: 'bioclim/mexico/bio_{tile_index[0]}_{tile_index[1]}_{start_time}.nc'i
+global_attributes:
+  title: CONABIO Data Cube Bioclimatics
+  summary: Climatic surface with monthly temporal resolution
+  source: UNIATMOS, UNAM
+  institution: CONABIO
+  instrument: Weather station
+  cdm_data_type: Grid
+  keywords: CONABIO,BIOCLIMATICS,TEMPERATURE
+  keywords_vocabulary: SMN,BIO
+  platform: Servicio Meteorologico Nacional
+  processing_level: Monthly climatological surface, with a spatial resolution of 926m, considers the topographic effect. 
+  product_version: '0.0.1'
+  product_suite: BIO
+  project: MADMEX
+  coverage_content_type: physicalMeasurement
+
+storage:
+  driver: NetCDF CF
+  # http://spatialreference.org/ref/sr-org/mexico-inegi-lambert-conformal-conic/
+  crs: PROJCS["unnamed",GEOGCS["WGS 84",DATUM["unknown",SPHEROID["WGS84",6378137,6556752.3141]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",17.5],PARAMETER["standard_parallel_2",29.5],PARAMETER["latitude_of_origin",12],PARAMETER["central_meridian",-102],PARAMETER["false_easting",2500000],PARAMETER["false_northing",0]] 
+  tile_size:
+          x: 100080
+          y: 100080
+  resolution:
+          x: 900
+          y: -900
+  origin:
+    # -118.21, 33.02
+    x: 977160 
+    y: 2426720
+  chunking:
+      x: 200
+      y: 200
+      time: 200
+  dimension_order: ['time', 'y', 'x']
+
+measurements:
+    - name: 'tmax_jan'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax_jan'
+      attrs:
+          long_name: "Maximum temperature January"
+          alias: "tmax_jan"
+    - name: 'tmean_jan'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean_jan'
+      attrs:
+          long_name: "Mean temperature January"
+          alias: "tmean_jan"
+    - name: 'tmin_jan'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin_jan'
+      attrs:
+          long_name: "Minimum temperature January"
+          alias: "tmin_jan"
+    - name: 'tmax_feb'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax_feb'
+      attrs:
+          long_name: "Maximum temperature February"
+          alias: "tmax_feb"
+    - name: 'tmean_feb'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean_feb'
+      attrs:
+          long_name: "Mean temperature February"
+          alias: "tmean_feb"
+    - name: 'tmin_feb'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin_feb'
+      attrs:
+          long_name: "Minimum temperature February"
+          alias: "tmin_feb"
+    - name: 'tmax_mar'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax_mar'
+      attrs:
+          long_name: "Maximum temperature March"
+          alias: "tmax_mar"
+    - name: 'tmean_mar'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean_mar'
+      attrs:
+          long_name: "Mean temperature March"
+          alias: "tmean_mar"
+    - name: 'tmin_mar'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin_mar'
+      attrs:
+          long_name: "Minimum temperature March"
+          alias: "tmin_mar"
+    - name: 'tmax_apr'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax_apr'
+      attrs:
+          long_name: "Maximum temperature April"
+          alias: "tmax_apr"
+    - name: 'tmean_apr'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean_apr'
+      attrs:
+          long_name: "Mean temperature April"
+          alias: "tmean_apr"
+    - name: 'tmin_apr'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin_apr'
+      attrs:
+          long_name: "Minimum temperature April"
+          alias: "tmin_apr"
+    - name: 'tmax_may'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax_may'
+      attrs:
+          long_name: "Maximum temperature May"
+          alias: "tmax_may"
+    - name: 'tmean_may'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean_may'
+      attrs:
+          long_name: "Mean temperature May"
+          alias: "tmean_may"
+    - name: 'tmin_may'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin_may'
+      attrs:
+          long_name: "Minimum temperature May"
+          alias: "tmin_may"
+    - name: 'tmax_jun'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax_jun'
+      attrs:
+          long_name: "Maximum temperature June"
+          alias: "tmax_june"
+    - name: 'tmean_june'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean_june'
+      attrs:
+          long_name: "Mean temperature June"
+          alias: "tmean_june"
+    - name: 'tmin_june'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin_june'
+      attrs:
+          long_name: "Minimum temperature June"
+          alias: "tmin_june"
+    - name: 'tmax_jul'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax_jul'
+      attrs:
+          long_name: "Maximum temperature July"
+          alias: "tmax_jul"
+    - name: 'tmean_jul'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean_jul'
+      attrs:
+          long_name: "Mean temperature July"
+          alias: "tmean_jul"
+    - name: 'tmin_jul'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin_jul'
+      attrs:
+          long_name: "Minimum temperature July"
+          alias: "tmin_jul"
+    - name: 'tmax_aug'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax_aug'
+      attrs:
+          long_name: "Maximum temperature August"
+          alias: "tmax_aug"
+    - name: 'tmean_aug'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean_aug'
+      attrs:
+          long_name: "Mean temperature August"
+          alias: "tmean_aug"
+    - name: 'tmin_aug'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin_aug'
+      attrs:
+          long_name: "Minimum temperature August"
+          alias: "tmin_aug"
+    - name: 'tmax_sep'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax_sep'
+      attrs:
+          long_name: "Maximum temperature September"
+          alias: "tmax_sep"
+    - name: 'tmean_sep'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean_sep'
+      attrs:
+          long_name: "Mean temperature September"
+          alias: "tmean_sep"
+    - name: 'tmin_sep'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin_sep'
+      attrs:
+          long_name: "Minimum temperature September"
+          alias: "tmin_sep"
+    - name: 'tmax_oct'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax_oct'
+      attrs:
+          long_name: "Maximum temperature October"
+          alias: "tmax_oct"
+    - name: 'tmean_oct'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean_oct'
+      attrs:
+          long_name: "Mean temperature October"
+          alias: "tmean_oct"
+    - name: 'tmin_oct'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin_oct'
+      attrs:
+          long_name: "Minimum temperature October"
+          alias: "tmin_oct"
+    - name: 'tmax_nov'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax_nov'
+      attrs:
+          long_name: "Maximum temperature November"
+          alias: "tmax_nov"
+    - name: 'tmean_nov'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean_nov'
+      attrs:
+          long_name: "Mean temperature November"
+          alias: "tmean_nov"
+    - name: 'tmin_nov'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin_nov'
+      attrs:
+          long_name: "Minimum temperature November"
+          alias: "tmin_nov"
+    - name: 'tmax_dec'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmax_dec'
+      attrs:
+          long_name: "Maximum temperature December"
+          alias: "tmax_dec"
+    - name: 'tmean_dec'
+      dtype: float32 
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmean_dec'
+      attrs:
+          long_name: "Mean temperature December"
+          alias: "tmean_dec"
+    - name: 'tmin_dec'
+      dtype: float32
+      nodata: -3.40282e+38
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'tmin_dec'
+      attrs:
+          long_name: "Minimum temperature December"
+          alias: "tmin_dec"

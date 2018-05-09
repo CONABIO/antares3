@@ -10,13 +10,23 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
+import logging
 import os
-from os.path import join, dirname
+from os.path import join, dirname, expanduser
+import sys
 
 from dotenv.main import load_dotenv
 
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
+
+logger = logging.getLogger(__name__)
+
+dotenv_path = join(expanduser('~'), '.antares')
+
+if os.path.isfile(dotenv_path):
+    load_dotenv(dotenv_path)
+else:
+    logger.error('Configuration file %s missing.' % dotenv_path)
+    sys.exit(0)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -45,10 +55,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'rest_framework',
+    'corsheaders',
     'madmex',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -58,12 +71,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ORIGIN_ALLOW_ALL=True
+
 ROOT_URLCONF = 'madmex.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, os.path.join('madmex', 'templates'))],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -93,6 +108,7 @@ DATABASES = {
     }
 }
 
+
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
@@ -118,6 +134,10 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
+        'null': {
+            'level': 'DEBUG',
+            'class':'logging.NullHandler',
+        },
     },
     'loggers': {
         'django': {
@@ -129,7 +149,17 @@ LOGGING = {
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             'formatter': 'simple',
         },
+        'django.db.backends': {
+            'handlers': ['null'],  # Quiet by default!
+            'propagate': False,
+            'level':'DEBUG',
+        },
     },
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
 }
 
 # Internationalization
@@ -153,6 +183,16 @@ USGS_PASSWORD = os.getenv('USGS_PASSWORD')
 SCIHUB_USER = os.getenv('SCIHUB_USER')
 SCIHUB_PASSWORD = os.getenv('SCIHUB_PASSWORD')
 
+# A directory to store serialized objects
+SERIALIZED_OBJECTS_DIR = os.getenv('SERIALIZED_OBJECTS_DIR')
+
+# Ingestion path
+INGESTION_PATH = os.getenv('INGESTION_PATH')
+
+# Berkeley image segmentation license number
+BIS_LICENSE = os.getenv('BIS_LICENSE', '1-319-527-2680')
+
+# Static files (CSS, JavaScript, Images)
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 

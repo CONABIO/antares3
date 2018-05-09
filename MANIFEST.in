@@ -1,0 +1,3 @@
+recursive-include madmex/conf *.yaml
+recursive-include madmex/templates *.yaml
+recursive-include madmex/bin *.py *.so *.txt *.tif *.bmp *.bpw

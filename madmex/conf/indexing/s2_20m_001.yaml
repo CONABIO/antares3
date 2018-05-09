@@ -1,0 +1,98 @@
+description: Intermediary dataset used for model training and prediction, derived from sentinel2
+metadata_type: eo
+
+metadata:
+    platform:
+        code: multi
+    instrument:
+        name: multi 
+    product_type: intermediary
+    format:
+        name: NetCDF
+
+storage:
+    crs: PROJCS["unnamed",GEOGCS["WGS 84",DATUM["unknown",SPHEROID["WGS84",6378137,6556752.3141]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",17.5],PARAMETER["standard_parallel_2",29.5],PARAMETER["latitude_of_origin",12],PARAMETER["central_meridian",-102],PARAMETER["false_easting",2500000],PARAMETER["false_northing",0]] 
+    resolution:
+        x: 20
+        y: -20
+    tile_size:
+        x: 100020
+        y: 100020
+    origin:
+        x: 977160 
+        y: 2426720
+
+measurements:
+    - name: 'blue_mean'
+      dtype: int16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'green_mean'
+      dtype: int16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'red_mean'
+      dtype: int16
+      nodata: 0
+      units: 'reflectance'
+    - name: 're1_mean'
+      dtype: int16
+      nodata: 0
+      units: 'reflectance'
+    - name: 're2_mean'
+      dtype: int16
+      nodata: 0
+      units: 'reflectance'
+    - name: 're3_mean'
+      dtype: int16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'nir_mean'
+      dtype: int16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'swir1_mean'
+      dtype: int16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'swir2_mean'
+      dtype: int16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'ndvi_mean'
+      dtype: int16
+      nodata: 0
+      units: 'unitless'
+    - name: 'ndmi_mean'
+      dtype: int16
+      nodata: 0
+      units: 'unitless'
+    - name: 'ndvi_max'
+      dtype: int16
+      nodata: 0
+      units: 'unitless'
+    - name: 'ndvi_min'
+      dtype: int16
+      nodata: 0
+      units: 'unitless'
+    - name: 'ndmi_max'
+      dtype: int16
+      nodata: 0
+      units: 'unitless'
+    - name: 'ndmi_min'
+      dtype: int16
+      nodata: 0
+      units: 'unitless'
+    - name: 'elevation'
+      dtype: int16
+      nodata: -32768
+      units: 'meter'
+    - name: 'slope'
+      dtype: float32 
+      nodata: -9999
+      units: 'degree'
+    - name: 'aspect'
+      dtype: float32
+      nodata: -9999
+      units: 'degree'
+

@@ -1,0 +1,81 @@
+name: s2_l2a_20m_granule
+description: Sentinel 2 data processed with sen2cor
+metadata_type: eo
+
+metadata:
+    platform:
+        code: sentinel2
+    instrument:
+        name: MSI
+    product_type: sen2cor
+    format:
+        name: JPEG2000
+
+measurements:
+    - name: 'blue'
+      aliases: [band_2, blue]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'green'
+      aliases: [band_3, green]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'red'
+      aliases: [band_4, red]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 're1'
+      aliases: [band_5, red_edge_1, re1]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 're2'
+      aliases: [band_6, red_edge_2, re2]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 're3'
+      aliases: [band_7, red_edge_3, re3]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'nir'
+      aliases: [band_8A, nir]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'swir1'
+      aliases: [band_11, swir1]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'swir2'
+      aliases: [band_12, swir2]
+      dtype: uint16
+      nodata: 0
+      units: 'reflectance'
+    - name: 'pixel_qa'
+      aliases: [slc, qa]
+      units: '1'
+      dtype: uint16
+      nodata: 0
+      flags_definition: 
+        sca:
+            bits: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+            description: Sen2Cor Scene Classification
+            values:
+                0: No Data
+                1: Saturated or defective pixel
+                2: Dark features / Shadows
+                3: Cloud shadows
+                4: Vegetation
+                5: Not-vegetated
+                6: Water
+                7: Unclassified
+                8: Cloud medium probability
+                9: Cloud high probability
+                10: Thin cirrus
+                11: Snow or ice

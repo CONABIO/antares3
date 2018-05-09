@@ -1,0 +1,194 @@
+name: bioclimatics
+description: Climatic surface of temperature in Celsius Degrees and presipitation in mm, of the Mexican Republic (1903-2011) 
+metadata_type: eo
+
+metadata:
+    platform:
+        code: WorldClim (1950-2000) and the daily climatological base (1902-2011)
+    instrument:
+        name: Weather station
+    product_type: BIO
+    format:
+        name: GeoTiff
+
+measurements:
+    - name: 'tmax_jan'
+      aliases: [maximum_temperature_january]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmean_jan'
+      aliases: [mean_temperature_january]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmin_jan'
+      aliases: [minimum_temperature_january]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmax_feb'
+      aliases: [maximum_temperature_february]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmean_feb'
+      aliases: [mean_temperature_february]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmin_feb'
+      aliases: [minimum_temperature_february]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmax_mar'
+      aliases: [maximum_temperature_march]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmean_mar'
+      aliases: [mean_temperature_march]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmin_mar'
+      aliases: [minimum_temperature_march]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmax_apr'
+      aliases: [maximum_temperature_april]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmean_apr'
+      aliases: [mean_temperature_april]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmin_apr'
+      aliases: [minimum_temperature_april]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmax_may'
+      aliases: [maximum_temperature_may]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmean_may'
+      aliases: [mean_temperature_may]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmin_may'
+      aliases: [minimum_temperature_may]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmax_jun'
+      aliases: [maximum_temperature_june]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmean_jun'
+      aliases: [mean_temperature_june]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmin_jun'
+      aliases: [minimum_temperature_june]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmax_jul'
+      aliases: [maximum_temperature_july]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmean_jul'
+      aliases: [mean_temperature_july]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmin_jul'
+      aliases: [minimum_temperature_july]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmax_aug'
+      aliases: [maximum_temperature_august]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmean_aug'
+      aliases: [mean_temperature_august]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmin_aug'
+      aliases: [minimum_temperature_august]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmax_sep'
+      aliases: [maximum_temperature_september]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmean_sep'
+      aliases: [mean_temperature_september]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmin_sep'
+      aliases: [minimum_temperature_september]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmax_oct'
+      aliases: [maximum_temperature_october]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmean_oct'
+      aliases: [mean_temperature_october]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmin_oct'
+      aliases: [minimum_temperature_october]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmax_nov'
+      aliases: [maximum_temperature_november]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmean_nov'
+      aliases: [mean_temperature_november]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmin_nov'
+      aliases: [minimum_temperature_november]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmax_dec'
+      aliases: [maximum_temperature_december]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmean_dec'
+      aliases: [mean_temperature_december]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'
+    - name: 'tmin_dec'
+      aliases: [minimum_temperature_december]
+      dtype: float32
+      nodata: -3.40282e+38
+      units: 'degree'

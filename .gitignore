@@ -1,5 +1,6 @@
 madmex.egg-info/*
 docs/_build/*
+madmex/bin/bis/license.txt
 *.swp
 *.pyc
 *.pyc[cod]
@@ -9,3 +10,4 @@ docs/_build/*
 __pycache__/
 .project
 .pydevproject
+docs/generated/*
