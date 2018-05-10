@@ -38,13 +38,13 @@ def run(tile, gwf, center_dt, path):
         # Load Landsat sr
         if os.path.isfile(nc_filename):
             raise ValueError('%s already exist' % nc_filename)
-        sr_0 = gwf.load(tile[1], dask_chunks={'x': 2501, 'y': 2501})
+        sr_0 = gwf.load(tile[1], dask_chunks={'x': 1000, 'y': 1000})
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
         # Load terrain metrics using same spatial parameters than sr
         dc = datacube.Datacube(app = 's2_20m_001_%s' % randomword(5))
         terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
                           time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
-                          dask_chunks={'x': 2501, 'y': 2501})
+                          dask_chunks={'x': 1000, 'y': 1000})
         dc.close()
         # Keep clear pixels (2: Dark features, 4: Vegetation, 5: Not vegetated,
         # 6: Water, 7: Unclassified, 11: Snow/Ice)
