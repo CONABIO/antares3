@@ -147,11 +147,12 @@ To consult the exposed arguments for each model, use the "model_params" command 
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
         C = client.map(extract_tile_db,
-                       iterable, **{'gwf': gwf,
-                                    'sp': sp,
-                                    'training_set': training,
-                                    'sample': sample},
-                       pure=False)
+                       iterable,
+                       pure=False,
+                       **{'gwf': gwf,
+                          'sp': sp,
+                          'training_set': training,
+                          'sample': sample})
         arr_list = client.gather(C)
 
         logger.info('Completed extraction of training data from %d tiles' , len(arr_list))
