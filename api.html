@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API reference &mdash; antares3 0.1.0 documentation</title>
+  <title>API reference &mdash; antares3 0.2.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
             
           
@@ -115,6 +115,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.ingestion.bioclimatics.metadata_convert.html">madmex.ingestion.bioclimatics.metadata_convert</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.ingestion.landsat_espa.metadata_convert.html">madmex.ingestion.landsat_espa.metadata_convert</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.ingestion.srtm_cgiar.metadata_convert.html">madmex.ingestion.srtm_cgiar.metadata_convert</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.ingestion.s2_l2a_20m.metadata_convert.html">madmex.ingestion.s2_l2a_20m.metadata_convert</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#i-o">I/O</a><ul>
@@ -200,6 +201,10 @@
 </li>
 </ul>
 </li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="example_s2_land_cover.html">Sentinel 2 based Land cover example</a></li>
 </ul>
 
             
@@ -334,6 +339,9 @@
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/madmex.ingestion.srtm_cgiar.metadata_convert.html#madmex.ingestion.srtm_cgiar.metadata_convert" title="madmex.ingestion.srtm_cgiar.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.srtm_cgiar.metadata_convert</span></code></a>(path)</td>
 <td>Prepare metadata prior to datacube indexing</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.ingestion.s2_l2a_20m.metadata_convert.html#madmex.ingestion.s2_l2a_20m.metadata_convert" title="madmex.ingestion.s2_l2a_20m.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.s2_l2a_20m.metadata_convert</span></code></a>(path)</td>
+<td>Prepare metatdata prior to datacube indexing</td>
 </tr>
 </tbody>
 </table>
@@ -520,7 +528,7 @@
 <td>Run a model in prediction mode and generates a raster file written to disk</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.wrappers.extract_tile_db.html#madmex.wrappers.extract_tile_db" title="madmex.wrappers.extract_tile_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.extract_tile_db</span></code></a>(tile,&nbsp;gwf,&nbsp;sp,&nbsp;…)</td>
-<td>FUnction to extract data under training geometries for a given tile</td>
+<td>Function to extract data under training geometries for a given tile</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/madmex.wrappers.gwf_query.html#madmex.wrappers.gwf_query" title="madmex.wrappers.gwf_query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.gwf_query</span></code></a>(product[,&nbsp;lat,&nbsp;long,&nbsp;…])</td>
 <td>Run a spatial query on a datacube product using either coordinates or a region name</td>
@@ -635,7 +643,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0',
+            VERSION:'0.2.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
