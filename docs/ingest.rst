@@ -35,7 +35,7 @@ Cloud deployment
 Example in Netcdf CF
 ^^^^^^^^^^^^^^^^^^^^
 
-log in to maseter node retrieve the dask-scheduler ip with:
+log in to master node retrieve the dask-scheduler ip with:
 
 .. code-block:: bash
 
@@ -46,7 +46,7 @@ and execute:
 .. code-block:: bash
 
     datacube -v product add /home/ubuntu/.config/madmex/indexing/landsat_8_espa_scenes.yaml
-    antares prepare_metadata -p $mount_point/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o $mount_point/datacube/ls8_espa.yaml
+    antares prepare_metadata -p $mount_point/landsat_8_espa/ -d landsat_espa -o $mount_point/datacube/ls8_espa.yaml
     datacube -v ingest -c /home/ubuntu/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor distributed <ip dask-scheduler>:<port where dask-scheduler listens>
 
 
