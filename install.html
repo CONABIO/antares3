@@ -234,7 +234,7 @@ mount -t nfs4 -o <span class="nv">nfsvers</span><span class="o">=</span><span cl
 <span class="nb">echo</span> <span class="nv">$master_dns</span> &gt; /var/lib/gridengine/default/common/act_qmaster
 /etc/init.d/gridengine-exec restart
 <span class="c1">##Install open datacube and antares3</span>
-/bin/bash -c <span class="s2">&quot;alias python=python3 &amp;&amp; pip3 install git+https://github.com/CONABIO/datacube-core.git@develop &amp;&amp; cd /home/ubuntu/git/antares3 &amp;&amp; pip3 install -e .&quot;</span>
+/bin/bash -c <span class="s2">&quot;alias python=python3 &amp;&amp; pip3 install git+https://github.com/CONABIO/datacube-core.git@develop &amp;&amp; pip3 install git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
 </pre></div>
 </div>
 <p><strong>Run SGE commands to init cluster.</strong></p>
