@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Ingesting data &mdash; antares3 0.2.0 documentation</title>
+  <title>Ingesting data &mdash; antares3 0.1.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.1.0
               </div>
             
           
@@ -94,7 +94,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#landsat-8-example">Landsat 8 example</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#local">Local</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#cloud-deployment">Cloud deployment</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#example-in-netcdf-cf">Example in Netcdf CF</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#example-in-s3">Example in S3</a></li>
 </ul>
 </li>
@@ -107,10 +106,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="extend.html">Extending the system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="example_s2_land_cover.html">Sentinel 2 based Land cover example</a></li>
 </ul>
 
             
@@ -199,19 +194,6 @@ datacube ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico.yaml --executor mu
 <p class="first admonition-title">Attention</p>
 <p class="last">Open Datacube supports NETCDF CF and S3 drivers for storage (see <a class="reference external" href="https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config">Open DataCube Ingestion Config</a>). Different software dependencies are required for different drivers and different <code class="docutils literal notranslate"><span class="pre">datacube</span> <span class="pre">ingest</span></code> command.</p>
 </div>
-<div class="section" id="example-in-netcdf-cf">
-<h4>Example in Netcdf CF<a class="headerlink" href="#example-in-netcdf-cf" title="Permalink to this headline">¶</a></h4>
-<p>log in to maseter node retrieve the dask-scheduler ip with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat <span class="nv">$mount_volume</span>/scheduler.json
-</pre></div>
-</div>
-<p>and execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>datacube -v product add /home/ubuntu/.config/madmex/indexing/landsat_8_espa_scenes.yaml
-antares prepare_metadata -p <span class="nv">$mount_point</span>/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o <span class="nv">$mount_point</span>/datacube/ls8_espa.yaml
-datacube -v ingest -c /home/ubuntu/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor distributed &lt;ip dask-scheduler&gt;:&lt;port where dask-scheduler listens&gt;
-</pre></div>
-</div>
-</div>
 <div class="section" id="example-in-s3">
 <h4>Example in S3<a class="headerlink" href="#example-in-s3" title="Permalink to this headline">¶</a></h4>
 <p>It’s assumed you have created a bucket in S3.</p>
@@ -221,9 +203,9 @@ datacube -v ingest -c /home/ubuntu/.config/madmex/ingestion/ls8_espa_mexico_s3.y
 
 <span class="c1">#cp /shared_volume/datacube/madmex_conf_files/ingestion/ls8_espa_mexico_s3.yaml /home/ubuntu/.config/madmex/ingestion/</span>
 
-mkdir /home/ubuntu/datacube
+mkdir /home/ubuntudatacube
 
-antares prepare_metadata -p <span class="nv">$mount_point</span>/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o <span class="nv">$mount_point</span>/datacube/ls8_espa.yaml
+antares prepare_metadata -p <span class="nv">$mount_point</span>/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o /home/ubuntu/datacube/ls8_espa.yaml
 
 datacube -v dataset add /home/ubuntu/datacube/ls8_espa.yaml
 
@@ -277,7 +259,7 @@ datacube --driver s3 -v ingest -c /home/ubuntu/.config/madmex/ingestion/ls8_espa
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.0',
+            VERSION:'0.1.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

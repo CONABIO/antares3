@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Command line interface &mdash; antares3 0.2.0 documentation</title>
+  <title>Command line interface &mdash; antares3 0.1.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.1.0
               </div>
             
           
@@ -96,10 +96,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="extend.html">Extending the system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="example_s2_land_cover.html">Sentinel 2 based Land cover example</a></li>
 </ul>
 
             
@@ -167,15 +163,14 @@
   <div class="section" id="command-line-interface">
 <h1>Command line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
 <p>All command line interface start with the prefix <code class="docutils literal notranslate"><span class="pre">antares</span></code>. Simply running <code class="docutils literal notranslate"><span class="pre">antares</span></code> in a terminal will give a list of all available commands. Detailed help of each command line can be accessed by running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">command_line</span> <span class="pre">--help</span></code>. For instance running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_fit</span> <span class="pre">--help</span></code> returns:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
 usage: antares model_fit [-h] [--version] [-v {0,1,2,3}] [--settings SETTINGS]
                          [--pythonpath PYTHONPATH] [--traceback] [--no-color]
-                         [-model MODEL] -p PRODUCT -t TRAINING [-lat LAT LAT]
+                         -model MODEL -p PRODUCT -t TRAINING [-lat LAT LAT]
                          [-long LONG LONG] [-region REGION] [-sample SAMPLE]
-                         [-name NAME] [-sp SPATIAL_AGGREGATION]
+                         -name NAME [-sp SPATIAL_AGGREGATION]
                          [-categorical_variables [CATEGORICAL_VARIABLES [CATEGORICAL_VARIABLES ...]]]
-                         [-filename FILENAME]
                          [-extra [EXTRA_KWARGS [EXTRA_KWARGS ...]]]
 
 Command line for training a statistical model over a given extent using:
@@ -198,9 +193,6 @@ antares model_fit -model rf -p landsat_madmex_001_jalisco_2017 -t chips_jalisco 
 
 # With extra args passed to the random forest object constructor, use region name instead of lat long bounding box
 antares model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -t jalisco_chips --region Jalisco --name rf_landsat_madmex_001_jalisco_2017_jalisco_chips -sp mean -extra n_estimators=60 n_jobs=15
-
-# Only extract data and write the X and y array to file for further inspection (no model is fitted in that case)
-antares model_fit -p s2_001_jalisco_2017_0 -t jalisco_bits --region Jalisco --filename training_sentinel2_jalisco_bits.pkl
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -232,8 +224,6 @@ optional arguments:
                         Function to use for spatially aggregating the pixels over the training geometries (defaults to mean)
   -categorical_variables [CATEGORICAL_VARIABLES [CATEGORICAL_VARIABLES ...]], --categorical_variables [CATEGORICAL_VARIABLES [CATEGORICAL_VARIABLES ...]]
                         List of categorical variables to be encoded using One Hot Encoding before model fit
-  -filename FILENAME, --filename FILENAME
-                        Name of a pickle file to store X and y array. Optional, no model is fitted when used
   -extra [EXTRA_KWARGS [EXTRA_KWARGS ...]], --extra_kwargs [EXTRA_KWARGS [EXTRA_KWARGS ...]]
                         
                         Additional named arguments passed to the selected model class constructor. These arguments have
@@ -285,7 +275,7 @@ optional arguments:
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.0',
+            VERSION:'0.1.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

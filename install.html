@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; antares3 0.2.0 documentation</title>
+  <title>Installation &mdash; antares3 0.1.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.1.0
               </div>
             
           
@@ -105,10 +105,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="extend.html">Extending the system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="example_s2_land_cover.html">Sentinel 2 based Land cover example</a></li>
 </ul>
 
             
@@ -195,7 +191,7 @@ pip install git+https://github.com/CONABIO/antares3.git#egg<span class="o">=</sp
 <p>We also use Elastic File System of AWS (shared file storage, see <a class="reference external" href="https://aws.amazon.com/efs/">Amazon Elastic File System</a>), which multiple Amazon EC2 instances running in multiple Availability Zones (AZs) within the same region can access it. Change variable <code class="docutils literal notranslate"><span class="pre">efs_dns</span></code> according to your <code class="docutils literal notranslate"><span class="pre">DNS</span> <span class="pre">name</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Modify variables <code class="docutils literal notranslate"><span class="pre">eip</span></code>, <code class="docutils literal notranslate"><span class="pre">name_instance</span></code>, <code class="docutils literal notranslate"><span class="pre">efs_dns</span></code>, <code class="docutils literal notranslate"><span class="pre">queue_name</span></code> and <code class="docutils literal notranslate"><span class="pre">slots</span></code> with your own configuration.  Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example. In this example the instances have two cores each of them.</p>
+<p class="last">Modify variables <code class="docutils literal notranslate"><span class="pre">eip</span></code>, <code class="docutils literal notranslate"><span class="pre">name_instance</span></code>, <code class="docutils literal notranslate"><span class="pre">efs_dns</span></code>, <code class="docutils literal notranslate"><span class="pre">queue_name</span></code> and <code class="docutils literal notranslate"><span class="pre">slots</span></code> with your own configuration.  Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example.</p>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1">##variables</span>
@@ -205,13 +201,12 @@ pip install git+https://github.com/CONABIO/antares3.git#egg<span class="o">=</sp
 <span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS name of EFS&gt;
 <span class="c1">##Name of the queue that will be used by dask-scheduler and dask-workers</span>
 <span class="nv">queue_name</span><span class="o">=</span>dask-queue.q
-<span class="c1">##Change number of slots to use for every instance, in this example the instances has 2 slots each of them</span>
-<span class="nv">slots</span><span class="o">=</span><span class="m">2</span>
+<span class="c1">##We use one slot for every instance</span>
+<span class="nv">slots</span><span class="o">=</span><span class="m">1</span>
 <span class="nv">region</span><span class="o">=</span><span class="nv">$region</span>
 <span class="nv">type_value</span><span class="o">=</span><span class="nv">$type_value</span>
 <span class="c1">##Mount shared volume</span>
 mount -t nfs4 -o <span class="nv">nfsvers</span><span class="o">=</span><span class="m">4</span>.1,rsize<span class="o">=</span><span class="m">1048576</span>,wsize<span class="o">=</span><span class="m">1048576</span>,hard,timeo<span class="o">=</span><span class="m">600</span>,retrans<span class="o">=</span><span class="m">2</span> <span class="nv">$efs_dns</span>:/ <span class="nv">$mount_point</span>
-mkdir -p <span class="nv">$mount_point</span>/datacube/datacube_ingest
 <span class="c1">##Tag instance</span>
 <span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://169.254.169.254/latest/meta-data/instance-id<span class="k">)</span>
 <span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://169.254.169.254/latest/meta-data/public-ipv4<span class="k">)</span>
@@ -243,13 +238,9 @@ mount -t nfs4 -o <span class="nv">nfsvers</span><span class="o">=</span><span cl
 qsub -b y -l <span class="nv">h</span><span class="o">=</span><span class="nv">$HOSTNAME</span> dask-scheduler --scheduler-file <span class="nv">$mount_point</span>/scheduler.json
 </pre></div>
 </div>
-<p>The master node have two cores, one is used for dask-scheduler, the other core can be used as a dask-worker:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>qsub -b y -l <span class="nv">h</span><span class="o">=</span><span class="nv">$HOSTNAME</span> dask-worker --nthreads <span class="m">1</span> --scheduler-file <span class="nv">$mount_point</span>/scheduler.json
-</pre></div>
-</div>
 <p>If your group of autoscaling has 3 nodes, then execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start 6 (=3 nodes x 2 cores each node) dask-worker processes in an array job pointing to the same file</span>
-qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1</span> --scheduler-file <span class="nv">$mount_point</span>/scheduler.json
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start 2 dask-worker processes in an array job pointing to the same file</span>
+qsub -b y -t <span class="m">1</span>-2 dask-worker --scheduler-file <span class="nv">$mount_point</span>/scheduler.json
 </pre></div>
 </div>
 <p>You can view the web SGE on the page:</p>
@@ -351,7 +342,7 @@ qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.0',
+            VERSION:'0.1.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

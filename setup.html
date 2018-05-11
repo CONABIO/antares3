@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Setup/first time use &mdash; antares3 0.2.0 documentation</title>
+  <title>Setup/first time use &mdash; antares3 0.1.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.1.0
               </div>
             
           
@@ -116,10 +116,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="extend.html">Extending the system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="example_s2_land_cover.html">Sentinel 2 based Land cover example</a></li>
 </ul>
 
             
@@ -298,16 +294,12 @@ antares init -c mex
 <div class="section" id="id4">
 <h4>Antares3<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p>Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.</p>
-<p>Log in to master node, copy paste in <code class="docutils literal notranslate"><span class="pre">$mount_point/.antares</span></code> the configuration file for <code class="docutils literal notranslate"><span class="pre">antares</span></code> and execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ln -sf <span class="nv">$mount_point</span>/.antares /home/ubuntu/.antares
-antares init -c mex
-</pre></div>
-</div>
+<p>Log in to an instance and copy paste in <code class="docutils literal notranslate"><span class="pre">$mount_point/.antares</span></code> the configuration file for <code class="docutils literal notranslate"><span class="pre">antares</span></code>.</p>
 <p>Use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute following bash script in all instances with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code>, <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> configured in <a href="#id9"><span class="problematic" id="id10">`Dependencies-Cloud Deployment`_</span></a> in step 2, or use a tool for cluster management like <a class="reference external" href="https://github.com/duncs/clusterssh">clusterssh</a> .</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="nb">source</span> /home/ubuntu/.profile
 ln -sf <span class="nv">$mount_point</span>/.antares /home/ubuntu/.antares
-su ubuntu -c <span class="s2">&quot;antares init&quot;</span>
+antares init
 </pre></div>
 </div>
 <p>This will create a <code class="docutils literal notranslate"><span class="pre">madmex</span></code> directory under <code class="docutils literal notranslate"><span class="pre">/home/ubuntu/.config/</span></code> where ingestion files for all different suported dataset will be stored.</p>
@@ -358,7 +350,7 @@ su ubuntu -c <span class="s2">&quot;antares init&quot;</span>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.0',
+            VERSION:'0.1.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
