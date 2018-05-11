@@ -170,6 +170,7 @@ Various utils
    util.parser_extra_args
    util.chunk
    util.pprint_args
+   util.fill_and_copy
    util.datacube.var_to_ind
    util.local.aware_download
    util.local.extract_zip
