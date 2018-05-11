@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.util &mdash; antares3 0.1.0 documentation</title>
+  <title>madmex.util &mdash; antares3 0.2.0 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
             
           
@@ -94,6 +94,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../extend.html">Extending the system</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API reference</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../example_s2_land_cover.html">Sentinel 2 based Land cover example</a></li>
 </ul>
 
             
@@ -161,8 +165,10 @@
 <span class="kn">import</span> <span class="nn">string</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">islice</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">jinja2</span>
 
 <div class="viewcode-block" id="randomword"><a class="viewcode-back" href="../../generated/madmex.util.randomword.html#madmex.util.randomword">[docs]</a><span class="k">def</span> <span class="nf">randomword</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generate a random string of desired length</span>
@@ -297,6 +303,29 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">row_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">row</span><span class="p">))</span></div>
 
 
+<div class="viewcode-block" id="fill_and_copy"><a class="viewcode-back" href="../../generated/madmex.util.fill_and_copy.html#madmex.util.fill_and_copy">[docs]</a><span class="k">def</span> <span class="nf">fill_and_copy</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Retrieves a template, fills it with jinja2 and writes it with the same basename to a target directory</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        template (str): Path to template file</span>
+<span class="sd">        out_dir (str): Path of directory to which the filled template should be written</span>
+<span class="sd">        **kwargs: template variables</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        This function is used for its side effect of filling a template and writing it to a chosen destination.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">template</span><span class="p">))</span>
+    <span class="c1"># Load template as regular file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="c1"># Fill template</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="c1"># Write to file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
+        <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
+
+
+
 </pre></div>
 
            </div>
@@ -331,7 +360,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0',
+            VERSION:'0.2.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

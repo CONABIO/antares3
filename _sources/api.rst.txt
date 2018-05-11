@@ -45,6 +45,7 @@ Generate metadata to prepare indexing/ingestion of datasets
    ingestion.bioclimatics.metadata_convert
    ingestion.landsat_espa.metadata_convert
    ingestion.srtm_cgiar.metadata_convert
+   ingestion.s2_l2a_20m.metadata_convert
 
 
 
@@ -169,6 +170,7 @@ Various utils
    util.parser_extra_args
    util.chunk
    util.pprint_args
+   util.fill_and_copy
    util.datacube.var_to_ind
    util.local.aware_download
    util.local.extract_zip

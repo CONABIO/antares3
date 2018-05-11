@@ -1,0 +1,6 @@
+madmex.util.fill\_and\_copy
+===========================
+
+.. currentmodule:: madmex.util
+
+.. autofunction:: fill_and_copy
