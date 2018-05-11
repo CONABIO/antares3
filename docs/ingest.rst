@@ -32,6 +32,23 @@ Cloud deployment
 	Open Datacube supports NETCDF CF and S3 drivers for storage (see `Open DataCube Ingestion Config`_). Different software dependencies are required for different drivers and different ``datacube ingest`` command.
 
 
+Example in Netcdf CF
+^^^^^^^^^^^^^^^^^^^^
+
+log in to maseter node retrieve the dask-scheduler ip with:
+
+.. code-block:: bash
+
+    cat $mount_volume/scheduler.json
+
+and execute:
+
+.. code-block:: bash
+
+    datacube -v product add /home/ubuntu/.config/madmex/indexing/landsat_8_espa_scenes.yaml
+    antares prepare_metadata -p $mount_point/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o $mount_point/datacube/ls8_espa.yaml
+    datacube -v ingest -c /home/ubuntu/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor distributed <ip dask-scheduler>:<port where dask-scheduler listens>
+
 
 Example in S3
 ^^^^^^^^^^^^^
@@ -47,9 +64,9 @@ It's assumed you have created a bucket in S3.
 
 	#cp /shared_volume/datacube/madmex_conf_files/ingestion/ls8_espa_mexico_s3.yaml /home/ubuntu/.config/madmex/ingestion/
 
-	mkdir /home/ubuntudatacube
+	mkdir /home/ubuntu/datacube
 
-	antares prepare_metadata -p $mount_point/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o /home/ubuntu/datacube/ls8_espa.yaml
+	antares prepare_metadata -p $mount_point/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o $mount_point/datacube/ls8_espa.yaml
 
 	datacube -v dataset add /home/ubuntu/datacube/ls8_espa.yaml
 

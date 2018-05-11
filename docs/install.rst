@@ -37,7 +37,7 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
 
 .. note:: 
 
-    Modify variables ``eip``, ``name_instance``, ``efs_dns``, ``queue_name`` and ``slots`` with your own configuration.  Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example.
+    Modify variables ``eip``, ``name_instance``, ``efs_dns``, ``queue_name`` and ``slots`` with your own configuration.  Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example. In this example the instances have two cores each of them.
 
 .. code-block:: bash
 
@@ -49,12 +49,13 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
     efs_dns=<DNS name of EFS>
     ##Name of the queue that will be used by dask-scheduler and dask-workers
     queue_name=dask-queue.q
-    ##We use one slot for every instance
-    slots=1
+    ##Change number of slots to use for every instance, in this example the instances has 2 slots each of them
+    slots=2
     region=$region
     type_value=$type_value
     ##Mount shared volume
     mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 $efs_dns:/ $mount_point
+    mkdir -p $mount_point/datacube/datacube_ingest
     ##Tag instance
     INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
     PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
@@ -95,12 +96,18 @@ Login to master node and execute:
     # Start dask-scheduler on master node. The file scheduler.json will be created on $mount_point (shared_volume) of EFS
     qsub -b y -l h=$HOSTNAME dask-scheduler --scheduler-file $mount_point/scheduler.json
 
+The master node have two cores, one is used for dask-scheduler, the other core can be used as a dask-worker:
+
+.. code-block:: bash
+
+    qsub -b y -l h=$HOSTNAME dask-worker --nthreads 1 --scheduler-file $mount_point/scheduler.json
+
 If your group of autoscaling has 3 nodes, then execute:
 
 .. code-block:: bash
 
-    # Start 2 dask-worker processes in an array job pointing to the same file
-    qsub -b y -t 1-2 dask-worker --scheduler-file $mount_point/scheduler.json
+    # Start 6 (=3 nodes x 2 cores each node) dask-worker processes in an array job pointing to the same file
+    qsub -b y -t 1-6 dask-worker --nthreads 1 --scheduler-file $mount_point/scheduler.json
 
 You can view the web SGE on the page:
 

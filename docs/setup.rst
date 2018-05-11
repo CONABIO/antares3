@@ -156,7 +156,12 @@ Antares3
 
 Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.
 
-Log in to an instance and copy paste in ``$mount_point/.antares`` the configuration file for ``antares``.
+Log in to master node, copy paste in ``$mount_point/.antares`` the configuration file for ``antares`` and execute:
+
+.. code-block:: bash
+
+    ln -sf $mount_point/.antares /home/ubuntu/.antares
+    antares init -c mex
  
 Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` configured in `Dependencies-Cloud Deployment`_ in step 2, or use a tool for cluster management like `clusterssh`_ . 
 
@@ -167,7 +172,7 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
     #!/bin/bash
     source /home/ubuntu/.profile
     ln -sf $mount_point/.antares /home/ubuntu/.antares
-    antares init
+    su ubuntu -c "antares init"
 
 This will create a ``madmex`` directory under ``/home/ubuntu/.config/`` where ingestion files for all different suported dataset will be stored.
 
