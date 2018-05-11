@@ -85,6 +85,10 @@ Additional named arguments passed to the selected segmentation class constructor
 to be passed in the form of key=value pairs. e.g.: antares segment ... -extra arg1=12 arg2=0.2
 The list of parameters corresponding to every implemented segmentation algorithm can be retrieved
 using the antares segment_params command line''')
+        parser.add_argument('-sc', '--scheduler',
+                            type=str,
+                            default=None,
+                            help='Path to file with scheduler information (usually called scheduler.json)')
 
     def handle(self, *args, **options):
         # Unpack variables
@@ -95,6 +99,7 @@ using the antares segment_params command line''')
         datasource = options['datasource']
         year = options['year']
         name = options['name']
+        scheduler_file = options['scheduler']
 
         # Build segmentation meta object
         meta, _ = SegmentationInformation.objects.get_or_create(
@@ -109,13 +114,15 @@ using the antares segment_params command line''')
         gwf, iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
-        client = Client()
+        client = Client(scheduler_file=scheduler_file)
         C = client.map(segment,
-                       iterable, **{'gwf': gwf,
-                                    'algorithm': algorithm,
-                                    'segmentation_meta': meta,
-                                    'band_list': bands,
-                                    'extra_args': extra_args})
+                       iterable,
+                       pure=False,
+                       **{'gwf': gwf,
+                          'algorithm': algorithm,
+                          'segmentation_meta': meta,
+                          'band_list': bands,
+                          'extra_args': extra_args})
         result = client.gather(C)
 
         print('Successfully ran segmentation on %d tiles' % sum(result))

@@ -74,6 +74,10 @@ antares model_predict_object -p landsat_madmex_001_jalisco_2017_2 -m rf_madmex_0
                             nargs='*',
                             default=None,
                             help='List of categorical variables to be encoded using One Hot Encoding before model fit')
+        parser.add_argument('-sc', '--scheduler',
+                            type=str,
+                            default=None,
+                            help='Path to file with scheduler information (usually called scheduler.json)')
 
     def handle(self, *args, **options):
         # Unpack variables
@@ -82,21 +86,24 @@ antares model_predict_object -p landsat_madmex_001_jalisco_2017_2 -m rf_madmex_0
         segmentation = options['segmentation']
         spatial_aggregation = options['spatial_aggregation']
         categorical_variables = options['categorical_variables']
+        scheduler_file = options['scheduler']
 
         # datacube query
         gwf_kwargs = { k: options[k] for k in ['product', 'lat', 'long', 'region']}
         gwf, iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
-        client = Client()
+        client = Client(scheduler_file=scheduler_file)
         C = client.map(predict_object,
-                       iterable, **{'gwf': gwf,
-                                    'model_name': model,
-                                    'segmentation_name': segmentation,
-                                    'categorical_variables': categorical_variables,
-                                    'aggregation': spatial_aggregation,
-                                    'name': name,
-                                   })
+                       iterable,
+                       pure=False,
+                       **{'gwf': gwf,
+                          'model_name': model,
+                          'segmentation_name': segmentation,
+                          'categorical_variables': categorical_variables,
+                          'aggregation': spatial_aggregation,
+                          'name': name,
+                          })
         result = client.gather(C)
 
         print('Successfully ran prediction on %d tiles' % sum(result))

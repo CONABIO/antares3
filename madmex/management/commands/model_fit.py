@@ -110,6 +110,10 @@ antares model_fit -p s2_001_jalisco_2017_0 -t jalisco_bits --region Jalisco --fi
 Additional named arguments passed to the selected model class constructor. These arguments have
 to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 arg2=median
 To consult the exposed arguments for each model, use the "model_params" command line''')
+        parser.add_argument('-sc', '--scheduler',
+                            type=str,
+                            default=None,
+                            help='Path to file with scheduler information (usually called scheduler.json)')
 
     def handle(self, *args, **options):
         # Unpack variables
@@ -122,6 +126,7 @@ To consult the exposed arguments for each model, use the "model_params" command 
         categorical_variables = options['categorical_variables']
         sample = options['sample']
         filename = options['filename']
+        scheduler_file = options['scheduler']
 
         # Prepare encoding of categorical variables if any specified
         if categorical_variables is not None:
@@ -140,12 +145,13 @@ To consult the exposed arguments for each model, use the "model_params" command 
         gwf, iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
-        client = Client()
+        client = Client(scheduler_file=scheduler_file)
         C = client.map(extract_tile_db,
                        iterable, **{'gwf': gwf,
                                     'sp': sp,
                                     'training_set': training,
-                                    'sample': sample})
+                                    'sample': sample},
+                       pure=False)
         arr_list = client.gather(C)
 
         logger.info('Completed extraction of training data from %d tiles' , len(arr_list))
