@@ -79,6 +79,10 @@ antares apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-12-31 --r
                             type=str,
                             required=True,
                             help='Name under which the product should be referenced in the datacube')
+        parser.add_argument('-sc', '--scheduler',
+                            type=str,
+                            default=None,
+                            help='Path to file with scheduler information (usually called scheduler.json)')
 
     def handle(self, *args, **options):
         path = os.path.join(INGESTION_PATH, 'recipes', options['name'])
@@ -96,6 +100,7 @@ antares apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-12-31 --r
         end = datetime.strptime(options['end'], '%Y-%m-%d')
         time = (begin, end)
         center_dt = mid_date(begin, end)
+        scheduler_file = options['scheduler']
 
         # database query
         gwf_kwargs = { k: options[k] for k in ['lat', 'long', 'region', 'begin', 'end']}
@@ -103,10 +108,11 @@ antares apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-12-31 --r
         gwf, iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
-        client = Client()
+        client = Client(scheduler_file=scheduler_file)
         C = client.map(fun, iterable, **{'gwf': gwf,
                                          'center_dt': center_dt,
-                                         'path': path})
+                                         'path': path},
+                       pure=False)
         nc_list = client.gather(C)
         n_tiles = len([x for x in nc_list if x is not None])
         logger.info('Processing done, %d tiles written to disk' % n_tiles)
