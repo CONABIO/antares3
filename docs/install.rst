@@ -84,7 +84,7 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
     echo $master_dns > /var/lib/gridengine/default/common/act_qmaster
     /etc/init.d/gridengine-exec restart
     ##Install open datacube and antares3
-    /bin/bash -c "alias python=python3 && pip3 install git+https://github.com/CONABIO/datacube-core.git@develop && cd /home/ubuntu/git/antares3 && pip3 install -e ."
+    /bin/bash -c "alias python=python3 && pip3 install git+https://github.com/CONABIO/datacube-core.git@develop && pip3 install git+https://github.com/CONABIO/antares3.git@develop"
 
 
 **Run SGE commands to init cluster.**
