@@ -1,6 +1,7 @@
 import os
 import datacube
 from datacube.storage.storage import write_dataset_to_netcdf
+from datacube.api import GridWorkflow
 import xarray as xr
 import numpy as np
 import dask
@@ -24,8 +25,6 @@ def run(tile, gwf, center_dt, path):
     Args:
         tile (tuple): Tuple of (tile indices, Tile object). Tile object can be
             loaded as xarray.Dataset using gwf.load()
-        gwf (GridWorkflow): GridWorkflow object instantiated with the corresponding
-            product
         center_dt (datetime): Date to be used in making the filename
         path (str): Directory where files generated are to be written
 
@@ -38,7 +37,7 @@ def run(tile, gwf, center_dt, path):
         # Load Landsat sr
         if os.path.isfile(nc_filename):
             raise ValueError('%s already exist' % nc_filename)
-        sr_0 = gwf.load(tile[1], dask_chunks={'x': 1000, 'y': 1000})
+        sr_0 = GridWorkflow.load(tile[1], dask_chunks={'x': 1000, 'y': 1000})
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
         # Load terrain metrics using same spatial parameters than sr
         dc = datacube.Datacube(app = 's2_20m_001_%s' % randomword(5))

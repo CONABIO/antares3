@@ -111,15 +111,14 @@ using the antares segment_params command line''')
 
         # datacube query
         gwf_kwargs = { k: options[k] for k in ['product', 'lat', 'long', 'region']}
-        gwf, iterable = gwf_query(**gwf_kwargs)
+        iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
         C = client.map(segment,
                        iterable,
                        pure=False,
-                       **{'gwf': gwf,
-                          'algorithm': algorithm,
+                       **{'algorithm': algorithm,
                           'segmentation_meta': meta,
                           'band_list': bands,
                           'extra_args': extra_args})

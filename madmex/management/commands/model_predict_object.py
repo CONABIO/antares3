@@ -90,15 +90,14 @@ antares model_predict_object -p landsat_madmex_001_jalisco_2017_2 -m rf_madmex_0
 
         # datacube query
         gwf_kwargs = { k: options[k] for k in ['product', 'lat', 'long', 'region']}
-        gwf, iterable = gwf_query(**gwf_kwargs)
+        iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
         C = client.map(predict_object,
                        iterable,
                        pure=False,
-                       **{'gwf': gwf,
-                          'model_name': model,
+                       **{'model_name': model,
                           'segmentation_name': segmentation,
                           'categorical_variables': categorical_variables,
                           'aggregation': spatial_aggregation,
