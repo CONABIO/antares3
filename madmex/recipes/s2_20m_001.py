@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 dask.set_options(get=dask.get)
 
-def run(tile, gwf, center_dt, path):
+def run(tile, center_dt, path):
     """Basic datapreparation recipe 001
 
     Combines temporal statistics of surface reflectance and ndvi with terrain

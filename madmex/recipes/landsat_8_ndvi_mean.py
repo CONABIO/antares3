@@ -15,7 +15,7 @@ from datetime import datetime
 import logging
 logger = logging.getLogger(__name__)
 
-def run(tile, gwf, center_dt, path):
+def run(tile, center_dt, path):
     """Basic datapreparation recipe 001
 
     Computes mean NDVI for a landsat collection over a given time frame
