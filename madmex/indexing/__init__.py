@@ -6,7 +6,7 @@ import yaml
 from datacube.index._datasets import DatasetResource
 from datacube.index._products import ProductResource
 from datacube.index._metadata_types import MetadataTypeResource
-from datacube.index.postgres._connections import PostgresDb
+from datacube.drivers.postgres._connections import PostgresDb
 from datacube.model import Dataset
 from pyproj import Proj
 import netCDF4 as nc
