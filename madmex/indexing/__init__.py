@@ -3,7 +3,9 @@ import uuid
 from datetime import datetime
 
 import yaml
-from datacube.index._datasets import ProductResource, MetadataTypeResource, DatasetResource
+from datacube.index._datasets import DatasetResource
+from datacube.index._products import ProductResource
+from datacube.index._metadata_types import MetadataTypeResource
 from datacube.index.postgres._connections import PostgresDb
 from datacube.model import Dataset
 from pyproj import Proj
