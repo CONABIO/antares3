@@ -1,4 +1,9 @@
-from xgboost.sklearn import XGBClassifier
+try:
+    from xgboost.sklearn import XGBClassifier
+except ImportError:
+    _has_xgboost = False
+else:
+    _has_xgboost = True
 
 from madmex.modeling import BaseModel
 
@@ -19,6 +24,8 @@ class Model(BaseModel):
             >>> # Read model from db
             >>> xgb2 = Model.from_db('test_model')
         '''
+        if not _has_xgboost:
+            raise ImportError('xgboost is required for that. (pip install xgboost)')
         super().__init__(categorical_features=categorical_features)
         self.model = XGBClassifier(objective='multi:softmax', n_estimators=n_estimators,
                                    n_jobs=n_jobs, max_depth=max_depth,
