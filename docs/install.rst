@@ -49,7 +49,7 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
     efs_dns=<DNS name of EFS>
     ##Name of the queue that will be used by dask-scheduler and dask-workers
     queue_name=dask-queue.q
-    ##Change number of slots to use for every instance, in this example the instances has 2 slots each of them
+    ##Change number of slots to use for every instance, in this example the instances have 2 slots each of them
     slots=2
     region=$region
     type_value=$type_value
@@ -59,12 +59,14 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
     ##Tag instance
     INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
     PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-    ##Assing elastic IP where this bash script is executed
+    ##Assining elastic IP where this bash script is executed
     aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $eip --region $region
     ##Tag instance where this bash script is executed
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
     ##Execute bash script create-dask-sge-queue already created on Dependencies-Cloud Deployment
     bash $mount_point/create-dask-sge-queue.sh $queue_name $slots
+    ##Create symbolic link to configuration files for datacube
+    ln -sf $mount_point/.datacube.conf /home/ubuntu/.datacube.conf
 
    
 **Restart gridengine-exec on nodes and install OpenDataCube and Antares3**
@@ -84,7 +86,12 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
     echo $master_dns > /var/lib/gridengine/default/common/act_qmaster
     /etc/init.d/gridengine-exec restart
     ##Install open datacube and antares3
-    /bin/bash -c "alias python=python3 && pip3 install git+https://github.com/CONABIO/datacube-core.git@develop && pip3 install git+https://github.com/CONABIO/antares3.git@develop"
+    su ubuntu -c "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop"
+    ##Create symbolic link to configuration files for antares3
+    ln -sf $mount_point/.antares /home/ubuntu/.antares
+    ##Uncomment next line if you want to init antares
+    #su ubuntu -c "/home/ubuntu/.local/bin/antares init"
+
 
 
 **Run SGE commands to init cluster.**
