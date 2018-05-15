@@ -102,7 +102,13 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.api.remote.ScihubApi.html">madmex.api.remote.ScihubApi</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#indexing">Indexing</a><ul class="simple">
+<li class="toctree-l2"><a class="reference internal" href="#indexing">Indexing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.indexing.add_product.html">madmex.indexing.add_product</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.indexing.add_product_from_yaml.html">madmex.indexing.add_product_from_yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.indexing.add_product_from_recipe.html">madmex.indexing.add_product_from_recipe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.indexing.add_dataset.html">madmex.indexing.add_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.indexing.wkt_to_proj4.html">madmex.indexing.wkt_to_proj4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.indexing.metadict_from_netcdf.html">madmex.indexing.metadict_from_netcdf</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#ingestion">Ingestion</a><ul>
@@ -296,23 +302,23 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_product</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.indexing.add_product.html#madmex.indexing.add_product" title="madmex.indexing.add_product"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_product</span></code></a>(description,&nbsp;name)</td>
+<td>Add a new product to the database given a product description dictionary</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_product_from_yaml</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.indexing.add_product_from_yaml.html#madmex.indexing.add_product_from_yaml" title="madmex.indexing.add_product_from_yaml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_product_from_yaml</span></code></a>(description,&nbsp;name)</td>
+<td>Wrapper to add a product directly from a yaml file</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_product_from_recipe</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.indexing.add_product_from_recipe.html#madmex.indexing.add_product_from_recipe" title="madmex.indexing.add_product_from_recipe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_product_from_recipe</span></code></a>(recipe[,&nbsp;name])</td>
+<td>Wrapper to add a product from a recipe name</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_dataset</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.indexing.add_dataset.html#madmex.indexing.add_dataset" title="madmex.indexing.add_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.add_dataset</span></code></a>(pr,&nbsp;dt,&nbsp;metadict,&nbsp;file)</td>
+<td>Add a dataset to the datacube database</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.wkt_to_proj4</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.indexing.wkt_to_proj4.html#madmex.indexing.wkt_to_proj4" title="madmex.indexing.wkt_to_proj4"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.wkt_to_proj4</span></code></a>(wkt)</td>
+<td>Utility to convert CRS WKT to CRS in proj4 format</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.metadict_from_netcdf</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.indexing.metadict_from_netcdf.html#madmex.indexing.metadict_from_netcdf" title="madmex.indexing.metadict_from_netcdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indexing.metadict_from_netcdf</span></code></a>(file,&nbsp;…[,&nbsp;…])</td>
+<td>Get metadata dictionary for netcdf dataset written using <code class="docutils literal notranslate"><span class="pre">write_dataset_to_netcdf</span></code></td>
 </tr>
 </tbody>
 </table>

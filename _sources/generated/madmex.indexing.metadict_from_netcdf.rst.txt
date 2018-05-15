@@ -1,0 +1,6 @@
+madmex.indexing.metadict\_from\_netcdf
+======================================
+
+.. currentmodule:: madmex.indexing
+
+.. autofunction:: metadict_from_netcdf
