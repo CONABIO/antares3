@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.util.xarray.to_int &mdash; antares3 0.2.0 documentation</title>
+  <title>madmex.util.datacube.var_to_ind &mdash; antares3 0.2.0 documentation</title>
   
 
   
@@ -29,8 +29,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="madmex.util.spatial.feature_transform" href="madmex.util.spatial.feature_transform.html" />
-    <link rel="prev" title="madmex.util.xarray.to_float" href="madmex.util.xarray.to_float.html" /> 
+    <link rel="next" title="madmex.util.local.aware_download" href="madmex.util.local.aware_download.html" />
+    <link rel="prev" title="madmex.util.fill_and_copy" href="madmex.util.fill_and_copy.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -112,14 +112,14 @@
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.chunk.html">madmex.util.chunk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.pprint_args.html">madmex.util.pprint_args</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.fill_and_copy.html">madmex.util.fill_and_copy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.datacube.var_to_ind.html">madmex.util.datacube.var_to_ind</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.util.datacube.var_to_ind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.local.aware_download.html">madmex.util.local.aware_download</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.local.extract_zip.html">madmex.util.local.extract_zip</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.local.aware_make_dir.html">madmex.util.local.aware_make_dir</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.local.basename.html">madmex.util.local.basename</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.local.filter_files_from_folder.html">madmex.util.local.filter_files_from_folder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.xarray.to_float.html">madmex.util.xarray.to_float</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.util.xarray.to_int</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.xarray.to_int.html">madmex.util.xarray.to_int</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.feature_transform.html">madmex.util.spatial.feature_transform</a></li>
 </ul>
 </li>
@@ -176,13 +176,13 @@
         
           <li><a href="../api.html">API reference</a> &raquo;</li>
         
-      <li>madmex.util.xarray.to_int</li>
+      <li>madmex.util.datacube.var_to_ind</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/madmex.util.xarray.to_int.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/madmex.util.datacube.var_to_ind.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -195,50 +195,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="madmex-util-xarray-to-int">
-<h1>madmex.util.xarray.to_int<a class="headerlink" href="#madmex-util-xarray-to-int" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="madmex-util-datacube-var-to-ind">
+<h1>madmex.util.datacube.var_to_ind<a class="headerlink" href="#madmex-util-datacube-var-to-ind" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="madmex.util.xarray.to_int">
-<code class="descclassname">madmex.util.xarray.</code><code class="descname">to_int</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/util/xarray.html#to_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.util.xarray.to_int" title="Permalink to this definition">¶</a></dt>
-<dd><p>TAkes a DataArray in float and converts it to int, converting Nan to nodata flags</p>
-<p>Meant to be used with Dataset.apply() to apply to all the DataArrays of a Dataset</p>
+<dt id="madmex.util.datacube.var_to_ind">
+<code class="descclassname">madmex.util.datacube.</code><code class="descname">var_to_ind</code><span class="sig-paren">(</span><em>variables</em>, <em>product</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/util/datacube.html#var_to_ind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.util.datacube.var_to_ind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper to get a list of index from a list of variables names</p>
+<p>Useful for telling the modeling module which are the categorical variables
+that should be encoded using One Hot Encoding</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>xarray.DataArray</em>) – Input DataArray. Must have a nodata flag written to
-x.attrs[‘nodata’]</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>names</strong> (<em>list</em>) – List of strings corresponding to existing variable names in the
+product</li>
+<li><strong>product</strong> (<em>str</em>) – Name of an existing datacube product</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The corresponding DataArray cast to int16 and with Nan converted
-to nodata value</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">LIst of integer corresponding to dataset positions</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">xarray.DataArray</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xarray.testing</span> <span class="k">import</span> <span class="n">assert_identical</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.util.datacube</span> <span class="k">import</span> <span class="n">var_to_ind</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Build test data</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">9999</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">date_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="k">for</span> <span class="n">delta</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xarr</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span> <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">date_list</span><span class="p">},</span>
-<span class="gp">&gt;&gt;&gt; </span>                    <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nodata&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">9999</span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span><span class="s1">&#39;blue&#39;</span><span class="p">:</span> <span class="n">xarr</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">:</span> <span class="n">xarr</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">:</span> <span class="n">xarr</span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">xset</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Round trip int to float (with nodata replaced by nan) to int</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xset_float</span> <span class="o">=</span> <span class="n">xset</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">to_float</span><span class="p">,</span> <span class="n">keep_attrs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">xset_float</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xset_int</span> <span class="o">=</span> <span class="n">xset_float</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">to_int</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">xset_int</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">assert_identical</span><span class="p">(</span><span class="n">xset</span><span class="p">,</span> <span class="n">xset_int</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ind</span> <span class="o">=</span> <span class="n">var_to_ind</span><span class="p">([</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;swir2&#39;</span><span class="p">],</span> <span class="s1">&#39;ls8_espa_mexico&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -253,10 +242,10 @@ to nodata value</td>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="madmex.util.spatial.feature_transform.html" class="btn btn-neutral float-right" title="madmex.util.spatial.feature_transform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="madmex.util.local.aware_download.html" class="btn btn-neutral float-right" title="madmex.util.local.aware_download" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.util.xarray.to_float.html" class="btn btn-neutral" title="madmex.util.xarray.to_float" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.util.fill_and_copy.html" class="btn btn-neutral" title="madmex.util.fill_and_copy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

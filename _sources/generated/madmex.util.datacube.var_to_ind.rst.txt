@@ -1,0 +1,6 @@
+madmex.util.datacube.var\_to\_ind
+=================================
+
+.. currentmodule:: madmex.util.datacube
+
+.. autofunction:: var_to_ind
