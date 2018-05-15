@@ -1,6 +1,0 @@
-madmex.wrappers.segment
-=======================
-
-.. currentmodule:: madmex.wrappers
-
-.. autofunction:: segment

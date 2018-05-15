@@ -264,26 +264,137 @@ datacube ingest -c ~/.config/madmex/ingestion/s2_l2a_20m_mexico.yaml --executor 
 <h2>Run spatial segmentation<a class="headerlink" href="#run-spatial-segmentation" title="Permalink to this headline">¶</a></h2>
 <p>The final map is composed of spatial objects, also called segments. A spatial segmentation step is therefore required.
 <code class="docutils literal notranslate"><span class="pre">antares</span></code> implements various segmentation algorithms that can all be operated from the <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">segment</span></code> command line. To get a list of implemented algorithms, run the <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">segment_params</span></code> command line.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;pythonpath&#39;: None, &#39;traceback&#39;: False, &#39;verbosity&#39;: 1, &#39;segmentation&#39;: None, &#39;settings&#39;: None, &#39;no_color&#39;: False}
-Command execution is done in 1.0094363689422607 seconds.
-Algorithm description                                                                
---------  ---------------                                                            
-bis       Antares implementation of Berkeley Image segmentation algorithm            
-slic      Antares implementation of scikit-image&#39;s SLIC segmentation algorithm
+Command line arguments: {&#39;verbosity&#39;: 1, &#39;settings&#39;: None, &#39;pythonpath&#39;: None, &#39;traceback&#39;: False, &#39;no_color&#39;: False, &#39;segmentation&#39;: None}
+Traceback (most recent call last):
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/bin/antares&quot;, line 11, in &lt;module&gt;
+    load_entry_point(&#39;madmex==0.2.0&#39;, &#39;console_scripts&#39;, &#39;antares&#39;)()
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/entry.py&quot;, line 15, in main
+    execute_from_command_line(sys.argv)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/__init__.py&quot;, line 371, in execute_from_command_line
+    utility.execute()
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/__init__.py&quot;, line 365, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 288, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/management/base.py&quot;, line 35, in execute
+    output = BaseCommand.execute(self, *args, **options)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 332, in execute
+    self.check()
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 364, in check
+    include_deployment_checks=include_deployment_checks,
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 351, in _run_checks
+    return checks.run_checks(**kwargs)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/checks/registry.py&quot;, line 73, in run_checks
+    new_errors = check(app_configs=app_configs)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/checks/urls.py&quot;, line 40, in check_url_namespaces_unique
+    all_namespaces = _load_all_namespaces(resolver)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/checks/urls.py&quot;, line 57, in _load_all_namespaces
+    url_patterns = getattr(resolver, &#39;url_patterns&#39;, [])
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/utils/functional.py&quot;, line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/urls/resolvers.py&quot;, line 536, in url_patterns
+    patterns = getattr(self.urlconf_module, &quot;urlpatterns&quot;, self.urlconf_module)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/utils/functional.py&quot;, line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/urls/resolvers.py&quot;, line 529, in urlconf_module
+    return import_module(self.urlconf_name)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/importlib/__init__.py&quot;, line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 994, in _gcd_import
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 971, in _find_and_load
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 955, in _find_and_load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 665, in _load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 678, in exec_module
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 219, in _call_with_frames_removed
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/urls.py&quot;, line 21, in &lt;module&gt;
+    from madmex.rest import views
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/rest/views.py&quot;, line 27, in &lt;module&gt;
+    from madmex.wrappers import predict_object
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/wrappers.py&quot;, line 6, in &lt;module&gt;
+    import datacube
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/__init__.py&quot;, line 21, in &lt;module&gt;
+    from .api import Datacube
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/api/__init__.py&quot;, line 7, in &lt;module&gt;
+    from datacube.storage.masking import list_flag_names, describe_variable_flags, make_mask
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/storage/masking.py&quot;, line 11, in &lt;module&gt;
+    from datacube.utils import generate_table
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/utils/__init__.py&quot;, line 24, in &lt;module&gt;
+    import netCDF4
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/__init__.py&quot;, line 3, in &lt;module&gt;
+    from ._netCDF4 import *
+ImportError: dlopen(/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/_netCDF4.cpython-36m-darwin.so, 2): Symbol not found: _clock_gettime
+  Referenced from: /Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/.dylibs/libcurl.4.dylib (which was built for Mac OS X 10.12)
+  Expected in: /usr/lib/libSystem.B.dylib
+ in /Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/.dylibs/libcurl.4.dylib
 </pre></div>
 </div>
 <p>We will use the Berkeley Image Segmentation (bis) for the present example. Each algorithm has different parameters, that can be inspected using the <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">segment_params</span> <span class="pre">'algorithm'</span></code> command line.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;verbosity&#39;: 1, &#39;traceback&#39;: False, &#39;pythonpath&#39;: None, &#39;no_color&#39;: False, &#39;segmentation&#39;: &#39;bis&#39;, &#39;settings&#39;: None}
-Command execution is done in 0.9572024345397949 seconds.
-                 Argument | Default value            
-       ================== | ==============           
-                        t | 12                       
-                        s | 0.3                      
-                        c | 0.8
+Command line arguments: {&#39;verbosity&#39;: 1, &#39;settings&#39;: None, &#39;pythonpath&#39;: None, &#39;traceback&#39;: False, &#39;no_color&#39;: False, &#39;segmentation&#39;: &#39;bis&#39;}
+Traceback (most recent call last):
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/bin/antares&quot;, line 11, in &lt;module&gt;
+    load_entry_point(&#39;madmex==0.2.0&#39;, &#39;console_scripts&#39;, &#39;antares&#39;)()
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/entry.py&quot;, line 15, in main
+    execute_from_command_line(sys.argv)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/__init__.py&quot;, line 371, in execute_from_command_line
+    utility.execute()
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/__init__.py&quot;, line 365, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 288, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/management/base.py&quot;, line 35, in execute
+    output = BaseCommand.execute(self, *args, **options)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 332, in execute
+    self.check()
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 364, in check
+    include_deployment_checks=include_deployment_checks,
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 351, in _run_checks
+    return checks.run_checks(**kwargs)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/checks/registry.py&quot;, line 73, in run_checks
+    new_errors = check(app_configs=app_configs)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/checks/urls.py&quot;, line 40, in check_url_namespaces_unique
+    all_namespaces = _load_all_namespaces(resolver)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/checks/urls.py&quot;, line 57, in _load_all_namespaces
+    url_patterns = getattr(resolver, &#39;url_patterns&#39;, [])
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/utils/functional.py&quot;, line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/urls/resolvers.py&quot;, line 536, in url_patterns
+    patterns = getattr(self.urlconf_module, &quot;urlpatterns&quot;, self.urlconf_module)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/utils/functional.py&quot;, line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/urls/resolvers.py&quot;, line 529, in urlconf_module
+    return import_module(self.urlconf_name)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/importlib/__init__.py&quot;, line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 994, in _gcd_import
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 971, in _find_and_load
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 955, in _find_and_load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 665, in _load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 678, in exec_module
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 219, in _call_with_frames_removed
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/urls.py&quot;, line 21, in &lt;module&gt;
+    from madmex.rest import views
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/rest/views.py&quot;, line 27, in &lt;module&gt;
+    from madmex.wrappers import predict_object
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/wrappers.py&quot;, line 6, in &lt;module&gt;
+    import datacube
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/__init__.py&quot;, line 21, in &lt;module&gt;
+    from .api import Datacube
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/api/__init__.py&quot;, line 7, in &lt;module&gt;
+    from datacube.storage.masking import list_flag_names, describe_variable_flags, make_mask
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/storage/masking.py&quot;, line 11, in &lt;module&gt;
+    from datacube.utils import generate_table
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/utils/__init__.py&quot;, line 24, in &lt;module&gt;
+    import netCDF4
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/__init__.py&quot;, line 3, in &lt;module&gt;
+    from ._netCDF4 import *
+ImportError: dlopen(/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/_netCDF4.cpython-36m-darwin.so, 2): Symbol not found: _clock_gettime
+  Referenced from: /Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/.dylibs/libcurl.4.dylib (which was built for Mac OS X 10.12)
+  Expected in: /usr/lib/libSystem.B.dylib
+ in /Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/.dylibs/libcurl.4.dylib
 </pre></div>
 </div>
 <p>Experimenting with the data, we found <code class="docutils literal notranslate"><span class="pre">t=40</span></code>, <code class="docutils literal notranslate"><span class="pre">s=0.5</span></code> and <code class="docutils literal notranslate"><span class="pre">c=0.7</span></code> to be an appropriate set of segmentation parameters for this dataset. We can therefore start the segmentation using the following command. Also the command line allow to select a subset of layers to run the segmentation. In this case we choose to use <code class="docutils literal notranslate"><span class="pre">green_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">red_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">nir_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">swir1_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">swir2_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">ndvi_mean</span></code> and <code class="docutils literal notranslate"><span class="pre">ndmi_mean</span></code>.</p>
@@ -313,27 +424,137 @@ Command execution is done in 0.9572024345397949 seconds.
 <h2>Train the a model<a class="headerlink" href="#train-the-a-model" title="Permalink to this headline">¶</a></h2>
 <p>Training a model consists in defining the signature of each land cover class so that it can be recognized and the class be assigned properly in the prediction step. For that, training polygons ingested at the beginning of this example are overlayed with the intermediary product and overlapping areas are extracted, spatially averaged, prepared to be used as training samples and fed to a model (training samples are combined across tiles, so that a single model is trained for the entire area). Once the model has been trained, it is saved on disk and indexed in the <code class="docutils literal notranslate"><span class="pre">antares</span></code> database.</p>
 <p>Similarly to segmentation algorithms, <code class="docutils literal notranslate"><span class="pre">antares</span></code> offers an interface to various prediction models. To get a list of the models implemented, one can run <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_params</span></code>.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;settings&#39;: None, &#39;model&#39;: None, &#39;no_color&#39;: False, &#39;verbosity&#39;: 1, &#39;pythonpath&#39;: None, &#39;traceback&#39;: False}
-Command execution is done in 0.7465038299560547 seconds.
-Model     description                                                                
---------  ---------------                                                            
-lgb       Antares implementation of Microsoft&#39;s Light Boost classifier               
-rf        Antares implementation of scikit learn random forest classifier            
-xgb       Antares implementation of Gradient Boost classifier
+Command line arguments: {&#39;verbosity&#39;: 1, &#39;settings&#39;: None, &#39;pythonpath&#39;: None, &#39;traceback&#39;: False, &#39;no_color&#39;: False, &#39;model&#39;: None}
+Traceback (most recent call last):
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/bin/antares&quot;, line 11, in &lt;module&gt;
+    load_entry_point(&#39;madmex==0.2.0&#39;, &#39;console_scripts&#39;, &#39;antares&#39;)()
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/entry.py&quot;, line 15, in main
+    execute_from_command_line(sys.argv)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/__init__.py&quot;, line 371, in execute_from_command_line
+    utility.execute()
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/__init__.py&quot;, line 365, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 288, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/management/base.py&quot;, line 35, in execute
+    output = BaseCommand.execute(self, *args, **options)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 332, in execute
+    self.check()
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 364, in check
+    include_deployment_checks=include_deployment_checks,
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 351, in _run_checks
+    return checks.run_checks(**kwargs)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/checks/registry.py&quot;, line 73, in run_checks
+    new_errors = check(app_configs=app_configs)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/checks/urls.py&quot;, line 40, in check_url_namespaces_unique
+    all_namespaces = _load_all_namespaces(resolver)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/checks/urls.py&quot;, line 57, in _load_all_namespaces
+    url_patterns = getattr(resolver, &#39;url_patterns&#39;, [])
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/utils/functional.py&quot;, line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/urls/resolvers.py&quot;, line 536, in url_patterns
+    patterns = getattr(self.urlconf_module, &quot;urlpatterns&quot;, self.urlconf_module)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/utils/functional.py&quot;, line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/urls/resolvers.py&quot;, line 529, in urlconf_module
+    return import_module(self.urlconf_name)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/importlib/__init__.py&quot;, line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 994, in _gcd_import
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 971, in _find_and_load
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 955, in _find_and_load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 665, in _load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 678, in exec_module
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 219, in _call_with_frames_removed
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/urls.py&quot;, line 21, in &lt;module&gt;
+    from madmex.rest import views
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/rest/views.py&quot;, line 27, in &lt;module&gt;
+    from madmex.wrappers import predict_object
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/wrappers.py&quot;, line 6, in &lt;module&gt;
+    import datacube
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/__init__.py&quot;, line 21, in &lt;module&gt;
+    from .api import Datacube
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/api/__init__.py&quot;, line 7, in &lt;module&gt;
+    from datacube.storage.masking import list_flag_names, describe_variable_flags, make_mask
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/storage/masking.py&quot;, line 11, in &lt;module&gt;
+    from datacube.utils import generate_table
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/utils/__init__.py&quot;, line 24, in &lt;module&gt;
+    import netCDF4
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/__init__.py&quot;, line 3, in &lt;module&gt;
+    from ._netCDF4 import *
+ImportError: dlopen(/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/_netCDF4.cpython-36m-darwin.so, 2): Symbol not found: _clock_gettime
+  Referenced from: /Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/.dylibs/libcurl.4.dylib (which was built for Mac OS X 10.12)
+  Expected in: /usr/lib/libSystem.B.dylib
+ in /Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/.dylibs/libcurl.4.dylib
 </pre></div>
 </div>
 <p>The following example uses the random forest decision tree model, which parameters can be consulted using <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_params</span> <span class="pre">rf</span></code>.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;settings&#39;: None, &#39;model&#39;: &#39;rf&#39;, &#39;no_color&#39;: False, &#39;verbosity&#39;: 1, &#39;pythonpath&#39;: None, &#39;traceback&#39;: False}
-Command execution is done in 0.730938196182251 seconds.
-                 Argument | Default value            
-       ================== | ==============           
-             n_estimators | 50                       
-                   n_jobs | -1                       
-                max_depth | 10
+Command line arguments: {&#39;verbosity&#39;: 1, &#39;settings&#39;: None, &#39;pythonpath&#39;: None, &#39;traceback&#39;: False, &#39;no_color&#39;: False, &#39;model&#39;: &#39;rf&#39;}
+Traceback (most recent call last):
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/bin/antares&quot;, line 11, in &lt;module&gt;
+    load_entry_point(&#39;madmex==0.2.0&#39;, &#39;console_scripts&#39;, &#39;antares&#39;)()
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/entry.py&quot;, line 15, in main
+    execute_from_command_line(sys.argv)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/__init__.py&quot;, line 371, in execute_from_command_line
+    utility.execute()
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/__init__.py&quot;, line 365, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 288, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/management/base.py&quot;, line 35, in execute
+    output = BaseCommand.execute(self, *args, **options)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 332, in execute
+    self.check()
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 364, in check
+    include_deployment_checks=include_deployment_checks,
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/management/base.py&quot;, line 351, in _run_checks
+    return checks.run_checks(**kwargs)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/checks/registry.py&quot;, line 73, in run_checks
+    new_errors = check(app_configs=app_configs)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/checks/urls.py&quot;, line 40, in check_url_namespaces_unique
+    all_namespaces = _load_all_namespaces(resolver)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/core/checks/urls.py&quot;, line 57, in _load_all_namespaces
+    url_patterns = getattr(resolver, &#39;url_patterns&#39;, [])
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/utils/functional.py&quot;, line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/urls/resolvers.py&quot;, line 536, in url_patterns
+    patterns = getattr(self.urlconf_module, &quot;urlpatterns&quot;, self.urlconf_module)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/utils/functional.py&quot;, line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/django/urls/resolvers.py&quot;, line 529, in urlconf_module
+    return import_module(self.urlconf_name)
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/importlib/__init__.py&quot;, line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 994, in _gcd_import
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 971, in _find_and_load
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 955, in _find_and_load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 665, in _load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 678, in exec_module
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 219, in _call_with_frames_removed
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/urls.py&quot;, line 21, in &lt;module&gt;
+    from madmex.rest import views
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/rest/views.py&quot;, line 27, in &lt;module&gt;
+    from madmex.wrappers import predict_object
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/madmex/wrappers.py&quot;, line 6, in &lt;module&gt;
+    import datacube
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/__init__.py&quot;, line 21, in &lt;module&gt;
+    from .api import Datacube
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/api/__init__.py&quot;, line 7, in &lt;module&gt;
+    from datacube.storage.masking import list_flag_names, describe_variable_flags, make_mask
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/storage/masking.py&quot;, line 11, in &lt;module&gt;
+    from datacube.utils import generate_table
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/datacube/utils/__init__.py&quot;, line 24, in &lt;module&gt;
+    import netCDF4
+  File &quot;/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/__init__.py&quot;, line 3, in &lt;module&gt;
+    from ._netCDF4 import *
+ImportError: dlopen(/Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/_netCDF4.cpython-36m-darwin.so, 2): Symbol not found: _clock_gettime
+  Referenced from: /Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/.dylibs/libcurl.4.dylib (which was built for Mac OS X 10.12)
+  Expected in: /usr/lib/libSystem.B.dylib
+ in /Users/erickpalacios/Documents/CONABIO/PythonDirVirtEnv/antares3_for_gh_pages/lib/python3.6/site-packages/netCDF4/.dylibs/libcurl.4.dylib
 </pre></div>
 </div>
 <p>Without much justification, we will build a model composed of 100 trees with a maximum depth of 20. Note that by default 20 percents of the training polygons is selected for training, this value can be adjusted using the <code class="docutils literal notranslate"><span class="pre">-sample</span></code> command line argument.</p>

@@ -1,6 +1,0 @@
-madmex.wrappers.gwf\_query
-==========================
-
-.. currentmodule:: madmex.wrappers
-
-.. autofunction:: gwf_query

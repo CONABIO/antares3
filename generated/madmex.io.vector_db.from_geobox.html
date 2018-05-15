@@ -197,8 +197,11 @@ To declare a class method, use this idiom:</p>
 <blockquote>
 <div><dl class="docutils">
 <dt>class C:</dt>
-<dd>def f(cls, arg1, arg2, …): …
-f = classmethod(f)</dd>
+<dd><p class="first">&#64;classmethod
+def f(cls, arg1, arg2, …):</p>
+<blockquote class="last">
+<div>…</div></blockquote>
+</dd>
 </dl>
 </div></blockquote>
 <p>It can be called either on the class (e.g. C.f()) or on an instance
