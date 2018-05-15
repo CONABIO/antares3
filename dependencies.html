@@ -254,14 +254,14 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 <span class="c1">##Set variable mount_point</span>
 <span class="nb">echo</span> <span class="s2">&quot;export mount_point=</span><span class="nv">$shared_volume</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
 <span class="c1">##Dependencies for sge, antares3 and open datacube</span>
-apt-get install -y nfs-common openssh-server openjdk-8-jre xsltproc apache2 git htop postgresql <span class="se">\</span>
+apt-get install -y nfs-common openssh-server openjdk-8-jre xsltproc apache2 git htop postgresql-client <span class="se">\</span>
 python-software-properties <span class="se">\</span>
 libssl-dev <span class="se">\</span>
 libffi-dev <span class="se">\</span>
 python3-dev <span class="se">\</span>
 python3-pip <span class="se">\</span>
 python3-setuptools
-service ssh start
+pip3 install --upgrade <span class="nv">pip</span><span class="o">==</span><span class="m">9</span>.0.3
 <span class="c1">##For RunCommand service of EC2</span>
 wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
 dpkg -i amazon-ssm-agent.deb
@@ -291,14 +291,11 @@ service apache2 start
 apt-get install -q -y gridengine-client gridengine-exec gridengine-master
 /etc/init.d/gridengine-master restart
 service apache2 restart
-<span class="c1">##Install python virtualenv</span>
-pip3 install virtualenv virtualenvwrapper
 <span class="c1">##Install spatial libraries</span>
 add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable <span class="o">&amp;&amp;</span> apt-get -qq update
 apt-get install -y <span class="se">\</span>
     netcdf-bin <span class="se">\</span>
     libnetcdf-dev <span class="se">\</span>
-    ncview <span class="se">\</span>
     libproj-dev <span class="se">\</span>
     libgeos-dev <span class="se">\</span>
     gdal-bin <span class="se">\</span>
@@ -311,10 +308,16 @@ pip3 install --upgrade python-dateutil
 <span class="c1">##Create shared volume</span>
 mkdir <span class="nv">$shared_volume</span>
 <span class="c1">##Create directories for antares3 and locale settings for open datacube</span>
-mkdir -p /home/ubuntu/.virtualenvs
 mkdir -p /home/ubuntu/git <span class="o">&amp;&amp;</span> mkdir -p /home/ubuntu/sandbox
-<span class="nb">echo</span> <span class="s1">&#39;source /usr/local/bin/virtualenvwrapper.sh&#39;</span> &gt;&gt; /home/ubuntu/.bash_aliases
 <span class="nb">echo</span> <span class="s2">&quot;alias python=python3&quot;</span> &gt;&gt; /home/ubuntu/.bash_aliases
+<span class="c1">#dependencies for antares3 &amp; datacube</span>
+pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install cloudpickle <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span>.0a12 --no-binary rasterio <span class="o">&amp;&amp;</span> pip3 install scipy
+pip3 install sklearn
+pip3 install lightbm
+pip3 install fiona --no-binary fiona
+pip3 install django
+<span class="c1">#datacube:</span>
+pip3 install <span class="nv">datacube</span><span class="o">==</span><span class="m">1</span>.6rc1
 </pre></div>
 </div>
 <p>Once launching of the instance was successful, log in and execute next commands:</p>
@@ -384,8 +387,8 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 <span class="nb">echo</span> <span class="s2">&quot;export region=</span><span class="nv">$region</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
 <span class="nb">echo</span> <span class="s2">&quot;export type_value=</span><span class="nv">$type_value</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
 /bin/bash -c <span class="s2">&quot;alias python=python3 &amp;&amp; pip3 install numpy &amp;&amp; pip3 install cloudpickle &amp;&amp; pip3 install GDAL==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span><span class="s2"> --global-option=build_ext --global-option=&#39;-I/usr/include/gdal&#39; &amp;&amp; pip3 install rasterio==1.0a12  --no-binary rasterio &amp;&amp; pip3 install scipy&quot;</span>
-<span class="c1">##Uncomment next line if you want to install also Open Datacube and Antares3 on your AutoScalingGroup</span>
-<span class="c1">#/bin/bash -c &quot;alias python=python3 &amp;&amp;  pip3 install datacube==1.6rc1 &amp;&amp; pip3 install git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
+<span class="c1">##Uncomment next line if you want to install also Open Datacube and Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo</span>
+<span class="c1">#su ubuntu -c &quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
 </pre></div>
 </div>
 <p>* S3 driver of Open Datacube</p>
@@ -405,11 +408,9 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Type,Value<span class="o">=</span><span class="nv">$type_value</span> --region<span class="o">=</span><span class="nv">$region</span>
 <span class="nb">echo</span> <span class="s2">&quot;export region=</span><span class="nv">$region</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
 <span class="nb">echo</span> <span class="s2">&quot;export type_value=</span><span class="nv">$type_value</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
-/bin/bash -c <span class="s2">&quot;alias python=python3 &amp;&amp; pip3 install numpy &amp;&amp; pip3 install cloudpickle &amp;&amp; pip3 install GDAL==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span><span class="s2"> --global-option=build_ext --global-option=&#39;-I/usr/include/gdal&#39; &amp;&amp; pip3 install rasterio==1.0a12 --no-binary rasterio &amp;&amp; pip3 install scipy &amp;&amp; pip3 install boto3 &amp;&amp; pip3 install SharedArray &amp;&amp; pip3 install pathos &amp;&amp; pip3 install zstandard&quot;</span>
-<span class="c1">##clone develop branch of antares3</span>
-su ubuntu -c <span class="s2">&quot;cd /home/ubuntu/ &amp;&amp; git clone https://github.com/CONABIO/antares3.git &amp;&amp; cd antares3 &amp;&amp; git checkout -b develop origin/develop&quot;</span>
-<span class="c1">##Uncomment next line if you want to install also Open Datacube and Antares3 on your AutoScalingGroup</span>
-<span class="c1">#/bin/bash -c &quot;alias python=python3 &amp;&amp;  pip3 install datacube==1.6rc1 &amp;&amp; pip3 install git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
+/bin/bash -c <span class="s2">&quot;alias python=python3 &amp;&amp; pip3 install boto3 &amp;&amp; pip3 install SharedArray &amp;&amp; pip3 install pathos &amp;&amp; pip3 install zstandard&quot;</span>
+<span class="c1">##Uncomment next line if you want to install also Open Datacube and Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo</span>
+<span class="c1">#su ubuntu -c &quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
 </pre></div>
 </div>
 <p><strong>Example using</strong> <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> <strong>service of AWS with Tag Name and Tag Value</strong></p>

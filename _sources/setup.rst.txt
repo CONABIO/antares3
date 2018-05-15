@@ -160,7 +160,6 @@ Log in to master node, copy paste in ``$mount_point/.antares`` the configuration
 
 .. code-block:: bash
 
-    ln -sf $mount_point/.antares /home/ubuntu/.antares
     antares init -c mex
  
 Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` configured in `Dependencies-Cloud Deployment`_ in step 2, or use a tool for cluster management like `clusterssh`_ . 
@@ -171,8 +170,7 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
 
     #!/bin/bash
     source /home/ubuntu/.profile
-    ln -sf $mount_point/.antares /home/ubuntu/.antares
-    su ubuntu -c "antares init"
+    su ubuntu -c "/home/ubuntu/.local/bin/antares init"
 
 This will create a ``madmex`` directory under ``/home/ubuntu/.config/`` where ingestion files for all different suported dataset will be stored.
 

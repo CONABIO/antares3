@@ -205,7 +205,7 @@ pip install git+https://github.com/CONABIO/antares3.git#egg<span class="o">=</sp
 <span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS name of EFS&gt;
 <span class="c1">##Name of the queue that will be used by dask-scheduler and dask-workers</span>
 <span class="nv">queue_name</span><span class="o">=</span>dask-queue.q
-<span class="c1">##Change number of slots to use for every instance, in this example the instances has 2 slots each of them</span>
+<span class="c1">##Change number of slots to use for every instance, in this example the instances have 2 slots each of them</span>
 <span class="nv">slots</span><span class="o">=</span><span class="m">2</span>
 <span class="nv">region</span><span class="o">=</span><span class="nv">$region</span>
 <span class="nv">type_value</span><span class="o">=</span><span class="nv">$type_value</span>
@@ -215,12 +215,14 @@ mkdir -p <span class="nv">$mount_point</span>/datacube/datacube_ingest
 <span class="c1">##Tag instance</span>
 <span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://169.254.169.254/latest/meta-data/instance-id<span class="k">)</span>
 <span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://169.254.169.254/latest/meta-data/public-ipv4<span class="k">)</span>
-<span class="c1">##Assing elastic IP where this bash script is executed</span>
+<span class="c1">##Assining elastic IP where this bash script is executed</span>
 aws ec2 associate-address --instance-id <span class="nv">$INSTANCE_ID</span> --allocation-id <span class="nv">$eip</span> --region <span class="nv">$region</span>
 <span class="c1">##Tag instance where this bash script is executed</span>
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Name,Value<span class="o">=</span><span class="nv">$name_instance</span>-<span class="nv">$PUBLIC_IP</span> --region<span class="o">=</span><span class="nv">$region</span>
 <span class="c1">##Execute bash script create-dask-sge-queue already created on Dependencies-Cloud Deployment</span>
 bash <span class="nv">$mount_point</span>/create-dask-sge-queue.sh <span class="nv">$queue_name</span> <span class="nv">$slots</span>
+<span class="c1">##Create symbolic link to configuration files for datacube</span>
+ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/ubuntu/.datacube.conf
 </pre></div>
 </div>
 <p><strong>Restart gridengine-exec on nodes and install OpenDataCube and Antares3</strong></p>
@@ -234,7 +236,11 @@ mount -t nfs4 -o <span class="nv">nfsvers</span><span class="o">=</span><span cl
 <span class="nb">echo</span> <span class="nv">$master_dns</span> &gt; /var/lib/gridengine/default/common/act_qmaster
 /etc/init.d/gridengine-exec restart
 <span class="c1">##Install open datacube and antares3</span>
-/bin/bash -c <span class="s2">&quot;alias python=python3 &amp;&amp; pip3 install git+https://github.com/CONABIO/datacube-core.git@develop &amp;&amp; pip3 install git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
+su ubuntu -c <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
+<span class="c1">##Create symbolic link to configuration files for antares3</span>
+ln -sf <span class="nv">$mount_point</span>/.antares /home/ubuntu/.antares
+<span class="c1">##Uncomment next line if you want to init antares</span>
+<span class="c1">#su ubuntu -c &quot;/home/ubuntu/.local/bin/antares init&quot;</span>
 </pre></div>
 </div>
 <p><strong>Run SGE commands to init cluster.</strong></p>
