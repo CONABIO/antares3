@@ -105,14 +105,13 @@ antares apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-12-31 --r
         # database query
         gwf_kwargs = { k: options[k] for k in ['lat', 'long', 'region', 'begin', 'end']}
         gwf_kwargs.update(product=product)
-        gwf, iterable = gwf_query(**gwf_kwargs)
+        iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
         C = client.map(fun, iterable,
                        pure=False,
-                       **{'gwf': gwf,
-                          'center_dt': center_dt,
+                       **{'center_dt': center_dt,
                           'path': path})
         nc_list = client.gather(C)
         n_tiles = len([x for x in nc_list if x is not None])

@@ -142,15 +142,14 @@ To consult the exposed arguments for each model, use the "model_params" command 
 
         # datacube query
         gwf_kwargs = { k: options[k] for k in ['product', 'lat', 'long', 'region']}
-        gwf, iterable = gwf_query(**gwf_kwargs)
+        iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
         C = client.map(extract_tile_db,
                        iterable,
                        pure=False,
-                       **{'gwf': gwf,
-                          'sp': sp,
+                       **{'sp': sp,
                           'training_set': training,
                           'sample': sample})
         arr_list = client.gather(C)

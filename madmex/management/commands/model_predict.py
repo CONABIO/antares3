@@ -70,13 +70,12 @@ antares model_predict --region Jalisco -p landsat_madmex_001_jalisco_2017_2 -id 
 
         # datacube query
         gwf_kwargs = { k: options[k] for k in ['product', 'lat', 'long', 'region']}
-        gwf, iterable = gwf_query(**gwf_kwargs)
+        iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
         client = Client()
         C = client.map(predict_pixel_tile,
-                       iterable, **{'gwf': gwf,
-                                    'model_id': model_id,
+                       iterable, **{'model_id': model_id,
                                     'outdir': out_dir})
         filename_list = client.gather(C)
         print(filename_list)
