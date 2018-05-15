@@ -239,7 +239,7 @@ mount -t nfs4 -o <span class="nv">nfsvers</span><span class="o">=</span><span cl
 su ubuntu -c <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
 <span class="c1">##Create symbolic link to configuration files for antares3</span>
 ln -sf <span class="nv">$mount_point</span>/.antares /home/ubuntu/.antares
-<span class="c1">##Uncomment next line if you want to init antares</span>
+<span class="c1">##Uncomment next line if you want to init antares (previously installed)</span>
 <span class="c1">#su ubuntu -c &quot;/home/ubuntu/.local/bin/antares init&quot;</span>
 </pre></div>
 </div>

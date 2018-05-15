@@ -266,8 +266,8 @@ datacube ingest -c ~/.config/madmex/ingestion/s2_l2a_20m_mexico.yaml --executor 
 <code class="docutils literal notranslate"><span class="pre">antares</span></code> implements various segmentation algorithms that can all be operated from the <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">segment</span></code> command line. To get a list of implemented algorithms, run the <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">segment_params</span></code> command line.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;no_color&#39;: False, &#39;traceback&#39;: False, &#39;verbosity&#39;: 1, &#39;settings&#39;: None, &#39;segmentation&#39;: None, &#39;pythonpath&#39;: None}
-Command execution is done in 0.9960482120513916 seconds.
+Command line arguments: {&#39;verbosity&#39;: 1, &#39;settings&#39;: None, &#39;segmentation&#39;: None, &#39;pythonpath&#39;: None, &#39;traceback&#39;: False, &#39;no_color&#39;: False}
+Command execution is done in 1.0065975189208984 seconds.
 Algorithm description                                                                
 --------  ---------------                                                            
 bis       Antares implementation of Berkeley Image segmentation algorithm            
@@ -277,8 +277,8 @@ slic      Antares implementation of scikit-image&#39;s SLIC segmentation algorit
 <p>We will use the Berkeley Image Segmentation (bis) for the present example. Each algorithm has different parameters, that can be inspected using the <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">segment_params</span> <span class="pre">'algorithm'</span></code> command line.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;segmentation&#39;: &#39;bis&#39;, &#39;verbosity&#39;: 1, &#39;no_color&#39;: False, &#39;pythonpath&#39;: None, &#39;settings&#39;: None, &#39;traceback&#39;: False}
-Command execution is done in 0.9490339756011963 seconds.
+Command line arguments: {&#39;settings&#39;: None, &#39;pythonpath&#39;: None, &#39;segmentation&#39;: &#39;bis&#39;, &#39;no_color&#39;: False, &#39;traceback&#39;: False, &#39;verbosity&#39;: 1}
+Command execution is done in 0.9750988483428955 seconds.
                  Argument | Default value            
        ================== | ==============           
                         t | 12                       
@@ -315,8 +315,8 @@ Command execution is done in 0.9490339756011963 seconds.
 <p>Similarly to segmentation algorithms, <code class="docutils literal notranslate"><span class="pre">antares</span></code> offers an interface to various prediction models. To get a list of the models implemented, one can run <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_params</span></code>.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;pythonpath&#39;: None, &#39;verbosity&#39;: 1, &#39;no_color&#39;: False, &#39;settings&#39;: None, &#39;traceback&#39;: False, &#39;model&#39;: None}
-Command execution is done in 0.7379434108734131 seconds.
+Command line arguments: {&#39;pythonpath&#39;: None, &#39;traceback&#39;: False, &#39;model&#39;: None, &#39;settings&#39;: None, &#39;verbosity&#39;: 1, &#39;no_color&#39;: False}
+Command execution is done in 0.7543056011199951 seconds.
 Model     description                                                                
 --------  ---------------                                                            
 lgb       Antares implementation of Microsoft&#39;s Light Boost classifier               
@@ -327,8 +327,8 @@ xgb       Antares implementation of Gradient Boost classifier
 <p>The following example uses the random forest decision tree model, which parameters can be consulted using <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_params</span> <span class="pre">rf</span></code>.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;verbosity&#39;: 1, &#39;no_color&#39;: False, &#39;traceback&#39;: False, &#39;settings&#39;: None, &#39;pythonpath&#39;: None, &#39;model&#39;: &#39;rf&#39;}
-Command execution is done in 0.7286927700042725 seconds.
+Command line arguments: {&#39;settings&#39;: None, &#39;pythonpath&#39;: None, &#39;no_color&#39;: False, &#39;verbosity&#39;: 1, &#39;model&#39;: &#39;rf&#39;, &#39;traceback&#39;: False}
+Command execution is done in 0.7760536670684814 seconds.
                  Argument | Default value            
        ================== | ==============           
              n_estimators | 50                       
