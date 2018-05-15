@@ -209,11 +209,10 @@ Countries must be queried using ISO code (e.g.: ‘MEX’ for Mexico)</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of [0] GridWorkflow object and [1] dictionary view of Tile index, Tile
-key value pair</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Dictionary view of Tile index, Tile key value pair</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">view</p>
 </td>
 </tr>
 </tbody>
@@ -223,13 +222,13 @@ key value pair</p>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Using region name, time unbounded</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gwf</span><span class="p">,</span> <span class="n">tiles_list</span> <span class="o">=</span> <span class="n">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="s1">&#39;ls8_espa_mexico&#39;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;Jalisco&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tiles_list</span> <span class="o">=</span> <span class="n">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="s1">&#39;ls8_espa_mexico&#39;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;Jalisco&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Using region name, time windowed</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gwf</span><span class="p">,</span> <span class="n">tiles_list</span> <span class="o">=</span> <span class="n">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="s1">&#39;ls8_espa_mexico&#39;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;Jalisco&#39;</span><span class="p">,</span>
-<span class="gp">... </span>                            <span class="n">begin</span> <span class="o">=</span> <span class="s1">&#39;2017-01-01&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;2017-03-31&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tiles_list</span> <span class="o">=</span> <span class="n">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="s1">&#39;ls8_espa_mexico&#39;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;Jalisco&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                       <span class="n">begin</span> <span class="o">=</span> <span class="s1">&#39;2017-01-01&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;2017-03-31&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Using lat long box, time windowed</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gwf</span><span class="p">,</span> <span class="n">tiles_list</span> <span class="o">=</span> <span class="n">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="s1">&#39;ls8_espa_mexico&#39;</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="p">[</span><span class="mi">19</span><span class="p">,</span> <span class="mi">22</span><span class="p">],</span> <span class="n">long</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">104</span><span class="p">,</span> <span class="o">-</span><span class="mi">102</span><span class="p">],</span>
-<span class="gp">... </span>                            <span class="n">begin</span> <span class="o">=</span> <span class="s1">&#39;2017-01-01&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;2017-03-31&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tiles_list</span> <span class="o">=</span> <span class="n">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="s1">&#39;ls8_espa_mexico&#39;</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="p">[</span><span class="mi">19</span><span class="p">,</span> <span class="mi">22</span><span class="p">],</span> <span class="n">long</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">104</span><span class="p">,</span> <span class="o">-</span><span class="mi">102</span><span class="p">],</span>
+<span class="gp">... </span>                       <span class="n">begin</span> <span class="o">=</span> <span class="s1">&#39;2017-01-01&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;2017-03-31&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

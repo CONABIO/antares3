@@ -163,7 +163,12 @@
            <div itemprop="articleBody">
             
   <h1>Source code for madmex.modeling.supervised.xgb</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">xgboost.sklearn</span> <span class="k">import</span> <span class="n">XGBClassifier</span>
+<span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">xgboost.sklearn</span> <span class="k">import</span> <span class="n">XGBClassifier</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">_has_xgboost</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_has_xgboost</span> <span class="o">=</span> <span class="kc">True</span>
 
 <span class="kn">from</span> <span class="nn">madmex.modeling</span> <span class="k">import</span> <span class="n">BaseModel</span>
 
@@ -184,6 +189,8 @@
 <span class="sd">            &gt;&gt;&gt; # Read model from db</span>
 <span class="sd">            &gt;&gt;&gt; xgb2 = Model.from_db(&#39;test_model&#39;)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_has_xgboost</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;xgboost is required for that. (pip install xgboost)&#39;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">categorical_features</span><span class="o">=</span><span class="n">categorical_features</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">(</span><span class="n">objective</span><span class="o">=</span><span class="s1">&#39;multi:softmax&#39;</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">,</span>
                                    <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span>
