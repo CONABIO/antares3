@@ -108,14 +108,14 @@ The following bash script can be used in **User data** configuration of the inst
     ##Set variable mount_point
     echo "export mount_point=$shared_volume" >> /home/ubuntu/.profile
     ##Dependencies for sge, antares3 and open datacube
-    apt-get install -y nfs-common openssh-server openjdk-8-jre xsltproc apache2 git htop postgresql \
+    apt-get install -y nfs-common openssh-server openjdk-8-jre xsltproc apache2 git htop postgresql-client \
     python-software-properties \
     libssl-dev \
     libffi-dev \
     python3-dev \
     python3-pip \
     python3-setuptools
-    service ssh start
+    pip3 install --upgrade pip==9.0.3
     ##For RunCommand service of EC2
     wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
     dpkg -i amazon-ssm-agent.deb
@@ -145,14 +145,11 @@ The following bash script can be used in **User data** configuration of the inst
     apt-get install -q -y gridengine-client gridengine-exec gridengine-master
     /etc/init.d/gridengine-master restart
     service apache2 restart
-    ##Install python virtualenv
-    pip3 install virtualenv virtualenvwrapper
     ##Install spatial libraries
     add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable && apt-get -qq update
     apt-get install -y \
         netcdf-bin \
         libnetcdf-dev \
-        ncview \
         libproj-dev \
         libgeos-dev \
         gdal-bin \
@@ -165,11 +162,16 @@ The following bash script can be used in **User data** configuration of the inst
     ##Create shared volume
     mkdir $shared_volume
     ##Create directories for antares3 and locale settings for open datacube
-    mkdir -p /home/ubuntu/.virtualenvs
     mkdir -p /home/ubuntu/git && mkdir -p /home/ubuntu/sandbox
-    echo 'source /usr/local/bin/virtualenvwrapper.sh' >> /home/ubuntu/.bash_aliases
     echo "alias python=python3" >> /home/ubuntu/.bash_aliases
-
+    #dependencies for antares3 & datacube
+    pip3 install numpy && pip3 install cloudpickle && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0a12 --no-binary rasterio && pip3 install scipy
+    pip3 install sklearn
+    pip3 install lightbm
+    pip3 install fiona --no-binary fiona
+    pip3 install django
+    #datacube:
+    pip3 install datacube==1.6rc1
 
 
 Once launching of the instance was successful, log in and execute next commands:
