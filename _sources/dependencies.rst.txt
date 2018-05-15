@@ -262,7 +262,7 @@ Once created an AMI of AWS from previous step, use the following bash script to 
     echo "export region=$region" >> /home/ubuntu/.profile
     echo "export type_value=$type_value" >> /home/ubuntu/.profile
     /bin/bash -c "alias python=python3 && pip3 install numpy && pip3 install cloudpickle && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0a12  --no-binary rasterio && pip3 install scipy"
-    ##Uncomment next line if you want to install Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo
+    ##Uncomment next line if you want to install Antares3 on your AutoScalingGroup
     #su ubuntu -c "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop"
 
 
@@ -289,7 +289,7 @@ Once created an AMI of AWS from previous step, use the following bash script to 
     echo "export region=$region" >> /home/ubuntu/.profile
     echo "export type_value=$type_value" >> /home/ubuntu/.profile
     /bin/bash -c "alias python=python3 && pip3 install boto3 && pip3 install SharedArray && pip3 install pathos && pip3 install zstandard"
-    ##Uncomment next line if you want to install Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo
+    ##Uncomment next line if you want to install Antares3 on your AutoScalingGroup
     #su ubuntu -c "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop"  
 
 
