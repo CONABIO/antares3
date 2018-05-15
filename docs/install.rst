@@ -89,7 +89,7 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
     su ubuntu -c "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop"
     ##Create symbolic link to configuration files for antares3
     ln -sf $mount_point/.antares /home/ubuntu/.antares
-    ##Uncomment next line if you want to init antares
+    ##Uncomment next line if you want to init antares (previously installed)
     #su ubuntu -c "/home/ubuntu/.local/bin/antares init"
 
 
