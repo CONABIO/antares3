@@ -47,6 +47,7 @@ and execute:
 
     datacube -v product add /home/ubuntu/.config/madmex/indexing/landsat_8_espa_scenes.yaml
     antares prepare_metadata -p $mount_point/landsat_8_espa/ -d landsat_espa -o $mount_point/datacube/ls8_espa.yaml
+    datacube -v dataset add $mount_point/datacube/ls8_espa.yaml
     datacube -v ingest -c /home/ubuntu/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor distributed <ip dask-scheduler>:<port where dask-scheduler listens>
 
 
