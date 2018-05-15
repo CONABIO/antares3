@@ -387,7 +387,7 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 <span class="nb">echo</span> <span class="s2">&quot;export region=</span><span class="nv">$region</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
 <span class="nb">echo</span> <span class="s2">&quot;export type_value=</span><span class="nv">$type_value</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
 /bin/bash -c <span class="s2">&quot;alias python=python3 &amp;&amp; pip3 install numpy &amp;&amp; pip3 install cloudpickle &amp;&amp; pip3 install GDAL==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span><span class="s2"> --global-option=build_ext --global-option=&#39;-I/usr/include/gdal&#39; &amp;&amp; pip3 install rasterio==1.0a12  --no-binary rasterio &amp;&amp; pip3 install scipy&quot;</span>
-<span class="c1">##Uncomment next line if you want to install also Open Datacube and Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo</span>
+<span class="c1">##Uncomment next line if you want to install Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo</span>
 <span class="c1">#su ubuntu -c &quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
 </pre></div>
 </div>
@@ -409,7 +409,7 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 <span class="nb">echo</span> <span class="s2">&quot;export region=</span><span class="nv">$region</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
 <span class="nb">echo</span> <span class="s2">&quot;export type_value=</span><span class="nv">$type_value</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
 /bin/bash -c <span class="s2">&quot;alias python=python3 &amp;&amp; pip3 install boto3 &amp;&amp; pip3 install SharedArray &amp;&amp; pip3 install pathos &amp;&amp; pip3 install zstandard&quot;</span>
-<span class="c1">##Uncomment next line if you want to install also Open Datacube and Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo</span>
+<span class="c1">##Uncomment next line if you want to install Antares3 on your AutoScalingGroup, we are using right now a fork from Open Datacube repo</span>
 <span class="c1">#su ubuntu -c &quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
 </pre></div>
 </div>
