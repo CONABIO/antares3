@@ -70,7 +70,7 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
     # Divide extraction in chunks to avoid blowing memory
     X_list = []
     y_list = []
-    for fc_sub in chunk(fc, 60000):
+    for fc_sub in chunk(fc, 30000):
         fc_sub = list(fc_sub)
         # Rasterize feature collection
         arr = rasterize_xarray(fc_sub, dataset)
@@ -84,6 +84,8 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
         # TODO: Use numpy.array instead of list here to reduce memory footprint (see np.vectorize)
         ids = list(df.index.values.astype('uint32') - 1)
         y_list.append(np.array([fc_sub[x]['properties'][field] for x in ids]))
+    # Deallocate array
+    dataset = None
     y = np.concatenate(y_list)
     X = np.concatenate(X_list, axis=0)
     return [X, y]
