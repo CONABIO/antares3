@@ -43,7 +43,7 @@ def calculate_zonal_statistics(array, labels, index, statistics):
 
 def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
                        categorical_variables=None):
-    """Perform extraction and grouping using xarray groupby method
+    """Perform extraction and grouping using pandas' groupby method
 
     Data are first coerced to pandas dataframe and pandas' groupby method is used
     to perform spatial aggregation
