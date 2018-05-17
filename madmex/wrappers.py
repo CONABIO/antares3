@@ -212,6 +212,9 @@ def segment(tile, algorithm, segmentation_meta,
         geoarray = GridWorkflow.load(tile[1], measurements=band_list)
         seg = Segmentation.from_geoarray(geoarray, **extra_args)
         seg.segment()
+        # Try deallocating input array
+        seg.array = None
+        geoarray = None
         seg.polygonize()
         seg.to_db(segmentation_meta)
         return True
