@@ -78,8 +78,14 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
         xr_arr = xr.DataArray(arr, dims=['y', 'x'], name='features_id')
         # Combine the Dataset with the DataArray
         combined = xr.merge([xr_arr, dataset])
+        # Get rid of everything that is np.nan in features_id variable
+        # 1: flatten, 2: delete nans
+        combined = combined.stack(z=('x', 'y')).reset_index('z').drop(['x', 'y'])
+        combined = combined.where(np.isfinite(combined['features_id']), drop=True)
         # Coerce to pandas dataframe
-        df = combined.to_dataframe().groupby('features_id').agg(agg_ordered_dict)
+        df = combined.to_dataframe()
+        combined = None
+        df = df.groupby('features_id').agg(agg_ordered_dict)
         X_list.append(df.values)
         # TODO: Use numpy.array instead of list here to reduce memory footprint (see np.vectorize)
         ids = list(df.index.values.astype('uint32') - 1)
