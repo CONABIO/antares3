@@ -39,10 +39,12 @@ class VectorDb(AntaresDb):
         crs = str(dataset.crs)
         poly = Polygon.from_geobox(geobox)
         query_set = TrainClassification.objects.filter(train_object__the_geom__contained=poly,
-                                                       training_set=training_set).prefetch_related('train_object', 'interpret_tag')
+                                                       training_set=training_set)
         if  0 < sample < 1:
             nsample = floor(query_set.count() * sample)
             query_set = query_set.order_by('?')[:nsample]
+
+        query_set = query_set.iterator(10000)
 
         fc = (train_object_to_feature(x, crs) for x in query_set)
         return fc
