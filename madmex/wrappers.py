@@ -8,6 +8,7 @@ from datacube.api import GridWorkflow
 from datacube.utils.geometry import Geometry, CRS
 from importlib import import_module
 from madmex.util.xarray import to_float
+from madmex.util import chunk
 from madmex.io.vector_db import VectorDb, load_segmentation_from_dataset
 from madmex.overlay.extractions import zonal_stats_xarray
 from madmex.modeling import BaseModel
@@ -264,9 +265,11 @@ def predict_object(tile, model_name, segmentation_name,
         def predict_object_builder(i, pred, conf):
             return PredictClassification(model_id=model_id, predict_object_id=i,
                                          tag_id=pred, confidence=conf, name=name)
-        obj_list = [predict_object_builder(i,pred,conf) for i, pred, conf in
-                    zip(y, y_pred, y_conf)]
-        PredictClassification.objects.bulk_create(obj_list)
+        # Write labels to database combining chunking and bulk_create
+        for sub_zip in chunk(zip(y, y_pred, y_conf), 10000):
+            obj_list = [predict_object_builder(i,pred,conf) for i, pred, conf in
+                        sub_zip]
+            PredictClassification.objects.bulk_create(obj_list)
         return True
     except Exception as e:
         print('Prediction failed because: %s' % e)
