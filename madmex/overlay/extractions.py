@@ -85,10 +85,10 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
         # 1: flatten, 2: delete nans
         combined = combined.stack(z=('x', 'y')).reset_index('z').drop(['x', 'y'])
         combined = combined.where(np.isfinite(combined['features_id']), drop=True)
+        combined = combined.compute()
         # Coerce to pandas dataframe
-        df = combined.to_dask_dataframe()
+        df = combined.to_dataframe()
         combined = None
-        df = df.compute()
         df = df.groupby('features_id').agg(agg_ordered_dict)
         X_list.append(df.values)
         # TODO: Use numpy.array instead of list here to reduce memory footprint (see np.vectorize)
