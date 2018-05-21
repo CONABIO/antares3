@@ -243,6 +243,9 @@ def predict_object(tile, model_name, segmentation_name,
         X, y = zonal_stats_xarray(dataset=geoarray, fc=fc, field='id',
                                   categorical_variables=categorical_variables,
                                   aggregation=aggregation)
+        # Deallocate geoarray and feature collection
+        geoarray = None
+        fc = None
         # Load model
         PredModel = BaseModel.from_db(model_name)
         model_id = Model.objects.get(name=model_name).id
@@ -254,6 +257,9 @@ def predict_object(tile, model_name, segmentation_name,
         # Run prediction
         y_pred = PredModel.predict(X)
         y_conf = PredModel.predict_confidence(X)
+        # Deallocate arrays of extracted values and model
+        X = None
+        PredModel = None
         # Build list of PredictClassification objects
         def predict_object_builder(i, pred, conf):
             return PredictClassification(model_id=model_id, predict_object_id=i,
