@@ -18,6 +18,22 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+def write_to_file(fc, filename):
+    # Define output file schema
+    schema = {'geometry': 'MultiPolygon',
+                  'properties': {'class':'str', 'code':'int'}}
+
+    # Write to file
+    logger.info('Writing feature collection to file')
+    crs = from_string('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+    with fiona.open(filename, 'w',
+                        encoding='utf-8',
+                        schema=schema,
+                        driver='ESRI Shapefile',
+                        crs=crs) as dst:
+        write = dst.write
+        [write(feature) for feature in fc]
+
 class Command(AntaresBaseCommand):
     help = """
 Query the result of a classification and write the results to a vector file on disk
@@ -57,7 +73,7 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
             geometry = json.loads(x.predict_object.the_geom.geojson)
             feature = {'type': 'feature',
                        'geometry': geometry,
-                       'properties': {'class': x.tag.value}}
+                       'properties': {'class': x.tag.value, 'code': x.tag.numeric_code}}
             return feature
 
         # Query country or region contour
@@ -71,22 +87,10 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         qs = PredictClassification.objects.filter(name=name)
         qs = qs.filter(predict_object__the_geom__intersects=region).prefetch_related('predict_object', 'tag')
 
-        # COnvert query set to feature collection generator
+        # Convert query set to feature collection generator
         logger.info('Generating feature collection')
         fc = (to_fc(x) for x in qs)
+        write_to_file(fc, filename)
 
-        # Define output file schema
-        schema = {'geometry': 'MultiPolygon',
-                  'properties': [('class', 'str')]}
-
-        # Write to file
-        logger.info('Writing feature collection to file')
-        crs = from_string('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
-        with fiona.open(filename, 'w',
-                        schema=schema,
-                        driver='ESRI Shapefile',
-                        crs=crs) as dst:
-            for feature in fc:
-                dst.write(feature)
 
 

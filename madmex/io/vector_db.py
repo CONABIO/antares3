@@ -44,7 +44,7 @@ class VectorDb(AntaresDb):
             nsample = floor(query_set.count() * sample)
             query_set = query_set.order_by('?')[:nsample]
 
-        fc = [train_object_to_feature(x, crs) for x in query_set]
+        fc = (train_object_to_feature(x, crs) for x in query_set)
         return fc
 
 def load_segmentation_from_dataset(geoarray, segmentation_name):
