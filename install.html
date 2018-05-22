@@ -221,8 +221,6 @@ aws ec2 associate-address --instance-id <span class="nv">$INSTANCE_ID</span> --a
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Name,Value<span class="o">=</span><span class="nv">$name_instance</span>-<span class="nv">$PUBLIC_IP</span> --region<span class="o">=</span><span class="nv">$region</span>
 <span class="c1">##Execute bash script create-dask-sge-queue already created on Dependencies-Cloud Deployment</span>
 bash <span class="nv">$mount_point</span>/create-dask-sge-queue.sh <span class="nv">$queue_name</span> <span class="nv">$slots</span>
-<span class="c1">##Create symbolic link to configuration files for datacube</span>
-ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/ubuntu/.datacube.conf
 </pre></div>
 </div>
 <p><strong>Restart gridengine-exec on nodes and install OpenDataCube and Antares3</strong></p>
@@ -239,6 +237,8 @@ mount -t nfs4 -o <span class="nv">nfsvers</span><span class="o">=</span><span cl
 su ubuntu -c <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
 <span class="c1">##Create symbolic link to configuration files for antares3</span>
 ln -sf <span class="nv">$mount_point</span>/.antares /home/ubuntu/.antares
+<span class="c1">##Create symbolic link to configuration files for datacube in all instances</span>
+ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/ubuntu/.datacube.conf
 <span class="c1">##Uncomment next line if you want to init antares (previously installed)</span>
 <span class="c1">#su ubuntu -c &quot;/home/ubuntu/.local/bin/antares init&quot;</span>
 </pre></div>

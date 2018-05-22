@@ -171,6 +171,7 @@
 <span class="kn">from</span> <span class="nn">datacube.utils.geometry</span> <span class="k">import</span> <span class="n">Geometry</span><span class="p">,</span> <span class="n">CRS</span>
 <span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
 <span class="kn">from</span> <span class="nn">madmex.util.xarray</span> <span class="k">import</span> <span class="n">to_float</span>
+<span class="kn">from</span> <span class="nn">madmex.util</span> <span class="k">import</span> <span class="n">chunk</span>
 <span class="kn">from</span> <span class="nn">madmex.io.vector_db</span> <span class="k">import</span> <span class="n">VectorDb</span><span class="p">,</span> <span class="n">load_segmentation_from_dataset</span>
 <span class="kn">from</span> <span class="nn">madmex.overlay.extractions</span> <span class="k">import</span> <span class="n">zonal_stats_xarray</span>
 <span class="kn">from</span> <span class="nn">madmex.modeling</span> <span class="k">import</span> <span class="n">BaseModel</span>
@@ -375,6 +376,9 @@
         <span class="n">geoarray</span> <span class="o">=</span> <span class="n">GridWorkflow</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tile</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">measurements</span><span class="o">=</span><span class="n">band_list</span><span class="p">)</span>
         <span class="n">seg</span> <span class="o">=</span> <span class="n">Segmentation</span><span class="o">.</span><span class="n">from_geoarray</span><span class="p">(</span><span class="n">geoarray</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_args</span><span class="p">)</span>
         <span class="n">seg</span><span class="o">.</span><span class="n">segment</span><span class="p">()</span>
+        <span class="c1"># Try deallocating input array</span>
+        <span class="n">seg</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">geoarray</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">seg</span><span class="o">.</span><span class="n">polygonize</span><span class="p">()</span>
         <span class="n">seg</span><span class="o">.</span><span class="n">to_db</span><span class="p">(</span><span class="n">segmentation_meta</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -403,6 +407,9 @@
         <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">zonal_stats_xarray</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">geoarray</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="n">fc</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">,</span>
                                   <span class="n">categorical_variables</span><span class="o">=</span><span class="n">categorical_variables</span><span class="p">,</span>
                                   <span class="n">aggregation</span><span class="o">=</span><span class="n">aggregation</span><span class="p">)</span>
+        <span class="c1"># Deallocate geoarray and feature collection</span>
+        <span class="n">geoarray</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">fc</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Load model</span>
         <span class="n">PredModel</span> <span class="o">=</span> <span class="n">BaseModel</span><span class="o">.</span><span class="n">from_db</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
         <span class="n">model_id</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">id</span>
@@ -414,13 +421,18 @@
         <span class="c1"># Run prediction</span>
         <span class="n">y_pred</span> <span class="o">=</span> <span class="n">PredModel</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="n">y_conf</span> <span class="o">=</span> <span class="n">PredModel</span><span class="o">.</span><span class="n">predict_confidence</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="c1"># Deallocate arrays of extracted values and model</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">PredModel</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Build list of PredictClassification objects</span>
         <span class="k">def</span> <span class="nf">predict_object_builder</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">PredictClassification</span><span class="p">(</span><span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span> <span class="n">predict_object_id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
                                          <span class="n">tag_id</span><span class="o">=</span><span class="n">pred</span><span class="p">,</span> <span class="n">confidence</span><span class="o">=</span><span class="n">conf</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">obj_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">predict_object_builder</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">pred</span><span class="p">,</span><span class="n">conf</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">conf</span> <span class="ow">in</span>
-                    <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_conf</span><span class="p">)]</span>
-        <span class="n">PredictClassification</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">bulk_create</span><span class="p">(</span><span class="n">obj_list</span><span class="p">)</span>
+        <span class="c1"># Write labels to database combining chunking and bulk_create</span>
+        <span class="k">for</span> <span class="n">sub_zip</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_conf</span><span class="p">),</span> <span class="mi">10000</span><span class="p">):</span>
+            <span class="n">obj_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">predict_object_builder</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">pred</span><span class="p">,</span><span class="n">conf</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">conf</span> <span class="ow">in</span>
+                        <span class="n">sub_zip</span><span class="p">]</span>
+            <span class="n">PredictClassification</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">bulk_create</span><span class="p">(</span><span class="n">obj_list</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Prediction failed because: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>

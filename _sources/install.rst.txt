@@ -65,8 +65,6 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
     ##Execute bash script create-dask-sge-queue already created on Dependencies-Cloud Deployment
     bash $mount_point/create-dask-sge-queue.sh $queue_name $slots
-    ##Create symbolic link to configuration files for datacube
-    ln -sf $mount_point/.datacube.conf /home/ubuntu/.datacube.conf
 
    
 **Restart gridengine-exec on nodes and install OpenDataCube and Antares3**
@@ -89,6 +87,8 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
     su ubuntu -c "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop"
     ##Create symbolic link to configuration files for antares3
     ln -sf $mount_point/.antares /home/ubuntu/.antares
+    ##Create symbolic link to configuration files for datacube in all instances
+    ln -sf $mount_point/.datacube.conf /home/ubuntu/.datacube.conf
     ##Uncomment next line if you want to init antares (previously installed)
     #su ubuntu -c "/home/ubuntu/.local/bin/antares init"
 
