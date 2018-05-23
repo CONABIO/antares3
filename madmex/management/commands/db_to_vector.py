@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 def write_to_file(fc, filename, layer, driver):
     # Define output file schema
-    schema = {'geometry': 'MultiPolygon',
+    schema = {'geometry': 'Polygon',
               'properties': {'class':'str',
                              'code':'int'}}
 
