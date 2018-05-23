@@ -8,10 +8,11 @@ import logging
 import os
 import struct
 from xml.dom.minidom import parse
+import pkg_resources as pr
 
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import Tag
-from madmex.settings import BASE_DIR, TEMP_DIR
+from madmex.settings import TEMP_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ antares generate_style madmex --filename madmex.qml
 
         queryset = Tag.objects.filter(scheme=scheme)
         if queryset.count() > 0:
-            template_directory = os.path.join(BASE_DIR, 'madmex/templates')
+            template_directory = pr.resource_filename('madmex', 'templates')
             template = os.path.join(template_directory,'vector_style_template.qml')
             xml_tree = parse(template)
             categories = xml_tree.getElementsByTagName('categories')[0]
