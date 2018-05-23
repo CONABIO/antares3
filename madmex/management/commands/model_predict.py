@@ -74,6 +74,7 @@ antares model_predict --region Jalisco -p landsat_madmex_001_jalisco_2017_2 -id 
 
         # Start cluster and run 
         client = Client()
+        client.restart()
         C = client.map(predict_pixel_tile,
                        iterable, **{'model_id': model_id,
                                     'outdir': out_dir})

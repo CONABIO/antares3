@@ -146,6 +146,7 @@ To consult the exposed arguments for each model, use the "model_params" command 
 
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
+        client.restart()
         C = client.map(extract_tile_db,
                        iterable,
                        pure=False,

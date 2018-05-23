@@ -109,6 +109,7 @@ antares apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-12-31 --r
 
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
+        client.restart()
         C = client.map(fun, iterable,
                        pure=False,
                        **{'center_dt': center_dt,

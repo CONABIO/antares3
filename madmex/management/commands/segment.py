@@ -115,6 +115,7 @@ using the antares segment_params command line''')
 
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
+        client.restart()
         C = client.map(segment,
                        iterable,
                        pure=False,
