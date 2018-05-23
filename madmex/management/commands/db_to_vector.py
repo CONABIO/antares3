@@ -18,32 +18,36 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def write_to_file(fc, filename):
+def write_to_file(fc, filename, layer, driver):
     # Define output file schema
     schema = {'geometry': 'MultiPolygon',
-                  'properties': {'class':'str', 'code':'int'}}
+              'properties': {'class':'str',
+                             'code':'int'}}
 
     # Write to file
     logger.info('Writing feature collection to file')
     crs = from_string('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
     with fiona.open(filename, 'w',
-                        encoding='utf-8',
-                        schema=schema,
-                        driver='ESRI Shapefile',
-                        crs=crs) as dst:
+                    encoding='utf-8',
+                    schema=schema,
+                    driver=driver,
+                    layer=layer,
+                    crs=crs) as dst:
         write = dst.write
         [write(feature) for feature in fc]
 
 class Command(AntaresBaseCommand):
     help = """
 Query the result of a classification and write the results to a vector file on disk
-Only supports ESRI Shapefile for now.
 
 --------------
 Example usage:
 --------------
-# Query classification performed for the state of Jalisco
+# Query classification performed for the state of Jalisco and write it to ESRI Shapfile
 antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --filename Jalisco_s2.shp
+
+# Query classification performed for the state of Jalisco and write it to Geopackage
+antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --filename madmex_mexico.shp --layer Jalisco --driver GPKG
 """
     def add_arguments(self, parser):
         parser.add_argument('-n', '--name',
@@ -60,13 +64,23 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         parser.add_argument('-f', '--filename',
                             type=str,
                             default=None,
-                            help='Name of the output filename')
+                            help='Name of the output filename. Can be an existing file if --layer is specified and the driver used support multiple layers')
+        parser.add_argument('-l', '--layer',
+                            type=str,
+                            default=None,
+                            help='Name of the layer (only for drivers that support multi-layer files)')
+        parser.add_argument('-d', '--driver',
+                            type=str,
+                            default='ESRI Shapefile',
+                            help='OGR driver to use for writting the data to file. Defaults to ESRI Shapefile')
 
 
     def handle(self, *args, **options):
         name = options['name']
         region = options['region']
         filename = options['filename']
+        layer = options['layer']
+        driver = options['driver']
 
         # Define function to convert query set object to feature
         def to_fc(x):
@@ -90,7 +104,7 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         # Convert query set to feature collection generator
         logger.info('Generating feature collection')
         fc = (to_fc(x) for x in qs)
-        write_to_file(fc, filename)
+        write_to_file(fc, filename, layer=layer, driver=driver)
 
 
 
