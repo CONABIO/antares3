@@ -93,15 +93,16 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
                 results= data.get('results')
                 if results:
                     for scene in results:
-                        
                         coords = tuple(point_from_object(scene.get(coord)) for coord in ['lowerLeftCoordinate', 'upperLeftCoordinate', 'upperRightCoordinate', 'lowerRightCoordinate', 'lowerLeftCoordinate'])
                         scene_extent = Polygon(coords)
                         entity_id = scene.get('displayId')
                         # we use the same regular expression that espa uses to filter the names that are valid; otherwise, the order throws an error
                         if scene_extent.intersects(shape_object.the_geom) and re.match(collection_regex, entity_id.lower()):
                             interest.append(entity_id)
-                            footprint = Footprint(name=entity_id, the_geom=scene_extent)
-                            footprint.save()
+                            footprint, _ = Footprint.objects.get_or_create(
+                                name=entity_id,
+                                the_geom=scene_extent
+                            )
             print(json.dumps(interest, indent=4))
             data = espa_client.order(collection_espa, interest, products)
             if data.get('status') == 'ordered':
