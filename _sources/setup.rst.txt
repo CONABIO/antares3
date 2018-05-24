@@ -103,7 +103,7 @@ It's assumed that a Cluster is already configured and variable ``mount_point`` i
 Open DataCube
 ^^^^^^^^^^^^^
 
-Log in to an instance of `Auto Scaling Groups`_ configured in `Dependencies-Cloud Deployment`_ in step 2, create on that instance the configuration file for ``datacube`` and execute:
+Log in to an instance of `Auto Scaling Groups`_ configured in `Dependencies-Cloud Deployment`_ in step 2, create on the ``$mount_point/.datacube.conf`` file the datacube configuration file and execute:
 
 .. attention:: 
 
