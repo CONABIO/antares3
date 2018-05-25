@@ -46,6 +46,8 @@ storage:
       time: 10
   dimension_order: ['time', 'y', 'x']
 
+fuse_data: copy
+
 measurements:
     - name: blue
       dtype: int16
