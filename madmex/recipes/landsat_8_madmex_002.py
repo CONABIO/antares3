@@ -39,7 +39,6 @@ def run(tile, center_dt, path):
         if os.path.isfile(nc_filename):
             raise ValueError('%s already exist' % nc_filename)
         sr_0 = GridWorkflow.load(tile[1], dask_chunks={'x': 1000, 'y': 1000})
-        sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
         # Load terrain metrics using same spatial parameters than sr
         dc = datacube.Datacube(app = 'landsat_madmex_001_%s' % randomword(5))
         terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
@@ -51,6 +50,7 @@ def run(tile, center_dt, path):
                                   snow=False)
         sr_1 = sr_0.where(clear)
         sr_1 = sr_1.drop('pixel_qa')
+        sr_1 = sr_1.apply(func=to_float, keep_attrs=True)
         # Compute vegetation indices
         sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
         sr_1['ndvi'].attrs['nodata'] = -9999
