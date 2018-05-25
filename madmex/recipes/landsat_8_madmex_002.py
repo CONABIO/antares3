@@ -38,12 +38,15 @@ def run(tile, center_dt, path):
         # Load Landsat sr
         if os.path.isfile(nc_filename):
             raise ValueError('%s already exist' % nc_filename)
-        sr_0 = GridWorkflow.load(tile[1], dask_chunks={'x': 1000, 'y': 1000})
+        sr_0 = GridWorkflow.load(tile[1],
+                                 dask_chunks={'x': 1667, 'y': 1667},
+                                )
         # Load terrain metrics using same spatial parameters than sr
         dc = datacube.Datacube(app = 'landsat_madmex_001_%s' % randomword(5))
         terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
                           time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
-                          dask_chunks={'x': 1000, 'y': 1000})
+                          dask_chunks={'x': 1667, 'y': 1667},
+                         )
         dc.close()
         # Mask clouds, shadow, water, ice,... and drop qa layer
         clear = masking.make_mask(sr_0.pixel_qa, cloud=False, cloud_shadow=False,
