@@ -60,7 +60,7 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
         end_date = options['end_date'][0]
         landsat = int(options['landsat'][0])
         shape_name = options['shape'][0]
-        cloud_cover = options['max-cloud-cover']
+        cloud_cover = options['max_cloud_cover']
 
         espa_client = EspaApi()
 
