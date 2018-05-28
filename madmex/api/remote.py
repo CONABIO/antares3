@@ -80,7 +80,7 @@ class UsgsApi():
             return False
         return True
     
-    def search(self, extent, collection, node='EE', start_date=None, end_date=None, starting_number=1, max_results=50000):
+    def search(self, extent, collection, node='EE', start_date=None, end_date=None, starting_number=1, max_results=50000, max_cloud_cover=100):
         '''Queries the USGS api for images in a given extent.
 
         This service requires to be logged into USGS. It is limited to an extent of interest which
@@ -99,7 +99,7 @@ class UsgsApi():
             end_date: The end date for the temporal window in a format yyyy-mm-dd.
             starting_number: An int representing where the query should start.
             max_results: The maximum number of scenes that the request will return.
-
+            max_cloud_cover: Limit results by maximum cloud cover between 0-100.
         Returns:
             The response from the service.
         '''
@@ -125,6 +125,9 @@ class UsgsApi():
 
             if max_results:
                 data['maxResults'] = max_results
+                
+            if max_cloud_cover:
+                data['maxCloudCover'] = max_cloud_cover
 
             if starting_number:
                 data['startingNumber'] = starting_number
