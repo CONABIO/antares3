@@ -41,6 +41,11 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
         parser.add_argument('--start-date', nargs=1, help='Date to start the query, inclusive.')
         parser.add_argument('--end-date', nargs=1, help='Date to end the query, inclusive.')
         parser.add_argument('--landsat', nargs=1, help='Landsat mission.')
+        parser.add_argument('--max-cloud-cover', 
+                            nargs=1,
+                            type=int,
+                            default=100, 
+                            help='Maximum amount of cloud cover.')
 
     def handle(self, **options):
         '''This method takes a given shape names and queries the usgs api for available scenes.
@@ -55,6 +60,7 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
         end_date = options['end_date'][0]
         landsat = int(options['landsat'][0])
         shape_name = options['shape'][0]
+        cloud_cover = options['max-cloud-cover'][0]
 
         espa_client = EspaApi()
 
@@ -85,7 +91,7 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
                 collection_espa = 'tm5_collection'
                 collection_regex = '^lt05_{1}\\w{4}_{1}[0-9]{6}_{1}[0-9]{8}_{1}[0-9]{8}_{1}[0-9]{2}_{1}\\w{2}$'
 
-            data = usgs_client.search(extent, collection_usgs, start_date=start_date, end_date=end_date).get('data')
+            data = usgs_client.search(extent, collection_usgs, start_date=start_date, end_date=end_date, max_cloud_cover=cloud_cover).get('data')
 
             products = ['sr', 'pixel_qa']
             interest = []
