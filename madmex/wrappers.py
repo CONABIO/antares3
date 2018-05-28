@@ -3,6 +3,7 @@ import numpy as np
 import os
 import json
 from datetime import datetime
+import gc
 import datacube
 from datacube.api import GridWorkflow
 from datacube.utils.geometry import Geometry, CRS
@@ -261,6 +262,7 @@ def predict_object(tile, model_name, segmentation_name,
         # Deallocate arrays of extracted values and model
         X = None
         PredModel = None
+        gc.collect()
         # Build list of PredictClassification objects
         def predict_object_builder(i, pred, conf):
             return PredictClassification(model_id=model_id, predict_object_id=i,
@@ -270,6 +272,7 @@ def predict_object(tile, model_name, segmentation_name,
             obj_list = [predict_object_builder(i,pred,conf) for i, pred, conf in
                         sub_zip]
             PredictClassification.objects.bulk_create(obj_list)
+            gc.collect()
         return True
     except Exception as e:
         print('Prediction failed because: %s' % e)

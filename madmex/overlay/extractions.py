@@ -6,6 +6,7 @@ Created on Jan 31, 2018
 from importlib import import_module
 import logging
 from collections import OrderedDict
+import gc
 
 import numpy as np
 import xarray as xr
@@ -91,8 +92,10 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
         ids = list(df.index.values.astype('uint32') - 1)
         df = None
         y_list.append(np.array([fc_sub[x]['properties'][field] for x in ids]))
+        gc.collect()
     # Deallocate array
     dataset = None
     y = np.concatenate(y_list)
     X = np.concatenate(X_list, axis=0)
+    gc.collect()
     return [X, y]
