@@ -8,8 +8,8 @@ Purpose: Query the result of a classification and write the results to a vector
 """
 from madmex.management.base import AntaresBaseCommand
 
-from madmex.util import pprint_args
 from madmex.models import Country, Region, PredictClassification
+from madmex.util.spatial import feature_transform
 
 import fiona
 from fiona.crs import from_string
@@ -48,6 +48,9 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
 
 # Query classification performed for the state of Jalisco and write it to Geopackage
 antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --filename madmex_mexico.shp --layer Jalisco --driver GPKG
+
+# With reprojection
+antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --filename Jalisco_s2.shp --proj4 '+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs'
 """
     def add_arguments(self, parser):
         parser.add_argument('-n', '--name',
@@ -73,6 +76,10 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                             type=str,
                             default='ESRI Shapefile',
                             help='OGR driver to use for writting the data to file. Defaults to ESRI Shapefile')
+        parser.add_argument('-p', '--proj4',
+                            type=str,
+                            default=None,
+                            help='Optional proj4 string defining the output projection')
 
 
     def handle(self, *args, **options):
@@ -81,6 +88,7 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         filename = options['filename']
         layer = options['layer']
         driver = options['driver']
+        proj4 = options['proj4']
 
         # Define function to convert query set object to feature
         def to_fc(x):
@@ -104,6 +112,8 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         # Convert query set to feature collection generator
         logger.info('Generating feature collection')
         fc = (to_fc(x) for x in qs)
+        if proj4 is not None:
+            fc = (feature_transform(x, crs_out=proj4) for x in fc)
         write_to_file(fc, filename, layer=layer, driver=driver)
 
 
