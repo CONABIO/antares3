@@ -66,7 +66,7 @@ antares generate_style madmex --type vector --filename madmex.qml
                         new_category = xml_tree.createElement('category')
                         new_category.setAttribute('render', 'true')
                         new_category.setAttribute('symbol', str(tag.numeric_code))
-                        new_category.setAttribute('value', tag.value)
+                        new_category.setAttribute('value', str(tag.numeric_code))
                         new_category.setAttribute('label', tag.value)
                         categories.appendChild(new_category )
     
