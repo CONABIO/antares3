@@ -243,7 +243,7 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
     
-    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="s1">&#39;EE&#39;</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">starting_number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_results</span><span class="o">=</span><span class="mi">50000</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="s1">&#39;EE&#39;</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">starting_number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_results</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span> <span class="n">max_cloud_cover</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Queries the USGS api for images in a given extent.</span>
 
 <span class="sd">        This service requires to be logged into USGS. It is limited to an extent of interest which</span>
@@ -262,7 +262,7 @@
 <span class="sd">            end_date: The end date for the temporal window in a format yyyy-mm-dd.</span>
 <span class="sd">            starting_number: An int representing where the query should start.</span>
 <span class="sd">            max_results: The maximum number of scenes that the request will return.</span>
-
+<span class="sd">            max_cloud_cover: Limit results by maximum cloud cover between 0-100.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            The response from the service.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -288,6 +288,9 @@
 
             <span class="k">if</span> <span class="n">max_results</span><span class="p">:</span>
                 <span class="n">data</span><span class="p">[</span><span class="s1">&#39;maxResults&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_results</span>
+                
+            <span class="k">if</span> <span class="n">max_cloud_cover</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;maxCloudCover&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_cloud_cover</span>
 
             <span class="k">if</span> <span class="n">starting_number</span><span class="p">:</span>
                 <span class="n">data</span><span class="p">[</span><span class="s1">&#39;startingNumber&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">starting_number</span>

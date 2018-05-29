@@ -167,7 +167,7 @@ The following bash script can be used in **User data** configuration of the inst
     #dependencies for antares3 & datacube
     pip3 install numpy && pip3 install cloudpickle && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0a12 --no-binary rasterio && pip3 install scipy
     pip3 install sklearn
-    pip3 install lightbm
+    pip3 install lightgbm
     pip3 install fiona --no-binary fiona
     pip3 install django
     #datacube:

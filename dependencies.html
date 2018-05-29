@@ -313,7 +313,7 @@ mkdir -p /home/ubuntu/git <span class="o">&amp;&amp;</span> mkdir -p /home/ubunt
 <span class="c1">#dependencies for antares3 &amp; datacube</span>
 pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install cloudpickle <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span>.0a12 --no-binary rasterio <span class="o">&amp;&amp;</span> pip3 install scipy
 pip3 install sklearn
-pip3 install lightbm
+pip3 install lightgbm
 pip3 install fiona --no-binary fiona
 pip3 install django
 <span class="c1">#datacube:</span>
