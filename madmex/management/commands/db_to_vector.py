@@ -18,7 +18,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def write_to_file(fc, filename, layer, driver):
+def write_to_file(fc, filename, layer, driver, crs):
     # Define output file schema
     schema = {'geometry': 'Polygon',
               'properties': {'class':'str',
@@ -26,7 +26,7 @@ def write_to_file(fc, filename, layer, driver):
 
     # Write to file
     logger.info('Writing feature collection to file')
-    crs = from_string('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+    crs = from_string(crs)
     with fiona.open(filename, 'w',
                     encoding='utf-8',
                     schema=schema,
@@ -112,9 +112,12 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         # Convert query set to feature collection generator
         logger.info('Generating feature collection')
         fc = (to_fc(x) for x in qs)
+        crs = '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'
         if proj4 is not None:
             fc = (feature_transform(x, crs_out=proj4) for x in fc)
-        write_to_file(fc, filename, layer=layer, driver=driver)
+            crs = proj4
+
+        write_to_file(fc, filename, layer=layer, driver=driver, crs=crs)
 
 
 
