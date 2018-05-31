@@ -37,7 +37,7 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
 
 .. note:: 
 
-    Modify variables ``eip``, ``name_instance``, ``efs_dns``, ``queue_name`` and ``slots`` with your own configuration.  Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example.
+    Modify variables ``eip``, ``name_instance``, ``efs_dns``, ``queue_name`` and ``slots`` with your own configuration.  Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example. In this example the instances have two cores each of them.
 
 .. code-block:: bash
 
@@ -49,16 +49,17 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
     efs_dns=<DNS name of EFS>
     ##Name of the queue that will be used by dask-scheduler and dask-workers
     queue_name=dask-queue.q
-    ##We use one slot for every instance
-    slots=1
+    ##Change number of slots to use for every instance, in this example the instances have 2 slots each of them
+    slots=2
     region=$region
     type_value=$type_value
     ##Mount shared volume
     mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 $efs_dns:/ $mount_point
+    mkdir -p $mount_point/datacube/datacube_ingest
     ##Tag instance
     INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
     PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-    ##Assing elastic IP where this bash script is executed
+    ##Assining elastic IP where this bash script is executed
     aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $eip --region $region
     ##Tag instance where this bash script is executed
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
@@ -83,7 +84,14 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
     echo $master_dns > /var/lib/gridengine/default/common/act_qmaster
     /etc/init.d/gridengine-exec restart
     ##Install open datacube and antares3
-    /bin/bash -c "alias python=python3 && pip3 install git+https://github.com/CONABIO/datacube-core.git@develop && cd /home/ubuntu/git/antares3 && pip3 install -e ."
+    su ubuntu -c "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop"
+    ##Create symbolic link to configuration files for antares3
+    ln -sf $mount_point/.antares /home/ubuntu/.antares
+    ##Create symbolic link to configuration files for datacube in all instances
+    ln -sf $mount_point/.datacube.conf /home/ubuntu/.datacube.conf
+    ##Uncomment next line if you want to init antares (previously installed)
+    #su ubuntu -c "/home/ubuntu/.local/bin/antares init"
+
 
 
 **Run SGE commands to init cluster.**
@@ -95,12 +103,18 @@ Login to master node and execute:
     # Start dask-scheduler on master node. The file scheduler.json will be created on $mount_point (shared_volume) of EFS
     qsub -b y -l h=$HOSTNAME dask-scheduler --scheduler-file $mount_point/scheduler.json
 
+The master node have two cores, one is used for dask-scheduler, the other core can be used as a dask-worker:
+
+.. code-block:: bash
+
+    qsub -b y -l h=$HOSTNAME dask-worker --nthreads 1 --scheduler-file $mount_point/scheduler.json
+
 If your group of autoscaling has 3 nodes, then execute:
 
 .. code-block:: bash
 
-    # Start 2 dask-worker processes in an array job pointing to the same file
-    qsub -b y -t 1-2 dask-worker --scheduler-file $mount_point/scheduler.json
+    # Start 6 (=3 nodes x 2 cores each node) dask-worker processes in an array job pointing to the same file
+    qsub -b y -t 1-6 dask-worker --nthreads 1 --scheduler-file $mount_point/scheduler.json
 
 You can view the web SGE on the page:
 

@@ -34,7 +34,10 @@ antares download_order
             logger.info(order.order_id)
             payload = client.get_list_order(order.order_id)
             for image in payload[order.order_id]:
-                logger.info('Download %s' % image['product_dload_url'])
-                aware_download(image['product_dload_url'], TEMP_DIR)
+                if image['product_dload_url']:
+                    logger.info('Download %s' % image['product_dload_url'])
+                    aware_download(image['product_dload_url'], TEMP_DIR)
+                else:
+                    logger.info('Skipping bad file')
             order.downloaded = True
             order.save()

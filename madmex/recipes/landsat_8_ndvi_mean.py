@@ -2,6 +2,7 @@ import os
 import datacube
 from datacube.storage.storage import write_dataset_to_netcdf
 from datacube.storage import masking
+from datacube.api import GridWorkflow
 import xarray as xr
 import numpy as np
 import dask
@@ -14,7 +15,7 @@ from datetime import datetime
 import logging
 logger = logging.getLogger(__name__)
 
-def run(tile, gwf, center_dt, path):
+def run(tile, center_dt, path):
     """Basic datapreparation recipe 001
 
     Computes mean NDVI for a landsat collection over a given time frame
@@ -22,8 +23,6 @@ def run(tile, gwf, center_dt, path):
     Args:
         tile (tuple): Tuple of (tile indices, Tile object). Tile object can be
             loaded as xarray.Dataset using gwf.load()
-        gwf (GridWorkflow): GridWorkflow object instantiated with the corresponding
-            product
         center_dt (datetime): Date to be used in making the filename
         path (str): Directory where files generated are to be written
 
@@ -34,9 +33,10 @@ def run(tile, gwf, center_dt, path):
         center_dt = center_dt.strftime("%Y-%m-%d")
         nc_filename = os.path.join(path, 'ndvi_mean_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         if os.path.isfile(nc_filename):
-            raise ValueError('%s already exist' % nc_filename)
+            logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
+            return nc_filename
         # Load Landsat sr
-        sr = gwf.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
+        sr = GridWorkflow.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
         # Compute ndvi
         sr['ndvi'] = (sr.nir - sr.red) / (sr.nir + sr.red) * 10000
         clear = masking.make_mask(sr.pixel_qa, clear=True)

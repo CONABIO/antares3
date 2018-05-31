@@ -4,10 +4,10 @@ Created on Dec 12, 2017
 @author: agutierrez
 '''
 
-from distutils.dir_util import copy_tree
 from glob import glob
 import logging
 import os
+import shutil
 
 from django.core.management import call_command
 
@@ -16,6 +16,8 @@ from madmex.models import ingest_countries_from_shape, ingest_states_from_shape
 from madmex.settings import TEMP_DIR, BIS_LICENSE
 from madmex.util.local import aware_download, extract_zip, aware_make_dir, \
     filter_files_from_folder
+from madmex.util import fill_and_copy
+from madmex.settings import INGESTION_PATH
 import pkg_resources as pr
 
 
@@ -91,11 +93,28 @@ antares init -c mex gtm
 
         # Move config files from package to standard system location
         if conf_setup:
-            dir_out = os.path.expanduser('~/.config/madmex')
-            if not os.path.exists(dir_out):
-                os.makedirs(dir_out)
+            system_config_dir = os.path.expanduser('~/.config/madmex')
+            if not os.path.exists(system_config_dir):
+                os.makedirs(system_config_dir)
+            # INdexing conf files destination
+            system_index_dir = os.path.join(system_config_dir, 'indexing')
+            if not os.path.exists(system_index_dir):
+                os.makedirs(system_index_dir)
+            # Ingestion conf files destination
+            system_ingest_dir = os.path.join(system_config_dir, 'ingestion')
+            if not os.path.exists(system_ingest_dir):
+                os.makedirs(system_ingest_dir)
+            # Origin root
             conf_dir = pr.resource_filename('madmex', 'conf')
-            copy_tree(conf_dir, dir_out)
+            indexing_origin_dir = os.path.join(conf_dir, 'indexing')
+            ingestion_origin_dir = os.path.join(conf_dir, 'ingestion')
+            # Copy indexing conf files
+            for f in glob(os.path.join(indexing_origin_dir, '*.yaml')):
+                shutil.copy2(f, system_index_dir)
+            # Template and copy ingestion files
+            for f in glob(os.path.join(ingestion_origin_dir, '*.yaml')):
+                fill_and_copy(template=f, out_dir=system_ingest_dir,
+                              ingestion_path=INGESTION_PATH)
 
         # Setup bis license
         bis_module = pr.resource_filename('madmex', 'bin/bis')

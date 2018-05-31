@@ -3,11 +3,13 @@ import numpy as np
 import os
 import json
 from datetime import datetime
+import gc
 import datacube
 from datacube.api import GridWorkflow
 from datacube.utils.geometry import Geometry, CRS
 from importlib import import_module
 from madmex.util.xarray import to_float
+from madmex.util import chunk
 from madmex.io.vector_db import VectorDb, load_segmentation_from_dataset
 from madmex.overlay.extractions import zonal_stats_xarray
 from madmex.modeling import BaseModel
@@ -19,7 +21,7 @@ The wrapper module gathers functions that are typically called by
 command lines
 """
 
-def predict_pixel_tile(tile, gwf, model_id, outdir=None):
+def predict_pixel_tile(tile, model_id, outdir=None):
     """Run a model in prediction mode and generates a raster file written to disk
 
     Meant to be called within a dask.distributed.Cluster.map() over a list of tiles
@@ -28,7 +30,6 @@ def predict_pixel_tile(tile, gwf, model_id, outdir=None):
 
     Args:
         tile: Datacube tile as returned by GridWorkflow.list_cells()
-        gwf: GridWorkflow object
         model_id (str): Database identifier of trained model to use. The model
             must have been trained against a numeric dependent variable.
             (See --encode flag in model_fit command line)
@@ -54,7 +55,7 @@ def predict_pixel_tile(tile, gwf, model_id, outdir=None):
         # Generate filename
         filename = os.path.join(outdir, 'prediction_%s_%d_%d.tif' % (model_id, tile[0][0], tile[0][1]))
         # Load tile
-        xr_dataset = gwf.load(tile[1])
+        xr_dataset = GridWorkflow.load(tile[1])
         # Convert it to float?
         # xr_dataset = xr_dataset.apply(func=to_float, keep_attrs=True)
         # Transform file to nd array
@@ -90,7 +91,7 @@ def predict_pixel_tile(tile, gwf, model_id, outdir=None):
         return None
 
 
-def extract_tile_db(tile, gwf, sp, training_set, sample):
+def extract_tile_db(tile, sp, training_set, sample):
     """Function to extract data under training geometries for a given tile
 
     Meant to be called within a dask.distributed.Cluster.map() over a list of tiles
@@ -99,7 +100,6 @@ def extract_tile_db(tile, gwf, sp, training_set, sample):
 
     Args:
         tile: Datacube tile as returned by GridWorkflow.list_cells()
-        gwf: GridWorkflow object
         sp: Spatial aggregation function
         training_set (str): Training data identifier (training_set field)
         sample (float): Proportion of training data to sample from the complete set
@@ -109,7 +109,7 @@ def extract_tile_db(tile, gwf, sp, training_set, sample):
     """
     try:
         # Load tile as Dataset
-        xr_dataset = gwf.load(tile[1])
+        xr_dataset = GridWorkflow.load(tile[1])
         # Query the training geometries fitting into the extent of xr_dataset
         db = VectorDb()
         fc = db.load_training_from_dataset(xr_dataset,
@@ -118,6 +118,8 @@ def extract_tile_db(tile, gwf, sp, training_set, sample):
         # fc is a feature collection with one property (class)
         # Overlay geometries and xr_dataset and perform extraction combined with spatial aggregation
         extract = zonal_stats_xarray(xr_dataset, fc, field='class', aggregation=sp)
+        fc = None
+        gc.collect()
         # Return the extracted array (or a list of two arrays?)
         return extract
     except Exception as e:
@@ -142,21 +144,20 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None):
         end (str): Date string in the form '%Y-%m-%d'. For temporally bounded queries
 
     Returns:
-        List: List of [0] GridWorkflow object and [1] dictionary view of Tile index, Tile
-        key value pair
+        view: Dictionary view of Tile index, Tile key value pair
 
     Example:
 
         >>> from madmex.wrappers import gwf_query
 
         >>> # Using region name, time unbounded
-        >>> gwf, tiles_list = gwf_query(product='ls8_espa_mexico', region='Jalisco')
+        >>> tiles_list = gwf_query(product='ls8_espa_mexico', region='Jalisco')
         >>> # Using region name, time windowed
-        >>> gwf, tiles_list = gwf_query(product='ls8_espa_mexico', region='Jalisco',
-        ...                             begin = '2017-01-01', end='2017-03-31')
+        >>> tiles_list = gwf_query(product='ls8_espa_mexico', region='Jalisco',
+        ...                        begin = '2017-01-01', end='2017-03-31')
         >>> # Using lat long box, time windowed
-        >>> gwf, tiles_list = gwf_query(product='ls8_espa_mexico', lat=[19, 22], long=[-104, -102],
-        ...                             begin = '2017-01-01', end='2017-03-31')
+        >>> tiles_list = gwf_query(product='ls8_espa_mexico', lat=[19, 22], long=[-104, -102],
+        ...                        begin = '2017-01-01', end='2017-03-31')
     """
     query_params = {'product': product}
     if region is not None:
@@ -185,9 +186,9 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None):
     tile_dict = gwf.list_cells(**query_params)
     # Iterable (dictionary view (analog to list of tuples))
     tiles_view = tile_dict.items()
-    return [gwf, tiles_view]
+    return tiles_view
 
-def segment(tile, gwf, algorithm, segmentation_meta,
+def segment(tile, algorithm, segmentation_meta,
             band_list, extra_args):
     """Run a segmentation algorithm on tile
 
@@ -197,7 +198,6 @@ def segment(tile, gwf, algorithm, segmentation_meta,
 
     Args:
         tile: Datacube tile as returned by GridWorkflow.list_cells()
-        gwf: GridWorkflow object
         algorithm (str): Name of the segmentation algorithm to apply
         segmentation_meta (madmex.models.SegmentationInformation.object): Django object
             relating to every segmentation object generated by this run
@@ -213,23 +213,26 @@ def segment(tile, gwf, algorithm, segmentation_meta,
 
     try:
         # Load tile
-        geoarray = gwf.load(tile[1], measurements=band_list)
+        geoarray = GridWorkflow.load(tile[1], measurements=band_list)
         seg = Segmentation.from_geoarray(geoarray, **extra_args)
         seg.segment()
+        # Try deallocating input array
+        seg.array = None
+        geoarray = None
         seg.polygonize()
         seg.to_db(segmentation_meta)
+        gc.collect()
         return True
     except Exception as e:
         print(e)
         return False
 
-def predict_object(tile, gwf, model_name, segmentation_name,
+def predict_object(tile, model_name, segmentation_name,
                    categorical_variables, aggregation, name):
     """Run a trained classifier in prediction mode on all objects intersection with a tile
 
     Args:
         tile: Datacube tile as returned by GridWorkflow.list_cells()
-        gwf: GridWorkflow object
         model_name (str): Name under which the trained model is referenced in the
             database
         segmentation_name (str): Name of the segmentation to use
@@ -239,12 +242,16 @@ def predict_object(tile, gwf, model_name, segmentation_name,
     """
     try:
         # Load geoarray and feature collection
-        geoarray = gwf.load(tile[1])
+        geoarray = GridWorkflow.load(tile[1])
         fc = load_segmentation_from_dataset(geoarray, segmentation_name)
         # Extract array of features
         X, y = zonal_stats_xarray(dataset=geoarray, fc=fc, field='id',
                                   categorical_variables=categorical_variables,
                                   aggregation=aggregation)
+        # Deallocate geoarray and feature collection
+        geoarray = None
+        fc = None
+        gc.collect()
         # Load model
         PredModel = BaseModel.from_db(model_name)
         model_id = Model.objects.get(name=model_name).id
@@ -256,13 +263,25 @@ def predict_object(tile, gwf, model_name, segmentation_name,
         # Run prediction
         y_pred = PredModel.predict(X)
         y_conf = PredModel.predict_confidence(X)
+        # Deallocate arrays of extracted values and model
+        X = None
+        PredModel = None
+        gc.collect()
         # Build list of PredictClassification objects
         def predict_object_builder(i, pred, conf):
             return PredictClassification(model_id=model_id, predict_object_id=i,
                                          tag_id=pred, confidence=conf, name=name)
-        obj_list = [predict_object_builder(i,pred,conf) for i, pred, conf in
-                    zip(y, y_pred, y_conf)]
-        PredictClassification.objects.bulk_create(obj_list)
+        # Write labels to database combining chunking and bulk_create
+        for sub_zip in chunk(zip(y, y_pred, y_conf), 10000):
+            obj_list = [predict_object_builder(i,pred,conf) for i, pred, conf in
+                        sub_zip]
+            PredictClassification.objects.bulk_create(obj_list)
+            obj_list = None
+            gc.collect()
+        y = None
+        y_pred = None
+        y_conf = None
+        gc.collect()
         return True
     except Exception as e:
         print('Prediction failed because: %s' % e)

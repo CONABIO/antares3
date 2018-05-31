@@ -9,6 +9,7 @@ from importlib import import_module
 import os
 import logging
 from datetime import datetime
+import pickle
 
 from dask.distributed import Client, LocalCluster
 import numpy as np
@@ -45,11 +46,14 @@ antares model_fit -model rf -p landsat_madmex_001_jalisco_2017 -t chips_jalisco 
 
 # With extra args passed to the random forest object constructor, use region name instead of lat long bounding box
 antares model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -t jalisco_chips --region Jalisco --name rf_landsat_madmex_001_jalisco_2017_jalisco_chips -sp mean -extra n_estimators=60 n_jobs=15
+
+# Only extract data and write the X and y array to file for further inspection (no model is fitted in that case)
+antares model_fit -p s2_001_jalisco_2017_0 -t jalisco_bits --region Jalisco --filename training_sentinel2_jalisco_bits.pkl
 """
     def add_arguments(self, parser):
         parser.add_argument('-model', '--model',
                             type=str,
-                            required=True,
+                            default=None,
                             help=('Name of the model to apply to the dataset. It is posible to retrieve a list '
                                   'of implemented models using the antares model_params command line'))
         parser.add_argument('-p', '--product',
@@ -82,7 +86,7 @@ antares model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -t jalisco_chip
                             help='Proportion of the training data to use. Must be float between 0 and 1. A random sampling of the training objects is performed (defaults to 0.2).')
         parser.add_argument('-name', '--name',
                             type=str,
-                            required=True,
+                            default=None,
                             help='Name under which the produced model should be referenced in the database')
         parser.add_argument('-sp', '--spatial_aggregation',
                             type=str,
@@ -94,6 +98,10 @@ antares model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -t jalisco_chip
                             nargs='*',
                             default=None,
                             help='List of categorical variables to be encoded using One Hot Encoding before model fit')
+        parser.add_argument('-filename', '--filename',
+                            type=str,
+                            default=None,
+                            help='Name of a pickle file to store X and y array. Optional, no model is fitted when used')
         parser.add_argument('-extra', '--extra_kwargs',
                             type=str,
                             default='',
@@ -102,6 +110,10 @@ antares model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -t jalisco_chip
 Additional named arguments passed to the selected model class constructor. These arguments have
 to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 arg2=median
 To consult the exposed arguments for each model, use the "model_params" command line''')
+        parser.add_argument('-sc', '--scheduler',
+                            type=str,
+                            default=None,
+                            help='Path to file with scheduler information (usually called scheduler.json)')
 
     def handle(self, *args, **options):
         # Unpack variables
@@ -113,29 +125,34 @@ To consult the exposed arguments for each model, use the "model_params" command 
         kwargs = parser_extra_args(options['extra_kwargs'])
         categorical_variables = options['categorical_variables']
         sample = options['sample']
+        filename = options['filename']
+        scheduler_file = options['scheduler']
 
         # Prepare encoding of categorical variables if any specified
         if categorical_variables is not None:
             kwargs.update(categorical_features=var_to_ind(categorical_variables))
 
         # Load model class
-        try:
-            module = import_module('madmex.modeling.supervised.%s' % model)
-            Model = module.Model
-        except ImportError as e:
-            raise ValueError('Invalid model argument')
+        if filename is None:
+            try:
+                module = import_module('madmex.modeling.supervised.%s' % model)
+                Model = module.Model
+            except ImportError as e:
+                raise ValueError('Invalid model argument')
 
         # datacube query
         gwf_kwargs = { k: options[k] for k in ['product', 'lat', 'long', 'region']}
-        gwf, iterable = gwf_query(**gwf_kwargs)
+        iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
-        client = Client()
+        client = Client(scheduler_file=scheduler_file)
+        client.restart()
         C = client.map(extract_tile_db,
-                       iterable, **{'gwf': gwf,
-                                    'sp': sp,
-                                    'training_set': training,
-                                    'sample': sample})
+                       iterable,
+                       pure=False,
+                       **{'sp': sp,
+                          'training_set': training,
+                          'sample': sample})
         arr_list = client.gather(C)
 
         logger.info('Completed extraction of training data from %d tiles' , len(arr_list))
@@ -151,11 +168,18 @@ To consult the exposed arguments for each model, use the "model_params" command 
         X = np.concatenate(X_list)
         y = np.concatenate(y_list)
 
-        print("Fitting %s model for %d observations" % (model, y.shape[0]))
+        # Optionally write the arrays to pickle file
+        if filename is not None:
+            logger.info('Writting X and y arrays to pickle file, no model will be fitted')
+            with open(filename, 'wb') as dst:
+                pickle.dump((X, y), dst)
 
-        # Fit model
-        mod = Model(**kwargs)
-        mod.fit(X, y)
-        # Write the fitted model to the database
-        mod.to_db(name=name, recipe=product, training_set=training)
+        else:
+            print("Fitting %s model for %d observations" % (model, y.shape[0]))
+
+            # Fit model
+            mod = Model(**kwargs)
+            mod.fit(X, y)
+            # Write the fitted model to the database
+            mod.to_db(name=name, recipe=product, training_set=training)
 

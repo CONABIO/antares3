@@ -2,6 +2,7 @@ import os
 import datacube
 from datacube.storage.storage import write_dataset_to_netcdf
 from datacube.storage import masking
+from datacube.api import GridWorkflow
 import xarray as xr
 import numpy as np
 import dask
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 dask.set_options(get=dask.get)
 
-def run(tile, gwf, center_dt, path):
+def run(tile, center_dt, path):
     """Basic datapreparation recipe 001
 
     Combines temporal statistics of surface reflectance and ndvi with terrain
@@ -25,8 +26,6 @@ def run(tile, gwf, center_dt, path):
     Args:
         tile (tuple): Tuple of (tile indices, Tile object). Tile object can be
             loaded as xarray.Dataset using gwf.load()
-        gwf (GridWorkflow): GridWorkflow object instantiated with the corresponding
-            product
         center_dt (datetime): Date to be used in making the filename
         path (str): Directory where files generated are to be written
 
@@ -38,8 +37,9 @@ def run(tile, gwf, center_dt, path):
         nc_filename = os.path.join(path, 'madmex_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         # Load Landsat sr
         if os.path.isfile(nc_filename):
-            raise ValueError('%s already exist' % nc_filename)
-        sr_0 = gwf.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
+            logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
+            return nc_filename
+        sr_0 = GridWorkflow.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
         # Load terrain metrics using same spatial parameters than sr
         dc = datacube.Datacube(app = 'landsat_madmex_001_%s' % randomword(5))
         terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,

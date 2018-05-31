@@ -3,8 +3,10 @@ import uuid
 from datetime import datetime
 
 import yaml
-from datacube.index._datasets import ProductResource, MetadataTypeResource, DatasetResource
-from datacube.index.postgres._connections import PostgresDb
+from datacube.index._datasets import DatasetResource
+from datacube.index._products import ProductResource
+from datacube.index._metadata_types import MetadataTypeResource
+from datacube.drivers.postgres._connections import PostgresDb
 from datacube.model import Dataset
 from pyproj import Proj
 import netCDF4 as nc
@@ -12,6 +14,11 @@ from affine import Affine
 from osgeo import osr
 
 from madmex.util import randomword
+from configparser import ConfigParser
+
+conf = ConfigParser()
+conf.read(os.path.expanduser('~/.datacube.conf'))
+CONFIG = conf['datacube']
 
 def add_product(description, name):
     """Add a new product to the database given a product description dictionary
@@ -34,7 +41,7 @@ def add_product(description, name):
     # Append name to dictionary
     description.update(name=name)
     # Add to database
-    db = PostgresDb.from_config()
+    db = PostgresDb.from_config(CONFIG)
     meta_resource = MetadataTypeResource(db)
     product_resource = ProductResource(db, meta_resource)
     dataset_type = product_resource.add_document(description)
@@ -99,7 +106,7 @@ def add_dataset(pr, dt, metadict, file):
     Return:
         No return, the function is used for its side effect of adding a dataset to the datacube
     """
-    db = PostgresDb.from_config()
+    db = PostgresDb.from_config(CONFIG)
     dataset_resource = DatasetResource(db, pr)
     dataset = Dataset(dt, metadict, sources={})
     dataset_resource.add(dataset)

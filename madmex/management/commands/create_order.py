@@ -41,6 +41,11 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
         parser.add_argument('--start-date', nargs=1, help='Date to start the query, inclusive.')
         parser.add_argument('--end-date', nargs=1, help='Date to end the query, inclusive.')
         parser.add_argument('--landsat', nargs=1, help='Landsat mission.')
+        parser.add_argument('--max-cloud-cover', 
+                            nargs=1,
+                            type=int,
+                            default=100, 
+                            help='Maximum amount of cloud cover.')
 
     def handle(self, **options):
         '''This method takes a given shape names and queries the usgs api for available scenes.
@@ -55,6 +60,7 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
         end_date = options['end_date'][0]
         landsat = int(options['landsat'][0])
         shape_name = options['shape'][0]
+        cloud_cover = options['max_cloud_cover']
 
         espa_client = EspaApi()
 
@@ -85,7 +91,7 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
                 collection_espa = 'tm5_collection'
                 collection_regex = '^lt05_{1}\\w{4}_{1}[0-9]{6}_{1}[0-9]{8}_{1}[0-9]{8}_{1}[0-9]{2}_{1}\\w{2}$'
 
-            data = usgs_client.search(extent, collection_usgs, start_date=start_date, end_date=end_date).get('data')
+            data = usgs_client.search(extent, collection_usgs, start_date=start_date, end_date=end_date, max_cloud_cover=cloud_cover).get('data')
 
             products = ['sr', 'pixel_qa']
             interest = []
@@ -93,15 +99,16 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
                 results= data.get('results')
                 if results:
                     for scene in results:
-                        
                         coords = tuple(point_from_object(scene.get(coord)) for coord in ['lowerLeftCoordinate', 'upperLeftCoordinate', 'upperRightCoordinate', 'lowerRightCoordinate', 'lowerLeftCoordinate'])
                         scene_extent = Polygon(coords)
                         entity_id = scene.get('displayId')
                         # we use the same regular expression that espa uses to filter the names that are valid; otherwise, the order throws an error
                         if scene_extent.intersects(shape_object.the_geom) and re.match(collection_regex, entity_id.lower()):
                             interest.append(entity_id)
-                            footprint = Footprint(name=entity_id, the_geom=scene_extent)
-                            footprint.save()
+                            footprint, _ = Footprint.objects.get_or_create(
+                                name=entity_id,
+                                the_geom=scene_extent
+                            )
             print(json.dumps(interest, indent=4))
             data = espa_client.order(collection_espa, interest, products)
             if data.get('status') == 'ordered':

@@ -1,6 +1,7 @@
 import os
 import datacube
 from datacube.storage.storage import write_dataset_to_netcdf
+from datacube.storage import masking
 from datacube.api import GridWorkflow
 import xarray as xr
 import numpy as np
@@ -33,37 +34,28 @@ def run(tile, center_dt, path):
     """
     try:
         center_dt = center_dt.strftime("%Y-%m-%d")
-        nc_filename = os.path.join(path, 's2_20m_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
+        nc_filename = os.path.join(path, 'madmex_002_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         # Load Landsat sr
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
         sr_0 = GridWorkflow.load(tile[1], dask_chunks={'x': 1000, 'y': 1000})
-        sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
-        # Load terrain metrics using same spatial parameters than sr
-        dc = datacube.Datacube(app = 's2_20m_001_%s' % randomword(5))
-        terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
-                          time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
-                          dask_chunks={'x': 1000, 'y': 1000})
-        dc.close()
-        # Keep clear pixels (2: Dark features, 4: Vegetation, 5: Not vegetated,
-        # 6: Water, 7: Unclassified, 11: Snow/Ice)
-        sr_1 = sr_0.where(sr_0.pixel_qa.isin([2,4,5,6,7,8,11]))
+        # Mask clouds, shadow, water, ice,... and drop qa layer
+        clear = masking.make_mask(sr_0.pixel_qa, cloud=False, cloud_shadow=False,
+                                  snow=False)
+        sr_1 = sr_0.where(clear)
         sr_1 = sr_1.drop('pixel_qa')
-        # Compute ndvi
+        sr_1 = sr_1.apply(func=to_float, keep_attrs=True)
+        # Compute vegetation indices
         sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
-        sr_1['ndvi'].attrs['nodata'] = 0
-        # Compute ndmi
+        sr_1['ndvi'].attrs['nodata'] = -9999
         sr_1['ndmi'] = ((sr_1.nir - sr_1.swir1) / (sr_1.nir + sr_1.swir1)) * 10000
-        sr_1['ndmi'].attrs['nodata'] = 0
+        sr_1['ndmi'].attrs['nodata'] = -9999
         # Run temporal reductions and rename DataArrays
         sr_mean = sr_1.mean('time', keep_attrs=True, skipna=True)
         sr_mean.rename({'blue': 'blue_mean',
                         'green': 'green_mean',
                         'red': 'red_mean',
-                        're1': 're1_mean',
-                        're2': 're2_mean',
-                        're3': 're3_mean',
                         'nir': 'nir_mean',
                         'swir1': 'swir1_mean',
                         'swir2': 'swir2_mean',
@@ -72,17 +64,23 @@ def run(tile, center_dt, path):
         # Compute min/max/std only for vegetation indices
         ndvi_max = sr_1.ndvi.max('time', keep_attrs=True, skipna=True)
         ndvi_max = ndvi_max.rename('ndvi_max')
-        ndvi_max.attrs['nodata'] = 0
+        ndvi_max.attrs['nodata'] = -9999
         ndvi_min = sr_1.ndvi.min('time', keep_attrs=True, skipna=True)
         ndvi_min = ndvi_min.rename('ndvi_min')
-        ndvi_min.attrs['nodata'] = 0
+        ndvi_min.attrs['nodata'] = -9999
         # ndmi
         ndmi_max = sr_1.ndmi.max('time', keep_attrs=True, skipna=True)
         ndmi_max = ndmi_max.rename('ndmi_max')
-        ndmi_max.attrs['nodata'] = 0
+        ndmi_max.attrs['nodata'] = -9999
         ndmi_min = sr_1.ndmi.min('time', keep_attrs=True, skipna=True)
         ndmi_min = ndmi_min.rename('ndmi_min')
-        ndmi_min.attrs['nodata'] = 0
+        ndmi_min.attrs['nodata'] = -9999
+        # Load terrain metrics using same spatial parameters than sr
+        dc = datacube.Datacube(app = 'landsat_madmex_002_%s' % randomword(5))
+        terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
+                          time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
+                          dask_chunks={'x': 1000, 'y': 1000})
+        dc.close()
         # Merge dataarrays
         combined = xr.merge([sr_mean.apply(to_int),
                              to_int(ndvi_max),
@@ -93,6 +91,9 @@ def run(tile, center_dt, path):
         combined.attrs['crs'] = sr_0.attrs['crs']
         combined = combined.compute()
         write_dataset_to_netcdf(combined, nc_filename)
+        # Explicitely deallocate objects and run garbage collector
+        sr_0=sr_1=sr_mean=clear=ndvi_max=ndvi_min=ndmi_max=ndmi_min=terrain=combined=None
+        gc.collect()
         return nc_filename
     except Exception as e:
         logger.warning('Tile (%d, %d) not processed. %s' % (tile[0][0], tile[0][1], e))

@@ -32,6 +32,10 @@ class Command(AntaresBaseCommand):
         parser.add_argument('--dataset', nargs=1, help='The name of the shape to ingest.')
         parser.add_argument('--year', nargs=1, help='The creation year for this objects.')
         parser.add_argument('--scheme', nargs=1, help='Classification scheme.')
+        parser.add_argument('--filter', 
+                            type=int,
+                            default=None, 
+                            help='Number to filter the shapes.')
     
     def handle(self, **options):
         
@@ -41,18 +45,26 @@ class Command(AntaresBaseCommand):
         dataset = options['dataset'][0]
         year = options['year'][0]
         scheme = options['scheme'][0]
+        filter = options['filter']
         
         filename = basename(shape_file, False)
+        
+        if filter <= 1:
+            filter = None
 
         with fiona.open(shape_file) as source:
             project = partial(
                 pyproj.transform,
                 pyproj.Proj(source.crs),
                 pyproj.Proj(init='EPSG:4326'))
-            object_list = [(TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt),
+            if filter == None:
+                object_list = [(TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt),
                                         filename=filename,
                                         creation_year=year), feat['properties']) for feat in source]
-
+            else:
+                object_list = [(TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt),
+                                        filename=filename,
+                                        creation_year=year), feat['properties']) for ind, feat in enumerate(source) if ind % filter == 0]
         TrainObject.objects.bulk_create(list(map(lambda x: x[0], object_list)))
 
         

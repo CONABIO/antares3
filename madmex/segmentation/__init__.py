@@ -3,6 +3,7 @@
 
 import abc
 import json
+import gc
 from affine import Affine
 import numpy as np
 from rasterio import features
@@ -128,8 +129,9 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             obj = PredictObject(the_geom=geom, segmentation_information=meta_object)
             return obj
 
-        for fc_chunk in chunk(self.fc, 50000):
+        for fc_chunk in chunk(self.fc, 30000):
             obj_list = [predict_obj_builder(x) for x in fc_chunk]
             PredictObject.objects.bulk_create(obj_list)
+            gc.collect()
 
 

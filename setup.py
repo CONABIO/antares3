@@ -14,6 +14,7 @@ with open('madmex/__init__.py') as f:
 extra_reqs = {'docs': ['sphinx',
                        'sphinx-rtd-theme',
                        'sphinxcontrib-programoutput'],
+              'xgboost': ['xgboost'],
               'multi': ['cloudpickle',
                         'distributed']}
 extra_reqs['all'] = list(set(itertools.chain(*extra_reqs.values())))
@@ -39,7 +40,6 @@ setup(name='madmex',
           'requests',
           'datacube',
           'sklearn',
-          'xgboost',
           'lightgbm',
           'scipy',
           'fiona',

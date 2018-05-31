@@ -6,6 +6,7 @@ Created on Jan 31, 2018
 from importlib import import_module
 import logging
 from collections import OrderedDict
+import gc
 
 import numpy as np
 import xarray as xr
@@ -43,7 +44,7 @@ def calculate_zonal_statistics(array, labels, index, statistics):
 
 def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
                        categorical_variables=None):
-    """Perform extraction and grouping using xarray groupby method
+    """Perform extraction and grouping using pandas' groupby method
 
     Data are first coerced to pandas dataframe and pandas' groupby method is used
     to perform spatial aggregation
@@ -70,7 +71,7 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
     # Divide extraction in chunks to avoid blowing memory
     X_list = []
     y_list = []
-    for fc_sub in chunk(fc, 60000):
+    for fc_sub in chunk(fc, 10000):
         fc_sub = list(fc_sub)
         # Rasterize feature collection
         arr = rasterize_xarray(fc_sub, dataset)
@@ -78,12 +79,23 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
         xr_arr = xr.DataArray(arr, dims=['y', 'x'], name='features_id')
         # Combine the Dataset with the DataArray
         combined = xr.merge([xr_arr, dataset])
+        # Get rid of everything that is np.nan in features_id variable
+        # 1: flatten, 2: delete nans
+        combined = combined.stack(z=('x', 'y')).reset_index('z').drop(['x', 'y'])
+        combined = combined.where(np.isfinite(combined['features_id']), drop=True)
         # Coerce to pandas dataframe
-        df = combined.to_dataframe().groupby('features_id').agg(agg_ordered_dict)
+        df = combined.to_dataframe()
+        combined = None
+        df = df.groupby('features_id').agg(agg_ordered_dict)
         X_list.append(df.values)
         # TODO: Use numpy.array instead of list here to reduce memory footprint (see np.vectorize)
         ids = list(df.index.values.astype('uint32') - 1)
+        df = None
         y_list.append(np.array([fc_sub[x]['properties'][field] for x in ids]))
+        gc.collect()
+    # Deallocate array
+    dataset = None
     y = np.concatenate(y_list)
     X = np.concatenate(X_list, axis=0)
+    gc.collect()
     return [X, y]

@@ -3,7 +3,7 @@ output_type: ls8_espa_mexico
 
 description: Landsat 8 Collection 1 processed to surface reflectance by espa. Resampled to 30m Mexico INEGI Lambert Conformal Conic projection with a 100 km tile size.
 
-location: '/home/madmex_user/datacube_ingest'
+location: '{{ ingestion_path }}'
 file_path_template: 'LS8_espa/mexico/LS8_espa_{tile_index[0]}_{tile_index[1]}_{start_time}.nc'
 global_attributes:
   title: CONABIO Data Cube Landsat Surface Reflectance
@@ -45,6 +45,8 @@ storage:
       y: 200
       time: 10
   dimension_order: ['time', 'y', 'x']
+
+fuse_data: copy
 
 measurements:
     - name: blue

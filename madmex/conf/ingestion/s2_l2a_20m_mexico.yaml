@@ -3,7 +3,7 @@ output_type: s2_l2a_20m_mexico
 
 description: Sentinel 2 bottom of atmosphere processed with sen2cor. Resampled to 20m Mexico INEGI Lambert Conformal Conic projection with a 100 km tile size.
 
-location: '/home/madmex_user/datacube_ingest'
+location: '{{ ingestion_path }}'
 file_path_template: 's2_l2a_20m/mexico/s2_l2a_20m_{tile_index[0]}_{tile_index[1]}_{start_time}.nc'
 global_attributes:
   title: CONABIO Data Cube Landsat Surface Reflectance

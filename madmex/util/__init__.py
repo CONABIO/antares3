@@ -2,8 +2,10 @@ import random
 import string
 import inspect
 from itertools import chain, islice
+import os
 
 import yaml
+import jinja2
 
 def randomword(length):
     """Generate a random string of desired length
@@ -136,5 +138,28 @@ def pprint_args(fun, exclude=None):
     print(row_format.format('==================', '=============='))
     for row in table:
         print(row_format.format(*row))
+
+
+def fill_and_copy(template, out_dir, **kwargs):
+    """Retrieves a template, fills it with jinja2 and writes it with the same basename to a target directory
+
+    Args:
+        template (str): Path to template file
+        out_dir (str): Path of directory to which the filled template should be written
+        **kwargs: template variables
+
+    Returns:
+        This function is used for its side effect of filling a template and writing it to a chosen destination.
+    """
+    out_file = os.path.join(out_dir, os.path.basename(template))
+    # Load template as regular file
+    with open(template) as src:
+        template = jinja2.Template(src.read())
+    # Fill template
+    out = template.render(**kwargs)
+    # Write to file
+    with open(out_file, 'w') as dst:
+        dst.write(out)
+
 
 

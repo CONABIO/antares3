@@ -44,6 +44,12 @@ antares apply_recipe -recipe landsat_8_madmex_001 -b 2016-01-01 -e 2016-12-31 -l
 
 # Apply landsat_8_ndvi_mean recipe (The datacube must contain the ls8_espa_mexico)
 antares apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-12-31 --region Jalisco --name landsat_ndvi_jalisco_2017
+
+# Apply landsat_8_madmex_002 recipe (The datacube must contain the ls8_espa_mexico)
+antares apply_recipe -recipe landsat_8_madmex_002 -b 2017-01-01 -e 2017-12-31 --region Jalisco --name landsat_8_madmex_002_jalisco_2017
+
+# Apply sentinel 20m 001 recipe (The datacube must contain the s2_20m_mexico dataset)
+antares apply_recipe -recipe s2_20m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_0
 """
     def add_arguments(self, parser):
         # Recipe is a positional argument
@@ -79,6 +85,10 @@ antares apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-12-31 --r
                             type=str,
                             required=True,
                             help='Name under which the product should be referenced in the datacube')
+        parser.add_argument('-sc', '--scheduler',
+                            type=str,
+                            default=None,
+                            help='Path to file with scheduler information (usually called scheduler.json)')
 
     def handle(self, *args, **options):
         path = os.path.join(INGESTION_PATH, 'recipes', options['name'])
@@ -96,17 +106,20 @@ antares apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-12-31 --r
         end = datetime.strptime(options['end'], '%Y-%m-%d')
         time = (begin, end)
         center_dt = mid_date(begin, end)
+        scheduler_file = options['scheduler']
 
         # database query
         gwf_kwargs = { k: options[k] for k in ['lat', 'long', 'region', 'begin', 'end']}
         gwf_kwargs.update(product=product)
-        gwf, iterable = gwf_query(**gwf_kwargs)
+        iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
-        client = Client()
-        C = client.map(fun, iterable, **{'gwf': gwf,
-                                         'center_dt': center_dt,
-                                         'path': path})
+        client = Client(scheduler_file=scheduler_file)
+        client.restart()
+        C = client.map(fun, iterable,
+                       pure=False,
+                       **{'center_dt': center_dt,
+                          'path': path})
         nc_list = client.gather(C)
         n_tiles = len([x for x in nc_list if x is not None])
         logger.info('Processing done, %d tiles written to disk' % n_tiles)
