@@ -90,6 +90,9 @@ def run(tile, center_dt, path):
         combined.attrs['crs'] = sr_0.attrs['crs']
         combined = combined.compute()
         write_dataset_to_netcdf(combined, nc_filename)
+        # Explicitely deallocate objects and run garbage collector
+        sr_0=sr_1=sr_mean=clear=ndvi_max=ndvi_min=ndmi_max=ndmi_min=terrain=combined=None
+        gc.collect()
         return nc_filename
     except Exception as e:
         logger.warning('Tile (%d, %d) not processed. %s' % (tile[0][0], tile[0][1], e))

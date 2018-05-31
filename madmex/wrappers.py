@@ -118,6 +118,8 @@ def extract_tile_db(tile, sp, training_set, sample):
         # fc is a feature collection with one property (class)
         # Overlay geometries and xr_dataset and perform extraction combined with spatial aggregation
         extract = zonal_stats_xarray(xr_dataset, fc, field='class', aggregation=sp)
+        fc = None
+        gc.collect()
         # Return the extracted array (or a list of two arrays?)
         return extract
     except Exception as e:
@@ -219,6 +221,7 @@ def segment(tile, algorithm, segmentation_meta,
         geoarray = None
         seg.polygonize()
         seg.to_db(segmentation_meta)
+        gc.collect()
         return True
     except Exception as e:
         print(e)
@@ -248,6 +251,7 @@ def predict_object(tile, model_name, segmentation_name,
         # Deallocate geoarray and feature collection
         geoarray = None
         fc = None
+        gc.collect()
         # Load model
         PredModel = BaseModel.from_db(model_name)
         model_id = Model.objects.get(name=model_name).id
@@ -272,7 +276,12 @@ def predict_object(tile, model_name, segmentation_name,
             obj_list = [predict_object_builder(i,pred,conf) for i, pred, conf in
                         sub_zip]
             PredictClassification.objects.bulk_create(obj_list)
+            obj_list = None
             gc.collect()
+        y = None
+        y_pred = None
+        y_conf = None
+        gc.collect()
         return True
     except Exception as e:
         print('Prediction failed because: %s' % e)
