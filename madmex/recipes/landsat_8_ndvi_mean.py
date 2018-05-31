@@ -33,7 +33,8 @@ def run(tile, center_dt, path):
         center_dt = center_dt.strftime("%Y-%m-%d")
         nc_filename = os.path.join(path, 'ndvi_mean_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         if os.path.isfile(nc_filename):
-            raise ValueError('%s already exist' % nc_filename)
+            logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
+            return nc_filename
         # Load Landsat sr
         sr = GridWorkflow.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
         # Compute ndvi

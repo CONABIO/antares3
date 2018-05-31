@@ -37,7 +37,8 @@ def run(tile, center_dt, path):
         nc_filename = os.path.join(path, 'madmex_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         # Load Landsat sr
         if os.path.isfile(nc_filename):
-            raise ValueError('%s already exist' % nc_filename)
+            logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
+            return nc_filename
         sr_0 = GridWorkflow.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
         # Load terrain metrics using same spatial parameters than sr
         dc = datacube.Datacube(app = 'landsat_madmex_001_%s' % randomword(5))
