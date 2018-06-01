@@ -180,3 +180,5 @@ Various utils
    util.xarray.to_float
    util.xarray.to_int
    util.spatial.feature_transform
+   util.spatial.geometry_transform
+   util.spatial.get_geom_ul
