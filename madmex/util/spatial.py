@@ -55,8 +55,8 @@ def geometry_transform(geometry, crs_out,
     return geom_out
 
 
-def get_geom_ul(geometry):
-    """Given a geojson like geometry, returns its top left coordinates
+def get_geom_bbox(geometry):
+    """Given a geojson like geometry, returns its bounding box as a tuple of coordinates
 
     Copied from https://gis.stackexchange.com/a/90554/17409
 
@@ -64,11 +64,11 @@ def get_geom_ul(geometry):
         geometry (dict): The geometry part of a geojson like feature
 
     Return:
-        tuple: top left corner coordinates in (x, y) or (long, lat) order
+        tuple: bounding box coordinates in (xmin, ymin, xmax, ymax) order
     """
-    def explode(geom):
+    def explode(coords):
         for e in coords:
-            if isinstance(e, (float, int, long)):
+            if isinstance(e, (float, int)):
                 yield coords
                 break
             else:
@@ -76,7 +76,7 @@ def get_geom_ul(geometry):
                     yield f
 
     x, y = zip(*list(explode(geometry['coordinates'])))
-    return (min(x), max(y))
+    return (min(x), min(y), max(x), max(y))
 
 
 
