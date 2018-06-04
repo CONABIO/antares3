@@ -10,12 +10,14 @@ from madmex.management.base import AntaresBaseCommand
 
 from madmex.models import Country, Region, PredictClassification
 from madmex.util.spatial import geometry_transform, get_geom_bbox
+from django.db import connection
 
 import fiona
 from fiona.crs import from_string
 import json
 import logging
 import gc
+import re
 
 import numpy as np
 from affine import Affine
@@ -65,24 +67,38 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         region = options['region']
         filename = options['filename']
         resolution = options['resolution']
+        # Proj4 string needs to be quoted in query
         proj4 = options['proj4']
 
         # Query 0: Create the temp table
-        """
+        q_0_proj = """
 CREATE TEMP TABLE predict_proj AS
 SELECT
-    st_transform(public.madmex_predictobject.the_geom, '+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs') AS geom_proj,
-    public.madmex_tag.numeric_code
+    st_transform(public.madmex_predictobject.the_geom, %s) AS geom_proj,
+    public.madmex_tag.numeric_code AS tag
 FROM
     public.madmex_predictclassification
 INNER JOIN
-    public.madmex_predictobject ON public.madmex_predictclassification.predict_object_id = public.madmex_predictobject.id AND st_intersects(public.madmex_predictobject.the_geom, ST_GeometryFromText('POLYGON ((-106.90521240234375 29.185737173254434, -106.962890625 29.12577252480808, -106.89697265625 29.07057414581467, -106.787109375 29.099376992628493, -106.820068359375 29.185737173254434, -106.85302734374999 29.19053283229458, -106.90521240234375 29.185737173254434))', 4326))
+    public.madmex_predictobject ON public.madmex_predictclassification.predict_object_id = public.madmex_predictobject.id AND st_intersects(public.madmex_predictobject.the_geom, ST_GeometryFromText(%s, 4326))
+INNER JOIN
+    public.madmex_tag ON public.madmex_predictclassification.tag_id = public.madmex_tag.id;
+        """
+
+        q_0_longlat = """
+CREATE TEMP TABLE predict_proj AS
+SELECT
+    public.madmex_predictobject.the_geom AS geom_proj,
+    public.madmex_tag.numeric_code AS tag
+FROM
+    public.madmex_predictclassification
+INNER JOIN
+    public.madmex_predictobject ON public.madmex_predictclassification.predict_object_id = public.madmex_predictobject.id AND st_intersects(public.madmex_predictobject.the_geom, ST_GeometryFromText(%s, 4326))
 INNER JOIN
     public.madmex_tag ON public.madmex_predictclassification.tag_id = public.madmex_tag.id;
         """
 
         # Query 1: Get bbox
-        """
+        q_1 = """
 SELECT
     st_extent(geom_proj)
 FROM
@@ -90,22 +106,21 @@ FROM
         """
 
         # Query 2: Get the whole queryset/table
-        """
+        q_2 = """
 SELECT geom_proj, tag FROM predict_proj;
         """
+
         # Define function to convert query set object to feature
         def to_feature(x):
             """Not really a feature; more like a geometry/value tuple
             """
-            geometry = json.loads(x.predict_object.the_geom.geojson)
-            return (geometry, x.tag.numeric_code)
+            geometry = json.loads(x.geom_proj.geojson)
+            return (geometry, x.tag)
 
-        def to_proj_feature(x, crs):
-            """Not really a feature; more like a geometry/value tuple
-            """
-            geometry = json.loads(x.predict_object.the_geom.geojson)
-            geometry = geometry_transform(geometry, proj4)
-            return (geometry, x.tag.numeric_code)
+        def postgis_box_parser(box):
+            pattern = re.compile(r'BOX\((\d+\.*\d*) (\d+\.*\d*),(\d+\.*\d*) (\d+\.*\d*)\)')
+            m = pattern.search(box)
+            return [float(x) for x in m.groups()]
 
         # Query country or region contour
         try:
@@ -115,53 +130,26 @@ SELECT geom_proj, tag FROM predict_proj;
 
         # Query objects
         logger.info('Querying the database for intersecting records')
-        qs = PredictClassification.objects.filter(name=name)
-        qs = qs.filter(predict_object__the_geom__intersects=region).iterator(chunk_size=20000)
+        with connection.cursor() as c:
+            if proj4 is not None:
+                c.execute(q_0_proj, [proj4, region.wkt])
+            else:
+                c.execute(q_0_longlat, [region.wkt])
+            c.execute(q_1)
+            bbox = c.fetchone()
+            c.execute(q_2)
+            qs = c.fetchall()
+
+        xmin, ymin, xmax, ymax = postgis_box_parser(bbox[0])
+        print(xmin)
+        print(ymin)
+        print(xmax)
+        print(ymax)
 
         # Convert query set to feature collection 
         logger.info('Generating feature collection')
-        if proj4 is None:
-            fc = [to_feature(x) for x in qs]
-            crs = '+proj=longlat'
-        else:
-            fc = [to_proj_feature(x, proj4) for x in qs]
-            crs = proj4
-        qs = None
-        gc.collect()
+        fc = (to_feature(x) for x in qs)
 
-        # Find top left corner coordinate
-        logger.info('Looking for top left coordinates')
-        ul_coord_list = (get_geom_bbox(x[0]) for x in fc)
-        xmin_list, ymin_list, xmax_list, ymax_list = zip(*ul_coord_list)
-        ul_x = min(xmin_list)
-        ul_y = max(ymax_list)
-        lr_x = max(xmax_list)
-        lr_y = min(ymin_list)
-
-        # Define output raster shape
-        nrows = int(((ul_y - lr_y) // resolution) + 1)
-        ncols = int(((lr_x - ul_x) // resolution) + 1)
-        shape = (nrows, ncols)
-
-        # Define affine transform
-        logger.info('Rasterizing feature collection')
-        aff = Affine(resolution, 0, ul_x, 0, -resolution, ul_y)
-        arr = rasterize(shapes=fc, out_shape=shape, transform=aff, dtype=np.uint8)
-
-        # Write array to file
-        meta = {'driver': 'GTiff',
-                'width': shape[1],
-                'height': shape[0],
-                'count': 1,
-                'dtype': arr.dtype,
-                'crs': crs,
-                'transform': aff,
-                'compress': 'lzw',
-                'nodata': 0}
-
-        logger.info('Writing rasterized feature collection to file')
-        with rasterio.open(filename, 'w', **meta) as dst:
-            dst.write(arr, 1)
 
 # Add colormaps
 # 1 Read from tags table (via external function)
