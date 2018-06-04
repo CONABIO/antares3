@@ -90,7 +90,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         # Query objects
         logger.info('Querying the database for intersecting records')
         qs = PredictClassification.objects.filter(name=name)
-        qs = qs.filter(predict_object__the_geom__intersects=region).prefetch_related('predict_object', 'tag')
+        qs = qs.filter(predict_object__the_geom__intersects=region).iterator(chunk_size=20000)
 
         # Convert query set to feature collection 
         logger.info('Generating feature collection')
