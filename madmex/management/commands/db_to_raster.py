@@ -67,6 +67,32 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         resolution = options['resolution']
         proj4 = options['proj4']
 
+        # Query 0: Create the temp table
+        """
+CREATE TEMP TABLE predict_proj AS
+SELECT
+    st_transform(public.madmex_predictobject.the_geom, '+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs') AS geom_proj,
+    public.madmex_tag.numeric_code
+FROM
+    public.madmex_predictclassification
+INNER JOIN
+    public.madmex_predictobject ON public.madmex_predictclassification.predict_object_id = public.madmex_predictobject.id AND st_intersects(public.madmex_predictobject.the_geom, ST_GeometryFromText('POLYGON ((-106.90521240234375 29.185737173254434, -106.962890625 29.12577252480808, -106.89697265625 29.07057414581467, -106.787109375 29.099376992628493, -106.820068359375 29.185737173254434, -106.85302734374999 29.19053283229458, -106.90521240234375 29.185737173254434))', 4326))
+INNER JOIN
+    public.madmex_tag ON public.madmex_predictclassification.tag_id = public.madmex_tag.id;
+        """
+
+        # Query 1: Get bbox
+        """
+SELECT
+    st_extent(geom_proj)
+FROM
+    predict_proj;
+        """
+
+        # Query 2: Get the whole queryset/table
+        """
+SELECT geom_proj, tag FROM predict_proj;
+        """
         # Define function to convert query set object to feature
         def to_feature(x):
             """Not really a feature; more like a geometry/value tuple
@@ -137,3 +163,8 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         with rasterio.open(filename, 'w', **meta) as dst:
             dst.write(arr, 1)
 
+# Add colormaps
+# 1 Read from tags table (via external function)
+# 2 Convert hex color codes to rgb + transparency https://stackoverflow.com/questions/29643352/converting-hex-to-rgb-value-in-python
+# 3 Add other tags (0, etc)
+# Write to file with rasterio.dst.write_colormap
