@@ -107,15 +107,15 @@ FROM
 
         # Query 2: Get the whole queryset/table
         q_2 = """
-SELECT geom_proj, tag FROM predict_proj;
+SELECT st_asgeojson(geom_proj), tag FROM predict_proj;
         """
 
         # Define function to convert query set object to feature
         def to_feature(x):
             """Not really a feature; more like a geometry/value tuple
             """
-            geometry = json.loads(x.geom_proj.geojson)
-            return (geometry, x.tag)
+            geometry = json.loads(x[0])
+            return (geometry, x[1])
 
         def postgis_box_parser(box):
             pattern = re.compile(r'BOX\((\d+\.*\d*) (\d+\.*\d*),(\d+\.*\d*) (\d+\.*\d*)\)')
@@ -141,15 +141,38 @@ SELECT geom_proj, tag FROM predict_proj;
             qs = c.fetchall()
 
         xmin, ymin, xmax, ymax = postgis_box_parser(bbox[0])
-        print(xmin)
-        print(ymin)
-        print(xmax)
-        print(ymax)
 
         # Convert query set to feature collection 
         logger.info('Generating feature collection')
         fc = (to_feature(x) for x in qs)
 
+        # Define output raster shape
+        nrows = int(((ymax - ymin) // resolution) + 1)
+        ncols = int(((xmax - xmin) // resolution) + 1)
+        shape = (nrows, ncols)
+
+        # Define affine transform
+        logger.info('Rasterizing feature collection')
+        aff = Affine(resolution, 0, xmin, 0, -resolution, ymax)
+        arr = rasterize(shapes=fc, out_shape=shape, transform=aff, dtype=np.uint8)
+
+        if proj4 is None:
+            proj4 = "+proj=longlat"
+
+        # Write array to file
+        meta = {'driver': 'GTiff',
+                'width': shape[1],
+                'height': shape[0],
+                'count': 1,
+                'dtype': arr.dtype,
+                'crs': proj4,
+                'transform': aff,
+                'compress': 'lzw',
+                'nodata': 0}
+
+        logger.info('Writing rasterized feature collection to file')
+        with rasterio.open(filename, 'w', **meta) as dst:
+            dst.write(arr, 1)
 
 # Add colormaps
 # 1 Read from tags table (via external function)
