@@ -79,7 +79,7 @@ SELECT
 FROM
     public.madmex_predictclassification
 INNER JOIN
-    public.madmex_predictobject ON public.madmex_predictclassification.predict_object_id = public.madmex_predictobject.id AND st_intersects(public.madmex_predictobject.the_geom, ST_GeometryFromText(%s, 4326))
+    public.madmex_predictobject ON public.madmex_predictclassification.predict_object_id = public.madmex_predictobject.id AND st_intersects(public.madmex_predictobject.the_geom, ST_GeometryFromText(%s, 4326)) AND public.madmex_predictclassification.name = %s
 INNER JOIN
     public.madmex_tag ON public.madmex_predictclassification.tag_id = public.madmex_tag.id;
         """
@@ -92,7 +92,7 @@ SELECT
 FROM
     public.madmex_predictclassification
 INNER JOIN
-    public.madmex_predictobject ON public.madmex_predictclassification.predict_object_id = public.madmex_predictobject.id AND st_intersects(public.madmex_predictobject.the_geom, ST_GeometryFromText(%s, 4326))
+    public.madmex_predictobject ON public.madmex_predictclassification.predict_object_id = public.madmex_predictobject.id AND st_intersects(public.madmex_predictobject.the_geom, ST_GeometryFromText(%s, 4326)) AND public.madmex_predictclassification.name = %s
 INNER JOIN
     public.madmex_tag ON public.madmex_predictclassification.tag_id = public.madmex_tag.id;
         """
@@ -107,7 +107,7 @@ FROM
 
         # Query 2: Get the whole queryset/table
         q_2 = """
-SELECT st_asgeojson(geom_proj), tag FROM predict_proj;
+SELECT st_asgeojson(geom_proj, 5), tag FROM predict_proj;
         """
 
         # Define function to convert query set object to feature
@@ -132,9 +132,9 @@ SELECT st_asgeojson(geom_proj), tag FROM predict_proj;
         logger.info('Querying the database for intersecting records')
         with connection.cursor() as c:
             if proj4 is not None:
-                c.execute(q_0_proj, [proj4, region.wkt])
+                c.execute(q_0_proj, [proj4, region.wkt, name])
             else:
-                c.execute(q_0_longlat, [region.wkt])
+                c.execute(q_0_longlat, [region.wkt, name])
             c.execute(q_1)
             bbox = c.fetchone()
             c.execute(q_2)
