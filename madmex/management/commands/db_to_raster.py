@@ -10,6 +10,7 @@ from madmex.management.base import AntaresBaseCommand
 
 from madmex.models import Country, Region, PredictClassification
 from madmex.util.spatial import geometry_transform, get_geom_bbox
+from madmex.util import chunk
 from django.db import connection
 
 import fiona
@@ -142,19 +143,22 @@ SELECT st_asgeojson(geom_proj, 5), tag FROM predict_proj;
 
         xmin, ymin, xmax, ymax = postgis_box_parser(bbox[0])
 
-        # Convert query set to feature collection 
-        logger.info('Generating feature collection')
-        fc = (to_feature(x) for x in qs)
-
         # Define output raster shape
         nrows = int(((ymax - ymin) // resolution) + 1)
         ncols = int(((xmax - xmin) // resolution) + 1)
         shape = (nrows, ncols)
+        logger.info('Allocating array of shape (%d, %d)' % (nrows, ncols))
+        arr = np.zeros((nrows, ncols), dtype=np.uint8)
+        aff = Affine(resolution, 0, xmin, 0, -resolution, ymax)
 
         # Define affine transform
         logger.info('Rasterizing feature collection')
-        aff = Affine(resolution, 0, xmin, 0, -resolution, ymax)
-        arr = rasterize(shapes=fc, out_shape=shape, transform=aff, dtype=np.uint8)
+        for qs_sub in chunk(qs, 50000):
+            # Convert query set to feature collection 
+            fc = [to_feature(x) for x in qs_sub]
+            rasterize(shapes=fc, transform=aff, dtype=np.uint8, out=arr)
+            fc = None
+            gc.collect()
 
         if proj4 is None:
             proj4 = "+proj=longlat"
