@@ -182,3 +182,4 @@ Various utils
    util.spatial.feature_transform
    util.spatial.geometry_transform
    util.spatial.get_geom_bbox
+   util.db.classification_to_cmap

@@ -11,6 +11,7 @@ from madmex.management.base import AntaresBaseCommand
 from madmex.models import Country, Region, PredictClassification
 from madmex.util.spatial import geometry_transform, get_geom_bbox
 from madmex.util import chunk
+from madmex.util.db import classification_to_cmap
 from django.db import connection
 
 import fiona
@@ -153,7 +154,7 @@ SELECT st_asgeojson(geom_proj, 5), tag FROM predict_proj;
 
         # Define affine transform
         logger.info('Rasterizing feature collection')
-        for qs_sub in chunk(qs, 50000):
+        for qs_sub in chunk(qs, 100000):
             # Convert query set to feature collection 
             fc = [to_feature(x) for x in qs_sub]
             rasterize(shapes=fc, transform=aff, dtype=np.uint8, out=arr)
@@ -177,9 +178,10 @@ SELECT st_asgeojson(geom_proj, 5), tag FROM predict_proj;
         logger.info('Writing rasterized feature collection to file')
         with rasterio.open(filename, 'w', **meta) as dst:
             dst.write(arr, 1)
+            try:
+                cmap = classification_to_cmap(name)
+                dst.write_colormap(1, cmap)
+            except Exception as e:
+                logger.info('Didn\'t find a colormap or couldn\'t write it: %s' % e)
+                pass
 
-# Add colormaps
-# 1 Read from tags table (via external function)
-# 2 Convert hex color codes to rgb + transparency https://stackoverflow.com/questions/29643352/converting-hex-to-rgb-value-in-python
-# 3 Add other tags (0, etc)
-# Write to file with rasterio.dst.write_colormap
