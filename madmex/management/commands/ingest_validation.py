@@ -28,6 +28,7 @@ Ingest a vector file containing validation data into the antares database
 --------------
 Example usage:
 --------------
+antares ingest_validation /path/to/file.shp --scheme madmex --year 2015 --name random_validation --field code
     """
     def add_arguments(self, parser):
         parser.add_argument('input_file',
@@ -71,7 +72,7 @@ Example usage:
             """Build individual ValidObjects
             """
             geom = GEOSGeometry(json.dumps(x['geometry']))
-            obj = PredictObject(the_geom=geom)
+            obj = ValidObject(the_geom=geom)
             return obj
 
         obj_list = [valid_obj_builder(x) for x in fc]
