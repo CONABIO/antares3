@@ -99,6 +99,22 @@ class TrainClassification(models.Model):
     train_object = models.ForeignKey(TrainObject, related_name='train_object', on_delete=models.CASCADE)
     training_set = models.CharField(max_length=100, default='')
 
+class ValidClassification(models.Model):
+    """Relates Validation objects to Tags
+    """
+    valid_tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    valid_object = models.ForeignKey(ValidObject, on_delete=models.CASCADE)
+    valid_set = models.CharField(max_length=100, default='')
+
+class ValidObject(models.Model):
+    """The geometries of the validation datasets
+    """
+    the_geom = models.GeometryField()
+    added = models.DateTimeField(auto_now_add=True)
+    prediction_tags = models.ManyToManyField(Tag, through='ValidClassification')
+    filename = models.CharField(max_length=200, default='')
+    interpretation_year = models.IntegerField(default=-1)
+
 class PredictClassification(models.Model):
     '''This table relates predict object and a tag as a many to many table. We created an
     specific table for this to add information about the model.
@@ -108,7 +124,7 @@ class PredictClassification(models.Model):
     model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='model', default=None)
     name = models.CharField(max_length=200, default='')
     confidence = models.FloatField(default=-1.0)
-    
+
 class Scene(models.Model):
     '''This table represents a satellite scene and information to build a catalalog.
     '''
