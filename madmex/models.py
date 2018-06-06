@@ -99,6 +99,13 @@ class TrainClassification(models.Model):
     train_object = models.ForeignKey(TrainObject, related_name='train_object', on_delete=models.CASCADE)
     training_set = models.CharField(max_length=100, default='')
 
+class ValidObject(models.Model):
+    """The geometries of the validation datasets
+    """
+    the_geom = models.GeometryField()
+    added = models.DateTimeField(auto_now_add=True)
+    validation_tags = models.ManyToManyField(Tag, through='ValidClassification')
+
 class ValidClassification(models.Model):
     """Relates Validation objects to Tags
     """
@@ -106,13 +113,6 @@ class ValidClassification(models.Model):
     valid_object = models.ForeignKey(ValidObject, on_delete=models.CASCADE)
     valid_set = models.CharField(max_length=100, default='')
     interpretation_year = models.IntegerField(default=-1)
-
-class ValidObject(models.Model):
-    """The geometries of the validation datasets
-    """
-    the_geom = models.GeometryField()
-    added = models.DateTimeField(auto_now_add=True)
-    validation_tags = models.ManyToManyField(Tag, through='ValidClassification')
 
 class PredictClassification(models.Model):
     '''This table relates predict object and a tag as a many to many table. We created an
