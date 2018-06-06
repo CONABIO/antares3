@@ -105,15 +105,14 @@ class ValidClassification(models.Model):
     valid_tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
     valid_object = models.ForeignKey(ValidObject, on_delete=models.CASCADE)
     valid_set = models.CharField(max_length=100, default='')
+    interpretation_year = models.IntegerField(default=-1)
 
 class ValidObject(models.Model):
     """The geometries of the validation datasets
     """
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
-    prediction_tags = models.ManyToManyField(Tag, through='ValidClassification')
-    filename = models.CharField(max_length=200, default='')
-    interpretation_year = models.IntegerField(default=-1)
+    validation_tags = models.ManyToManyField(Tag, through='ValidClassification')
 
 class PredictClassification(models.Model):
     '''This table relates predict object and a tag as a many to many table. We created an
