@@ -54,7 +54,8 @@ def validate(fc_valid, fc_test, valid_field=None, test_field=None):
     for v in geom_list_valid:
         for t in geom_list_test:
             if v[0].intersects(t[0]):
-                results.append((v[1], t[1], v[0].intersection(t[0]).area))
+                # The area used for weighting is multiplied by 1000000 to approximate hectares (more friendly conf matrix)
+                results.append((v[1], t[1], v[0].intersection(t[0]).area * 1000000))
     y_true, y_pred, weight = zip(*results)
     mat = confusion_matrix(y_true=y_true, y_pred=y_pred, sample_weight=weight,
                            labels=unique_labels)
