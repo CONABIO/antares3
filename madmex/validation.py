@@ -52,7 +52,7 @@ def validate(fc_valid, fc_test, valid_field=None, test_field=None):
     unique_labels = list(set([x[1] for x in fc_valid] + [x[1] for x in fc_test]))
     results = []
     for v in geom_list_valid:
-        for t in geom_list_valid_test:
+        for t in geom_list_test:
             if v[0].intersects(t[0]):
                 results.append((v[1], t[1], v[0].intersection(t[0]).area))
     y_true, y_pred, weight = zip(*results)
