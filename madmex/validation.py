@@ -1,9 +1,12 @@
+import json
+
 from shapely.geometry import shape
 from sklearn.metrics import confusion_matrix
+from django.db import connection
 
 from madmex.models import Country, Region
 
-def validate(fc_valid, fc_test, valid_field, test_field):
+def validate(fc_valid, fc_test, valid_field=None, test_field=None):
     """Generate area weighted confusion matrix
 
     Generate an area weighted confusion matrix given 2 feature collections of
@@ -13,9 +16,17 @@ def validate(fc_valid, fc_test, valid_field, test_field):
 
     Args:
         fc_valid (list): The feature collection containing validation polygons
+            Can also be a list of (geometry, value) tupples in case any of valid_field
+            and test_fields are specified
         fc_test (list): The feature collection containing test polygons
-        valid_field (str): Name of the field containing the validation values
+            Can also be a list of (geometry, value) tupples in case any of valid_field
+            and test_fields are specified
+        valid_field (str): Name of the field containing the validation values.
+            Defaults to None in which case fc_valid and fc_test are assumed to be
+            lists of (geometry, value) tupples.
         test_field (str): Name of the field containing the test values
+            Defaults to None in which case fc_valid and fc_test are assumed to be
+            lists of (geometry, value) tupples.
 
     Example:
         >>> import os, json
@@ -31,20 +42,21 @@ def validate(fc_valid, fc_test, valid_field, test_field):
     Returns:
         Tupple: Array of labels and confusion matrix
     """
-    pass
-    # Build list of (geometry, value) tuples for both feature collections
-    geom_list_valid = [(shape(x['geometry']), x['properties'][valid_field]) for x in fc_valid]
-    geom_list_test = [(shape(x['geometry']), x['properties'][test_field]) for x in fc_test]
-    unique_labels = list(set([x[1] for x in geom_list_valid] + [x[1] for x in geom_list_test]))
+    if valid_field is not None and test_field is not None:
+        # Build list of (geometry, value) tuples for both feature collections
+        fc_valid = [(shape(x['geometry']), x['properties'][valid_field]) for x in fc_valid]
+        fc_test = [(shape(x['geometry']), x['properties'][test_field]) for x in fc_test]
+    unique_labels = list(set([x[1] for x in fc_valid] + [x[1] for x in fc_test]))
     results = []
-    for v in geom_list_valid:
-        for t in geom_list_test:
+    for v in fc_valid:
+        for t in fc_test:
             if v[0].intersects(t[0]):
                 results.append((v[1], t[1], v[0].intersection(t[0]).area))
     y_true, y_pred, weight = zip(*results)
     mat = confusion_matrix(y_true=y_true, y_pred=y_pred, sample_weight=weight,
                            labels=unique_labels)
     return (unique_labels, mat)
+
 
 def pprint_conf(matrix, scheme):
     pass
@@ -64,15 +76,12 @@ def query_validation_intersect(validation_set, test_set, region=None):
             iso country code (Country table) or region name (Region table)
 
     Return:
-        tuple: A tuple of two feature collections corresponding to the validation
-        dataset and the spatially intersecting records of the test dataset (fc_valid, fc_test)
-        For both feature collections, attribute values are written to the ```value``
-        property
+        tuple: A tuple (fc_valid, fc_test) of two list of (geometry, value) tupples
     """
     # Create temp table with validation geometries filtered by name and optionally by region (geom, value)
     # Get that table converting to geojson on the fly
     # Query the PredictClassification data that intersect with the validation data (st_asgeojson(the_geom), value)
-    q_0 = """
+    q0_sp_filter = """
 CREATE TEMP TABLE validation AS
 SELECT
     public.madmex_validobject.the_geom AS geom,
@@ -88,12 +97,67 @@ INNER JOIN
 INNER JOIN
     public.madmex_tag ON public.madmex_validclassification.valid_tag_id = public.madmex_tag.id;
     """
+
+    q0 = """
+CREATE TEMP TABLE validation AS
+SELECT
+    public.madmex_validobject.the_geom AS geom,
+    public.madmex_tag.numeric_code AS tag
+FROM
+    public.madmex_validclassification AS vc
+INNER JOIN
+    public.madmex_validobject ON vc.valid_object_id = public.madmex_validobject.id
+    AND
+    vc.valid_set = %s
+INNER JOIN
+    public.madmex_tag ON vc.valid_tag_id = public.madmex_tag.id;
+    """
+
+    q1 = """
+SELECT
+    st_asgeojson(geom, 6),
+    tag
+FROM
+    validation;
+    """
+
+    q2 = """
+SELECT
+    st_asgeojson(public.madmex_predictobject.the_geom, 6),
+    public.madmex_tag.numeric_code
+FROM
+    public.madmex_predictclassification AS cl
+INNER JOIN
+    public.madmex_predictobject ON cl.predict_object_id = public.madmex_predictobject.id
+INNER JOIN
+    validation ON st_intersects(validation.geom, public.madmex_predictobject.the_geom)
+INNER JOIN
+    public.madmex_tag ON cl.tag_id = public.madmex_tag.id
+WHERE
+    cl.name = %s;
+    """
     if region is not None:
         # Query country or region contour
         try:
             region = Country.objects.get(name=region).the_geom
         except Country.DoesNotExist:
             region = Region.objects.get(name=region).the_geom
+
+    with connection.cursor() as c:
+        if region is None:
+            c.execute(q0, [validation_set])
+        else:
+            c.execute(q0_sp_filter, [region.wkt, validation_set])
+        c.execute(q1)
+        val_qs = c.fetchall()
+        c.execute(q2, [test_set])
+        pred_qs = c.fetchall()
+
+    val_fc = [(json.loads(x[0]), x[1]) for x in val_qs]
+    pred_fc = [(json.loads(x[0]), x[1]) for x in pred_qs]
+    return (val_fc, pred_fc)
+
+
 
 def db_log():
     """Log the results of a validation to the database

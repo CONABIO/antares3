@@ -140,6 +140,18 @@ Implemented algorithms
    segmentation.bis.Segmentation
 
 
+Validation
+==========
+
+Utilities to compute validation metrics on existing results
+
+.. autosummary::
+   :toctree: generated
+
+   validation.validate
+   validation.query_validation_intersect
+
+
 Wrappers
 ========
 
