@@ -44,12 +44,15 @@ def validate(fc_valid, fc_test, valid_field=None, test_field=None):
     """
     if valid_field is not None and test_field is not None:
         # Build list of (geometry, value) tuples for both feature collections
-        fc_valid = [(shape(x['geometry']), x['properties'][valid_field]) for x in fc_valid]
-        fc_test = [(shape(x['geometry']), x['properties'][test_field]) for x in fc_test]
+        geom_list_valid = [(shape(x['geometry']), x['properties'][valid_field]) for x in fc_valid]
+        geom_list_test = [(shape(x['geometry']), x['properties'][test_field]) for x in fc_test]
+    else:
+        geom_list_valid = [(shape(x[0]), x[1]) for x in fc_valid]
+        geom_list_test = [(shape(x[0]), x[1]) for x in fc_test]
     unique_labels = list(set([x[1] for x in fc_valid] + [x[1] for x in fc_test]))
     results = []
-    for v in fc_valid:
-        for t in fc_test:
+    for v in geom_list_valid:
+        for t in geom_list_valid_test:
             if v[0].intersects(t[0]):
                 results.append((v[1], t[1], v[0].intersection(t[0]).area))
     y_true, y_pred, weight = zip(*results)
