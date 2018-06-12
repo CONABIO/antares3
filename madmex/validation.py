@@ -3,6 +3,7 @@ import json
 from shapely.geometry import shape
 from sklearn.metrics import precision_score as user_acc
 from sklearn.metrics import recall_score as prod_acc
+from sklearn.metrics import accuracy_score
 from django.db import connection
 
 from madmex.models import Country, Region
@@ -76,9 +77,9 @@ def validate(y_true, y_pred, sample_weight=None, scheme=None):
     """
     labels = list(set(y_true + y_pred))
     pa = prod_acc(y_true=y_true, y_pred=y_pred, average=None,
-                  label=labels, sample_weight=sample_weight)
+                  labels=labels, sample_weight=sample_weight)
     ua = user_acc(y_true=y_true, y_pred=y_pred, average=None,
-                  label=labels, sample_weight=sample_weight)
+                  labels=labels, sample_weight=sample_weight)
     acc_dict = {}
     acc_dict['users_accuracy'] = dict(zip(labels, ua))
     acc_dict['producers_accuracy'] = dict(zip(labels, pa))
