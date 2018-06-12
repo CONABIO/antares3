@@ -8,7 +8,10 @@ Purpose: Compute validation metrics on an existing object based classification
 from madmex.management.base import AntaresBaseCommand
 import logging
 
-from madmex.validation import validate, query_validation_intersect
+from madmex.validation import validate, prepare_validation, query_validation_intersect
+from madmex.util.db import get_validation_scheme_name
+
+from pprint import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -53,15 +56,20 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
         region = options['region']
         log = options['log']
 
+        # Get the scheme name
+        scheme = get_validation_scheme_name(validation)
+
         # Query the data
         fc_valid, fc_test = query_validation_intersect(validation_set=validation,
                                                        test_set=classification,
                                                        region=region)
 
+        # Prepare validation vectors
+        y_true, y_pred, sample_weight = prepare_validation(fc_valid, fc_test)
         # Run the validation
-        labels, conf = validate(fc_valid, fc_test)
-        print(labels)
-        print(conf)
+        acc_dict = validate(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight,
+                            scheme=scheme)
+        pprint(labels)
 
         # Optionally log the results to the db
         if log:

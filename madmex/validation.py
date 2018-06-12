@@ -1,16 +1,19 @@
 import json
 
 from shapely.geometry import shape
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import precision_score as user_acc
+from sklearn.metrics import recall_score as prod_acc
 from django.db import connection
 
 from madmex.models import Country, Region
+from madmex.util.db import get_label_encoding
 
-def validate(fc_valid, fc_test, valid_field=None, test_field=None):
+def prepare_validation(fc_valid, fc_test, valid_field=None, test_field=None):
     """Generate area weighted confusion matrix
 
-    Generate an area weighted confusion matrix given 2 feature collections of
-    polygon or multipolygon geometries
+    Generate the various vectors required to produce area weighted validation metrics
+    (y_true, y_pred, weight, labels). Weight is simply the area of intersection between
+    each pair of intersecting polygons from the test and validation features collections
     Both feature collections must be in the same CRS. Note that an equal area CRS
     should be preferred for this type of operations.
 
@@ -37,10 +40,10 @@ def validate(fc_valid, fc_test, valid_field=None, test_field=None):
 
         >>> fc_test = [x for x in fc if x['properties']['set'] == 'test']
         >>> fc_validation = [x for x in fc if x['properties']['set'] == 'validation']
-        >>> validate(fc_validation, fc_test, 'value', 'value')
+        >>> prepare_validation(fc_validation, fc_test, 'value', 'value')
 
     Returns:
-        Tupple: Array of labels and confusion matrix
+        Tupple: Array of 3 lists (y_true, y_pred, weight)
     """
     if valid_field is not None and test_field is not None:
         # Build list of (geometry, value) tuples for both feature collections
@@ -49,7 +52,6 @@ def validate(fc_valid, fc_test, valid_field=None, test_field=None):
     else:
         geom_list_valid = [(shape(x[0]), x[1]) for x in fc_valid]
         geom_list_test = [(shape(x[0]), x[1]) for x in fc_test]
-    unique_labels = list(set([x[1] for x in fc_valid] + [x[1] for x in fc_test]))
     results = []
     for v in geom_list_valid:
         for t in geom_list_test:
@@ -57,13 +59,34 @@ def validate(fc_valid, fc_test, valid_field=None, test_field=None):
                 # The area used for weighting is multiplied by 1000000 to approximate hectares (more friendly conf matrix)
                 results.append((v[1], t[1], v[0].intersection(t[0]).area * 1000000))
     y_true, y_pred, weight = zip(*results)
-    mat = confusion_matrix(y_true=y_true, y_pred=y_pred, sample_weight=weight,
-                           labels=unique_labels)
-    return (unique_labels, mat)
+    return (y_true, y_pred, weight)
 
 
-def pprint_conf(matrix, scheme):
-    pass
+def validate(y_true, y_pred, sample_weight=None, scheme=None):
+    """Compute user's and producer's accuracy for each class and overall accuracy
+
+    Args:
+        y_true (list, array): 1D array-like list of truth labels
+        y_pred (list, array): 1D array-like list of estimated targets
+        sample_weight (list, array): See sklearn.metrics
+        scheme (str): Name of the classification scheme
+
+    Return:
+        dict: A dictionary organizing the accuracy information
+    """
+    labels = list(set(y_true + y_pred))
+    pa = prod_acc(y_true=y_true, y_pred=y_pred, average=None,
+                  label=labels, sample_weight=sample_weight)
+    ua = user_acc(y_true=y_true, y_pred=y_pred, average=None,
+                  label=labels, sample_weight=sample_weight)
+    acc_dict = {}
+    acc_dict['users_accuracy'] = dict(zip(labels, ua))
+    acc_dict['producers_accuracy'] = dict(zip(labels, pa))
+    acc_dict['overall_accuracy'] = accuracy_score(y_true=y_true, y_pred=y_pred,
+                                                  sample_weight=sample_weight)
+    if scheme is not None:
+        acc_dict['label_encoding'] = get_label_encoding(scheme, inverse=True)
+    return acc_dict
 
 
 def query_validation_intersect(validation_set, test_set, region=None):

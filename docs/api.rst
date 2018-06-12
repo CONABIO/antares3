@@ -148,6 +148,7 @@ Utilities to compute validation metrics on existing results
    :toctree: generated
 
    validation.prepare_validation
+   validation.validate
    validation.query_validation_intersect
 
 
