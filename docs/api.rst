@@ -57,7 +57,6 @@ Read and write data
 .. autosummary::
    :toctree: generated
 
-   io.helpers.get_label_encoding
    io.vector_db.from_geobox
    io.vector_db.VectorDb
    io.vector_db.VectorDb.load_training_from_dataset
@@ -148,7 +147,7 @@ Utilities to compute validation metrics on existing results
 .. autosummary::
    :toctree: generated
 
-   validation.validate
+   validation.prepare_validation
    validation.query_validation_intersect
 
 
@@ -195,3 +194,5 @@ Various utils
    util.spatial.geometry_transform
    util.spatial.get_geom_bbox
    util.db.classification_to_cmap
+   util.db.get_label_encoding
+   util.db.get_validation_scheme_name
