@@ -69,7 +69,7 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
         # Run the validation
         acc_dict = validate(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight,
                             scheme=scheme)
-        pprint(labels)
+        pprint(acc_dict)
 
         # Optionally log the results to the db
         if log:
