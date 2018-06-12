@@ -69,6 +69,6 @@ def get_validation_scheme_name(name):
     Return:
         str: The name of the scheme used by that validation dataset
     """
-    valid_obj = ValidClassification.objects.filter(name=name).first()
+    valid_obj = ValidClassification.objects.filter(valid_set=name).first()
     scheme = valid_obj.tag.scheme
     return scheme
