@@ -200,7 +200,7 @@ def pprint_val_dict(d):
         print("{:<15} {<:20.2f} {<:20.2f} {<:50}".format(code,
                                                          d['users_accuracy'][code],
                                                          d['producers_accuracy'][code],
-                                                         d['label_encoding'][code])
+                                                         d['label_encoding'][code]))
 
 
 def db_log():
