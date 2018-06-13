@@ -186,6 +186,22 @@ WHERE
     return (val_fc, pred_fc)
 
 
+def pprint_val_dict(d):
+    """Prints the dictionary returned by madmex.validation.validate as a nicely formated table
+
+    Args:
+        d (dict): The dictionary returned by madmex.validation.validate()
+
+    Return:
+        This function is used for its side effect of print a dictionary as a table
+    """
+    print('{:<15} {:<20} {:<20} {:<50}'.format('Numeric code','User\'s Accuracy','Producer\'s Accuracy','Class Name'))
+    for code in d['users_accuracy'].keys():
+        print("{:<15} {<:20.2f} {<:20.2f} {<:50}".format(code,
+                                                         d['users_accuracy'][code],
+                                                         d['producers_accuracy'][code],
+                                                         d['label_encoding'][code])
+
 
 def db_log():
     """Log the results of a validation to the database
