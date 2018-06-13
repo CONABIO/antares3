@@ -73,7 +73,7 @@ Number of validation polygons: %d
 Number of intersecting classification polygons: %d """
 
         print(report % (region, classification, validation,
-                        len(fc_valid), len(fc_test))
+                        len(fc_valid), len(fc_test)))
 
         # Prepare validation vectors
         y_true, y_pred, sample_weight = prepare_validation(fc_valid, fc_test)
