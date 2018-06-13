@@ -70,7 +70,9 @@ Region: %s
 Classification identifier: %s
 Validation dataset identifier: %s
 Number of validation polygons: %d
-Number of intersecting classification polygons: %d """
+Number of intersecting classification polygons: %d
+
+"""
 
         print(report % (region, classification, validation,
                         len(fc_valid), len(fc_test)))
