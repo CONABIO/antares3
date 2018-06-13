@@ -6,6 +6,7 @@ Created on Dec 12, 2017
 
 from django.contrib.gis.db import models
 from django.contrib.gis.utils.layermapping import LayerMapping
+from django.contrib.postgres.fields import JSONField
 
 
 class Country(models.Model):
@@ -113,6 +114,21 @@ class ValidClassification(models.Model):
     valid_object = models.ForeignKey(ValidObject, on_delete=models.CASCADE)
     valid_set = models.CharField(max_length=100, default='')
     interpretation_year = models.IntegerField(default=-1)
+
+
+class ValidationResults(models.Model):
+    """Log validation results
+    """
+    classification = models.CharField(max_length=100, default='')
+    validation = models.CharField(max_length=100, default='')
+    region = models.CharField(max_length=100, default='', null=True)
+    scheme = models.CharField(max_length=100, default='')
+    n_val = models.IntegerField(default=-1)
+    n_pred = models.IntegerField(default=-1)
+    overall_acc = models.FloatField(default=1.0)
+    report = JSONField()
+    comment = models.CharField(max_length=500, default='', null=True)
+    added = models.DateTimeField(auto_now_add=True)
 
 class PredictClassification(models.Model):
     '''This table relates predict object and a tag as a many to many table. We created an

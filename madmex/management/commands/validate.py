@@ -11,6 +11,7 @@ import logging
 from madmex.validation import validate, prepare_validation
 from madmex.validation import query_validation_intersect, pprint_val_dict
 from madmex.util.db import get_validation_scheme_name
+from madmex.models import ValidationResults
 
 from pprint import pprint
 
@@ -49,6 +50,10 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
         parser.add_argument('--log',
                             action='store_true',
                             help='Write the validation metrics to the database when specified.')
+        parser.add_argument('--comment',
+                            type=str,
+                            default=None,
+                            help='Optional quotted comment to be added to the database')
 
     def handle(self, *args, **options):
         # Unpack variables
@@ -56,6 +61,7 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
         validation = options['validation']
         region = options['region']
         log = options['log']
+        comment = options['comment']
 
         # Get the scheme name
         scheme = get_validation_scheme_name(validation)
@@ -86,5 +92,14 @@ Number of intersecting classification polygons: %d
 
         # Optionally log the results to the db
         if log:
-            logger.info('Logging the results of a validation hasn\'t been implemented yet')
+            logger.info('Writing validation results to the database')
+            ValidationResults.objects.create(classification=classification,
+                                             validation=validation,
+                                             region=region,
+                                             scheme=scheme,
+                                             n_val=len(fc_valid),
+                                             n_pred=len(fc_test),
+                                             overall_acc=acc_dict['overall_accuracy'],
+                                             report=acc_dict,
+                                             comment=comment)
 
