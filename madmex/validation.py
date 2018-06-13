@@ -201,6 +201,9 @@ def pprint_val_dict(d):
                                                          d['users_accuracy'][code],
                                                          d['producers_accuracy'][code],
                                                          d['label_encoding'][code]))
+    print('-----')
+    print('Overall Accuracy: %.2f' % d['overall_accuracy'])
+
 
 
 def db_log():

@@ -150,6 +150,7 @@ Utilities to compute validation metrics on existing results
    validation.prepare_validation
    validation.validate
    validation.query_validation_intersect
+   validation.pprint_val_dict
 
 
 Wrappers
