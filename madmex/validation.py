@@ -210,8 +210,10 @@ def pprint_val_dict(d):
     print('\n-----')
     print('Confusion matrix')
     print('-----')
-    row_format = '{:<6}|' + ' {:<6.2f}'*len(d['numeric_labels'])
-    print(row_format.format('   ', *d['numeric_labels']))
+    head_format = '{:<6}|' + ' {:<7}'*len(d['numeric_labels'])
+    row_format = '{:<6}|' + ' {:<7.2f}'*len(d['numeric_labels'])
+    print(head_format.format('   ', *d['numeric_labels']))
+    print(head_format.format('   ', *['--------'] * len(d['numeric_labels'])))
     for i, row in enumerate(d['confusion_matrix']):
         print(row_format.format(d['numeric_labels'][i], *row))
 
