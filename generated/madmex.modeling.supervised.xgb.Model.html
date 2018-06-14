@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.modeling.supervised.xgb.Model &mdash; antares3 0.2.0 documentation</title>
+  <title>madmex.modeling.supervised.xgb.Model &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -112,6 +112,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#overlay">Overlay</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#validation">Validation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#wrappers">Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#utils">Utils</a></li>
 </ul>
@@ -216,35 +217,29 @@
 <tr class="row-odd"><td><a class="reference internal" href="#madmex.modeling.supervised.xgb.Model.__init__" title="madmex.modeling.supervised.xgb.Model.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([categorical_features,&nbsp;…])</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_report</span></code>(expected,&nbsp;predicted[,&nbsp;filepath])</td>
-<td>Creates a report in the given filepath, it includes the confusion matrix, and information about the score.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(X,&nbsp;y)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(X,&nbsp;y)</td>
 <td>This method will train the classifier with given data.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_db</span></code>(name)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_db</span></code>(name)</td>
 <td>Instantiate an object from a children class of BaseModel reading it from the database</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hot_encode_predict</span></code>(X)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hot_encode_predict</span></code>(X)</td>
 <td>Hot Encode data on which prediction is to be performed</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hot_encode_training</span></code>(X)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hot_encode_training</span></code>(X)</td>
 <td>Apply one hot encoding to one or several predictors determined by the list of indices of the hot_encode attribute</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>()</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>()</td>
 <td>Read object from file</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(X)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(X)</td>
 <td>Simply passes down the prediction from the underlying model.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_confidence</span></code>(X)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_confidence</span></code>(X)</td>
 <td>Get confidence of every prediction</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(filepath)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(filepath)</td>
 <td>Write entire object to file</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code>(filepath)</td>
-<td>Lets the user load a previously trained model to predict with it.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_db</span></code>(name[,&nbsp;recipe,&nbsp;training_set])</td>
 <td>Write the instance of the class to the datbase</td>
@@ -297,7 +292,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.2.0',
+            VERSION:'0.3.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

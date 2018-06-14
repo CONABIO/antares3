@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.modeling.BaseModel.create_report &mdash; antares3 0.2.0 documentation</title>
+  <title>madmex.util.spatial.geometry_transform &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -29,8 +29,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="madmex.modeling.supervised.rf.Model" href="madmex.modeling.supervised.rf.Model.html" />
-    <link rel="prev" title="madmex.modeling.BaseModel.score" href="madmex.modeling.BaseModel.score.html" /> 
+    <link rel="next" title="madmex.util.spatial.get_geom_bbox" href="madmex.util.spatial.get_geom_bbox.html" />
+    <link rel="prev" title="madmex.util.spatial.feature_transform" href="madmex.util.spatial.feature_transform.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -100,28 +100,35 @@
 <li class="toctree-l2"><a class="reference internal" href="../api.html#indexing">Indexing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#ingestion">Ingestion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#i-o">I/O</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api.html#modeling">Modeling</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../api.html#base-class">Base class</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.html">madmex.modeling.BaseModel</a></li>
-<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.fit.html">madmex.modeling.BaseModel.fit</a></li>
-<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.predict.html">madmex.modeling.BaseModel.predict</a></li>
-<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.load.html">madmex.modeling.BaseModel.load</a></li>
-<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.save.html">madmex.modeling.BaseModel.save</a></li>
-<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.from_db.html">madmex.modeling.BaseModel.from_db</a></li>
-<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.to_db.html">madmex.modeling.BaseModel.to_db</a></li>
-<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.hot_encode_training.html">madmex.modeling.BaseModel.hot_encode_training</a></li>
-<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.hot_encode_predict.html">madmex.modeling.BaseModel.hot_encode_predict</a></li>
-<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.score.html">madmex.modeling.BaseModel.score</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">madmex.modeling.BaseModel.create_report</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../api.html#implemented-models">Implemented models</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#modeling">Modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#overlay">Overlay</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#validation">Validation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#wrappers">Wrappers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#utils">Utils</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#utils">Utils</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.randomword.html">madmex.util.randomword</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.yaml_to_dict.html">madmex.util.yaml_to_dict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.mid_date.html">madmex.util.mid_date</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.parser_extra_args.html">madmex.util.parser_extra_args</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.chunk.html">madmex.util.chunk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.pprint_args.html">madmex.util.pprint_args</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.fill_and_copy.html">madmex.util.fill_and_copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.datacube.var_to_ind.html">madmex.util.datacube.var_to_ind</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.local.aware_download.html">madmex.util.local.aware_download</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.local.extract_zip.html">madmex.util.local.extract_zip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.local.aware_make_dir.html">madmex.util.local.aware_make_dir</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.local.basename.html">madmex.util.local.basename</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.local.filter_files_from_folder.html">madmex.util.local.filter_files_from_folder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.xarray.to_float.html">madmex.util.xarray.to_float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.xarray.to_int.html">madmex.util.xarray.to_int</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.feature_transform.html">madmex.util.spatial.feature_transform</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.util.spatial.geometry_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.get_geom_bbox.html">madmex.util.spatial.get_geom_bbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.db.classification_to_cmap.html">madmex.util.db.classification_to_cmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.db.get_label_encoding.html">madmex.util.db.get_label_encoding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.db.get_validation_scheme_name.html">madmex.util.db.get_validation_scheme_name</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -175,13 +182,13 @@
         
           <li><a href="../api.html">API reference</a> &raquo;</li>
         
-      <li>madmex.modeling.BaseModel.create_report</li>
+      <li>madmex.util.spatial.geometry_transform</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/madmex.modeling.BaseModel.create_report.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/madmex.util.spatial.geometry_transform.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -194,14 +201,33 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="madmex-modeling-basemodel-create-report">
-<h1>madmex.modeling.BaseModel.create_report<a class="headerlink" href="#madmex-modeling-basemodel-create-report" title="Permalink to this headline">¶</a></h1>
-<dl class="method">
-<dt id="madmex.modeling.BaseModel.create_report">
-<code class="descclassname">BaseModel.</code><code class="descname">create_report</code><span class="sig-paren">(</span><em>expected</em>, <em>predicted</em>, <em>filepath='report.txt'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/modeling.html#BaseModel.create_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.modeling.BaseModel.create_report" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a report in the given filepath, it includes the confusion
-matrix, and information about the score. It contrasts expected and
-predicted outcomes.</p>
+  <div class="section" id="madmex-util-spatial-geometry-transform">
+<h1>madmex.util.spatial.geometry_transform<a class="headerlink" href="#madmex-util-spatial-geometry-transform" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="madmex.util.spatial.geometry_transform">
+<code class="descclassname">madmex.util.spatial.</code><code class="descname">geometry_transform</code><span class="sig-paren">(</span><em>geometry</em>, <em>crs_out</em>, <em>crs_in='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/util/spatial.html#geometry_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.util.spatial.geometry_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reproject a geometry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>geometry</strong> (<em>dict</em>) – The geometry part of a geojson like feature</li>
+<li><strong>crs_out</strong> (<em>str</em>) – coordinate reference system to project to. In proj4 string
+format</li>
+<li><strong>crs_in</strong> (<em>str</em>) – proj4 string of the input feature. Can be omited in which case
+it defaults to 4326</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A geometry</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -214,10 +240,10 @@ predicted outcomes.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="madmex.modeling.supervised.rf.Model.html" class="btn btn-neutral float-right" title="madmex.modeling.supervised.rf.Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="madmex.util.spatial.get_geom_bbox.html" class="btn btn-neutral float-right" title="madmex.util.spatial.get_geom_bbox" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.modeling.BaseModel.score.html" class="btn btn-neutral" title="madmex.modeling.BaseModel.score" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.util.spatial.feature_transform.html" class="btn btn-neutral" title="madmex.util.spatial.feature_transform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -248,7 +274,7 @@ predicted outcomes.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.2.0',
+            VERSION:'0.3.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

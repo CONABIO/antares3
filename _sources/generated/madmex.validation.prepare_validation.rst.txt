@@ -1,0 +1,6 @@
+madmex.validation.prepare\_validation
+=====================================
+
+.. currentmodule:: madmex.validation
+
+.. autofunction:: prepare_validation

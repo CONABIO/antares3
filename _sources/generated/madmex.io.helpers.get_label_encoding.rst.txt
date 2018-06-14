@@ -1,6 +1,0 @@
-madmex.io.helpers.get\_label\_encoding
-======================================
-
-.. currentmodule:: madmex.io.helpers
-
-.. autofunction:: get_label_encoding

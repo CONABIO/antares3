@@ -1,0 +1,6 @@
+madmex.util.db.classification\_to\_cmap
+=======================================
+
+.. currentmodule:: madmex.util.db
+
+.. autofunction:: classification_to_cmap

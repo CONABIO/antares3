@@ -1,0 +1,441 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>madmex.validation &mdash; antares3 0.3.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> antares3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dependencies.html">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">Setup/first time use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../download.html">Downloading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ingest.html">Ingesting data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../extend.html">Extending the system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API reference</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../example_s2_land_cover.html">Sentinel 2 based Land cover example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">antares3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>madmex.validation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for madmex.validation</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="k">import</span> <span class="n">shape</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">precision_score</span> <span class="k">as</span> <span class="n">user_acc</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">recall_score</span> <span class="k">as</span> <span class="n">prod_acc</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">accuracy_score</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">connection</span>
+
+<span class="kn">from</span> <span class="nn">madmex.models</span> <span class="k">import</span> <span class="n">Country</span><span class="p">,</span> <span class="n">Region</span>
+<span class="kn">from</span> <span class="nn">madmex.util.db</span> <span class="k">import</span> <span class="n">get_label_encoding</span>
+
+<div class="viewcode-block" id="prepare_validation"><a class="viewcode-back" href="../../generated/madmex.validation.prepare_validation.html#madmex.validation.prepare_validation">[docs]</a><span class="k">def</span> <span class="nf">prepare_validation</span><span class="p">(</span><span class="n">fc_valid</span><span class="p">,</span> <span class="n">fc_test</span><span class="p">,</span> <span class="n">valid_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">test_field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate area weighted confusion matrix</span>
+
+<span class="sd">    Generate the various vectors required to produce area weighted validation metrics</span>
+<span class="sd">    (y_true, y_pred, weight, labels). Weight is simply the area of intersection between</span>
+<span class="sd">    each pair of intersecting polygons from the test and validation features collections</span>
+<span class="sd">    Both feature collections must be in the same CRS. Note that an equal area CRS</span>
+<span class="sd">    should be preferred for this type of operations.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fc_valid (list): The feature collection containing validation polygons</span>
+<span class="sd">            Can also be a list of (geometry, value) tupples in case any of valid_field</span>
+<span class="sd">            and test_fields are specified</span>
+<span class="sd">        fc_test (list): The feature collection containing test polygons</span>
+<span class="sd">            Can also be a list of (geometry, value) tupples in case any of valid_field</span>
+<span class="sd">            and test_fields are specified</span>
+<span class="sd">        valid_field (str): Name of the field containing the validation values.</span>
+<span class="sd">            Defaults to None in which case fc_valid and fc_test are assumed to be</span>
+<span class="sd">            lists of (geometry, value) tupples.</span>
+<span class="sd">        test_field (str): Name of the field containing the test values</span>
+<span class="sd">            Defaults to None in which case fc_valid and fc_test are assumed to be</span>
+<span class="sd">            lists of (geometry, value) tupples.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import os, json</span>
+<span class="sd">        &gt;&gt;&gt; from madmex.validation import validate</span>
+
+<span class="sd">        &gt;&gt;&gt; with open(os.path.userexpand(&#39;~/git/antares3/tests/data/validation.geojson&#39;)) as src:</span>
+<span class="sd">        &gt;&gt;&gt;     fc = json.load(src)[&#39;features&#39;]</span>
+
+<span class="sd">        &gt;&gt;&gt; fc_test = [x for x in fc if x[&#39;properties&#39;][&#39;set&#39;] == &#39;test&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; fc_validation = [x for x in fc if x[&#39;properties&#39;][&#39;set&#39;] == &#39;validation&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; prepare_validation(fc_validation, fc_test, &#39;value&#39;, &#39;value&#39;)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tupple: Array of 3 lists (y_true, y_pred, weight)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">valid_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">test_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Build list of (geometry, value) tuples for both feature collections</span>
+        <span class="n">geom_list_valid</span> <span class="o">=</span> <span class="p">[(</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]),</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="n">valid_field</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fc_valid</span><span class="p">]</span>
+        <span class="n">geom_list_test</span> <span class="o">=</span> <span class="p">[(</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]),</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="n">test_field</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fc_test</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">geom_list_valid</span> <span class="o">=</span> <span class="p">[(</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fc_valid</span><span class="p">]</span>
+        <span class="n">geom_list_test</span> <span class="o">=</span> <span class="p">[(</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fc_test</span><span class="p">]</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">geom_list_valid</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">geom_list_test</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="c1"># The area used for weighting is multiplied by 1000000 to approximate hectares (more friendly conf matrix)</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">area</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">))</span>
+    <span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">weight</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">results</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="validate"><a class="viewcode-back" href="../../generated/madmex.validation.validate.html#madmex.validation.validate">[docs]</a><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute user&#39;s and producer&#39;s accuracy for each class and overall accuracy</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        y_true (list, array): 1D array-like list of truth labels</span>
+<span class="sd">        y_pred (list, array): 1D array-like list of estimated targets</span>
+<span class="sd">        sample_weight (list, array): See sklearn.metrics</span>
+<span class="sd">        scheme (str): Name of the classification scheme</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        dict: A dictionary organizing the accuracy information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">y_true</span> <span class="o">+</span> <span class="n">y_pred</span><span class="p">))</span>
+    <span class="n">pa</span> <span class="o">=</span> <span class="n">prod_acc</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">sample_weight</span><span class="p">)</span>
+    <span class="n">ua</span> <span class="o">=</span> <span class="n">user_acc</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">sample_weight</span><span class="p">)</span>
+    <span class="n">acc_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">acc_dict</span><span class="p">[</span><span class="s1">&#39;users_accuracy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">ua</span><span class="p">))</span>
+    <span class="n">acc_dict</span><span class="p">[</span><span class="s1">&#39;producers_accuracy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">pa</span><span class="p">))</span>
+    <span class="n">acc_dict</span><span class="p">[</span><span class="s1">&#39;overall_accuracy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span>
+                                                  <span class="n">sample_weight</span><span class="o">=</span><span class="n">sample_weight</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">scheme</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">acc_dict</span><span class="p">[</span><span class="s1">&#39;label_encoding&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_label_encoding</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">acc_dict</span></div>
+
+
+<div class="viewcode-block" id="query_validation_intersect"><a class="viewcode-back" href="../../generated/madmex.validation.query_validation_intersect.html#madmex.validation.query_validation_intersect">[docs]</a><span class="k">def</span> <span class="nf">query_validation_intersect</span><span class="p">(</span><span class="n">validation_set</span><span class="p">,</span> <span class="n">test_set</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Query intersecting records from the validation and the predictClassification database table</span>
+
+<span class="sd">    validation_set and test_set must exist in the ValidClassification and PredictClassification</span>
+<span class="sd">    respectively</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        validation_set (str): Name/unique identifier of the validation set to use</span>
+<span class="sd">        test_set (str): Name/unique identifier of the data to validate. Must be present</span>
+<span class="sd">            in the PredictClassification table of the database</span>
+<span class="sd">        region (str): Optional region withing which to query the data. Specified as</span>
+<span class="sd">            iso country code (Country table) or region name (Region table)</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        tuple: A tuple (fc_valid, fc_test) of two list of (geometry, value) tupples</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create temp table with validation geometries filtered by name and optionally by region (geom, value)</span>
+    <span class="c1"># Get that table converting to geojson on the fly</span>
+    <span class="c1"># Query the PredictClassification data that intersect with the validation data (st_asgeojson(the_geom), value)</span>
+    <span class="n">q0_sp_filter</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">CREATE TEMP TABLE validation AS</span>
+<span class="s2">SELECT</span>
+<span class="s2">    public.madmex_validobject.the_geom AS geom,</span>
+<span class="s2">    public.madmex_tag.numeric_code AS tag</span>
+<span class="s2">FROM</span>
+<span class="s2">    public.madmex_validclassification</span>
+<span class="s2">INNER JOIN</span>
+<span class="s2">    public.madmex_validobject ON public.madmex_validclassification.valid_object_id = public.madmex_validobject.id</span>
+<span class="s2">    AND</span>
+<span class="s2">    st_intersects(public.madmex_validobject.the_geom, st_geometryFromText(</span><span class="si">%s</span><span class="s2">, 4326))</span>
+<span class="s2">    AND</span>
+<span class="s2">    public.madmex_validclassification.valid_set = </span><span class="si">%s</span><span class="s2"></span>
+<span class="s2">INNER JOIN</span>
+<span class="s2">    public.madmex_tag ON public.madmex_validclassification.valid_tag_id = public.madmex_tag.id;</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">q0</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">CREATE TEMP TABLE validation AS</span>
+<span class="s2">SELECT</span>
+<span class="s2">    public.madmex_validobject.the_geom AS geom,</span>
+<span class="s2">    public.madmex_tag.numeric_code AS tag</span>
+<span class="s2">FROM</span>
+<span class="s2">    public.madmex_validclassification AS vc</span>
+<span class="s2">INNER JOIN</span>
+<span class="s2">    public.madmex_validobject ON vc.valid_object_id = public.madmex_validobject.id</span>
+<span class="s2">    AND</span>
+<span class="s2">    vc.valid_set = </span><span class="si">%s</span><span class="s2"></span>
+<span class="s2">INNER JOIN</span>
+<span class="s2">    public.madmex_tag ON vc.valid_tag_id = public.madmex_tag.id;</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">q1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">SELECT</span>
+<span class="s2">    st_asgeojson(geom, 6),</span>
+<span class="s2">    tag</span>
+<span class="s2">FROM</span>
+<span class="s2">    validation;</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">q2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">SELECT</span>
+<span class="s2">    st_asgeojson(public.madmex_predictobject.the_geom, 6),</span>
+<span class="s2">    public.madmex_tag.numeric_code</span>
+<span class="s2">FROM</span>
+<span class="s2">    public.madmex_predictclassification AS cl</span>
+<span class="s2">INNER JOIN</span>
+<span class="s2">    public.madmex_predictobject ON cl.predict_object_id = public.madmex_predictobject.id</span>
+<span class="s2">INNER JOIN</span>
+<span class="s2">    validation ON st_intersects(validation.geom, public.madmex_predictobject.the_geom)</span>
+<span class="s2">INNER JOIN</span>
+<span class="s2">    public.madmex_tag ON cl.tag_id = public.madmex_tag.id</span>
+<span class="s2">WHERE</span>
+<span class="s2">    cl.name = </span><span class="si">%s</span><span class="s2">;</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">region</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Query country or region contour</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">region</span> <span class="o">=</span> <span class="n">Country</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">region</span><span class="p">)</span><span class="o">.</span><span class="n">the_geom</span>
+        <span class="k">except</span> <span class="n">Country</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="n">region</span> <span class="o">=</span> <span class="n">Region</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">region</span><span class="p">)</span><span class="o">.</span><span class="n">the_geom</span>
+
+    <span class="k">with</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">c</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">region</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="p">[</span><span class="n">validation_set</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">q0_sp_filter</span><span class="p">,</span> <span class="p">[</span><span class="n">region</span><span class="o">.</span><span class="n">wkt</span><span class="p">,</span> <span class="n">validation_set</span><span class="p">])</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">q1</span><span class="p">)</span>
+        <span class="n">val_qs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="p">[</span><span class="n">test_set</span><span class="p">])</span>
+        <span class="n">pred_qs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">val_fc</span> <span class="o">=</span> <span class="p">[(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">val_qs</span><span class="p">]</span>
+    <span class="n">pred_fc</span> <span class="o">=</span> <span class="p">[(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pred_qs</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">val_fc</span><span class="p">,</span> <span class="n">pred_fc</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pprint_val_dict"><a class="viewcode-back" href="../../generated/madmex.validation.pprint_val_dict.html#madmex.validation.pprint_val_dict">[docs]</a><span class="k">def</span> <span class="nf">pprint_val_dict</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Prints the dictionary returned by madmex.validation.validate as a nicely formated table</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        d (dict): The dictionary returned by madmex.validation.validate()</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        This function is used for its side effect of print a dictionary as a table</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:&lt;15}</span><span class="s1"> </span><span class="si">{:&lt;20}</span><span class="s1"> </span><span class="si">{:&lt;20}</span><span class="s1"> </span><span class="si">{:&lt;50}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Numeric code&#39;</span><span class="p">,</span><span class="s1">&#39;User</span><span class="se">\&#39;</span><span class="s1">s Accuracy&#39;</span><span class="p">,</span><span class="s1">&#39;Producer</span><span class="se">\&#39;</span><span class="s1">s Accuracy&#39;</span><span class="p">,</span><span class="s1">&#39;Class Name&#39;</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;users_accuracy&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:&lt;15}</span><span class="s2"> </span><span class="si">{:&lt;20.2f}</span><span class="s2"> </span><span class="si">{:&lt;20.2f}</span><span class="s2"> </span><span class="si">{:&lt;50}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">code</span><span class="p">,</span>
+                                                         <span class="n">d</span><span class="p">[</span><span class="s1">&#39;users_accuracy&#39;</span><span class="p">][</span><span class="n">code</span><span class="p">],</span>
+                                                         <span class="n">d</span><span class="p">[</span><span class="s1">&#39;producers_accuracy&#39;</span><span class="p">][</span><span class="n">code</span><span class="p">],</span>
+                                                         <span class="n">d</span><span class="p">[</span><span class="s1">&#39;label_encoding&#39;</span><span class="p">][</span><span class="n">code</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-----&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Overall Accuracy: </span><span class="si">%.2f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;overall_accuracy&#39;</span><span class="p">])</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">db_log</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Log the results of a validation to the database</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.3.0',
+            LANGUAGE:'en',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
+      });
+  </script> 
+
+</body>
+</html>

@@ -14,7 +14,6 @@ madmex.modeling.BaseModel
    .. autosummary::
    
       ~BaseModel.__init__
-      ~BaseModel.create_report
       ~BaseModel.fit
       ~BaseModel.from_db
       ~BaseModel.hot_encode_predict
@@ -23,7 +22,6 @@ madmex.modeling.BaseModel
       ~BaseModel.predict
       ~BaseModel.predict_confidence
       ~BaseModel.save
-      ~BaseModel.score
       ~BaseModel.to_db
    
    

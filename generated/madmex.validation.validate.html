@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.io.helpers.get_label_encoding &mdash; antares3 0.2.0 documentation</title>
+  <title>madmex.validation.validate &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -29,8 +29,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="madmex.io.vector_db.from_geobox" href="madmex.io.vector_db.from_geobox.html" />
-    <link rel="prev" title="madmex.ingestion.s2_l2a_20m.metadata_convert" href="madmex.ingestion.s2_l2a_20m.metadata_convert.html" /> 
+    <link rel="next" title="madmex.validation.query_validation_intersect" href="madmex.validation.query_validation_intersect.html" />
+    <link rel="prev" title="madmex.validation.prepare_validation" href="madmex.validation.prepare_validation.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -99,17 +99,17 @@
 <li class="toctree-l2"><a class="reference internal" href="../api.html#api">Api</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#indexing">Indexing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#ingestion">Ingestion</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api.html#i-o">I/O</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.io.helpers.get_label_encoding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.io.vector_db.from_geobox.html">madmex.io.vector_db.from_geobox</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.io.vector_db.VectorDb.html">madmex.io.vector_db.VectorDb</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.io.vector_db.VectorDb.load_training_from_dataset.html">madmex.io.vector_db.VectorDb.load_training_from_dataset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.io.vector_db.load_segmentation_from_dataset.html">madmex.io.vector_db.load_segmentation_from_dataset</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#i-o">I/O</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#modeling">Modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#overlay">Overlay</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#validation">Validation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="madmex.validation.prepare_validation.html">madmex.validation.prepare_validation</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.validation.validate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.validation.query_validation_intersect.html">madmex.validation.query_validation_intersect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.validation.pprint_val_dict.html">madmex.validation.pprint_val_dict</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#wrappers">Wrappers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#utils">Utils</a></li>
 </ul>
@@ -165,13 +165,13 @@
         
           <li><a href="../api.html">API reference</a> &raquo;</li>
         
-      <li>madmex.io.helpers.get_label_encoding</li>
+      <li>madmex.validation.validate</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/madmex.io.helpers.get_label_encoding.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/madmex.validation.validate.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -184,24 +184,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="madmex-io-helpers-get-label-encoding">
-<h1>madmex.io.helpers.get_label_encoding<a class="headerlink" href="#madmex-io-helpers-get-label-encoding" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="madmex-validation-validate">
+<h1>madmex.validation.validate<a class="headerlink" href="#madmex-validation-validate" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="madmex.io.helpers.get_label_encoding">
-<code class="descclassname">madmex.io.helpers.</code><code class="descname">get_label_encoding</code><span class="sig-paren">(</span><em>scheme</em>, <em>inverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/io/helpers.html#get_label_encoding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.io.helpers.get_label_encoding" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get label –&gt; Numeric code correspondance for a given classification scheme as a dictionary</p>
+<dt id="madmex.validation.validate">
+<code class="descclassname">madmex.validation.</code><code class="descname">validate</code><span class="sig-paren">(</span><em>y_true</em>, <em>y_pred</em>, <em>sample_weight=None</em>, <em>scheme=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/validation.html#validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.validation.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute user’s and producer’s accuracy for each class and overall accuracy</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>scheme</strong> (<em>str</em>) – Classification scheme</li>
-<li><strong>inverse</strong> (<em>bool</em>) – Use numerics codes as keys and labels as values if True.
-Defaults to False (labels as keys and codes as values)</li>
+<li><strong>y_true</strong> (<em>list</em><em>, </em><em>array</em>) – 1D array-like list of truth labels</li>
+<li><strong>y_pred</strong> (<em>list</em><em>, </em><em>array</em>) – 1D array-like list of estimated targets</li>
+<li><strong>sample_weight</strong> (<em>list</em><em>, </em><em>array</em>) – See sklearn.metrics</li>
+<li><strong>scheme</strong> (<em>str</em>) – Name of the classification scheme</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dictionary of encoding mapping</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dictionary organizing the accuracy information</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
@@ -209,17 +210,6 @@ Defaults to False (labels as keys and codes as values)</li>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.io.helpers</span> <span class="k">import</span> <span class="n">get_label_encoding</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pprint</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">get_label_encoding</span><span class="p">(</span><span class="s1">&#39;madmex&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d_inv</span> <span class="o">=</span> <span class="n">get_label_encoding</span><span class="p">(</span><span class="s1">&#39;madmex&#39;</span><span class="p">,</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">d_inv</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </div>
@@ -232,10 +222,10 @@ Defaults to False (labels as keys and codes as values)</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="madmex.io.vector_db.from_geobox.html" class="btn btn-neutral float-right" title="madmex.io.vector_db.from_geobox" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="madmex.validation.query_validation_intersect.html" class="btn btn-neutral float-right" title="madmex.validation.query_validation_intersect" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.ingestion.s2_l2a_20m.metadata_convert.html" class="btn btn-neutral" title="madmex.ingestion.s2_l2a_20m.metadata_convert" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.validation.prepare_validation.html" class="btn btn-neutral" title="madmex.validation.prepare_validation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -266,7 +256,7 @@ Defaults to False (labels as keys and codes as values)</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.2.0',
+            VERSION:'0.3.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

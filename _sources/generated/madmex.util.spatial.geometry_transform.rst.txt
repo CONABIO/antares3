@@ -1,0 +1,6 @@
+madmex.util.spatial.geometry\_transform
+=======================================
+
+.. currentmodule:: madmex.util.spatial
+
+.. autofunction:: geometry_transform

@@ -1,0 +1,6 @@
+madmex.util.db.get\_validation\_scheme\_name
+============================================
+
+.. currentmodule:: madmex.util.db
+
+.. autofunction:: get_validation_scheme_name

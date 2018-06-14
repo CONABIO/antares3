@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.io.helpers &mdash; antares3 0.2.0 documentation</title>
+  <title>madmex.util.db &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -145,9 +145,9 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-          <li><a href="../io.html">madmex.io</a> &raquo;</li>
+          <li><a href="../util.html">madmex.util</a> &raquo;</li>
         
-      <li>madmex.io.helpers</li>
+      <li>madmex.util.db</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -162,16 +162,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for madmex.io.helpers</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">Created on Mar 7, 2018</span>
+  <h1>Source code for madmex.util.db</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">madmex.models</span> <span class="k">import</span> <span class="n">Tag</span><span class="p">,</span> <span class="n">PredictClassification</span><span class="p">,</span> <span class="n">ValidClassification</span>
 
-<span class="sd">@author: agutierrez</span>
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="kn">from</span> <span class="nn">madmex.models</span> <span class="k">import</span> <span class="n">Tag</span>
+<div class="viewcode-block" id="classification_to_cmap"><a class="viewcode-back" href="../../../generated/madmex.util.db.classification_to_cmap.html#madmex.util.db.classification_to_cmap">[docs]</a><span class="k">def</span> <span class="nf">classification_to_cmap</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate a colormap (cmap) object for a given classification</span>
+
+<span class="sd">    Colors are read from the database. The cmap can later be written to the metadata</span>
+<span class="sd">    of a GeoTiff file using the write_colormap rasterio method</span>
+<span class="sd">    0 is always considered no value and is therefore assigned no full transparency</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (str): Name of an existing classification, registered in the madmex_predictclassification</span>
+<span class="sd">            table</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: A color map object {value0: [R, G, B, Alpha], ...}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">hex_to_rgba</span><span class="p">(</span><span class="n">hex_code</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">hex_code</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="p">,</span><span class="mi">5</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="mi">255</span><span class="p">,)</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">PredictClassification</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="n">scheme</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">scheme</span>
+    <span class="n">qs_tag</span> <span class="o">=</span> <span class="n">Tag</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">scheme</span><span class="o">=</span><span class="n">scheme</span><span class="p">)</span>
+    <span class="n">hex_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">i</span><span class="o">.</span><span class="n">numeric_code</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">color</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">qs_tag</span><span class="p">])</span>
+    <span class="n">rgb_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">hex_to_rgba</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">hex_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">rgb_dict</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rgb_dict</span></div>
 
 
-<div class="viewcode-block" id="get_label_encoding"><a class="viewcode-back" href="../../../generated/madmex.io.helpers.get_label_encoding.html#madmex.io.helpers.get_label_encoding">[docs]</a><span class="k">def</span> <span class="nf">get_label_encoding</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_label_encoding"><a class="viewcode-back" href="../../../generated/madmex.util.db.get_label_encoding.html#madmex.util.db.get_label_encoding">[docs]</a><span class="k">def</span> <span class="nf">get_label_encoding</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get label --&gt; Numeric code correspondance for a given classification scheme as a dictionary</span>
 
 <span class="sd">    Args:</span>
@@ -197,6 +217,26 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="p">{</span><span class="n">row</span><span class="o">.</span><span class="n">numeric_code</span><span class="p">:</span><span class="n">row</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">query_set</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="get_validation_scheme_name"><a class="viewcode-back" href="../../../generated/madmex.util.db.get_validation_scheme_name.html#madmex.util.db.get_validation_scheme_name">[docs]</a><span class="k">def</span> <span class="nf">get_validation_scheme_name</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Given the name/identifier of an ingested validation dataset, returns its scheme name</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): Name, identifier of the classification, as it appears in the</span>
+<span class="sd">            ValidClassification table</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from madmex.util.db import get_validation_scheme_name</span>
+
+<span class="sd">        &gt;&gt;&gt; get_validation_scheme_name(&#39;bis_interpret&#39;)</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        str: The name of the scheme used by that validation dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">valid_obj</span> <span class="o">=</span> <span class="n">ValidClassification</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">valid_set</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="n">scheme</span> <span class="o">=</span> <span class="n">valid_obj</span><span class="o">.</span><span class="n">valid_tag</span><span class="o">.</span><span class="n">scheme</span>
+    <span class="k">return</span> <span class="n">scheme</span></div>
 </pre></div>
 
            </div>
@@ -231,7 +271,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.2.0',
+            VERSION:'0.3.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

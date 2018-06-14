@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.wrappers &mdash; antares3 0.2.0 documentation</title>
+  <title>madmex.wrappers &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -281,6 +281,8 @@
         <span class="c1"># fc is a feature collection with one property (class)</span>
         <span class="c1"># Overlay geometries and xr_dataset and perform extraction combined with spatial aggregation</span>
         <span class="n">extract</span> <span class="o">=</span> <span class="n">zonal_stats_xarray</span><span class="p">(</span><span class="n">xr_dataset</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="n">aggregation</span><span class="o">=</span><span class="n">sp</span><span class="p">)</span>
+        <span class="n">fc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
         <span class="c1"># Return the extracted array (or a list of two arrays?)</span>
         <span class="k">return</span> <span class="n">extract</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -382,6 +384,7 @@
         <span class="n">geoarray</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">seg</span><span class="o">.</span><span class="n">polygonize</span><span class="p">()</span>
         <span class="n">seg</span><span class="o">.</span><span class="n">to_db</span><span class="p">(</span><span class="n">segmentation_meta</span><span class="p">)</span>
+        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -411,6 +414,7 @@
         <span class="c1"># Deallocate geoarray and feature collection</span>
         <span class="n">geoarray</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">fc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
         <span class="c1"># Load model</span>
         <span class="n">PredModel</span> <span class="o">=</span> <span class="n">BaseModel</span><span class="o">.</span><span class="n">from_db</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
         <span class="n">model_id</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">id</span>
@@ -435,7 +439,12 @@
             <span class="n">obj_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">predict_object_builder</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">pred</span><span class="p">,</span><span class="n">conf</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">conf</span> <span class="ow">in</span>
                         <span class="n">sub_zip</span><span class="p">]</span>
             <span class="n">PredictClassification</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">bulk_create</span><span class="p">(</span><span class="n">obj_list</span><span class="p">)</span>
+            <span class="n">obj_list</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">y_conf</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Prediction failed because: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
@@ -476,7 +485,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.0',
+            VERSION:'0.3.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

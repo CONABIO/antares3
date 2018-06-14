@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.modeling &mdash; antares3 0.2.0 documentation</title>
+  <title>madmex.modeling &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -294,23 +294,8 @@
         <span class="c1"># Create database entry</span>
         <span class="n">m</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span> <span class="n">training_set</span><span class="o">=</span><span class="n">training_set</span><span class="p">,</span>
                    <span class="n">recipe</span><span class="o">=</span><span class="n">recipe</span><span class="p">)</span>
-        <span class="n">m</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+        <span class="n">m</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div></div>
 
-<div class="viewcode-block" id="BaseModel.score"><a class="viewcode-back" href="../../generated/madmex.modeling.BaseModel.score.html#madmex.modeling.BaseModel.score">[docs]</a>    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Lets the user load a previously trained model to predict with it.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;subclasses of BaseModel must provide a score() method&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="BaseModel.create_report"><a class="viewcode-back" href="../../generated/madmex.modeling.BaseModel.create_report.html#madmex.modeling.BaseModel.create_report">[docs]</a>    <span class="k">def</span> <span class="nf">create_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">predicted</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="s1">&#39;report.txt&#39;</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Creates a report in the given filepath, it includes the confusion</span>
-<span class="sd">        matrix, and information about the score. It contrasts expected and</span>
-<span class="sd">        predicted outcomes.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">report</span><span class="p">:</span>
-            <span class="n">report</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Classification report for classifier:</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">predicted</span><span class="p">))</span>
-            <span class="n">report</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Confusion matrix:</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">predicted</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">expected</span><span class="p">)))</span></div></div>
 </pre></div>
 
            </div>
@@ -345,7 +330,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.0',
+            VERSION:'0.3.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

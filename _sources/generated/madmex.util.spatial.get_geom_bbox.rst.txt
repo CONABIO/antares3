@@ -1,0 +1,6 @@
+madmex.util.spatial.get\_geom\_bbox
+===================================
+
+.. currentmodule:: madmex.util.spatial
+
+.. autofunction:: get_geom_bbox

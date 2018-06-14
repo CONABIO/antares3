@@ -57,7 +57,6 @@ Read and write data
 .. autosummary::
    :toctree: generated
 
-   io.helpers.get_label_encoding
    io.vector_db.from_geobox
    io.vector_db.VectorDb
    io.vector_db.VectorDb.load_training_from_dataset
@@ -140,6 +139,20 @@ Implemented algorithms
    segmentation.bis.Segmentation
 
 
+Validation
+==========
+
+Utilities to compute validation metrics on existing results
+
+.. autosummary::
+   :toctree: generated
+
+   validation.prepare_validation
+   validation.validate
+   validation.query_validation_intersect
+   validation.pprint_val_dict
+
+
 Wrappers
 ========
 
@@ -180,3 +193,8 @@ Various utils
    util.xarray.to_float
    util.xarray.to_int
    util.spatial.feature_transform
+   util.spatial.geometry_transform
+   util.spatial.get_geom_bbox
+   util.db.classification_to_cmap
+   util.db.get_label_encoding
+   util.db.get_validation_scheme_name

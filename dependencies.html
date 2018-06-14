@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Dependencies &mdash; antares3 0.2.0 documentation</title>
+  <title>Dependencies &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -386,7 +386,6 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Type,Value<span class="o">=</span><span class="nv">$type_value</span> --region<span class="o">=</span><span class="nv">$region</span>
 <span class="nb">echo</span> <span class="s2">&quot;export region=</span><span class="nv">$region</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
 <span class="nb">echo</span> <span class="s2">&quot;export type_value=</span><span class="nv">$type_value</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
-/bin/bash -c <span class="s2">&quot;alias python=python3 &amp;&amp; pip3 install numpy &amp;&amp; pip3 install cloudpickle &amp;&amp; pip3 install GDAL==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span><span class="s2"> --global-option=build_ext --global-option=&#39;-I/usr/include/gdal&#39; &amp;&amp; pip3 install rasterio==1.0a12  --no-binary rasterio &amp;&amp; pip3 install scipy&quot;</span>
 <span class="c1">##Uncomment next line if you want to install Antares3 on your AutoScalingGroup</span>
 <span class="c1">#su ubuntu -c &quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
 </pre></div>
@@ -508,7 +507,7 @@ psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --d
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.0',
+            VERSION:'0.3.0',
             LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
