@@ -3,7 +3,7 @@ import json
 from shapely.geometry import shape
 from sklearn.metrics import precision_score as user_acc
 from sklearn.metrics import recall_score as prod_acc
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix
 from django.db import connection
 
 from madmex.models import Country, Region
@@ -80,11 +80,15 @@ def validate(y_true, y_pred, sample_weight=None, scheme=None):
                   labels=labels, sample_weight=sample_weight)
     ua = user_acc(y_true=y_true, y_pred=y_pred, average=None,
                   labels=labels, sample_weight=sample_weight)
+    cm = confusion_matrix(y_true=y_true, y_pred=y_pred,
+                          labels=labels, sample_weight=sample_weight)
     acc_dict = {}
     acc_dict['users_accuracy'] = dict(zip(labels, ua))
     acc_dict['producers_accuracy'] = dict(zip(labels, pa))
+    acc_dict['confusion_matrix'] = cm.tolist()
     acc_dict['overall_accuracy'] = accuracy_score(y_true=y_true, y_pred=y_pred,
                                                   sample_weight=sample_weight)
+    acc_dict['numeric_labels'] = labels
     if scheme is not None:
         acc_dict['label_encoding'] = get_label_encoding(scheme, inverse=True)
     return acc_dict
@@ -203,6 +207,12 @@ def pprint_val_dict(d):
                                                          d['label_encoding'][code]))
     print('-----')
     print('Overall Accuracy: %.2f' % d['overall_accuracy'])
+    print('\n------')
+    print('Confusion matrix')
+    row_format = '{:<6}' + ' {:<10.0f}'*len(d['numeric_labels'])
+    print(row_format.format('   ', *d['numeric_labels']))
+    for i, row in enumerate(d['confusion_matrix']):
+        print(row_format(d['numeric_labels'][i], *row))
 
 
 
