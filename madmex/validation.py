@@ -209,10 +209,10 @@ def pprint_val_dict(d):
     print('Overall Accuracy: %.2f' % d['overall_accuracy'])
     print('\n------')
     print('Confusion matrix')
-    row_format = '{:<6}' + ' {:<10.0f}'*len(d['numeric_labels'])
+    row_format = '{:<6}' + ' {:<8.0f}'*len(d['numeric_labels'])
     print(row_format.format('   ', *d['numeric_labels']))
     for i, row in enumerate(d['confusion_matrix']):
-        print(row_format(d['numeric_labels'][i], *row))
+        print(row_format.format(d['numeric_labels'][i], *row))
 
 
 
