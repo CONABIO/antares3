@@ -41,6 +41,7 @@ class Command(AntaresBaseCommand):
                                         landsat_product_id=row[headers.index('LANDSAT_PRODUCT_ID')],
                                         acquisition_date=row[headers.index('acquisitionDate')],
                                         cloud_cover=float(row[headers.index('cloudCoverFull')]),
+                                        cloud_cover_land=float(row[headers.index('CLOUD_COVER_LAND')]),
                                         min_lat=float(row[headers.index('lowerRightCornerLatitude')]),
                                         min_lon=float(row[headers.index('upperLeftCornerLongitude')]),
                                         max_lat=float(row[headers.index('upperLeftCornerLatitude')]),
