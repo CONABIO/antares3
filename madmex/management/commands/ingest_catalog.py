@@ -40,7 +40,6 @@ class Command(AntaresBaseCommand):
                                         scene_id=row[headers.index('sceneID')],
                                         landsat_product_id=row[headers.index('LANDSAT_PRODUCT_ID')],
                                         acquisition_date=row[headers.index('acquisitionDate')],
-                                        image_quality=int(row[headers.index('imageQuality1')]),
                                         cloud_cover=float(row[headers.index('cloudCoverFull')]),
                                         min_lat=float(row[headers.index('lowerRightCornerLatitude')]),
                                         min_lon=float(row[headers.index('upperLeftCornerLongitude')]),
