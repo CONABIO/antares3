@@ -44,6 +44,10 @@ def get_landsat_catalog(mission):
         mission_name = 'LE07%'  
     elif int(mission) == 8: 
         mission_name = 'LC08%'
+    elif int(mission) == 5: 
+        mission_name = 'LT05%'
+    elif int(mission) == 4:
+        mission_name = 'LT04%'
 
     print(mission_name)
     print(query % mission_name)
