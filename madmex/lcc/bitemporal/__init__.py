@@ -15,6 +15,14 @@ class BaseBiChange(metaclass=abc.ABCMeta):
     handling.
     """
     def __init__(self, array, affine, crs):
+        """Parent class to run bi-temporal change detection
+
+        Args:
+            array (numpy.array): A 3 dimensional numpy array. Dimention order should
+                be (bands, y, x)
+            affine (affine.Affine): Affine transform
+            crs (str): Proj4 string corresponding to the array's CRS
+        """
         self.array = array
         self.affine = affine
         self.crs = crs
@@ -25,12 +33,25 @@ class BaseBiChange(metaclass=abc.ABCMeta):
 
     @classmethod
     def from_geoarray(cls, geoarray, **kwargs):
-        pass
+        """Instantiate class from a geoarray (xarray read with datacube.load)
+
+        Args:
+            geoarray (xarray.Dataset): a Dataset with crs and affine attribute. Typically
+                coming from a call to Datacube.load or GridWorkflow.load
+            **kwargs: Additional arguments. Allow children class to set algorithm specific
+                parameters during instantiation
+        """
+        array = geoarray.squeeze().to_array().values
+        affine = Affine(*list(geoarray.affine)[0:6])
+        crs = geoarray.crs._crs.ExportToProj4()
+        return cls(array=array, affine=affine, crs=crs, **kwargs)
 
 
     @abc.abstractmethod
     def _run(self, arr0, arr1):
         """Takes two nd arrays and returns a binary array of change/no change
+
+        When 3D arrays are used, order should be (bands, y, x)
 
         The only method that needs to be included in children classes. May use
         additional variables taken from children attributes passed during instantiation
@@ -43,6 +64,11 @@ class BaseBiChange(metaclass=abc.ABCMeta):
 
     def run(self, other):
         """Run change detection using algorithm defined in _run
+
+        Args:
+            other (madmex.lcc.bitemporal.BaseBiChange): Instance of a class inheriting
+                from madmex.lcc.bitemporal.BaseBiChange. The data agains which to detect
+                changes
         """
         if self != other:
             raise AssertionError('Object equality check failed')
@@ -55,7 +81,6 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         self.change_array = change_array
 
 
-
     def filter_mmu(self, min_area):
         """Filter clumps of pixels smaller than min_area
 
@@ -64,8 +89,8 @@ class BaseBiChange(metaclass=abc.ABCMeta):
                 input array.
         """
         # Vectorize (generator of (featue, value) tuples)
-        fc = features.shapes(self.array,
-                             mask=self.array,
+        fc = features.shapes(self.change_array,
+                             mask=self.change_array,
                              transform=self.affine)
         # Filter by area
         fc_sub = [x[0] for x in fc if geometry.shape(x[0]).area >= min_area]
@@ -80,22 +105,80 @@ class BaseBiChange(metaclass=abc.ABCMeta):
 
 
     def label_change(self, fc_0, fc_1):
+        """Label change array
+
+        Args:
+            fc_0 (list): Iterable of (geometry, value) pairs. Corresponds to the
+                land cover map anterior to change
+            fc_1 (list): Iterable of (geometry, value) pairs. Corresponds to the
+                land cover map posterior to change
+
+        Returns:
+            list: A list of change geometries with before and after label in the
+            form of a tuple (geometry, label_0, label_1)
+         """
+        # Obtain before and after categorical arrays by rasterizing feature collection and masking
+        arr_0 = features.rasterize(shapes=fc_0,
+                                   out_shape=self.change_array.shape,
+                                   fill=0,
+                                   transform=self.affine,
+                                   dtype=np.uint8)
+        arr_0[self.change_array == 0 ] = 0
+        arr_1 = features.rasterize(shapes=fc_1,
+                                   out_shape=self.change_array.shape,
+                                   fill=0,
+                                   transform=self.affine,
+                                   dtype=np.uint8)
+        arr_1[self.change_array == 0 ] = 0
+        # Combine both array
+        arr_combined = np.add((arr_0.astype(np.uint16) << 8), arr_1)
+        # Vectorize combined array
+        fc_change = features.shapes(arr_combined, mask=self.change_array,
+                                    transform=self.affine)
+        # Generate feature collection with before and after label
+        # (generates a list of tuples (feature, label0, label1))
+        fc_label = [(x[0], *divmod(x[1], 256)) for x in fc_change]
+        return fc_label
+
+
+    @staticmethod
+    def to_db(fc):
+        """Write feature collection returned by label_change to the antares3 database
+
+        Args:
+            fc (list): List of tuples (geometry, tag_id_pre, tag_id_post)
+
+        Returns:
+            Function used for its side effect of writing a feature collection to
+            the database
+        """
         pass
+
+
+    def read_land_cover(self, name):
+        """Read the specified land cover map covering the extent of the instance array
+
+        Args:
+            name (str): Database classification identifier (see madmex_predictclassification
+                table)
+
+        Return:
+            list: A list of (geometry, tag_id) tupples in the crs of the instance.
+            The list can be passed directly to the label_change method
+        """
+        pass
+        # Define geobox from affine, array.shape and crs
+        # Build polygon from the geobox (monkey patch classmethod from_geobox)
+        # Query data
+        # Build tuples using reprojected geometries and extracted tag_id
 
 
     def __eq__(self, other):
         """Compare crs, affine and shape between two instance of the class
         """
-        # Compare affine
-        if not self.affine.almost_equals(other.affine):
-            return False
-        # Compare crs
         crs_0 = CRS.from_string(self.crs)
         crs_1 = CRS.from_string(other.crs)
-        if crs_0 != crs_1:
-            return False
-        # compare shape of arrays
-        if self.array.shape != other.array.shape:
-            return False
-        return True
+        return (self.affine.almost_equals(other.affine)
+                and crs_0 == crs_1
+                and self.array.shape == other.array.shape)
 
