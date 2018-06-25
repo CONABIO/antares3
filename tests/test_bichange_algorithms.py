@@ -22,17 +22,17 @@ proj_0 = '+proj=longlat'
 class TestBiChange(unittest.TestCase):
 
     def test_change_batch_3D(self):
-        for algorithm in algo_list:
-            Change_0 = BiChange(arr0_3D, identity, proj_0)
-            Change_1 = BiChange(arr1_3D, identity, proj_0)
+        for Algorithm in algo_list:
+            Change_0 = Algorithm(arr0_3D, identity, proj_0)
+            Change_1 = Algorithm(arr1_3D, identity, proj_0)
             Change_0.run(Change_1)
             self.assertEqual(Change_0.change_array.shape, (100, 100))
             self.assertEqual(Change_0.change_array.dtype, np.uint8)
 
     def test_change_batch_2D(self):
-        for algorithm in algo_list:
-            Change_0 = BiChange(arr0_2D, identity, proj_0)
-            Change_1 = BiChange(arr1_2D, identity, proj_0)
+        for Algorithm in algo_list:
+            Change_0 = Algorithm(arr0_2D, identity, proj_0)
+            Change_1 = Algorithm(arr1_2D, identity, proj_0)
             Change_0.run(Change_1)
             self.assertEqual(Change_0.change_array.shape, (100, 100))
             self.assertEqual(Change_0.change_array.dtype, np.uint8)
