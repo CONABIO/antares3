@@ -62,7 +62,7 @@ class BiChange(BaseBiChange):
 
     def _run(self, arr0, arr1):
         # Normalize arr0 to arr1
-        if self.norm = 'hist':
+        if self.norm == 'hist':
             if arr0.ndim == 2:
                 arr0_t = _hist_match_band(arr0, arr1)
             elif arr0.ndim == 3:
