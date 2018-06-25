@@ -1,12 +1,21 @@
 """Bitemporal change detection module"""
 
 import abc
+import json
 
 from rasterio import features
 from rasterio.crs import CRS
 from shapely import geometry
 from affine import Affine
 import numpy as np
+from datacube.utils.geometry import CRS, GeoBox
+from django.contrib.gis.geos import Polygon
+
+from madmex.io.vector_db import from_geobox
+from madmex.util.spatial import geometry_transform
+
+# Monkeypatch Django Polygon class to instantiate it using a datacube style geobox
+Polygon.from_geobox = from_geobox
 
 
 class BaseBiChange(metaclass=abc.ABCMeta):
@@ -26,8 +35,9 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         self.array = array
         self.affine = affine
         self.crs = crs
+        self.geobox = GeoBox(width=array.shape[2], height=array.shape[1],
+                             affine=affine, crs=CRS(crs))
         self.change_array = None
-        self.labelled_array = None
         self.algorithm = None
 
 
@@ -45,6 +55,17 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         affine = Affine(*list(geoarray.affine)[0:6])
         crs = geoarray.crs._crs.ExportToProj4()
         return cls(array=array, affine=affine, crs=crs, **kwargs)
+
+
+    @property
+    def geobox(self):
+        """Object geobox
+
+        Returns:
+            datacube.utils.geometry.GeoBox
+        """
+        return GeoBox(width=self.array.shape[2], height=self.array.shape[1],
+                      affine=self.affine, crs=CRS(self.crs))
 
 
     @abc.abstractmethod
@@ -166,11 +187,14 @@ class BaseBiChange(metaclass=abc.ABCMeta):
             list: A list of (geometry, tag_id) tupples in the crs of the instance.
             The list can be passed directly to the label_change method
         """
-        pass
-        # Define geobox from affine, array.shape and crs
-        # Build polygon from the geobox (monkey patch classmethod from_geobox)
-        # Query data
-        # Build tuples using reprojected geometries and extracted tag_id
+        poly = Polygon.from_geobox(self.geobox)
+        query_set = PredictClassification.objects.filter(predict_object__the_geom__contained=poly,
+                                                         name=name).prefetch_related('predict_object', 'tag')
+        def to_feature(x, crs):
+            geometry = json.loads(x.the_geom.geojson)
+            feature = (geometry_transform(geometry, crs), x.tag)
+            return feature
+        return [to_feature(x, self.crs) for x in query_set]
 
 
     def __eq__(self, other):
