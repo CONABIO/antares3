@@ -77,7 +77,7 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         additional variables taken from children attributes passed during instantiation
 
         Does not write to any of the class attributes but returns a 2D array,
-        unint8 datatype and with zeros and ones only
+        uint8 datatype and with zeros and ones only
         """
         pass
 
