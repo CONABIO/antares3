@@ -15,6 +15,13 @@ from madmex.lcc.bitemporal import BaseBiChange
 logger = logging.getLogger(__name__)
 
 class IMAD(object):
+    '''
+    This class implements The iteratively Multivariate Alteration Detection (MAD)
+    transformation of two images. Taking the difference between the canonical variates
+    from a canonical correlation analysis we obtain the MAD components. The canonical
+    correlated variates are ordered 
+    
+    '''
     def __init__(self, max_iterations=25, min_delta=0.02):
         self.max_iterations = max_iterations
         self.min_delta = min_delta
@@ -22,7 +29,16 @@ class IMAD(object):
     def fit(self, X, Y):
         self.X = X
         self.Y = Y
-        self.bands, self.rows, self.columns = self.X.shape
+        if len(self.X.shape) == 2:
+            self.bands = 1
+            self.rows, self.columns = self.X.shape
+            self.X = X[numpy.newaxis,:]
+            self.Y = Y[numpy.newaxis,:]
+        elif len(self.X.shape) == 3:
+            self.bands, self.rows, self.columns = self.X.shape
+        else:
+            logger.error('An image of 3 or 2 dimensions is expected.')
+                
     
     def transform(self, X, Y):
         image_bands_flattened = numpy.zeros((2 * self.bands, self.columns * self.rows))
@@ -85,10 +101,10 @@ class IMAD(object):
                     # canonical and MAD variates
                     U = numpy.dot(a.T, (self.image_bands_flattened[0:self.bands, :] - means[0:self.bands, numpy.newaxis]))    
                     V = numpy.dot(b.T, (self.image_bands_flattened[self.bands:, :] - means[self.bands:, numpy.newaxis]))          
-                    T = U - V  # TODO: is this operation stable?
+                    M_flat = U - V  # TODO: is this operation stable?
                     # new weights        
                     var_mad = numpy.tile(numpy.mat(2 * (1 - rho)).T, (1, data_mask_sum))    
-                    chi_squared = numpy.sum(numpy.multiply(T, T) / var_mad, 0)
+                    chi_squared = numpy.sum(numpy.multiply(M_flat, M_flat) / var_mad, 0)
                     self.weights = numpy.squeeze(1 - numpy.array(stats.chi2._cdf(chi_squared, self.bands))) 
                     old_rho = rho
                     logger.info('Processing of iteration %d finished [%f] ...', i, numpy.max(self.delta))
@@ -101,11 +117,27 @@ class IMAD(object):
                 logger.error('iMAD transform failed with error: %s', str(repr(error))) 
                 logger.error('Processing in iteration %d produced error. Taking last MAD of iteration %d' % (i, i - 1))
         output_flat = numpy.zeros((self.bands, self.columns * self.rows))
-        output_flat[0:self.bands, data_mask] = T
-        output = numpy.zeros((self.bands, self.rows, self.columns))
+        output_flat[0:self.bands, data_mask] = M_flat
+        M = numpy.zeros((self.bands, self.rows, self.columns))
         for b in range(self.bands):
-            output[b, :, :] = (numpy.resize(output_flat[b, :], (self.rows, self.columns)))
-        return output, chi_squared
+            M[b, :, :] = (numpy.resize(output_flat[self.bands - (b + 1), :], (self.rows, self.columns)))
+        
+        
+        U_flat = numpy.zeros((self.bands, self.columns * self.rows))
+        U_flat[0:self.bands, data_mask] = U
+        U_final = numpy.zeros((self.bands, self.rows, self.columns))
+        for b in range(self.bands):
+            U_final[b, :, :] = (numpy.resize(U_flat[b, :], (self.rows, self.columns)))
+            
+        V_flat = numpy.zeros((self.bands, self.columns * self.rows))
+        V_flat[0:self.bands, data_mask] = V
+        V_final = numpy.zeros((self.bands, self.rows, self.columns))
+        for b in range(self.bands):
+            V_final[b, :, :] = (numpy.resize(V_flat[b, :], (self.rows, self.columns)))
+        
+        
+        
+        return M, U_final, V_final, chi_squared
 
     def fit_transform(self, X, Y):
         self.fit(X, Y)
@@ -119,11 +151,16 @@ class BiChange(BaseBiChange):
     '''
 
 
-    def __init__(self,  array, affine, crs):
+    def __init__(self,  array, affine, crs, max_iterations=25, min_delta=0.02):
         '''
         Constructor
         '''
         super.__init__(array=array, affine=affine, crs=crs)
-    
+        self.max_iterations = max_iterations
+        self.min_delta = min_delta
     def _run(self, arr0, arr1):
+        imad = IMAD(self.max_iterations, self.min_delta)
         pass
+        #maf = MAF(imad)
+        #return get_mask(maf)
+        
