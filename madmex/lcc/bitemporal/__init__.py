@@ -4,7 +4,7 @@ import abc
 import json
 
 from rasterio import features
-from rasterio.crs import CRS
+from rasterio.crs import CRS as rasterioCRS
 from shapely import geometry
 from affine import Affine
 import numpy as np
@@ -13,6 +13,7 @@ from django.contrib.gis.geos import Polygon
 
 from madmex.io.vector_db import from_geobox
 from madmex.util.spatial import geometry_transform
+from madmex.models import PredictClassification
 
 # Monkeypatch Django Polygon class to instantiate it using a datacube style geobox
 Polygon.from_geobox = from_geobox
@@ -35,8 +36,6 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         self.array = array
         self.affine = affine
         self.crs = crs
-        self.geobox = GeoBox(width=array.shape[2], height=array.shape[1],
-                             affine=affine, crs=CRS(crs))
         self.change_array = None
         self.algorithm = None
 
@@ -200,8 +199,8 @@ class BaseBiChange(metaclass=abc.ABCMeta):
     def __eq__(self, other):
         """Compare crs, affine and shape between two instance of the class
         """
-        crs_0 = CRS.from_string(self.crs)
-        crs_1 = CRS.from_string(other.crs)
+        crs_0 = rasterioCRS.from_string(self.crs)
+        crs_1 = rasterioCRS.from_string(other.crs)
         return (self.affine.almost_equals(other.affine)
                 and crs_0 == crs_1
                 and self.array.shape == other.array.shape)
