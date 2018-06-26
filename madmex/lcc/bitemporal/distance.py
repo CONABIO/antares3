@@ -48,11 +48,35 @@ class BiChange(BaseBiChange):
     def __init__(self, array, affine, crs, norm='hist', threshold=50):
         """Euclidean distance based change detection
 
+        Optionally performs histogram matching to normalize input arrays, compute
+        euclidean distance and determines change using the distance threshold
+
         Args:
             norm (str): Normalization method to use in order to match source and
-                destination arrays
+                destination arrays (one of ``'hist'`` or ``None``)
             threshold (float): Distance value above which a change is considered a
                 change
+
+        Example:
+			>>> from madmex.lcc.bitemporal.distance import BiChange
+            >>> import numpy as np
+            >>> from affine import Affine
+
+            >>> # Build random data
+            >>> arr0 = np.random.randint(1,2000,30000).reshape((3, 100, 100))
+            >>> arr1 = np.random.randint(1,2000,30000).reshape((3, 100, 100))
+
+            >>> # Instantiate classes
+            >>> Change_0 = BiChange(arr0, Affine.identity(), '+proj=longlat', threshold=150)
+            >>> Change_1 = BiChange(arr1, Affine.identity(), '+proj=longlat')
+
+            >>> # Compute distance
+            >>> Change_0.run(Change_1)
+            >>> print(Change_0.change_array)
+            >>> print(np.sum(Change_0.change_array))
+
+            >>> Change_0.filter_mmu(1.2)
+            >>> print(np.sum(Change_0.change_array))
         """
         super().__init__(array=array, affine=affine, crs=crs)
         self.algorithm = 'distance'
@@ -72,7 +96,8 @@ class BiChange(BaseBiChange):
                     arr0_t[i] = _hist_match_band(band, arr1[i])
             else:
                 raise ValueError('Improper number of dimensions')
-
+        elif self.norm is None:
+            arr0_t = arr0
         else:
             raise ValueError('Invalid normalization method selected')
         # Compute distance between both ndarrays

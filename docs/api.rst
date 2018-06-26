@@ -63,6 +63,35 @@ Read and write data
    io.vector_db.load_segmentation_from_dataset
 
 
+Land cover change (lcc)
+=======================
+
+Interface to perform Land cover change detection and classication
+
+Base class
+----------
+
+.. autosummary::
+   :toctree: generated
+
+   lcc.bitemporal.BaseBiChange
+   lcc.bitemporal.BaseBiChange.from_geoarray
+   lcc.bitemporal.BaseBiChange.run
+   lcc.bitemporal.BaseBiChange.filter_mmu
+   lcc.bitemporal.BaseBiChange.label_change
+   lcc.bitemporal.BaseBiChange.to_db
+   lcc.bitemporal.BaseBiChange.read_land_cover
+
+Implemented algorithms
+----------------------
+
+.. autosummary::
+   :toctree: generated
+
+   lcc.bitemporal.distance.BiChange
+   lcc.bitemporal.imadmaf
+
+
 Modeling
 ========
 
