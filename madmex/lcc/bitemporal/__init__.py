@@ -10,10 +10,11 @@ from affine import Affine
 import numpy as np
 from datacube.utils.geometry import CRS, GeoBox
 from django.contrib.gis.geos import Polygon
+from django.contrib.gis.geos.geometry import GEOSGeometry
 
 from madmex.io.vector_db import from_geobox
 from madmex.util.spatial import geometry_transform
-from madmex.models import PredictClassification
+from madmex.models import PredictClassification, ChangeObject, ChangeClassification
 
 # Monkeypatch Django Polygon class to instantiate it using a datacube style geobox
 Polygon.from_geobox = from_geobox
@@ -180,18 +181,46 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         return [x for x in fc if x[1] != x[2]]
 
 
-    @staticmethod
-    def to_db(fc):
+    def to_db(fc, meta, pre_name, post_name, name):
         """Write feature collection returned by label_change to the antares3 database
+
+        The geometries of fc are assumed to be in the crs specified in the instance
+        attribute ``crs``
 
         Args:
             fc (list): List of tuples (geometry, tag_id_pre, tag_id_post)
+            meta (madmex.models.ChangeInformation): Django model object containing
+                change objects meta informations. Often resulting from a call to
+                ``get_or_create()``
+            pre_name (str): Name of the classification used for assigning anterior
+                labels
+            post_name (str): Name of the classification used for assigning posterior
+                labels
+            name (str): Unique name/identifier to give to that series of labelled change
+                objects
 
         Returns:
             Function used for its side effect of writing a feature collection to
             the database
         """
-        pass
+        def change_obj_builder(geom, meta, crs_in):
+            geom_ll = geometry_transform(geom, '+proj=longlat', crs_in)
+            the_geom = GEOSGeometry(json.dumps(geom_ll)).buffer(0)
+            return ChangeObject(the_geom, meta)
+        # Build list of ChangeObjects
+        obj_list = [change_obj_builder(x[0], meta, self.crs) for x in fc]
+        # Write ChangeObjects with bulk_create
+        ChangeObject.objects.bulk_create(obj_list)
+        # Build list of ChangeClassification 
+        class_list = [ChangeClassification(pre_name=pre_name,
+                                           post_name=post_name,
+                                           name=name,
+                                           change_object=x[0],
+                                           pre_tag_id=x[1][1],
+                                           post_tag_id=x[1][2])
+                      for x in zip(obj_list, fc)]
+        # Write it with bulk_create
+        ChangeClassification.objects.bulk_create(class_list)
 
 
     def read_land_cover(self, name):
