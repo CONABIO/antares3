@@ -153,8 +153,6 @@ def spatial_covariance(X, h):
     C = numpy.cov(bands_by_row)
     return C
     
-
-    
 class MAF(object):
     
     def __init__(self, shift=(1, 1), no_data=0):
