@@ -142,6 +142,46 @@ class IMAD(object):
     def fit_transform(self, X, Y):
         self.fit(X, Y)
         return self.transform(X, Y)
+    
+def spatial_covariance(X, h):
+    X_shifted = numpy.roll(numpy.roll(X, h[1], axis=1), h[0], axis=2)
+    X_shifted_transpose = numpy.transpose(X_shifted, axes=[0,2,1])
+    product = numpy.matmul(X_shifted, X_shifted_transpose)
+    bands = product.shape[0]
+    pixels = product.shape[1] * product.shape[2]
+    bands_by_row = numpy.matmul(X_shifted, X_shifted_transpose).reshape((bands, pixels))
+    C = numpy.cov(bands_by_row)
+    return C
+    
+
+    
+class MAF(object):
+    
+    def __init__(self, shift=(1, 1), no_data=0):
+        self.no_data = no_data
+        self.h = numpy.array(shift)
+    def fit(self, X):
+        self.X = X
+        if len(self.X.shape) == 2:
+            self.bands = 1
+            self.rows, self.columns = self.X.shape
+            self.X = X[numpy.newaxis,:]
+        elif len(self.X.shape) == 3:
+            self.bands, self.rows, self.columns = self.X.shape
+        else:
+            logger.error('An image of 3 or 2 dimensions is expected.')
+    def transform(self, X):
+        sigma = spatial_covariance(X, numpy.array((0,0)))
+        gamma = 2 * sigma - spatial_covariance(X, self.h) - spatial_covariance(X, -self.h)       
+        numpy.linalg.eig(numpy.matmul(gamma, numpy.linalg.inv(sigma)))
+        lower = numpy.linalg.cholesky(sigma)
+        lower_inverse = numpy.linalg.inv(lower)
+        eig_problem = numpy.matmul(numpy.matmul(lower_inverse, gamma), lower_inverse.T)
+        eig_values, eig_vectors = numpy.linalg.eig(eig_problem)
+        sort_index = eig_values.argsort()
+        vector = eig_vectors[sort_index]
+        M = numpy.tensordot(vector, X, axes=1)
+        return M
 
 class BiChange(BaseBiChange):
     '''
