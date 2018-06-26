@@ -171,7 +171,6 @@ class MAF(object):
     def transform(self, X):
         sigma = spatial_covariance(X, numpy.array((0,0)))
         gamma = 2 * sigma - spatial_covariance(X, self.h) - spatial_covariance(X, -self.h)       
-        numpy.linalg.eig(numpy.matmul(gamma, numpy.linalg.inv(sigma)))
         lower = numpy.linalg.cholesky(sigma)
         lower_inverse = numpy.linalg.inv(lower)
         eig_problem = numpy.matmul(numpy.matmul(lower_inverse, gamma), lower_inverse.T)
@@ -180,6 +179,75 @@ class MAF(object):
         vector = eig_vectors[sort_index]
         M = numpy.tensordot(vector, X, axes=1)
         return M
+    
+    def fit_transform(self, X):
+        self.fit(X)
+        return self.transform(X)
+    
+class MAD(object):
+    
+    def __init__(self):
+        pass
+    
+    def fit(self, X, Y):
+        self.X = X
+        self.Y = Y
+        if len(self.X.shape) == 2:
+            self.bands = 1
+            self.rows, self.cols = self.X.shape
+            self.X = X[numpy.newaxis,:]
+            self.Y = Y[numpy.newaxis,:]
+        elif len(self.X.shape) == 3:
+            self.bands, self.rows, self.cols = self.X.shape
+        else:
+            logger.error('An image of 3 or 2 dimensions is expected.')
+                
+    def transform(self, X, Y):
+        
+        G_1 = X.reshape(self.bands, self.cols * self.rows)
+        G_2 = Y.reshape(self.bands, self.cols * self.rows)
+
+        print(G_1.shape)
+        print(G_2.shape)
+        
+        
+        aux = numpy.matmul(G_1, G_1.T)
+        
+        print(aux.shape)
+        sigma_11 = numpy.cov(numpy.matmul(G_1, G_1.T))
+        sigma_22 = numpy.cov(numpy.matmul(G_2, G_2.T))
+        sigma_12 = numpy.cov(numpy.matmul(G_1, G_2.T))
+    
+        lower_11 = numpy.linalg.cholesky(sigma_11)
+        lower_22 = numpy.linalg.cholesky(sigma_22)
+        lower_11_inverse = numpy.linalg.inv(lower_11)
+        lower_22_inverse = numpy.linalg.inv(lower_22)
+        
+        sigma_11_inverse = numpy.linalg.inv(sigma_11)
+        sigma_22_inverse = numpy.linalg.inv(sigma_22)
+        
+        
+        eig_problem_1 = numpy.matmul(lower_11_inverse, 
+                                     numpy.matmul(sigma_12, 
+                                                  numpy.matmul(sigma_22_inverse, 
+                                                               numpy.matmul(sigma_12.T, lower_11_inverse.T)))) 
+        
+        eig_problem_1 = numpy.matmul(lower_22_inverse, 
+                                     numpy.matmul(sigma_12.T, 
+                                                  numpy.matmul(sigma_22_inverse, 
+                                                               numpy.matmul(sigma_12.T, lower_11_inverse.T)))) 
+        
+        
+        print(sigma_11.shape)
+        print(sigma_22.shape)
+        print(sigma_12.shape)
+    
+        return None
+        
+    def fit_transform(self, X, Y):
+        self.fit(X, Y)
+        return self.transform(X, Y)
+
 
 class BiChange(BaseBiChange):
     '''
