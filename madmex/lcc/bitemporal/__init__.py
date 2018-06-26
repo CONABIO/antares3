@@ -162,6 +162,25 @@ class BaseBiChange(metaclass=abc.ABCMeta):
 
 
     @staticmethod
+    def filter_no_change(fc):
+        """Filter labeled change polygons that have the same before and after label
+
+        Takes the feature collection output by ``label_change``, filter out elements
+        that have the same before and after label, and returns the resulting feature
+        collection
+
+        Args:
+            fc (list): List of geometries with before and after label in the form
+            of a tuple (geometry, label_0, label_1)
+
+        Returns:
+            list: A list of change geometries with before and after label in the
+            form of a tuple (geometry, label_0, label_1)
+        """
+        return [x for x in fc if x[1] != x[2]]
+
+
+    @staticmethod
     def to_db(fc):
         """Write feature collection returned by label_change to the antares3 database
 

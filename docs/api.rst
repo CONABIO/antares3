@@ -79,6 +79,7 @@ Base class
    lcc.bitemporal.BaseBiChange.run
    lcc.bitemporal.BaseBiChange.filter_mmu
    lcc.bitemporal.BaseBiChange.label_change
+   lcc.bitemporal.BaseBiChange.filter_no_change
    lcc.bitemporal.BaseBiChange.to_db
    lcc.bitemporal.BaseBiChange.read_land_cover
 
