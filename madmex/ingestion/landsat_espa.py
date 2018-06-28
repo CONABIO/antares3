@@ -68,7 +68,7 @@ def metadata_convert(path):
                          namespaces={'ns': ns}).text
     time_str = root.find('ns:global_metadata/ns:scene_center_time',
                          namespaces={'ns': ns}).text
-    dt = '%sT%s' % (date_str, time_str)
+    dt = '%sT%s' % (date_str, time_str[:8])
     # satellite sensor metadata
     instrument = root.find('ns:global_metadata/ns:instrument',
                            namespaces={'ns': ns}).text
