@@ -203,10 +203,13 @@ class MAD(object):
             logger.error('An image of 3 or 2 dimensions is expected.')
                 
     def transform(self, X, Y):
-
-        g_11_product = numpy.matmul(X, numpy.transpose(X, axes=[0,2,1]))
-        g_22_product = numpy.matmul(Y, numpy.transpose(Y, axes=[0,2,1]))
-        g_12_product = numpy.matmul(X, numpy.transpose(Y, axes=[0,2,1]))
+        
+        X_minus_mean = X - numpy.tensordot(numpy.mean(X, axis=(1,2)).T, numpy.ones(X.shape), axes=1)
+        Y_minus_mean = Y - numpy.tensordot(numpy.mean(Y, axis=(1,2)).T, numpy.ones(Y.shape), axes=1)
+        
+        g_11_product = numpy.matmul(X_minus_mean, numpy.transpose(X_minus_mean, axes=[0,2,1]))
+        g_22_product = numpy.matmul(Y_minus_mean, numpy.transpose(Y_minus_mean, axes=[0,2,1]))
+        g_12_product = numpy.matmul(X_minus_mean, numpy.transpose(Y_minus_mean, axes=[0,2,1]))
 
         bands_11 = g_11_product.shape[0]
         pixels_11 = g_11_product.shape[1] * g_11_product.shape[2]
@@ -231,33 +234,30 @@ class MAD(object):
         sigma_11_inverse = numpy.linalg.inv(sigma_11)
         sigma_22_inverse = numpy.linalg.inv(sigma_22)
         
-        
         eig_problem_1 = numpy.matmul(lower_11_inverse, 
                                      numpy.matmul(sigma_12, 
                                                   numpy.matmul(sigma_22_inverse, 
                                                                numpy.matmul(sigma_12.T, lower_11_inverse.T)))) 
-        
         eig_problem_2 = numpy.matmul(lower_22_inverse, 
                                      numpy.matmul(sigma_12.T, 
-                                                  numpy.matmul(sigma_22_inverse, 
+                                                  numpy.matmul(sigma_11_inverse, 
                                                                numpy.matmul(sigma_12, lower_22_inverse.T)))) 
-        
-        
         eig_values_1, eig_vectors_1 = numpy.linalg.eig(eig_problem_1)
         eig_values_2, eig_vectors_2 = numpy.linalg.eig(eig_problem_2)
-        
+
         sort_index_1 = numpy.flip(eig_values_1.argsort(), 0)
         sort_index_2 = numpy.flip(eig_values_2.argsort(), 0)
-        
+
         vector_u = eig_vectors_1[sort_index_1]
         vector_v = eig_vectors_2[sort_index_2]
         
+        print(eig_values_1[sort_index_1])
+        print(eig_values_2[sort_index_2])
+
         U = numpy.tensordot(vector_u, X, axes=1)
-        V = numpy.tensordot(vector_v, Y, axes=1)
-        
+        V = numpy.tensordot(vector_v, Y, axes=1)        
         M = U - V
-        
-        return M
+        return vector_u, M
         
     def fit_transform(self, X, Y):
         self.fit(X, Y)
