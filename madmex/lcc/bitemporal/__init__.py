@@ -15,6 +15,7 @@ from django.contrib.gis.geos.geometry import GEOSGeometry
 from madmex.io.vector_db import from_geobox
 from madmex.util.spatial import geometry_transform
 from madmex.models import PredictClassification, ChangeObject, ChangeClassification
+from madmex.lcc.bitemporal.thresholding import Elliptic, Kapur
 
 # Monkeypatch Django Polygon class to instantiate it using a datacube style geobox
 Polygon.from_geobox = from_geobox
@@ -100,6 +101,30 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         if len(change_array.shape) != 2:
             raise ValueError('Children _run method must return a 2D np.array')
         self.change_array = change_array
+
+    @staticmethod
+    def threshold_change(diff_image,method, **kwargs):
+        """ Applies a thresholding method to a continuous difference image
+   
+        Takes aan array of difference images and thresholds them to produce discrete
+        change/no-change image masks
+
+        Args:
+            diff_image (ndarray): a, possibly multidimensional, numpy array consisting
+            of difference images.
+
+        Returns:
+            change_mask (ndarray): a, possibly multidimensional, numpy array
+            consisting of change (=-1) /no-change image masks (=1)
+        """
+        if method=="Kapur":
+            model_spec = Kapur(diff_image, **kwargs)
+            change_mask = model_spec.fit_transform(diff_image)
+        elif method=="Elliptic":
+            model_spec = Elliptic(diff_image, **kwargs)
+            change_mask = model_spec.fit_transform(diff_image)
+
+        return change_mask
 
 
     def filter_mmu(self, min_area):
