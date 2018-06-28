@@ -181,7 +181,7 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         return [x for x in fc if x[1] != x[2]]
 
 
-    def to_db(fc, meta, pre_name, post_name, name):
+    def to_db(self, fc, meta, pre_name, post_name, name):
         """Write feature collection returned by label_change to the antares3 database
 
         The geometries of fc are assumed to be in the crs specified in the instance
