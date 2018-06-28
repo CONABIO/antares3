@@ -45,13 +45,25 @@ class IMAD(object):
         for k in range(self.bands):
             image_bands_flattened[k, :] = numpy.ravel(self.X[k, :, :])
             image_bands_flattened[self.bands + k, :] = numpy.ravel(self.Y[k, :, :])
+        
+        
+        
         NO_DATA = 0
         no_data_X = image_bands_flattened[0, :] == NO_DATA
         no_data_Y = image_bands_flattened[self.bands, :] == NO_DATA
+        
+        
+        
+        
+        no_data_mask = (no_data_X | no_data_Y) == True
+        
+
         data_mask = (no_data_X | no_data_Y) == False
+        
         self.image_bands_flattened = image_bands_flattened[:, data_mask]
         data_mask_sum = numpy.sum(data_mask)
         self.weights = numpy.ones(int(data_mask_sum)) # we start with weights defined as ones.
+
         self.outcorrlist = []
         i = 0
         logger.info('Starting iMAD iterations.')  
@@ -103,12 +115,7 @@ class IMAD(object):
                     V = numpy.dot(b.T, (self.image_bands_flattened[self.bands:, :] - means[self.bands:, numpy.newaxis]))          
                     M_flat = U - V  # TODO: is this operation stable?
                     # new weights        
-                    var_mad = numpy.tile(numpy.mat(2 * (1 - rho)).T, (1, data_mask_sum))   
-                    
-                    print("********var mad******")
-                    print(var_mad.shape)
-                    print(numpy.multiply(M_flat, M_flat).shape)
-                     
+                    var_mad = numpy.tile(numpy.mat(2 * (1 - rho)).T, (1, data_mask_sum))
                     chi_squared = numpy.sum(numpy.multiply(M_flat, M_flat) / var_mad, 0)
                     self.weights = numpy.squeeze(1 - numpy.array(stats.chi2._cdf(chi_squared, self.bands))) 
                     old_rho = rho
@@ -208,41 +215,23 @@ class MAD(object):
             logger.error('An image of 3 or 2 dimensions is expected.')
                 
     def transform(self, X, Y):
-        
-        X_minus_mean = X - numpy.tensordot(numpy.mean(X, axis=(1,2)).T, numpy.ones(X.shape), axes=1)
-        Y_minus_mean = Y - numpy.tensordot(numpy.mean(Y, axis=(1,2)).T, numpy.ones(Y.shape), axes=1)
-        
-        g_11_product = numpy.matmul(X_minus_mean, numpy.transpose(X_minus_mean, axes=[0,2,1]))
-        g_22_product = numpy.matmul(Y_minus_mean, numpy.transpose(Y_minus_mean, axes=[0,2,1]))
-        g_12_product = numpy.matmul(X_minus_mean, numpy.transpose(Y_minus_mean, axes=[0,2,1]))
-
-        bands_11 = g_11_product.shape[0]
-        pixels_11 = g_11_product.shape[1] * g_11_product.shape[2]
-        
-        bands_22 = g_22_product.shape[0]
-        pixels_22 = g_22_product.shape[1] * g_22_product.shape[2]
-
-        bands_12 = g_12_product.shape[0]
-        pixels_12 = g_12_product.shape[1] * g_12_product.shape[2]
-
-        sigma_11 = numpy.cov(g_11_product.reshape(bands_11, pixels_11))
-        sigma_22 = numpy.cov(g_22_product.reshape(bands_22, pixels_22))
-        sigma_12 = numpy.cov(g_12_product.reshape(bands_12, pixels_12))
-
+        X_pixel_band = X.reshape(self.bands, self.rows * self.cols)
+        Y_pixel_band = Y.reshape(self.bands, self.rows * self.cols)
+        X_centered = X_pixel_band - numpy.mean(X_pixel_band, axis=1, dtype=numpy.float64)[:, numpy.newaxis]
+        Y_centered = Y_pixel_band - numpy.mean(Y_pixel_band, axis=1, dtype=numpy.float64)[:, numpy.newaxis]
+        sigma_11 = numpy.matmul(X_centered, X_centered.T) / (X_centered.shape[1])
+        sigma_22 = numpy.matmul(Y_centered, Y_centered.T) / (Y_centered.shape[1])
+        sigma_12 = numpy.matmul(X_centered, Y_centered.T) / (X_centered.shape[1])
         lower_11 = numpy.linalg.cholesky(sigma_11)
         lower_22 = numpy.linalg.cholesky(sigma_22)
-        lower_12 = numpy.linalg.cholesky(sigma_12)
-
         lower_11_inverse = numpy.linalg.inv(lower_11)
         lower_22_inverse = numpy.linalg.inv(lower_22)
-        
         sigma_11_inverse = numpy.linalg.inv(sigma_11)
         sigma_22_inverse = numpy.linalg.inv(sigma_22)
-        
         eig_problem_1 = numpy.matmul(lower_11_inverse, 
                                      numpy.matmul(sigma_12, 
                                                   numpy.matmul(sigma_22_inverse, 
-                                                               numpy.matmul(sigma_12.T, lower_11_inverse.T)))) 
+                                                               numpy.matmul(sigma_12.T, lower_11_inverse.T))))
         eig_problem_2 = numpy.matmul(lower_22_inverse, 
                                      numpy.matmul(sigma_12.T, 
                                                   numpy.matmul(sigma_11_inverse, 
@@ -255,12 +244,9 @@ class MAD(object):
 
         vector_u = eig_vectors_1[sort_index_1]
         vector_v = eig_vectors_2[sort_index_2]
-        
-        #print(eig_values_1[sort_index_1])
-        #print(eig_values_2[sort_index_2])
 
-        U = numpy.tensordot(vector_u, X, axes=1)
-        V = numpy.tensordot(vector_v, Y, axes=1)        
+        U = numpy.tensordot(vector_u, X_centered.reshape(self.bands, self.rows, self.cols), axes=1)
+        V = numpy.tensordot(vector_v, Y_centered.reshape(self.bands, self.rows, self.cols), axes=1)        
         M = U - V
         return eig_values_1[sort_index_1], M
         
