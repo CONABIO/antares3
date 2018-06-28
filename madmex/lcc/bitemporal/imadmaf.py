@@ -103,7 +103,12 @@ class IMAD(object):
                     V = numpy.dot(b.T, (self.image_bands_flattened[self.bands:, :] - means[self.bands:, numpy.newaxis]))          
                     M_flat = U - V  # TODO: is this operation stable?
                     # new weights        
-                    var_mad = numpy.tile(numpy.mat(2 * (1 - rho)).T, (1, data_mask_sum))    
+                    var_mad = numpy.tile(numpy.mat(2 * (1 - rho)).T, (1, data_mask_sum))   
+                    
+                    print("********var mad******")
+                    print(var_mad.shape)
+                    print(numpy.multiply(M_flat, M_flat).shape)
+                     
                     chi_squared = numpy.sum(numpy.multiply(M_flat, M_flat) / var_mad, 0)
                     self.weights = numpy.squeeze(1 - numpy.array(stats.chi2._cdf(chi_squared, self.bands))) 
                     old_rho = rho
@@ -251,14 +256,60 @@ class MAD(object):
         vector_u = eig_vectors_1[sort_index_1]
         vector_v = eig_vectors_2[sort_index_2]
         
-        print(eig_values_1[sort_index_1])
-        print(eig_values_2[sort_index_2])
+        #print(eig_values_1[sort_index_1])
+        #print(eig_values_2[sort_index_2])
 
         U = numpy.tensordot(vector_u, X, axes=1)
         V = numpy.tensordot(vector_v, Y, axes=1)        
         M = U - V
-        return vector_u, M
+        return eig_values_1[sort_index_1], M
         
+    def fit_transform(self, X, Y):
+        self.fit(X, Y)
+        return self.transform(X, Y)
+    
+class IRMAD(object):
+    def __init__(self, max_iterations=25, min_delta=0.02):
+        self.max_iterations = max_iterations
+        self.min_delta = min_delta
+    
+    def fit(self, X, Y):
+        self.X = X
+        self.Y = Y
+        if len(self.X.shape) == 2:
+            self.bands = 1
+            self.rows, self.cols = self.X.shape
+            self.X = X[numpy.newaxis,:]
+            self.Y = Y[numpy.newaxis,:]
+        elif len(self.X.shape) == 3:
+            self.bands, self.rows, self.cols = self.X.shape
+        else:
+            logger.error('An image of 3 or 2 dimensions is expected.')
+    
+    def transform(self, X, Y):        
+        
+        i = 0
+        delta = 100.0
+        while i < self.max_iterations:
+            print(i, self.max_iterations )
+            rho_square, M = MAD().fit_transform(X, Y)
+            print(rho_square)
+            sigma_squared = 2 * (1 - numpy.sqrt(rho_square))
+            
+            numpy.multiply(M, M)
+            
+            chi_square = numpy.tensordot(1 / sigma_squared , numpy.multiply(M, M), axes=1)
+
+            print(chi_square)
+            
+            print(len(rho_square))
+            weights = stats.chi2.cdf(chi_square, len(rho_square))
+            
+            print(weights)
+            
+            i = i + 1
+        return None
+    
     def fit_transform(self, X, Y):
         self.fit(X, Y)
         return self.transform(X, Y)
