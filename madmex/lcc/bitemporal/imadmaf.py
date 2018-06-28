@@ -203,23 +203,28 @@ class MAD(object):
             logger.error('An image of 3 or 2 dimensions is expected.')
                 
     def transform(self, X, Y):
-        
-        G_1 = X.reshape(self.bands, self.cols * self.rows)
-        G_2 = Y.reshape(self.bands, self.cols * self.rows)
 
-        print(G_1.shape)
-        print(G_2.shape)
+        g_11_product = numpy.matmul(X, numpy.transpose(X, axes=[0,2,1]))
+        g_22_product = numpy.matmul(Y, numpy.transpose(Y, axes=[0,2,1]))
+        g_12_product = numpy.matmul(X, numpy.transpose(Y, axes=[0,2,1]))
+
+        bands_11 = g_11_product.shape[0]
+        pixels_11 = g_11_product.shape[1] * g_11_product.shape[2]
         
-        
-        aux = numpy.matmul(G_1, G_1.T)
-        
-        print(aux.shape)
-        sigma_11 = numpy.cov(numpy.matmul(G_1, G_1.T))
-        sigma_22 = numpy.cov(numpy.matmul(G_2, G_2.T))
-        sigma_12 = numpy.cov(numpy.matmul(G_1, G_2.T))
-    
+        bands_22 = g_22_product.shape[0]
+        pixels_22 = g_22_product.shape[1] * g_22_product.shape[2]
+
+        bands_12 = g_12_product.shape[0]
+        pixels_12 = g_12_product.shape[1] * g_12_product.shape[2]
+
+        sigma_11 = numpy.cov(g_11_product.reshape(bands_11, pixels_11))
+        sigma_22 = numpy.cov(g_22_product.reshape(bands_22, pixels_22))
+        sigma_12 = numpy.cov(g_12_product.reshape(bands_12, pixels_12))
+
         lower_11 = numpy.linalg.cholesky(sigma_11)
         lower_22 = numpy.linalg.cholesky(sigma_22)
+        lower_12 = numpy.linalg.cholesky(sigma_12)
+
         lower_11_inverse = numpy.linalg.inv(lower_11)
         lower_22_inverse = numpy.linalg.inv(lower_22)
         
@@ -232,17 +237,27 @@ class MAD(object):
                                                   numpy.matmul(sigma_22_inverse, 
                                                                numpy.matmul(sigma_12.T, lower_11_inverse.T)))) 
         
-        eig_problem_1 = numpy.matmul(lower_22_inverse, 
+        eig_problem_2 = numpy.matmul(lower_22_inverse, 
                                      numpy.matmul(sigma_12.T, 
                                                   numpy.matmul(sigma_22_inverse, 
-                                                               numpy.matmul(sigma_12.T, lower_11_inverse.T)))) 
+                                                               numpy.matmul(sigma_12, lower_22_inverse.T)))) 
         
         
-        print(sigma_11.shape)
-        print(sigma_22.shape)
-        print(sigma_12.shape)
-    
-        return None
+        eig_values_1, eig_vectors_1 = numpy.linalg.eig(eig_problem_1)
+        eig_values_2, eig_vectors_2 = numpy.linalg.eig(eig_problem_2)
+        
+        sort_index_1 = numpy.flip(eig_values_1.argsort(), 0)
+        sort_index_2 = numpy.flip(eig_values_2.argsort(), 0)
+        
+        vector_u = eig_vectors_1[sort_index_1]
+        vector_v = eig_vectors_2[sort_index_2]
+        
+        U = numpy.tensordot(vector_u, X, axes=1)
+        V = numpy.tensordot(vector_v, Y, axes=1)
+        
+        M = U - V
+        
+        return M
         
     def fit_transform(self, X, Y):
         self.fit(X, Y)
