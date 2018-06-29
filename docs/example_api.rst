@@ -5,10 +5,14 @@ Land cover and land cover change: API example
 Introduction
 ============
 
-Building understanding of the various antares modules and the antares philosophy in spatial data handling 
+The example below walks you through the process of generating land cover and land cover change information, taking as example a small region of the state of Jalisco, Mexico. The steps described do not make use of the command line functionalities of antares, but instead use the API directly. While we do not recommend direct use of the API for map production over large areas, it is essential for developpers, maintainers and people who want to extent the antares system to understand the antares mechanisms and philosophy. This example aims at building this kind of understanding.
 
-Concept of feature collection
-xarray data structures
+Fully understanding the tutorial requires knowledge of some key python geospatial concepts and data structures. They are briefly reminded below:
+
+- Feature collection: a valid feature collection in python is a list of geojson features. Features are dictionaries that each contain at least a geometry and a dictionary of properties. `The geojson specifications <http://geojson.org/>`_ defines the structure of valid geojson features. Sometimes, lists of ``(geometry, value)`` tuples are referred to as features collections. This is an abuse as they are not list of valid geojson features, however, this way of orgazing data is often used in the internals of antares since it maps to database inserts and queries.
+
+- ``xarray`` ``DataArray``s, ``Dataset``s and ``geoarrays``: The ``xarray`` python package introduces two data structures; the ``DataArray`` and the ``Dataset``. Excellent documentation can be found `here <http://>`_ to understand ``xarray``'s paradigm and how to work with these data structures. In the example 
+ - 
 python (basic data structures (lists, tuples, dictionaries), list comprehensions)
 
 What's madmex and what's antares in that context.
@@ -368,16 +372,175 @@ Predict land cover
 We now have a trained model, a feature collection of segments and a set of geometric features. For each of the two years, we therefore need to prepare the prepare the array of predictors, predict the label for every observation and combine labels with geometries into a feature collection.
 
 
+Extract prediction features
+---------------------------
+
+.. code-block:: python
+
+    X_pre, _ = zonal_stats_xarray(features_pre, fc_seg_pre, 'id')
+    X_post, _ = zonal_stats_xarray(features_post, fc_seg_post, 'id')
+
+Run trained model in prediction mode
+------------------------------------
+
+
+.. code-block:: python
+
+    y_pre = lgb_model.predict(X_pre)
+    y_post = lgb_model.predict(X_post)
+
+
+
+Combined predicted labels with segmentation geometries
+------------------------------------------------------
+
+Here we're building a list of `(geometry, value)` tuples.
+
+.. code-block:: python
+
+    fc_pred_pre = [(x[0]['geometry'], x[1]) for x in zip(fc_seg_pre, y_pre)]
+    fc_pred_post = [(x[0]['geometry'], x[1]) for x in zip(fc_seg_post, y_post)]
+
+    pprint(fc_pred_pre[0])
+
+
+.. parsed-literal::
+
+    ({'coordinates': [[(2291520.0, 939800.0),
+                       (2291520.0, 939680.0),
+                       (2291550.0, 939680.0),
+                       (2291550.0, 939650.0),
+                       (2291580.0, 939650.0),
+                       (2291580.0, 939680.0),
+                       (2291610.0, 939680.0),
+                       (2291610.0, 939800.0),
+                       (2291520.0, 939800.0)]],
+      'type': 'Polygon'},
+     28)
+
+
+
 Detect spectral changes
 =======================
+
+.. code-block:: python
+
+    lcc_pre = BiChange.from_geoarray(features_pre[s_bands], threshold = 3000)
+    lcc_post = BiChange.from_geoarray(features_post[s_bands])
+    lcc_pre.run(lcc_post)
+    print(lcc_pre.change_array.sum() / lcc_pre.change_array.size)
+
+.. parsed-literal::
+
+    0.0087
+
+Given the ``change_array`` attribute of the ``BiChange`` class instance is a 2D array of zeos and ones (ones correspond to change and zeros to no change), the array sum tells us the number of pixels labeled as change. In the present case, a bit less than 1 percent of the pixels were labelled as change.
 
 
 Clean and label changes
 =======================
 
+Three steps:
+
+- Minimum mapping unit filter
+- Pixels labeling using pre and post land cover maps
+- Filter features having same pre and post land cover label
+
+First filter: minimum mapping unit
+----------------------------------
+
+It does an update of the `change_array` attribute of the class instance.
+
+.. code-block:: python
+
+    lcc_pre.filter_mmu(5000)
+    print(lcc_pre.change_array.sum() / lcc_pre.change_array.size)
+
+.. parsed-literal::
+
+    0.0077
+
+
+Assign pre and post labels to change layer
+------------------------------------------
+
+.. code-block:: python
+
+    fc_change = lcc_pre.label_change(fc_pred_pre, fc_pred_post)
+    print(len(fc_change))
+
+
+.. parsed-literal::
+
+    1813
+
+
+Second filter: No change in label
+---------------------------------
+
+.. code-block:: python
+
+    fc_change = lcc_pre.filter_no_change(fc_change)
+    print(len(fc_change))
+
+.. parsed-literal::
+
+    1152
+
 
 Write output to a vector file
 =============================
+
+The change feature collection is a list of tuples ``(geometry, pre_label, post_label)``, we therefore need to transform it to a geojson compliant feature collection before writting it to a vector file for visualization in an external program (e.g. QGIS).
+
+.. code-block:: python
+
+    import fiona
+    from fiona.crs import from_string
+    from madmex.util.spatial import geometry_transform
+    fc_change_geojson = [{'geometry': geometry_transform(x[0], crs_in=lcc_pre.crs, crs_out='+proj=longlat'),
+                          'properties': {'lc_2014': x[1], 'lc_2017': x[2]},
+                          'type': 'feature'} for x in fc_change]
+    fc_schema = {'geometry': 'Polygon',
+                 'properties': {'lc_2014': 'int',
+                                'lc_2017': 'int'}}
+    crs = from_string('+proj=longlat')
+    with fiona.open('/home/madmex_user/lc_lcc_api_example.gpkg', 'w',
+                    driver='GPKG', schema=fc_schema,
+                    layer='change', crs=crs) as dst:
+        dst.writerecords(fc_change_geojson)
+
+
+Opening the vector file in QGIS allows us to visualize detected changes.
+
+We can also write the land cover maps of 2014 and 2017 to visualize them
+
+.. code-block:: python
+
+    fc_schema = {'geometry': 'Polygon',
+                 'properties': {'lc': 'int'}}
+
+    # Build valid geojson features for both land cover maps
+    fc_pred_pre_geojson = [{'geometry': geometry_transform(x[0], crs_in=lcc_pre.crs, crs_out='+proj=longlat'),
+                            'properties': {'lc': int(x[1])},
+                            'type': 'feature'} for x in fc_pred_pre]
+    fc_pred_post_geojson = [{'geometry': geometry_transform(x[0], crs_in=lcc_pre.crs, crs_out='+proj=longlat'),
+                             'properties': {'lc': int(x[1])},
+                             'type': 'feature'} for x in fc_pred_post]
+
+    # Write 2014 map
+    with fiona.open('/home/madmex_user/lc_lcc_api_example.gpkg', 'w',
+                    driver='GPKG', schema=fc_schema,
+                    layer='lc_2014', crs=crs) as dst:
+        dst.writerecords(fc_pred_pre_geojson)
+
+    # Write 2017 map
+    with fiona.open('/home/madmex_user/lc_lcc_api_example.gpkg', 'w',
+                    driver='GPKG', schema=fc_schema,
+                    layer='lc_2017', crs=crs) as dst:
+        dst.writerecords(fc_pred_post_geojson)
+
+Antares can produce a QGIS style to enhance visualization of that particular classification scheme, by running the command line ``antares generate_style madmex --type vector --filename madmex.qml``.
 
 
 
