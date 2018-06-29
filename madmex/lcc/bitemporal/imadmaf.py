@@ -281,7 +281,7 @@ class IRMAD(object):
             sigma_squared = 2 * (1 - numpy.sqrt(rho_squared))
             M_std = (M - numpy.mean(M, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]) / numpy.std(M, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]
             chi_square = numpy.tensordot(1 / sigma_squared , numpy.multiply(M_std, M_std), axes=1)
-            weights = stats.chi2.cdf(chi_square, len(rho_squared))
+            weights = 1 - stats.chi2.cdf(chi_square, len(rho_squared))
             
             delta = numpy.linalg.norm(rho_squared - old_rho)
             print(delta)
