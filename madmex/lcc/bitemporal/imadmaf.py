@@ -146,9 +146,6 @@ class IMAD(object):
         V_final = numpy.zeros((self.bands, self.rows, self.columns))
         for b in range(self.bands):
             V_final[b, :, :] = (numpy.resize(V_flat[b, :], (self.rows, self.columns)))
-        
-        
-        
         return M, U_final, V_final, chi_squared
 
     def fit_transform(self, X, Y):
@@ -215,13 +212,13 @@ class MAD(object):
             logger.error('An image of 3 or 2 dimensions is expected.')
                 
     def transform(self, X, Y):
-        X_pixel_band = X.reshape(self.bands, self.rows * self.cols)
-        Y_pixel_band = Y.reshape(self.bands, self.rows * self.cols)
-        X_centered = X_pixel_band - numpy.mean(X_pixel_band, axis=1, dtype=numpy.float64)[:, numpy.newaxis]
-        Y_centered = Y_pixel_band - numpy.mean(Y_pixel_band, axis=1, dtype=numpy.float64)[:, numpy.newaxis]
-        sigma_11 = numpy.matmul(X_centered, X_centered.T) / (X_centered.shape[1])
-        sigma_22 = numpy.matmul(Y_centered, Y_centered.T) / (Y_centered.shape[1])
-        sigma_12 = numpy.matmul(X_centered, Y_centered.T) / (X_centered.shape[1])
+        X_std = (X - numpy.mean(X, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]) / numpy.std(X, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]
+        Y_std = (Y - numpy.mean(Y, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]) / numpy.std(Y, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]
+        X_pixel_band = X_std.reshape(self.bands, self.rows * self.cols)
+        Y_pixel_band = Y_std.reshape(self.bands, self.rows * self.cols)
+        sigma_11 = numpy.matmul(X_pixel_band, X_pixel_band.T) / (X_pixel_band.shape[1] - 1)
+        sigma_22 = numpy.matmul(Y_pixel_band, Y_pixel_band.T) / (Y_pixel_band.shape[1] - 1)
+        sigma_12 = numpy.matmul(X_pixel_band, Y_pixel_band.T) / (X_pixel_band.shape[1] - 1)
         lower_11 = numpy.linalg.cholesky(sigma_11)
         lower_22 = numpy.linalg.cholesky(sigma_22)
         lower_11_inverse = numpy.linalg.inv(lower_11)
@@ -238,15 +235,14 @@ class MAD(object):
                                                                numpy.matmul(sigma_12, lower_22_inverse.T)))) 
         eig_values_1, eig_vectors_1 = numpy.linalg.eig(eig_problem_1)
         eig_values_2, eig_vectors_2 = numpy.linalg.eig(eig_problem_2)
-
         sort_index_1 = numpy.flip(eig_values_1.argsort(), 0)
         sort_index_2 = numpy.flip(eig_values_2.argsort(), 0)
-
         vector_u = eig_vectors_1[sort_index_1]
         vector_v = eig_vectors_2[sort_index_2]
-
-        U = numpy.tensordot(vector_u, X_centered.reshape(self.bands, self.rows, self.cols), axes=1)
-        V = numpy.tensordot(vector_v, Y_centered.reshape(self.bands, self.rows, self.cols), axes=1)        
+        signs_vector = numpy.diag(numpy.dot(numpy.dot(vector_u.T, sigma_12), vector_v))
+        signs = -signs_vector / numpy.abs(signs_vector)
+        U = numpy.tensordot(vector_u, X_std, axes=1)
+        V = numpy.tensordot(vector_v * signs, Y_std, axes=1)        
         M = U - V
         return eig_values_1[sort_index_1], M
         
@@ -257,7 +253,7 @@ class MAD(object):
 class IRMAD(object):
     def __init__(self, max_iterations=25, min_delta=0.02):
         self.max_iterations = max_iterations
-        self.min_delta = min_delta
+        self.threshold = min_delta
     
     def fit(self, X, Y):
         self.X = X
@@ -276,25 +272,23 @@ class IRMAD(object):
         
         i = 0
         delta = 100.0
-        while i < self.max_iterations:
-            print(i, self.max_iterations )
-            rho_square, M = MAD().fit_transform(X, Y)
-            print(rho_square)
-            sigma_squared = 2 * (1 - numpy.sqrt(rho_square))
+        old_rho = numpy.ones((self.X.shape[0]))
+        weights = numpy.ones((self.X.shape[1],self.X.shape[2]))
+        while i < self.max_iterations and delta > self.threshold:
+            X_weighted = weights * X
+            Y_weighted = weights * Y
+            rho_squared, M = MAD().fit_transform(X_weighted, Y_weighted)
+            sigma_squared = 2 * (1 - numpy.sqrt(rho_squared))
+            M_std = (M - numpy.mean(M, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]) / numpy.std(M, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]
+            chi_square = numpy.tensordot(1 / sigma_squared , numpy.multiply(M_std, M_std), axes=1)
+            weights = stats.chi2.cdf(chi_square, len(rho_squared))
             
-            numpy.multiply(M, M)
-            
-            chi_square = numpy.tensordot(1 / sigma_squared , numpy.multiply(M, M), axes=1)
-
-            print(chi_square)
-            
-            print(len(rho_square))
-            weights = stats.chi2.cdf(chi_square, len(rho_square))
-            
-            print(weights)
-            
+            delta = numpy.linalg.norm(rho_squared - old_rho)
+            print(delta)
+            old_rho = rho_squared
             i = i + 1
-        return None
+            print('Iteration #%s' % i)
+        return M
     
     def fit_transform(self, X, Y):
         self.fit(X, Y)
