@@ -99,6 +99,7 @@
 <p class="caption"><span class="caption-text">Examples</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="example_s2_land_cover.html">Sentinel 2 based Land cover example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_api.html">Land cover and land cover change: API example</a></li>
 </ul>
 
             
@@ -199,6 +200,10 @@
 </li>
         <li><a href="generated/madmex.io.vector_db.VectorDb.html#madmex.io.vector_db.VectorDb.__init__">(madmex.io.vector_db.VectorDb method)</a>
 </li>
+        <li><a href="generated/madmex.lcc.bitemporal.BaseBiChange.html#madmex.lcc.bitemporal.BaseBiChange.__init__">(madmex.lcc.bitemporal.BaseBiChange method)</a>
+</li>
+        <li><a href="generated/madmex.lcc.bitemporal.distance.BiChange.html#madmex.lcc.bitemporal.distance.BiChange.__init__">(madmex.lcc.bitemporal.distance.BiChange method)</a>
+</li>
         <li><a href="generated/madmex.modeling.BaseModel.html#madmex.modeling.BaseModel.__init__">(madmex.modeling.BaseModel method)</a>
 </li>
         <li><a href="generated/madmex.modeling.supervised.lgb.Model.html#madmex.modeling.supervised.lgb.Model.__init__">(madmex.modeling.supervised.lgb.Model method)</a>
@@ -240,6 +245,8 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/madmex.lcc.bitemporal.BaseBiChange.html#madmex.lcc.bitemporal.BaseBiChange">BaseBiChange (class in madmex.lcc.bitemporal)</a>
+</li>
       <li><a href="generated/madmex.modeling.BaseModel.html#madmex.modeling.BaseModel">BaseModel (class in madmex.modeling)</a>
 </li>
   </ul></td>
@@ -247,6 +254,8 @@
       <li><a href="generated/madmex.util.local.basename.html#madmex.util.local.basename">basename() (in module madmex.util.local)</a>
 </li>
       <li><a href="generated/madmex.segmentation.BaseSegmentation.html#madmex.segmentation.BaseSegmentation">BaseSegmentation (class in madmex.segmentation)</a>
+</li>
+      <li><a href="generated/madmex.lcc.bitemporal.distance.BiChange.html#madmex.lcc.bitemporal.distance.BiChange">BiChange (class in madmex.lcc.bitemporal.distance)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -288,14 +297,22 @@
 </li>
       <li><a href="generated/madmex.util.local.filter_files_from_folder.html#madmex.util.local.filter_files_from_folder">filter_files_from_folder() (in module madmex.util.local)</a>
 </li>
+      <li><a href="generated/madmex.lcc.bitemporal.BaseBiChange.filter_mmu.html#madmex.lcc.bitemporal.BaseBiChange.filter_mmu">filter_mmu() (madmex.lcc.bitemporal.BaseBiChange method)</a>
+</li>
+      <li><a href="generated/madmex.lcc.bitemporal.BaseBiChange.filter_no_change.html#madmex.lcc.bitemporal.BaseBiChange.filter_no_change">filter_no_change() (madmex.lcc.bitemporal.BaseBiChange static method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/madmex.modeling.BaseModel.fit.html#madmex.modeling.BaseModel.fit">fit() (madmex.modeling.BaseModel method)</a>
 </li>
       <li><a href="generated/madmex.modeling.BaseModel.from_db.html#madmex.modeling.BaseModel.from_db">from_db() (madmex.modeling.BaseModel class method)</a>
 </li>
-      <li><a href="generated/madmex.segmentation.BaseSegmentation.from_geoarray.html#madmex.segmentation.BaseSegmentation.from_geoarray">from_geoarray() (madmex.segmentation.BaseSegmentation class method)</a>
+      <li><a href="generated/madmex.lcc.bitemporal.BaseBiChange.from_geoarray.html#madmex.lcc.bitemporal.BaseBiChange.from_geoarray">from_geoarray() (madmex.lcc.bitemporal.BaseBiChange class method)</a>
+
+      <ul>
+        <li><a href="generated/madmex.segmentation.BaseSegmentation.from_geoarray.html#madmex.segmentation.BaseSegmentation.from_geoarray">(madmex.segmentation.BaseSegmentation class method)</a>
 </li>
+      </ul></li>
       <li><a href="generated/madmex.io.vector_db.from_geobox.html#madmex.io.vector_db.from_geobox">from_geobox (madmex.io.vector_db attribute)</a>
 </li>
   </ul></td>
@@ -334,6 +351,8 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/madmex.lcc.bitemporal.BaseBiChange.label_change.html#madmex.lcc.bitemporal.BaseBiChange.label_change">label_change() (madmex.lcc.bitemporal.BaseBiChange method)</a>
+</li>
       <li><a href="generated/madmex.modeling.BaseModel.load.html#madmex.modeling.BaseModel.load">load() (madmex.modeling.BaseModel static method)</a>
 </li>
   </ul></td>
@@ -348,6 +367,8 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/madmex.lcc.bitemporal.imadmaf.html#module-madmex.lcc.bitemporal.imadmaf">madmex.lcc.bitemporal.imadmaf (module)</a>
+</li>
       <li><a href="generated/madmex.ingestion.bioclimatics.metadata_convert.html#madmex.ingestion.bioclimatics.metadata_convert">metadata_convert() (in module madmex.ingestion.bioclimatics)</a>
 
       <ul>
@@ -414,9 +435,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="generated/madmex.util.randomword.html#madmex.util.randomword">randomword() (in module madmex.util)</a>
 </li>
+      <li><a href="generated/madmex.overlay.conversions.rasterize_xarray.html#madmex.overlay.conversions.rasterize_xarray">rasterize_xarray() (in module madmex.overlay.conversions)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/madmex.overlay.conversions.rasterize_xarray.html#madmex.overlay.conversions.rasterize_xarray">rasterize_xarray() (in module madmex.overlay.conversions)</a>
+      <li><a href="generated/madmex.lcc.bitemporal.BaseBiChange.read_land_cover.html#madmex.lcc.bitemporal.BaseBiChange.read_land_cover">read_land_cover() (madmex.lcc.bitemporal.BaseBiChange method)</a>
+</li>
+      <li><a href="generated/madmex.lcc.bitemporal.BaseBiChange.run.html#madmex.lcc.bitemporal.BaseBiChange.run">run() (madmex.lcc.bitemporal.BaseBiChange method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -448,9 +473,11 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/madmex.modeling.BaseModel.to_db.html#madmex.modeling.BaseModel.to_db">to_db() (madmex.modeling.BaseModel method)</a>
+      <li><a href="generated/madmex.lcc.bitemporal.BaseBiChange.to_db.html#madmex.lcc.bitemporal.BaseBiChange.to_db">to_db() (madmex.lcc.bitemporal.BaseBiChange method)</a>
 
       <ul>
+        <li><a href="generated/madmex.modeling.BaseModel.to_db.html#madmex.modeling.BaseModel.to_db">(madmex.modeling.BaseModel method)</a>
+</li>
         <li><a href="generated/madmex.segmentation.BaseSegmentation.to_db.html#madmex.segmentation.BaseSegmentation.to_db">(madmex.segmentation.BaseSegmentation method)</a>
 </li>
       </ul></li>

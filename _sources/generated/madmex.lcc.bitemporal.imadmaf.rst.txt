@@ -1,0 +1,32 @@
+madmex.lcc.bitemporal.imadmaf
+=============================
+
+.. automodule:: madmex.lcc.bitemporal.imadmaf
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      spatial_covariance
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BiChange
+      IMAD
+      IRMAD
+      MAD
+      MAF
+   
+   
+
+   
+   
+   

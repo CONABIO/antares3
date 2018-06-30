@@ -1,0 +1,6 @@
+madmex.lcc.bitemporal.BaseBiChange.filter\_mmu
+==============================================
+
+.. currentmodule:: madmex.lcc.bitemporal
+
+.. automethod:: BaseBiChange.filter_mmu

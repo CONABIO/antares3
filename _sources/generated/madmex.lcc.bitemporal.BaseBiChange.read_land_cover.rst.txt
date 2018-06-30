@@ -1,0 +1,6 @@
+madmex.lcc.bitemporal.BaseBiChange.read\_land\_cover
+====================================================
+
+.. currentmodule:: madmex.lcc.bitemporal
+
+.. automethod:: BaseBiChange.read_land_cover

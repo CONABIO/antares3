@@ -1,0 +1,35 @@
+madmex.lcc.bitemporal.BaseBiChange
+==================================
+
+.. currentmodule:: madmex.lcc.bitemporal
+
+.. autoclass:: BaseBiChange
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BaseBiChange.__init__
+      ~BaseBiChange.filter_mmu
+      ~BaseBiChange.filter_no_change
+      ~BaseBiChange.from_geoarray
+      ~BaseBiChange.label_change
+      ~BaseBiChange.read_land_cover
+      ~BaseBiChange.run
+      ~BaseBiChange.to_db
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BaseBiChange.geobox
+   
+   

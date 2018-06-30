@@ -125,8 +125,27 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.io.vector_db.load_segmentation_from_dataset.html">madmex.io.vector_db.load_segmentation_from_dataset</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#modeling">Modeling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#land-cover-change-lcc">Land cover change (lcc)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#base-class">Base class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.html">madmex.lcc.bitemporal.BaseBiChange</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.from_geoarray.html">madmex.lcc.bitemporal.BaseBiChange.from_geoarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.run.html">madmex.lcc.bitemporal.BaseBiChange.run</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.filter_mmu.html">madmex.lcc.bitemporal.BaseBiChange.filter_mmu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.label_change.html">madmex.lcc.bitemporal.BaseBiChange.label_change</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.filter_no_change.html">madmex.lcc.bitemporal.BaseBiChange.filter_no_change</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.to_db.html">madmex.lcc.bitemporal.BaseBiChange.to_db</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.read_land_cover.html">madmex.lcc.bitemporal.BaseBiChange.read_land_cover</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#implemented-algorithms">Implemented algorithms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.distance.BiChange.html">madmex.lcc.bitemporal.distance.BiChange</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.imadmaf.html">madmex.lcc.bitemporal.imadmaf</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#modeling">Modeling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Base class</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.html">madmex.modeling.BaseModel</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.fit.html">madmex.modeling.BaseModel.fit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.predict.html">madmex.modeling.BaseModel.predict</a></li>
@@ -155,7 +174,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#segmentation">Segmentation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id5">Base class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Base class</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.html">madmex.segmentation.BaseSegmentation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.from_geoarray.html">madmex.segmentation.BaseSegmentation.from_geoarray</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.segment.html">madmex.segmentation.BaseSegmentation.segment</a></li>
@@ -163,7 +182,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.to_db.html">madmex.segmentation.BaseSegmentation.to_db</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#implemented-algorithms">Implemented algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Implemented algorithms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.slic.Segmentation.html">madmex.segmentation.slic.Segmentation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.segmentation.bis.Segmentation.html">madmex.segmentation.bis.Segmentation</a></li>
 </ul>
@@ -215,6 +234,7 @@
 <p class="caption"><span class="caption-text">Examples</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="example_s2_land_cover.html">Sentinel 2 based Land cover example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_api.html">Land cover and land cover change: API example</a></li>
 </ul>
 
             
@@ -380,11 +400,67 @@
 </tbody>
 </table>
 </div>
+<div class="section" id="land-cover-change-lcc">
+<h2>Land cover change (lcc)<a class="headerlink" href="#land-cover-change-lcc" title="Permalink to this headline">¶</a></h2>
+<p>Interface to perform Land cover change detection and classication</p>
+<div class="section" id="base-class">
+<h3>Base class<a class="headerlink" href="#base-class" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.html#madmex.lcc.bitemporal.BaseBiChange" title="madmex.lcc.bitemporal.BaseBiChange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.BaseBiChange</span></code></a>(array,&nbsp;affine,&nbsp;crs)</td>
+<td>Parent class imlementing generic methods related to change detection results handling.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.from_geoarray.html#madmex.lcc.bitemporal.BaseBiChange.from_geoarray" title="madmex.lcc.bitemporal.BaseBiChange.from_geoarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.BaseBiChange.from_geoarray</span></code></a>(…)</td>
+<td>Instantiate class from a geoarray (xarray read with datacube.load)</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.run.html#madmex.lcc.bitemporal.BaseBiChange.run" title="madmex.lcc.bitemporal.BaseBiChange.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.BaseBiChange.run</span></code></a>(other)</td>
+<td>Run change detection using algorithm defined in _run</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.filter_mmu.html#madmex.lcc.bitemporal.BaseBiChange.filter_mmu" title="madmex.lcc.bitemporal.BaseBiChange.filter_mmu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.BaseBiChange.filter_mmu</span></code></a>(min_area)</td>
+<td>Filter clumps of pixels smaller than min_area</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.label_change.html#madmex.lcc.bitemporal.BaseBiChange.label_change" title="madmex.lcc.bitemporal.BaseBiChange.label_change"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.BaseBiChange.label_change</span></code></a>(…)</td>
+<td>Label change array</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.filter_no_change.html#madmex.lcc.bitemporal.BaseBiChange.filter_no_change" title="madmex.lcc.bitemporal.BaseBiChange.filter_no_change"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.BaseBiChange.filter_no_change</span></code></a>()</td>
+<td>Filter labeled change polygons that have the same before and after label</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.to_db.html#madmex.lcc.bitemporal.BaseBiChange.to_db" title="madmex.lcc.bitemporal.BaseBiChange.to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.BaseBiChange.to_db</span></code></a>(fc,&nbsp;meta,&nbsp;…)</td>
+<td>Write feature collection returned by label_change to the antares3 database</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.read_land_cover.html#madmex.lcc.bitemporal.BaseBiChange.read_land_cover" title="madmex.lcc.bitemporal.BaseBiChange.read_land_cover"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.BaseBiChange.read_land_cover</span></code></a>(name)</td>
+<td>Read the specified land cover map covering the extent of the instance array</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="implemented-algorithms">
+<h3>Implemented algorithms<a class="headerlink" href="#implemented-algorithms" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.distance.BiChange.html#madmex.lcc.bitemporal.distance.BiChange" title="madmex.lcc.bitemporal.distance.BiChange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.distance.BiChange</span></code></a>(array,&nbsp;…)</td>
+<td>Antares implementation of a simple distance based bi-temporal change detection algorithm</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.imadmaf.html#module-madmex.lcc.bitemporal.imadmaf" title="madmex.lcc.bitemporal.imadmaf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.imadmaf</span></code></a></td>
+<td>Created on Jun 25, 2018</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="section" id="modeling">
 <h2>Modeling<a class="headerlink" href="#modeling" title="Permalink to this headline">¶</a></h2>
 <p>Interface to various statistical models running on numpy arrays</p>
-<div class="section" id="base-class">
-<h3>Base class<a class="headerlink" href="#base-class" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h3>Base class<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
@@ -477,9 +553,9 @@
 </div>
 <div class="section" id="segmentation">
 <h2>Segmentation<a class="headerlink" href="#segmentation" title="Permalink to this headline">¶</a></h2>
-<p>Interface to various segmentation algorithms operating on numpy arrays and xarray <a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>Dataset``s</p>
-<div class="section" id="id5">
-<h3>Base class<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>Interface to various segmentation algorithms operating on numpy arrays and xarray <a href="#id2"><span class="problematic" id="id3">``</span></a><a href="#id4"><span class="problematic" id="id5">`</span></a>Dataset``s</p>
+<div class="section" id="id6">
+<h3>Base class<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
@@ -504,8 +580,8 @@
 </tbody>
 </table>
 </div>
-<div class="section" id="implemented-algorithms">
-<h3>Implemented algorithms<a class="headerlink" href="#implemented-algorithms" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h3>Implemented algorithms<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />

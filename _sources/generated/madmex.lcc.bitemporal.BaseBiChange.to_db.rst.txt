@@ -1,0 +1,6 @@
+madmex.lcc.bitemporal.BaseBiChange.to\_db
+=========================================
+
+.. currentmodule:: madmex.lcc.bitemporal
+
+.. automethod:: BaseBiChange.to_db

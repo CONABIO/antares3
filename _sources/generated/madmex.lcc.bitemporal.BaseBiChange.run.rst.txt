@@ -1,0 +1,6 @@
+madmex.lcc.bitemporal.BaseBiChange.run
+======================================
+
+.. currentmodule:: madmex.lcc.bitemporal
+
+.. automethod:: BaseBiChange.run
