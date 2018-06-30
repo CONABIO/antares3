@@ -113,8 +113,6 @@ Base class
    modeling.BaseModel.to_db
    modeling.BaseModel.hot_encode_training
    modeling.BaseModel.hot_encode_predict
-   modeling.BaseModel.score
-   modeling.BaseModel.create_report
 
 Implemented models
 ------------------
