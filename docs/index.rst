@@ -38,6 +38,7 @@ Antares
    :caption: Examples
 
    example_s2_land_cover
+   example_api
 
 
 Indices and tables
