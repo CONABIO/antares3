@@ -29,7 +29,7 @@ Example usage:
 # Get the list of implemented methods
 antares bi_change_params
 
-# Get the list of available parameters for the rf model
+# Get the list of available parameters for the distance change method
 antares bi_change_params distance
 """
     def add_arguments(self, parser):
