@@ -126,7 +126,8 @@ def extract_tile_db(tile, sp, training_set, sample):
         return [None, None]
 
 
-def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None):
+def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None,
+              view=True):
     """Run a spatial query on a datacube product using either coordinates or a region name
 
     Wrapper function to call at the begining of nearly all spatial processing command lines
@@ -142,9 +143,12 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None):
             Countries must be queried using ISO code (e.g.: 'MEX' for Mexico)
         begin (str): Date string in the form '%Y-%m-%d'. For temporally bounded queries
         end (str): Date string in the form '%Y-%m-%d'. For temporally bounded queries
+        view (bool): Returns a view instead of the dictionary returned by ``GridWorkflow.list_cells``.
+            Useful when the output is be used directly as an iterable (e.g. in ``distributed.map``)
+            Default to True
 
     Returns:
-        view: Dictionary view of Tile index, Tile key value pair
+        dict or view: Dictionary (view) of Tile index, Tile key value pair
 
     Example:
 
@@ -185,8 +189,9 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None):
     gwf = GridWorkflow(dc.index, product=product)
     tile_dict = gwf.list_cells(**query_params)
     # Iterable (dictionary view (analog to list of tuples))
-    tiles_view = tile_dict.items()
-    return tiles_view
+    if view:
+        tile_dict = tile_dict.items()
+    return tile_dict
 
 def segment(tile, algorithm, segmentation_meta,
             band_list, extra_args):
