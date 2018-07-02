@@ -200,36 +200,37 @@ datacube ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico.yaml --executor mu
 <p class="first admonition-title">Attention</p>
 <p class="last">Open Datacube supports NETCDF CF and S3 drivers for storage (see <a class="reference external" href="https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config">Open DataCube Ingestion Config</a>). Different software dependencies are required for different drivers and different <code class="docutils literal notranslate"><span class="pre">datacube</span> <span class="pre">ingest</span></code> command.</p>
 </div>
-<div class="section" id="example-in-netcdf-cf">
-<h4>Example in Netcdf CF<a class="headerlink" href="#example-in-netcdf-cf" title="Permalink to this headline">¶</a></h4>
-<p>log in to master node retrieve the dask-scheduler ip with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat <span class="nv">$mount_volume</span>/scheduler.json
+<p>Log in to master node as user <code class="docutils literal notranslate"><span class="pre">ubuntu</span></code>.</p>
+<p>Retrieve the dask-scheduler ip with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat <span class="nv">$mount_point</span>/scheduler.json
 </pre></div>
 </div>
-<p>and execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>datacube -v product add /home/ubuntu/.config/madmex/indexing/landsat_8_espa_scenes.yaml
+<div class="section" id="example-in-netcdf-cf">
+<h4>Example in Netcdf CF<a class="headerlink" href="#example-in-netcdf-cf" title="Permalink to this headline">¶</a></h4>
+<p>Execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>datacube -v product add ~/.config/madmex/indexing/landsat_8_espa_scenes.yaml
 antares prepare_metadata -p <span class="nv">$mount_point</span>/landsat_8_espa/ -d landsat_espa -o <span class="nv">$mount_point</span>/datacube/ls8_espa.yaml
 datacube -v dataset add <span class="nv">$mount_point</span>/datacube/ls8_espa.yaml
-datacube -v ingest -c /home/ubuntu/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor distributed &lt;ip dask-scheduler&gt;:&lt;port where dask-scheduler listens&gt;
+<span class="c1">#If using distributed:</span>
+datacube -v ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico.yaml --executor distributed &lt;ip dask-scheduler&gt;:&lt;port where dask-scheduler listens, tipically <span class="m">8786</span>&gt;
+<span class="c1">#If using multiprocessing:</span>
+datacube -v ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico.yaml --executor multiproc &lt;number of multiprocesses&gt;
 </pre></div>
 </div>
 </div>
 <div class="section" id="example-in-s3">
 <h4>Example in S3<a class="headerlink" href="#example-in-s3" title="Permalink to this headline">¶</a></h4>
 <p>It’s assumed you have created a bucket in S3.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>datacube -v product add /home/ubuntu/.config/madmex/indexing/landsat_8_espa_scenes.yaml
-
-<span class="c1">#right now is not dynamic, so copy and modify container entry of ls8_espa_mexico_s3.yaml with name of bucket. Next line is to copy already file created</span>
-
-<span class="c1">#cp /shared_volume/datacube/madmex_conf_files/ingestion/ls8_espa_mexico_s3.yaml /home/ubuntu/.config/madmex/ingestion/</span>
-
-mkdir /home/ubuntu/datacube
-
-antares prepare_metadata -p <span class="nv">$mount_point</span>/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o <span class="nv">$mount_point</span>/datacube/ls8_espa.yaml
-
-datacube -v dataset add /home/ubuntu/datacube/ls8_espa.yaml
-
-datacube --driver s3 -v ingest -c /home/ubuntu/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor multiproc <span class="m">2</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    datacube -v product ~/.config/madmex/indexing/landsat_8_espa_scenes.yaml
+    <span class="c1">#right now is not dynamic, so copy and modify container entry of ls8_espa_mexico_s3.yaml with name of bucket. Next line will copy file created already:</span>
+    <span class="c1">#cp $mount_point/datacube/madmex_conf_files/ingestion/ls8_espa_mexico_s3.yaml ~/.config/madmex/ingestion/</span>
+    mkdir ~/datacube
+    antares prepare_metadata -p <span class="nv">$mount_point</span>/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o <span class="nv">$mount_point</span>/datacube/ls8_espa.yaml
+    datacube -v dataset add <span class="nv">$mount_point</span>/datacube/ls8_espa.yaml
+<span class="c1">#If using distributed:</span>
+datacube -v ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor distributed &lt;ip dask-scheduler&gt;:&lt;port where dask-scheduler listens, tipically <span class="m">8786</span>&gt;
+<span class="c1">#If using multiprocessing:</span>
+    datacube --driver s3 -v ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor multiproc &lt;number of multiprocesses&gt;
 </pre></div>
 </div>
 </div>

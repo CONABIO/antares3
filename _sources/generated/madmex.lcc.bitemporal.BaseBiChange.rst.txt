@@ -20,6 +20,7 @@ madmex.lcc.bitemporal.BaseBiChange
       ~BaseBiChange.label_change
       ~BaseBiChange.read_land_cover
       ~BaseBiChange.run
+      ~BaseBiChange.threshold_change
       ~BaseBiChange.to_db
    
    

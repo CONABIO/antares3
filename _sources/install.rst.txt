@@ -103,7 +103,7 @@ Login to master node and execute:
     # Start dask-scheduler on master node. The file scheduler.json will be created on $mount_point (shared_volume) of EFS
     qsub -b y -l h=$HOSTNAME dask-scheduler --scheduler-file $mount_point/scheduler.json
 
-The master node have two cores, one is used for dask-scheduler, the other core can be used as a dask-worker:
+The master node has two cores, one is used for dask-scheduler, the other core can be used as a dask-worker:
 
 .. code-block:: bash
 

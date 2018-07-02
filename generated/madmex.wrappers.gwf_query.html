@@ -191,7 +191,7 @@
 <h1>madmex.wrappers.gwf_query<a class="headerlink" href="#madmex-wrappers-gwf-query" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="madmex.wrappers.gwf_query">
-<code class="descclassname">madmex.wrappers.</code><code class="descname">gwf_query</code><span class="sig-paren">(</span><em>product</em>, <em>lat=None</em>, <em>long=None</em>, <em>region=None</em>, <em>begin=None</em>, <em>end=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/wrappers.html#gwf_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.wrappers.gwf_query" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">madmex.wrappers.</code><code class="descname">gwf_query</code><span class="sig-paren">(</span><em>product</em>, <em>lat=None</em>, <em>long=None</em>, <em>region=None</em>, <em>begin=None</em>, <em>end=None</em>, <em>view=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/wrappers.html#gwf_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.wrappers.gwf_query" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run a spatial query on a datacube product using either coordinates or a region name</p>
 <p>Wrapper function to call at the begining of nearly all spatial processing command lines</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -209,13 +209,16 @@ region  or country table. Overrides lat and long when present (not None).
 Countries must be queried using ISO code (e.g.: ‘MEX’ for Mexico)</li>
 <li><strong>begin</strong> (<em>str</em>) – Date string in the form ‘%Y-%m-%d’. For temporally bounded queries</li>
 <li><strong>end</strong> (<em>str</em>) – Date string in the form ‘%Y-%m-%d’. For temporally bounded queries</li>
+<li><strong>view</strong> (<em>bool</em>) – Returns a view instead of the dictionary returned by <code class="docutils literal notranslate"><span class="pre">GridWorkflow.list_cells</span></code>.
+Useful when the output is be used directly as an iterable (e.g. in <code class="docutils literal notranslate"><span class="pre">distributed.map</span></code>)
+Default to True</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Dictionary view of Tile index, Tile key value pair</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Dictionary (view) of Tile index, Tile key value pair</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">view</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or view</p>
 </td>
 </tr>
 </tbody>

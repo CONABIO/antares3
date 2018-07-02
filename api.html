@@ -212,6 +212,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.chunk.html">madmex.util.chunk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.pprint_args.html">madmex.util.pprint_args</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.fill_and_copy.html">madmex.util.fill_and_copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.join_dicts.html">madmex.util.join_dicts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.datacube.var_to_ind.html">madmex.util.datacube.var_to_ind</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.local.aware_download.html">madmex.util.local.aware_download</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.local.extract_zip.html">madmex.util.local.extract_zip</a></li>
@@ -673,46 +674,49 @@
 <tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.fill_and_copy.html#madmex.util.fill_and_copy" title="madmex.util.fill_and_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.fill_and_copy</span></code></a>(template,&nbsp;out_dir,&nbsp;**kwargs)</td>
 <td>Retrieves a template, fills it with jinja2 and writes it with the same basename to a target directory</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.datacube.var_to_ind.html#madmex.util.datacube.var_to_ind" title="madmex.util.datacube.var_to_ind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.datacube.var_to_ind</span></code></a>(variables,&nbsp;product)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.join_dicts.html#madmex.util.join_dicts" title="madmex.util.join_dicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.join_dicts</span></code></a>(*args[,&nbsp;join])</td>
+<td>Join dictionaries by combining elements with similar keys into lists</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.datacube.var_to_ind.html#madmex.util.datacube.var_to_ind" title="madmex.util.datacube.var_to_ind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.datacube.var_to_ind</span></code></a>(variables,&nbsp;product)</td>
 <td>Helper to get a list of index from a list of variables names</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.local.aware_download.html#madmex.util.local.aware_download" title="madmex.util.local.aware_download"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.aware_download</span></code></a>(url,&nbsp;directory)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.local.aware_download.html#madmex.util.local.aware_download" title="madmex.util.local.aware_download"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.aware_download</span></code></a>(url,&nbsp;directory)</td>
 <td>Download function that only executes when the file has not been downloaded.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.local.extract_zip.html#madmex.util.local.extract_zip" title="madmex.util.local.extract_zip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.extract_zip</span></code></a>(filepath,&nbsp;directory)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.local.extract_zip.html#madmex.util.local.extract_zip" title="madmex.util.local.extract_zip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.extract_zip</span></code></a>(filepath,&nbsp;directory)</td>
 <td>Extracts zip file to the given directory.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.local.aware_make_dir.html#madmex.util.local.aware_make_dir" title="madmex.util.local.aware_make_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.aware_make_dir</span></code></a>(directory)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.local.aware_make_dir.html#madmex.util.local.aware_make_dir" title="madmex.util.local.aware_make_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.aware_make_dir</span></code></a>(directory)</td>
 <td>Helper function to create a directory if it does not exists.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.local.basename.html#madmex.util.local.basename" title="madmex.util.local.basename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.basename</span></code></a>(filename[,&nbsp;suffix])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.local.basename.html#madmex.util.local.basename" title="madmex.util.local.basename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.basename</span></code></a>(filename[,&nbsp;suffix])</td>
 <td>Get base name of a file with or without its suffix.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.local.filter_files_from_folder.html#madmex.util.local.filter_files_from_folder" title="madmex.util.local.filter_files_from_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.filter_files_from_folder</span></code></a>(directory)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.local.filter_files_from_folder.html#madmex.util.local.filter_files_from_folder" title="madmex.util.local.filter_files_from_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.local.filter_files_from_folder</span></code></a>(directory)</td>
 <td>Returns a list with the files found in the given directory filtered by the given regex.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.xarray.to_float.html#madmex.util.xarray.to_float" title="madmex.util.xarray.to_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.xarray.to_float</span></code></a>(x)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.xarray.to_float.html#madmex.util.xarray.to_float" title="madmex.util.xarray.to_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.xarray.to_float</span></code></a>(x)</td>
 <td>TAkes a DataArray, converts data flagged as nodata to Nan and return corresponding array in float</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.xarray.to_int.html#madmex.util.xarray.to_int" title="madmex.util.xarray.to_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.xarray.to_int</span></code></a>(x)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.xarray.to_int.html#madmex.util.xarray.to_int" title="madmex.util.xarray.to_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.xarray.to_int</span></code></a>(x)</td>
 <td>TAkes a DataArray in float and converts it to int, converting Nan to nodata flags</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.spatial.feature_transform.html#madmex.util.spatial.feature_transform" title="madmex.util.spatial.feature_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.feature_transform</span></code></a>(feature,&nbsp;crs_out)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.spatial.feature_transform.html#madmex.util.spatial.feature_transform" title="madmex.util.spatial.feature_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.feature_transform</span></code></a>(feature,&nbsp;crs_out)</td>
 <td>Reproject a feature</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.spatial.geometry_transform.html#madmex.util.spatial.geometry_transform" title="madmex.util.spatial.geometry_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.geometry_transform</span></code></a>(geometry,&nbsp;…)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.spatial.geometry_transform.html#madmex.util.spatial.geometry_transform" title="madmex.util.spatial.geometry_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.geometry_transform</span></code></a>(geometry,&nbsp;…)</td>
 <td>Reproject a geometry</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.spatial.get_geom_bbox.html#madmex.util.spatial.get_geom_bbox" title="madmex.util.spatial.get_geom_bbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.get_geom_bbox</span></code></a>(geometry)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.spatial.get_geom_bbox.html#madmex.util.spatial.get_geom_bbox" title="madmex.util.spatial.get_geom_bbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.get_geom_bbox</span></code></a>(geometry)</td>
 <td>Given a geojson like geometry, returns its bounding box as a tuple of coordinates</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.db.classification_to_cmap.html#madmex.util.db.classification_to_cmap" title="madmex.util.db.classification_to_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.classification_to_cmap</span></code></a>(x)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.classification_to_cmap.html#madmex.util.db.classification_to_cmap" title="madmex.util.db.classification_to_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.classification_to_cmap</span></code></a>(x)</td>
 <td>Generate a colormap (cmap) object for a given classification</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.get_label_encoding.html#madmex.util.db.get_label_encoding" title="madmex.util.db.get_label_encoding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_label_encoding</span></code></a>(scheme[,&nbsp;inverse])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.db.get_label_encoding.html#madmex.util.db.get_label_encoding" title="madmex.util.db.get_label_encoding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_label_encoding</span></code></a>(scheme[,&nbsp;inverse])</td>
 <td>Get label –&gt; Numeric code correspondance for a given classification scheme as a dictionary</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.db.get_validation_scheme_name.html#madmex.util.db.get_validation_scheme_name" title="madmex.util.db.get_validation_scheme_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_validation_scheme_name</span></code></a>(name)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.get_validation_scheme_name.html#madmex.util.db.get_validation_scheme_name" title="madmex.util.db.get_validation_scheme_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_validation_scheme_name</span></code></a>(name)</td>
 <td>Given the name/identifier of an ingested validation dataset, returns its scheme name</td>
 </tr>
 </tbody>

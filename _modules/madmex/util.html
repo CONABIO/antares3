@@ -326,7 +326,34 @@
         <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="join_dicts"><a class="viewcode-back" href="../../generated/madmex.util.join_dicts.html#madmex.util.join_dicts">[docs]</a><span class="k">def</span> <span class="nf">join_dicts</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">join</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Join dictionaries by combining elements with similar keys into lists</span>
 
+<span class="sd">    Args:</span>
+<span class="sd">        *args: The dictionaries to join</span>
+<span class="sd">        join (str): Type of join. Either inner (default) or full</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        dict: The dictionary with combined keys</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; d1 = {1: 2, 3: 4}</span>
+<span class="sd">        &gt;&gt;&gt; d2 = {1: 6, 3: 7, 5: 6}</span>
+<span class="sd">        &gt;&gt;&gt; d3 = {1: 4, 3: 1, 9: 12, 5: 3}</span>
+<span class="sd">        &gt;&gt;&gt; join_dicts(d1, d2, d3)</span>
+<span class="sd">        &gt;&gt;&gt; join_dicts(d1, d2, d3, join=&#39;full&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get list of lists of keys</span>
+    <span class="n">key_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">join</span> <span class="o">==</span> <span class="s1">&#39;inner&#39;</span><span class="p">:</span>
+        <span class="n">key_iter</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">key_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="o">*</span><span class="n">key_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:[</span><span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key_iter</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="n">join</span> <span class="o">==</span> <span class="s1">&#39;full&#39;</span><span class="p">:</span>
+        <span class="n">key_iter</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">j</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:[</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key_iter</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown join type&#39;</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

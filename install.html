@@ -250,7 +250,7 @@ ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/ubuntu/.datacub
 qsub -b y -l <span class="nv">h</span><span class="o">=</span><span class="nv">$HOSTNAME</span> dask-scheduler --scheduler-file <span class="nv">$mount_point</span>/scheduler.json
 </pre></div>
 </div>
-<p>The master node have two cores, one is used for dask-scheduler, the other core can be used as a dask-worker:</p>
+<p>The master node has two cores, one is used for dask-scheduler, the other core can be used as a dask-worker:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>qsub -b y -l <span class="nv">h</span><span class="o">=</span><span class="nv">$HOSTNAME</span> dask-worker --nthreads <span class="m">1</span> --scheduler-file <span class="nv">$mount_point</span>/scheduler.json
 </pre></div>
 </div>

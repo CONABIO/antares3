@@ -290,7 +290,8 @@
         <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="gwf_query"><a class="viewcode-back" href="../../generated/madmex.wrappers.gwf_query.html#madmex.wrappers.gwf_query">[docs]</a><span class="k">def</span> <span class="nf">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">long</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="gwf_query"><a class="viewcode-back" href="../../generated/madmex.wrappers.gwf_query.html#madmex.wrappers.gwf_query">[docs]</a><span class="k">def</span> <span class="nf">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">long</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">view</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Run a spatial query on a datacube product using either coordinates or a region name</span>
 
 <span class="sd">    Wrapper function to call at the begining of nearly all spatial processing command lines</span>
@@ -306,9 +307,12 @@
 <span class="sd">            Countries must be queried using ISO code (e.g.: &#39;MEX&#39; for Mexico)</span>
 <span class="sd">        begin (str): Date string in the form &#39;%Y-%m-%d&#39;. For temporally bounded queries</span>
 <span class="sd">        end (str): Date string in the form &#39;%Y-%m-%d&#39;. For temporally bounded queries</span>
+<span class="sd">        view (bool): Returns a view instead of the dictionary returned by ``GridWorkflow.list_cells``.</span>
+<span class="sd">            Useful when the output is be used directly as an iterable (e.g. in ``distributed.map``)</span>
+<span class="sd">            Default to True</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        view: Dictionary view of Tile index, Tile key value pair</span>
+<span class="sd">        dict or view: Dictionary (view) of Tile index, Tile key value pair</span>
 
 <span class="sd">    Example:</span>
 
@@ -349,8 +353,9 @@
     <span class="n">gwf</span> <span class="o">=</span> <span class="n">GridWorkflow</span><span class="p">(</span><span class="n">dc</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">)</span>
     <span class="n">tile_dict</span> <span class="o">=</span> <span class="n">gwf</span><span class="o">.</span><span class="n">list_cells</span><span class="p">(</span><span class="o">**</span><span class="n">query_params</span><span class="p">)</span>
     <span class="c1"># Iterable (dictionary view (analog to list of tuples))</span>
-    <span class="n">tiles_view</span> <span class="o">=</span> <span class="n">tile_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">tiles_view</span></div>
+    <span class="k">if</span> <span class="n">view</span><span class="p">:</span>
+        <span class="n">tile_dict</span> <span class="o">=</span> <span class="n">tile_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">tile_dict</span></div>
 
 <div class="viewcode-block" id="segment"><a class="viewcode-back" href="../../generated/madmex.wrappers.segment.html#madmex.wrappers.segment">[docs]</a><span class="k">def</span> <span class="nf">segment</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">segmentation_meta</span><span class="p">,</span>
             <span class="n">band_list</span><span class="p">,</span> <span class="n">extra_args</span><span class="p">):</span>

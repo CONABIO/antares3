@@ -20,6 +20,7 @@ madmex.lcc.bitemporal.distance.BiChange
       ~BiChange.label_change
       ~BiChange.read_land_cover
       ~BiChange.run
+      ~BiChange.threshold_change
       ~BiChange.to_db
    
    

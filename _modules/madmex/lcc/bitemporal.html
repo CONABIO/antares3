@@ -179,6 +179,7 @@
 <span class="kn">from</span> <span class="nn">madmex.io.vector_db</span> <span class="k">import</span> <span class="n">from_geobox</span>
 <span class="kn">from</span> <span class="nn">madmex.util.spatial</span> <span class="k">import</span> <span class="n">geometry_transform</span>
 <span class="kn">from</span> <span class="nn">madmex.models</span> <span class="k">import</span> <span class="n">PredictClassification</span><span class="p">,</span> <span class="n">ChangeObject</span><span class="p">,</span> <span class="n">ChangeClassification</span>
+<span class="kn">from</span> <span class="nn">madmex.lcc.bitemporal.thresholding</span> <span class="k">import</span> <span class="n">Elliptic</span><span class="p">,</span> <span class="n">Kapur</span>
 
 <span class="c1"># Monkeypatch Django Polygon class to instantiate it using a datacube style geobox</span>
 <span class="n">Polygon</span><span class="o">.</span><span class="n">from_geobox</span> <span class="o">=</span> <span class="n">from_geobox</span>
@@ -264,6 +265,30 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">change_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Children _run method must return a 2D np.array&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">change_array</span> <span class="o">=</span> <span class="n">change_array</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">threshold_change</span><span class="p">(</span><span class="n">diff_image</span><span class="p">,</span><span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Applies a thresholding method to a continuous difference image</span>
+<span class="sd">   </span>
+<span class="sd">        Takes aan array of difference images and thresholds them to produce discrete</span>
+<span class="sd">        change/no-change image masks</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            diff_image (ndarray): a, possibly multidimensional, numpy array consisting</span>
+<span class="sd">            of difference images.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            change_mask (ndarray): a, possibly multidimensional, numpy array</span>
+<span class="sd">            consisting of change (=-1) /no-change image masks (=1)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">method</span><span class="o">==</span><span class="s2">&quot;Kapur&quot;</span><span class="p">:</span>
+            <span class="n">model_spec</span> <span class="o">=</span> <span class="n">Kapur</span><span class="p">(</span><span class="n">diff_image</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">change_mask</span> <span class="o">=</span> <span class="n">model_spec</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">diff_image</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span><span class="o">==</span><span class="s2">&quot;Elliptic&quot;</span><span class="p">:</span>
+            <span class="n">model_spec</span> <span class="o">=</span> <span class="n">Elliptic</span><span class="p">(</span><span class="n">diff_image</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">change_mask</span> <span class="o">=</span> <span class="n">model_spec</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">diff_image</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">change_mask</span>
 
 
 <div class="viewcode-block" id="BaseBiChange.filter_mmu"><a class="viewcode-back" href="../../../generated/madmex.lcc.bitemporal.BaseBiChange.filter_mmu.html#madmex.lcc.bitemporal.BaseBiChange.filter_mmu">[docs]</a>    <span class="k">def</span> <span class="nf">filter_mmu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_area</span><span class="p">):</span>
