@@ -241,13 +241,15 @@ pip install <span class="nv">rasterio</span><span class="o">==</span><span class
 <span class="nv">region</span><span class="o">=</span>&lt;region&gt;
 <span class="nv">name_instance</span><span class="o">=</span>conabio-dask-sge
 <span class="nv">shared_volume</span><span class="o">=</span>/shared_volume
-<span class="c1">##Install awscli</span>
+<span class="c1">##System update</span>
 apt-get update
-apt-get install -y awscli
+<span class="c1">##Install awscli</span>
+apt-get install -y python3-pip <span class="o">&amp;&amp;</span> pip3 install --upgrade <span class="nv">pip</span><span class="o">==</span><span class="m">9</span>.0.3
+pip3 install awscli --upgrade
 <span class="c1">##Tag instance</span>
-<span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://169.254.169.254/latest/meta-data/instance-id<span class="k">)</span>
-<span class="nv">PUBLIC_IP_LOCAL</span><span class="o">=</span><span class="k">$(</span>curl -s http://169.254.169.254/latest/meta-data/local-ipv4<span class="k">)</span>
-<span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://169.254.169.254/latest/meta-data/public-ipv4<span class="k">)</span>
+<span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/instance-id<span class="k">)</span>
+<span class="nv">PUBLIC_IP_LOCAL</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/local-ipv4<span class="k">)</span>
+<span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/public-ipv4<span class="k">)</span>
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Name,Value<span class="o">=</span><span class="nv">$name_instance</span>-<span class="nv">$PUBLIC_IP</span> --region<span class="o">=</span><span class="nv">$region</span>
 <span class="c1">##Set locales for OpenDataCube</span>
 <span class="nb">echo</span> <span class="s2">&quot;export LC_ALL=C.UTF-8&quot;</span> &gt;&gt; /home/ubuntu/.profile
@@ -260,9 +262,7 @@ python-software-properties <span class="se">\</span>
 libssl-dev <span class="se">\</span>
 libffi-dev <span class="se">\</span>
 python3-dev <span class="se">\</span>
-python3-pip <span class="se">\</span>
 python3-setuptools
-pip3 install --upgrade <span class="nv">pip</span><span class="o">==</span><span class="m">9</span>.0.3
 <span class="c1">##For RunCommand service of EC2</span>
 wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
 dpkg -i amazon-ssm-agent.deb
@@ -380,8 +380,8 @@ aws ec2 describe-instances --region<span class="o">=</span><span class="nv">$reg
 <span class="nv">name_instance</span><span class="o">=</span>conabio-dask-sge-node
 <span class="nv">type_value</span><span class="o">=</span>Node-dask-sge
 <span class="c1">##Tag instances of type node</span>
-<span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://169.254.169.254/latest/meta-data/instance-id<span class="k">)</span>
-<span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://169.254.169.254/latest/meta-data/public-ipv4<span class="k">)</span>
+<span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/instance-id<span class="k">)</span>
+<span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/public-ipv4<span class="k">)</span>
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Name,Value<span class="o">=</span><span class="nv">$name_instance</span>-<span class="nv">$PUBLIC_IP</span> --region<span class="o">=</span><span class="nv">$region</span>
 <span class="c1">##Next line is useful so RunCommand can execute bash scripts (for example) on instances with Key=Type, Value=$type_value</span>
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Type,Value<span class="o">=</span><span class="nv">$type_value</span> --region<span class="o">=</span><span class="nv">$region</span>
@@ -401,8 +401,8 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 <span class="nv">name_instance</span><span class="o">=</span>conabio-dask-sge-node
 <span class="nv">type_value</span><span class="o">=</span>Node-dask-sge
 <span class="c1">##Tag instances of type node</span>
-<span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://169.254.169.254/latest/meta-data/instance-id<span class="k">)</span>
-<span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://169.254.169.254/latest/meta-data/public-ipv4<span class="k">)</span>
+<span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/instance-id<span class="k">)</span>
+<span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/public-ipv4<span class="k">)</span>
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Name,Value<span class="o">=</span><span class="nv">$name_instance</span>-<span class="nv">$PUBLIC_IP</span> --region<span class="o">=</span><span class="nv">$region</span>
 <span class="c1">##Next line is useful so RunCommand can execute bash scripts (for example) on instances with Key=Type, Value=$type_value</span>
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Type,Value<span class="o">=</span><span class="nv">$type_value</span> --region<span class="o">=</span><span class="nv">$region</span>
