@@ -67,8 +67,7 @@ It's assumed you have created a bucket in S3.
 
 .. code-block:: bash
 
-    
-	datacube -v product ~/.config/madmex/indexing/landsat_8_espa_scenes.yaml
+    datacube -v product ~/.config/madmex/indexing/landsat_8_espa_scenes.yaml
 	#right now is not dynamic, so copy and modify container entry of ls8_espa_mexico_s3.yaml with name of bucket. Next line will copy file created already:
 	#cp $mount_point/datacube/madmex_conf_files/ingestion/ls8_espa_mexico_s3.yaml ~/.config/madmex/ingestion/
 	mkdir ~/datacube
