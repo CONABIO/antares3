@@ -41,6 +41,9 @@ Retrieve the dask-scheduler ip with:
     cat $mount_point/scheduler.json
 
 
+
+
+
 Example in Netcdf CF
 ^^^^^^^^^^^^^^^^^^^^
 
