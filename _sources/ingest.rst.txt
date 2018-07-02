@@ -68,15 +68,15 @@ It's assumed you have created a bucket in S3.
 .. code-block:: bash
 
     datacube -v product ~/.config/madmex/indexing/landsat_8_espa_scenes.yaml
-	#right now is not dynamic, so copy and modify container entry of ls8_espa_mexico_s3.yaml with name of bucket. Next line will copy file created already:
-	#cp $mount_point/datacube/madmex_conf_files/ingestion/ls8_espa_mexico_s3.yaml ~/.config/madmex/ingestion/
-	mkdir ~/datacube
-	antares prepare_metadata -p $mount_point/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o $mount_point/datacube/ls8_espa.yaml
-	datacube -v dataset add $mount_point/datacube/ls8_espa.yaml
+    #right now is not dynamic, so copy and modify container entry of ls8_espa_mexico_s3.yaml with name of bucket. Next line will copy file created already:
+    #cp $mount_point/datacube/madmex_conf_files/ingestion/ls8_espa_mexico_s3.yaml ~/.config/madmex/ingestion/
+    mkdir ~/datacube
+    antares prepare_metadata -p $mount_point/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o $mount_point/datacube/ls8_espa.yaml
+    datacube -v dataset add $mount_point/datacube/ls8_espa.yaml
     #If using distributed:
     datacube -v ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor distributed <ip dask-scheduler>:<port where dask-scheduler listens, tipically 8786>
     #If using multiprocessing:
-	datacube --driver s3 -v ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor multiproc <number of multiprocesses>
+    datacube --driver s3 -v ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor multiproc <number of multiprocesses>
 
 
 

@@ -222,15 +222,15 @@ datacube -v ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico.yaml --executor
 <h4>Example in S3<a class="headerlink" href="#example-in-s3" title="Permalink to this headline">¶</a></h4>
 <p>It’s assumed you have created a bucket in S3.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>datacube -v product ~/.config/madmex/indexing/landsat_8_espa_scenes.yaml
-    <span class="c1">#right now is not dynamic, so copy and modify container entry of ls8_espa_mexico_s3.yaml with name of bucket. Next line will copy file created already:</span>
-    <span class="c1">#cp $mount_point/datacube/madmex_conf_files/ingestion/ls8_espa_mexico_s3.yaml ~/.config/madmex/ingestion/</span>
-    mkdir ~/datacube
-    antares prepare_metadata -p <span class="nv">$mount_point</span>/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o <span class="nv">$mount_point</span>/datacube/ls8_espa.yaml
-    datacube -v dataset add <span class="nv">$mount_point</span>/datacube/ls8_espa.yaml
+<span class="c1">#right now is not dynamic, so copy and modify container entry of ls8_espa_mexico_s3.yaml with name of bucket. Next line will copy file created already:</span>
+<span class="c1">#cp $mount_point/datacube/madmex_conf_files/ingestion/ls8_espa_mexico_s3.yaml ~/.config/madmex/ingestion/</span>
+mkdir ~/datacube
+antares prepare_metadata -p <span class="nv">$mount_point</span>/data/staging/landsat_8_data_downloaded/2017/Jalisco/ -d landsat_espa -o <span class="nv">$mount_point</span>/datacube/ls8_espa.yaml
+datacube -v dataset add <span class="nv">$mount_point</span>/datacube/ls8_espa.yaml
 <span class="c1">#If using distributed:</span>
 datacube -v ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor distributed &lt;ip dask-scheduler&gt;:&lt;port where dask-scheduler listens, tipically <span class="m">8786</span>&gt;
 <span class="c1">#If using multiprocessing:</span>
-    datacube --driver s3 -v ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor multiproc &lt;number of multiprocesses&gt;
+datacube --driver s3 -v ingest -c ~/.config/madmex/ingestion/ls8_espa_mexico_s3.yaml --executor multiproc &lt;number of multiprocesses&gt;
 </pre></div>
 </div>
 </div>
