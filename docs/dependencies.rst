@@ -94,13 +94,15 @@ The following bash script can be used in **User data** configuration of the inst
     region=<region>
     name_instance=conabio-dask-sge
     shared_volume=/shared_volume
-    ##Install awscli
+    ##System update
     apt-get update
-    apt-get install -y awscli
+    ##Install awscli
+    apt-get install -y python3-pip && pip3 install --upgrade pip==9.0.3
+    pip3 install awscli --upgrade
     ##Tag instance
-    INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-    PUBLIC_IP_LOCAL=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
-    PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+    INSTANCE_ID=$(curl -s http://instance-data/latest/meta-data/instance-id)
+    PUBLIC_IP_LOCAL=$(curl -s http://instance-data/latest/meta-data/local-ipv4)
+    PUBLIC_IP=$(curl -s http://instance-data/latest/meta-data/public-ipv4)
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
     ##Set locales for OpenDataCube
     echo "export LC_ALL=C.UTF-8" >> /home/ubuntu/.profile
@@ -113,9 +115,7 @@ The following bash script can be used in **User data** configuration of the inst
     libssl-dev \
     libffi-dev \
     python3-dev \
-    python3-pip \
     python3-setuptools
-    pip3 install --upgrade pip==9.0.3
     ##For RunCommand service of EC2
     wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
     dpkg -i amazon-ssm-agent.deb
@@ -254,8 +254,8 @@ Once created an AMI of AWS from previous step, use the following bash script to 
     name_instance=conabio-dask-sge-node
     type_value=Node-dask-sge
     ##Tag instances of type node
-    INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-    PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+    INSTANCE_ID=$(curl -s http://instance-data/latest/meta-data/instance-id)
+    PUBLIC_IP=$(curl -s http://instance-data/latest/meta-data/public-ipv4)
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
     ##Next line is useful so RunCommand can execute bash scripts (for example) on instances with Key=Type, Value=$type_value
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Type,Value=$type_value --region=$region
@@ -280,8 +280,8 @@ Once created an AMI of AWS from previous step, use the following bash script to 
     name_instance=conabio-dask-sge-node
     type_value=Node-dask-sge
     ##Tag instances of type node
-    INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-    PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+    INSTANCE_ID=$(curl -s http://instance-data/latest/meta-data/instance-id)
+    PUBLIC_IP=$(curl -s http://instance-data/latest/meta-data/public-ipv4)
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
     ##Next line is useful so RunCommand can execute bash scripts (for example) on instances with Key=Type, Value=$type_value
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Type,Value=$type_value --region=$region
