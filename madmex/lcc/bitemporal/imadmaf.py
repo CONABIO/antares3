@@ -86,7 +86,9 @@ class IMAD(object):
                 aux_1 = linalg.solve(s22, s21)
                 lamda_a, a = linalg.eig(numpy.dot(s12, aux_1), s11)
                 print("OLD")
-                print(lamda_a)
+                #print(lamda_a)
+                
+                #print(dmc)
                 aux_2 = linalg.solve(s11, s12)
                 lamda_b, b = linalg.eig(numpy.dot(s21, aux_2), s22)
                 # sort a
@@ -104,6 +106,10 @@ class IMAD(object):
                     tmp1 = numpy.dot(numpy.dot(a.T, s11), a)
                     tmp2 = 1. / numpy.sqrt(numpy.diag(tmp1))
                     tmp3 = numpy.tile(tmp2, (self.bands, 1))
+                    
+                    print('variance')
+                    print(tmp3)
+                    
                     a = numpy.multiply(a, tmp3)
                     b = numpy.mat(b)
                     tmp1 = numpy.dot(numpy.dot(b.T, s22), b)
@@ -135,6 +141,10 @@ class IMAD(object):
         output_flat = numpy.zeros((self.bands, self.columns * self.rows))
         output_flat[0:self.bands, data_mask] = M_flat
         M = numpy.zeros((self.bands, self.rows, self.columns))
+        
+        
+        #print(M[0])
+        
         for b in range(self.bands):
             M[b, :, :] = (numpy.resize(output_flat[self.bands - (b + 1), :], (self.rows, self.columns)))
         
@@ -216,8 +226,17 @@ class MAD(object):
             logger.error('An image of 3 or 2 dimensions is expected.')
                 
     def transform(self, X, Y):
-        X_std = (X - numpy.mean(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]) / numpy.std(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]
-        Y_std = (Y - numpy.mean(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]) / numpy.std(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]
+        
+        print('variance')
+        
+        
+        print("NEW")
+        
+        
+        #print(X - numpy.mean(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis])
+        #print(Y - numpy.mean(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis])
+        X_std = (X - numpy.mean(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]) # / numpy.std(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]
+        Y_std = (Y - numpy.mean(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]) # / numpy.std(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]
         X_pixel_band = X_std.reshape(self.bands, self.rows * self.cols)
         Y_pixel_band = Y_std.reshape(self.bands, self.rows * self.cols)
         sigma_11 = numpy.matmul(X_pixel_band, X_pixel_band.T) / (X_pixel_band.shape[1] - 1)
@@ -229,6 +248,12 @@ class MAD(object):
         lower_22_inverse = numpy.linalg.inv(lower_22)
         sigma_11_inverse = numpy.linalg.inv(sigma_11)
         sigma_22_inverse = numpy.linalg.inv(sigma_22)
+        
+        print("variance std")
+        print(numpy.std(X, axis=(1,2), dtype=float64))
+        
+        
+        
         eig_problem_1 = numpy.matmul(lower_11_inverse, 
                                      numpy.matmul(sigma_12, 
                                                   numpy.matmul(sigma_22_inverse, 
@@ -237,14 +262,22 @@ class MAD(object):
                                      numpy.matmul(sigma_12.T, 
                                                   numpy.matmul(sigma_11_inverse, 
                                                                numpy.matmul(sigma_12, lower_22_inverse.T)))) 
+        
+        
+        
         eig_values_1, eig_vectors_1 = numpy.linalg.eig(eig_problem_1)
         eig_values_2, eig_vectors_2 = numpy.linalg.eig(eig_problem_2)
+        
+        print("variance via eigen")
+        variance_sigma_11 = numpy.sqrt(numpy.diag(numpy.dot(eig_vectors_1.T, numpy.dot(sigma_11, eig_vectors_1))))
+        print(variance_sigma_11)
+        
         sort_index_1 = numpy.flip(eig_values_1.argsort(), 0)
         sort_index_2 = numpy.flip(eig_values_2.argsort(), 0)
         vector_u = eig_vectors_1[sort_index_1]
         vector_v = eig_vectors_2[sort_index_2]
         
-        print("NEW")
+       
         print(eig_values_1)
         
         signs_vector = numpy.diag(numpy.dot(numpy.dot(vector_u.T, sigma_12), vector_v))
@@ -252,7 +285,7 @@ class MAD(object):
         U = numpy.tensordot(vector_u, X_std, axes=1)
         V = numpy.tensordot(vector_v * signs, Y_std, axes=1)        
         M = U - V
-        print(M)
+        print(M[0])
         return eig_values_1[sort_index_1], M
         
     def fit_transform(self, X, Y):
