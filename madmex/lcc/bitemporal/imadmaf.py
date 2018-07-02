@@ -6,6 +6,7 @@ Created on Jun 25, 2018
 import logging
 import  math
 
+from numpy import float64
 import numpy
 from scipy import linalg, stats
 
@@ -84,6 +85,8 @@ class IMAD(object):
                 s21 = sigma[self.bands:, 0:self.bands]
                 aux_1 = linalg.solve(s22, s21)
                 lamda_a, a = linalg.eig(numpy.dot(s12, aux_1), s11)
+                print("OLD")
+                print(lamda_a)
                 aux_2 = linalg.solve(s11, s12)
                 lamda_b, b = linalg.eig(numpy.dot(s21, aux_2), s22)
                 # sort a
@@ -114,6 +117,7 @@ class IMAD(object):
                     U = numpy.dot(a.T, (self.image_bands_flattened[0:self.bands, :] - means[0:self.bands, numpy.newaxis]))    
                     V = numpy.dot(b.T, (self.image_bands_flattened[self.bands:, :] - means[self.bands:, numpy.newaxis]))          
                     M_flat = U - V  # TODO: is this operation stable?
+                    print(M_flat)
                     # new weights        
                     var_mad = numpy.tile(numpy.mat(2 * (1 - rho)).T, (1, data_mask_sum))
                     chi_squared = numpy.sum(numpy.multiply(M_flat, M_flat) / var_mad, 0)
@@ -212,8 +216,8 @@ class MAD(object):
             logger.error('An image of 3 or 2 dimensions is expected.')
                 
     def transform(self, X, Y):
-        X_std = (X - numpy.mean(X, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]) / numpy.std(X, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]
-        Y_std = (Y - numpy.mean(Y, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]) / numpy.std(Y, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]
+        X_std = (X - numpy.mean(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]) / numpy.std(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]
+        Y_std = (Y - numpy.mean(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]) / numpy.std(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]
         X_pixel_band = X_std.reshape(self.bands, self.rows * self.cols)
         Y_pixel_band = Y_std.reshape(self.bands, self.rows * self.cols)
         sigma_11 = numpy.matmul(X_pixel_band, X_pixel_band.T) / (X_pixel_band.shape[1] - 1)
@@ -239,11 +243,16 @@ class MAD(object):
         sort_index_2 = numpy.flip(eig_values_2.argsort(), 0)
         vector_u = eig_vectors_1[sort_index_1]
         vector_v = eig_vectors_2[sort_index_2]
+        
+        print("NEW")
+        print(eig_values_1)
+        
         signs_vector = numpy.diag(numpy.dot(numpy.dot(vector_u.T, sigma_12), vector_v))
         signs = -signs_vector / numpy.abs(signs_vector)
         U = numpy.tensordot(vector_u, X_std, axes=1)
         V = numpy.tensordot(vector_v * signs, Y_std, axes=1)        
         M = U - V
+        print(M)
         return eig_values_1[sort_index_1], M
         
     def fit_transform(self, X, Y):
@@ -278,12 +287,32 @@ class IRMAD(object):
             X_weighted = weights * X
             Y_weighted = weights * Y
             rho_squared, M = MAD().fit_transform(X_weighted, Y_weighted)
-            sigma_squared = 2 * (1 - numpy.sqrt(rho_squared))
+            sigma_2 = 2 * (1 - numpy.sqrt(rho_squared))
+            
             M_std = (M - numpy.mean(M, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]) / numpy.std(M, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]
-            chi_square = numpy.tensordot(1 / sigma_squared , numpy.multiply(M_std, M_std), axes=1)
+            
+            
+            print("M_std statistics.")
+            print(numpy.mean(M_std, axis=(1,2)))
+            print(numpy.std(M_std, axis=(1,2)))
+            
+            
+            chi_square = numpy.tensordot(1 / sigma_2 , numpy.multiply(M_std, M_std), axes=1)
+            
+            print("test")
+            print(chi_square[0,0])
+            print(M_std[0,0,0] * M_std[0,0,0] / (sigma_2[0]) +
+                  M_std[1,0,0] * M_std[1,0,0] / (sigma_2[1]) +
+                  M_std[2,0,0] * M_std[2,0,0] / (sigma_2[2]) +
+                  M_std[3,0,0] * M_std[3,0,0] / (sigma_2[3]) +
+                  M_std[4,0,0] * M_std[4,0,0] / (sigma_2[4]))
+            
+            
             weights = 1 - stats.chi2.cdf(chi_square, len(rho_squared))
             
+            print(weights)
             delta = numpy.linalg.norm(rho_squared - old_rho)
+            print(delta)
             print(delta)
             old_rho = rho_squared
             i = i + 1
