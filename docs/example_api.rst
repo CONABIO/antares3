@@ -5,33 +5,53 @@ Land cover and land cover change: API example
 Introduction
 ============
 
-The example below walks you through the process of generating land cover and land cover change information, taking as example a small region of the state of Jalisco, Mexico. The steps described do not make use of the command line functionalities of antares, but instead use the API directly. While we do not recommend direct use of the API for map production over large areas, it is essential for developpers, maintainers and people who want to extent the antares system to understand the antares mechanisms and philosophy. This example aims at building this kind of understanding.
+The example below walks you through the process of generating land cover and land cover change information, taking as example a small region of the state of Jalisco, Mexico. The steps described do not make use of the command line functionalities of antares, but instead use the API directly. While we do not recommend direct use of the API for map production over large areas, it is essential for developers, maintainers and people who want to extent the antares system to understand the antares mechanisms and philosophy. This example aims at building this kind of understanding.
 
 Fully understanding the tutorial requires knowledge of some key python geospatial concepts and data structures. They are briefly reminded below:
 
-- Feature collection: a valid feature collection in python is a list of geojson features. Features are dictionaries that each contain at least a geometry and a dictionary of properties. `The geojson specifications <http://geojson.org/>`_ defines the structure of valid geojson features. Sometimes, lists of ``(geometry, value)`` tuples are referred to as features collections. This is an abuse as they are not list of valid geojson features, however, this way of orgazing data is often used in the internals of antares since it maps to database inserts and queries.
+- Feature collection: a valid feature collection in python is a list of geojson features. Features are dictionaries that each contain at least a geometry and a dictionary of properties. `The geojson specifications <http://geojson.org/>`_ defines the structure of valid geojson features. Sometimes, lists of ``(geometry, value)`` tuples are referred to as features collections. This is an abuse as they are not list of valid geojson features, however, this way of organizing data is often used in the internals of antares since it maps to database inserts and queries.
 
-- ``xarray`` ``DataArray``s, ``Dataset``s and ``geoarrays``: The ``xarray`` python package introduces two data structures; the ``DataArray`` and the ``Dataset``. Excellent documentation can be found `here <http://>`_ to understand ``xarray``'s paradigm and how to work with these data structures. In the example 
- - 
-python (basic data structures (lists, tuples, dictionaries), list comprehensions)
+- ``xarray`` ``DataArray``s, ``Dataset``s and ``geoarrays``: The ``xarray`` python package introduces two data structures; the ``DataArray`` and the ``Dataset``. Excellent documentation can be found `here <http://xarray.pydata.org/en/stable/>`_ to understand ``xarray``'s paradigm and how to work with these data structures. In the example we sometimes refer to ``geoarrays``. They are ``Datasets`` with a few additional attributes (namely ``crs``, ``geobox``, ``affine``, etc) and are usually returned by calls to datacube.
 
-What's madmex and what's antares in that context.
+- Basic python data structures and operations: lists, tuples, dictionaries and list comprehensions. Here list comprehensions is the preferred way to manipulate features collections (e.g.: change structure of features, reproject, filter on attributes, etc).
+
+
+madmex - antares / antares - madmex ???
+=======================================
+
+In the text below reference is made to both madmex and antares. Truth be told we like both names which makes it hard to decide how to name things. We inheritted the madmex name from previous systems built at CONABIO and keep calling things that way, but we also like antares. As it stands now, antares is the name of the system and madmex the name of the python package that makes the system. 
+
 
 Inventory
 =========
 
-Training data ingested using the ``antares ...`` command line and registered under the name ``jalisco_bits``
-Landsat 8 data for the year 2017 and 2014
+The starting point for the steps described below is the following:
+
+- A system with antares and datacube successfully installed
+- Landsat 8 data ingested in the datacube under the product name ``ls8_espa_mexico`` (we ingested year 2014 and 2017 over a small region of interest near guadalajara, state of Jalisco, Mexico).
+- CGIAR void filled 90m SRTM DEM ingested under the name ``srtm_cgiar_mexico``
+- Training data ingested in the antares database using the ``antares ingest_training`` command line and registered under the name ``jalisco_bits``
 
 
 Summary of steps
 ================
 
+We'll produce two land cover maps for the year 2014 and 2017, and a land cover change map. The following steps are required:
+
+- Load raw data for both years
+- Compute modeling features (vegetation indices and temporal statistics) for both years
+- Load the training data that intersect with the region of interest
+- Overlay training data with modeling features to extract training arrays
+- Train a model
+- Run spatial segmentation and retrieve geometries
+- Overlay geometries from the segmentation with modeling features to extract prediction arrays
+- Predict land cover for each geometry of the segmentation
+- Detect spectral changes between the years
+- Filter and classify the changes
 
 Loading the libraries
 =====================
 
-Describe briefly here the antares modules that will be used.
 
 .. code-block:: python
 
@@ -47,7 +67,6 @@ Describe briefly here the antares modules that will be used.
     import fiona
 
     # MAdmex imports
-    from madmex.lcc.bitemporal.distance import BiChange
     from madmex.util.xarray import to_float, to_int
     from madmex.segmentation.bis import Segmentation
     from madmex.overlay.extractions import zonal_stats_xarray
@@ -59,6 +78,8 @@ Describe briefly here the antares modules that will be used.
 
 Load data over a small study area
 =================================
+
+This is a small study area (approximately 40 x 40 km) near the city of Guadalajara.
 
 .. code-block:: python
 
@@ -100,12 +121,15 @@ Load data over a small study area
 Compute modeling features
 =========================
 
-They are a combination of temporal statistics and terrain metreics
-Subsets of these features will be used in various steps of the process
-Maintain the spatial characteristics of the input arrays
-This is what ``antares apply_recipe`` does when the system is operated from the command line
+We chose here to construct modeling features by applying temporal reduction to the Landsat spectral bands as well as vegetation indices. These temporally reduced features are combined with terrain metrics, resulting in 15 features.
+The complete set or subsets of these features will be used in various steps of the process.
 
-Let's first define a function that will take a spatio-temporal geoarray compute the feature (temporal statistics and terrain metrics) and return a geoarray of these modeling features.
+We define a function that performs the temporal reduction and combine the resulting features with terrain metrics. The function returns a ``Dataset``. Note that this reduction process is entirely pixel based, so that the spatial characteristics of both geoarrays remain unchanged.
+
+.. note:: This is what ``antares apply_recipe`` does when the system is operated from the command line, the ``landsat_prepare_features`` function was actually taken from one of the existing recipes.
+
+
+
 
 .. code-block:: python
 
@@ -200,10 +224,9 @@ The function can then be applied to both input arrays (2014 and 2017).
 Load the training data
 ======================
 
-As mentioned earlier, training data have been ingested in the database. We'll retrieve a random subset of them. The code below send a query to the database 
-Because the training data represents a complete map, we'll only load a random subset of it.
+As mentioned earlier, training data have been ingested in the database. We'll retrieve a random subset of them. The code below sends a query to the database to identify geometries that spatially intersect with the geoarrays and retrieve them as a feature collection. We're assuming that these labelled geometries represent true land cover. 
 
-Feature collection of labelled geometries. We assume they represent true land cover for the 
+Because the training data represents a complete map (spatially continuous), we'll only load a random subset of it.
 
 .. code-block:: python
 
@@ -242,7 +265,6 @@ Feature collection of labelled geometries. We assume they represent true land co
      'type': 'Feature'}
 
 The property here refers to a unique database id for the class. Although convenient for interacting with the database, this is not very meaningful in the present case. Because we know much better the numeric codes of the madmex classification scheme, we will convert these database indices to the known madmex classes numeric codes.
-
 
 
 .. code-block:: python
@@ -290,7 +312,7 @@ The same feature now appears with the numeric code ``2`` instead of the tag-id `
 Train a model
 =============
 
-In the present case, we are not saving the model to the database or doing any other kind of anatares specific operations related to modeling, so that we do not really benefit from using the ``Model`` class from the ``madmex.modeling.supervized`` submodules. Calling the scikit learn interface of lightGBM would provide the same results, however, for consistency with the rest of the tutorial we will use the madmex modeling interface.
+In the present case, we are not saving the model to the database or doing any other kind of antares specific operations related to modeling, so that we do not really benefit from using the ``Model`` class from the ``madmex.modeling.supervized`` submodules. Calling the scikit learn interface of lightGBM would provide the same results, however, for consistency with the rest of the tutorial we will use the madmex modeling interface.
 
 
 
@@ -311,18 +333,22 @@ The model can now be trained using scikit learn like syntax.
 
 .. code-block:: python
 
-    # Instantiate Model class of xgb submodule
+    # Instantiate Model class of lgb submodule
     lgb_model = Model()
     lgb_model.fit(X_train, y_train)
 
 
-**Highlight**: How many models should we train? Trade-off between Accepting that some training data may be wrong and accepting that the training features may be completely aligned on training features. 
+.. note:: How many models should we train? We have the options of either training a single model and use it to predict over both years, or training two separate models for each years. Both approaches are sub-optimal; the trade-off is between accepting that some of the training data may not completely represent reality (in case of land cover change between training data generation and year considered for the modeling features), and accepting that the modeling feature may not be completely stable over time.
+
+
+.. note:: The command line ``antares model_fit`` combines the steps from loading the training data, up to this point.
+
 
 
 Run a spatial segmentation
 ==========================
 
-The ``segmentation`` module offers an interface to segment georeferenced arrays (``numpy.ndarray`` + affine + crs or datacube like ``xarray.Dataset``), generate feature collections and interact with the database. Here we use the Berkeley image segmentation algorithm (bis) as seen in the imports section. We limit the number of input bands for the segmentation to two, ``ndvi_mean`` and ``ndmi_mean``, and run the segmentation on both geoarrays (2014 and 2017).
+The ``segmentation`` module offers an interface to segment georeferenced arrays (``numpy.ndarray`` + affine + crs or datacube like ``xarray.Dataset`` (``geoarrays``)), generate feature collections and interact with the database. Here we use the Berkeley image segmentation algorithm (bis) as seen in the imports section. We limit the number of input bands for the segmentation to two, ``ndvi_mean`` and ``ndmi_mean``, and run the segmentation on both geoarrays (2014 and 2017).
 
 .. code-block:: python
 
@@ -333,7 +359,7 @@ The ``segmentation`` module offers an interface to segment georeferenced arrays 
     Segmenter_post.segment()
 
 
-The first step of the segmentation process generates an array of segmented zones, writtent to a slot of the instance. The ``polygonize()`` method allows to generate a feature collection, written to the ``fc`` attribute of the instance. We can then access this attribute and inspect it.
+The first step of the segmentation process generates an array of segmented zones, written to a slot of the class instance. The ``polygonize()`` method allows to generate a feature collection, written to the ``fc`` attribute of the instance. We can then access this attribute and inspect it.
 
 .. code-block:: python
 
@@ -363,7 +389,9 @@ The first step of the segmentation process generates an array of segmented zones
     243983
     201879
 
-We now have feature collections whose geometries correspond to the spatial segments generated by the segmentation algorithm. The result of ``len(fc_seg_pre)`` let us appreciate the average object size. In the present case we obtained 243,983 and 201,879 which sounds like an acceptable segmentation for Landsat data, considering the input array contain 2,106,279 pixels (about 10 pixels per object on average).
+We now have for each year a feature collection whose geometries correspond to the spatial segments generated by the segmentation algorithm. The result of ``len(fc_seg_pre)`` let us appreciate the average object size. In the present case we obtained 243,983 and 201,879 which sounds like an acceptable segmentation for Landsat data, considering the input array contain 2,106,279 pixels (about 10 pixels per object on average).
+
+.. note:: When operating antares from the command line, segmentation as above is ran via ``antares segment`` command.
 
 
 Predict land cover
@@ -380,9 +408,9 @@ Extract prediction features
     X_pre, _ = zonal_stats_xarray(features_pre, fc_seg_pre, 'id')
     X_post, _ = zonal_stats_xarray(features_post, fc_seg_post, 'id')
 
+
 Run trained model in prediction mode
 ------------------------------------
-
 
 .. code-block:: python
 
@@ -419,9 +447,15 @@ Here we're building a list of `(geometry, value)` tuples.
      28)
 
 
+.. note:: The land cover prediction described above reproduces the steps taken by ``antares model_predict_object`` command line. 
 
-Detect spectral changes
-=======================
+
+
+Change detection and labeling
+=============================
+
+Detect spectral change
+----------------------
 
 .. code-block:: python
 
@@ -434,20 +468,20 @@ Detect spectral changes
 
     0.0087
 
-Given the ``change_array`` attribute of the ``BiChange`` class instance is a 2D array of zeos and ones (ones correspond to change and zeros to no change), the array sum tells us the number of pixels labeled as change. In the present case, a bit less than 1 percent of the pixels were labelled as change.
+Given the ``change_array`` attribute of the ``BiChange`` class instance is a 2D array of zeros and ones (ones correspond to change and zeros to no change), the array sum tells us the number of pixels labelled as change. In the present case, a bit less than 1 percent of the pixels were labelled as change.
 
 
 Clean and label changes
-=======================
+-----------------------
 
 Three steps:
 
 - Minimum mapping unit filter
-- Pixels labeling using pre and post land cover maps
+- Pixels labelling using pre and post land cover maps
 - Filter features having same pre and post land cover label
 
 First filter: minimum mapping unit
-----------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 It does an update of the `change_array` attribute of the class instance.
 
@@ -462,7 +496,7 @@ It does an update of the `change_array` attribute of the class instance.
 
 
 Assign pre and post labels to change layer
-------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -476,7 +510,7 @@ Assign pre and post labels to change layer
 
 
 Second filter: No change in label
----------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -491,7 +525,7 @@ Second filter: No change in label
 Write output to a vector file
 =============================
 
-The change feature collection is a list of tuples ``(geometry, pre_label, post_label)``, we therefore need to transform it to a geojson compliant feature collection before writting it to a vector file for visualization in an external program (e.g. QGIS).
+The change feature collection is a list of tuples ``(geometry, pre_label, post_label)``, we therefore need to transform it to a geojson compliant feature collection before writing it to a vector file for visualization in an external program (e.g. QGIS).
 
 .. code-block:: python
 
