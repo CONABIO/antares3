@@ -1,19 +1,37 @@
-********************
-Setup/first time use
-********************
+**********
+Deployment
+**********
 
+Single machine
+==============
+
+Installation
+------------
+
+Activate a ``python3`` virtual environmemt and run:
+
+.. code-block:: bash
+
+    # Install antares and all its dependencies (square brackets need to be escaped in zsh)
+    pip install git+https://github.com/CONABIO/antares3.git#egg=antares3[all]
+
+
+Setup
+-----
 
 Initial setup of both ``datacube`` (used as backend for antares) and ``antares`` itself requires a few one time actions.
 
 
 
-Configuration Files
-===================
+Configuration files
+^^^^^^^^^^^^^^^^^^^
 
 Both ``datacube`` and ``antares`` require configuration files to operate. In both cases these configuration files must be placed at the root of the user's home directory (``~/``).
 
+
 Open DataCube
--------------
+"""""""""""""
+
 
 In the case of datacube, the configuration file must be named ``.datacube.conf`` and contains database connection specifications. See `datacube doc <http://datacube-core.readthedocs.io/en/stable/ops/db_setup.html#create-configuration-file>`_ for more details.
 
@@ -32,7 +50,7 @@ In the case of datacube, the configuration file must be named ``.datacube.conf``
 
 
 Antares3
---------
+""""""""
 
 The configuration file used by antares contain various fields related to data location, password and database details, and must be named ``.antares``. Place it at the root of the user's home directory (``~/``). Depending on the ``antares`` functionalities you are planning to use, some field may be left empty. For instance ``SCIHUB_USER`` and ``SCIHUB_PASSWORD`` are not required if you are not planning to query or download sentinel data.
 
@@ -57,8 +75,8 @@ The configuration file used by antares contain various fields related to data lo
     BIS_LICENSE=
 
 
-Local
-======
+Init
+^^^^
 
 Open DataCube
 -------------
@@ -90,13 +108,108 @@ This will create a ``madmex`` directory under ``~/.config/`` where ingestion fil
 
 
 
-Cloud deployment
-================
+Cluster
+=======
 
-This section uses configuration files at the top of this page.
+Local
+-----
 
-Amazon Web Services
--------------------
+
+Cloud
+------
+
+Amazon Web Services and Sun Grid Engine
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**0. Prerequisites**
+
+\* Configure `Amazon Virtual Private Cloud`_ on AWS with properly `VPCs and Subnets`_ configured according to your application.
+
+
+\* Configure `Security Groups for Your VPC`_  with ports 6444 TCP and 6445 UDP for communication within instances via SGE and port 80 for web SGE, port 2043 for `Amazon Elastic File System`_ service on AWS and port 22 to ssh to instances from your machine.
+
+
+\* Configure `Amazon Elastic File System`_ service on AWS (shared volume via Network File System -NFS-).
+
+\* Create a bucket on S3 (see `Amazon S3`_) if using driver S3 of Open DataCube (see `Open DataCube Ingestion Config`_). `Boto3 Documentation`_ and AWS suggests as a best practice using `IAM Roles for Amazon EC2`_ to access this bucket. See `Best Practices for Configuring Credentials`_.
+
+\* **(Not mandatory but useful)** Configure an `Elastic IP Addresses`_  on AWS. Master node will have this elastic ip.
+
+
+\* AWS provide a managed relational database service `Amazon Relational Database Service (RDS)`_ with several database instance types and a `PostgreSQL`_  database engine.
+
+
+    \* Configure `Amazon Relational Database Service (RDS)`_  with `PostgreSQL`_  version 9.5 + with properly `Amazon RDS Security Groups`_ and subnet group for the RDS configured (see `Tutorial Create an Amazon VPC for Use with an Amazon RDS DB Instance`_).
+
+
+    \* Configure `Postgis`_ extension to `PostgreSQL`_  for storing and managing spatial information in the instance of `Amazon Relational Database Service (RDS)`_ you created.
+
+.. note:: 
+
+    AWS gives you necessary steps to setup Postgis extension in `Working with PostGis`_ documentation.
+
+
+We use the following bash script to setup `Postgis`_ extension in database instance:
+
+.. code-block:: bash
+
+    #!/bin/bash
+    ##First argument its the name of database created on RDS, following arguments are self explanatory
+    db=$1
+    db_user=$2
+    db_host=$3
+    psql -h $db_host -U $db_user --dbname=$db --command "create extension postgis;"
+    psql -h $db_host -U $db_user --dbname=$db --command "create extension fuzzystrmatch;"
+    psql -h $db_host -U $db_user --dbname=$db --command "create extension postgis_tiger_geocoder;"
+    psql -h $db_host -U $db_user --dbname=$db --command "create extension postgis_topology;"
+    psql -h $db_host -U $db_user --dbname=$db --command "alter schema tiger owner to rds_superuser;"
+    psql -h $db_host -U $db_user --dbname=$db --command "alter schema tiger_data owner to rds_superuser;"
+    psql -h $db_host -U $db_user --dbname=$db --command "alter schema topology owner to rds_superuser;"
+    psql -h $db_host -U $db_user --dbname=$db --command "CREATE FUNCTION exec(text) returns text language plpgsql volatile AS \$f\$ BEGIN EXECUTE \$1; RETURN \$1; END; \$f\$;"
+    psql -h $db_host -U $db_user --dbname=$db --command "SELECT exec('ALTER TABLE ' || quote_ident(s.nspname) || '.' || quote_ident(s.relname) || ' OWNER TO rds_superuser;') FROM (SELECT nspname, relname FROM pg_class c JOIN pg_namespace n ON (c.relnamespace = n.oid) WHERE nspname in ('tiger','topology') AND relkind IN ('r','S','v') ORDER BY relkind = 'S') s;"
+
+Make sure a file ``.pgpass`` is in ``/home/ubuntu`` path so you are not prompted with the password for every command. The contents of this file are:
+
+::
+
+<db_host>:<port>:<name of database>:<name of database user>:<database password>
+
+and permissions of this ``.pgpass`` are:
+
+.. code-block:: bash
+
+    chmod 0600 /home/ubuntu/.pgpass
+
+
+    \* **(Not mandatory but useful)** You can either work with the database configured in RDS or create a new one with:
+
+.. code-block:: bash
+
+    createdb -h <db_host> -U <db_user> <database_name>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 It's assumed that a Cluster is already configured and variable ``mount_point`` is set to path of shared volume. See `Installation-Cloud Deployment`_ .
 
@@ -175,6 +288,9 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
 This will create a ``madmex`` directory under ``/home/ubuntu/.config/`` where ingestion files for all different suported dataset will be stored.
 
 
+
+
+.. Last references:
 
 .. _Auto Scaling Groups: https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html
 
