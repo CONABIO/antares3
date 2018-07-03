@@ -319,12 +319,10 @@ psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --d
 </pre></div>
 </div>
 <p>and permissions of this <code class="docutils literal notranslate"><span class="pre">.pgpass</span></code> are:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chmod <span class="m">0600</span> /home/ubuntu/.pgpass
-
-
-<span class="se">\*</span> **<span class="o">(</span>Not mandatory but useful<span class="o">)</span>** You can either work with the database configured in RDS or create a new one with:
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chmod <span class="m">0600</span> ~/.pgpass
 </pre></div>
 </div>
+<p>* <strong>(Not mandatory but useful)</strong> You can either work with the database configured in RDS or create a new one with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>createdb -h &lt;db_host&gt; -U &lt;db_user&gt; &lt;database_name&gt;
 </pre></div>
 </div>
