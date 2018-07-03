@@ -408,22 +408,8 @@ Once created an AMI of AWS from previous step, use the following bash script to 
 Using instances of `Auto Scaling Groups`_ configured in step 2 we have to configure SGE queue on master node and register nodes on this queue.
 
 
-Header 6
-++++++++
 
-
-Otherheader7
-::::::::::::
-
-
-Just testing title
-~~~~~~~~~~~~~~~~~~
-
-other title
-###########
-
-3. Assign Elastic IP to master node and create Sun Grid Engine queue
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**3.1 Assign Elastic IP to master node and create Sun Grid Engine queue**
 
 Run the following bash script using `RunCommand`_ or login to an instance from your autoscaling group to run it (doesn't matter which one). The instance where  the bash script is executed will be the **master node** of our cluster.
  
@@ -465,11 +451,7 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
     bash $mount_point/create-dask-sge-queue.sh $queue_name $slots
 
 
-
-
-3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+**3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3**
 
 Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` already configured in step 2, or use a tool for cluster management like `clusterssh`_ . (You can also have the line that install OpenDataCube and Antares3 on the bash script configured in step 2 in instances of AutoScalingGroup)
 
@@ -493,9 +475,7 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
     ##Uncomment next line if you want to init antares (previously installed)
     #su ubuntu -c "/home/ubuntu/.local/bin/antares init"
 
-
-3.3 Run SGE commands to init cluster
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**3.3 Run SGE commands to init cluster**
 
 Login to master node and execute:
 
