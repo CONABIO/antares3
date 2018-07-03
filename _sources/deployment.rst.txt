@@ -407,11 +407,10 @@ Once created an AMI of AWS from previous step, use the following bash script to 
 **Example with one master and two nodes. Install Open DataCube and Antares3 in all nodes.**
 
 Using instances of `Auto Scaling Groups`_ configured in step 2 we have to configure SGE queue on master node and register nodes on this queue.
-   
 
-3.1 Asing Elastic IP to master node and create Sun Grid Engine queue
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   
+3.1 Assign Elastic IP to master node and create Sun Grid Engine queue
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Run the following bash script using `RunCommand`_ or login to an instance from your autoscaling group to run it (doesn't matter which one). The instance where  the bash script is executed will be the **master node** of our cluster.
  
 We use an elastic IP provided by AWS for the node that will be the **master node**, so change variable ``eip`` according to your ``Allocation ID`` (see `Elastic IP Addresses`_).
@@ -454,8 +453,9 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
 
 
 
-3.2 Restart gridengine-exec on nodes and install OpenDataCube and Antares3
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` already configured in step 2, or use a tool for cluster management like `clusterssh`_ . (You can also have the line that install OpenDataCube and Antares3 on the bash script configured in step 2 in instances of AutoScalingGroup)
 
