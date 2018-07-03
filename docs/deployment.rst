@@ -290,6 +290,51 @@ This will create a ``madmex`` directory under ``/home/ubuntu/.config/`` where in
 
 
 
+
+.. Install references:
+
+.. _Create an AMI from an Amazon EC2 Instace: https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/tkv-create-ami-from-instance.html
+
+.. _Auto Scaling Groups: https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html
+
+.. _Working with PostGis: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.PostgreSQL.CommonDBATasks.html#Appendix.PostgreSQL.CommonDBATasks.PostGIS
+
+.. _Postgis: https://postgis.net/ 
+    
+.. _Boto3 Documentation: http://boto3.readthedocs.io/en/latest/index.html 
+    
+.. _PostgreSQL: https://www.postgresql.org/
+
+.. _Amazon Relational Database Service (RDS): https://aws.amazon.com/rds/
+
+.. _Tutorial Create an Amazon VPC for Use with an Amazon RDS DB Instance: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Tutorials.WebServerDB.CreateVPC.html
+
+.. _Amazon RDS Security Groups: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html
+
+.. _IAM Roles for Amazon EC2: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html
+    
+.. _Best Practices for Configuring Credentials: http://boto3.readthedocs.io/en/latest/guide/configuration.html#best-practices-for-configuring-credentials
+
+.. _Amazon S3: https://aws.amazon.com/s3/
+
+.. _Amazon Elastic File System: https://aws.amazon.com/efs/ 
+
+.. _clusterssh: https://github.com/duncs/clusterssh
+
+.. _RunCommand: https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html
+
+.. _Open DataCube Ingestion Config: https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config
+
+.. _Security Groups for Your VPC: https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html
+
+.. _VPCs and Subnets: https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html
+
+.. _Amazon Virtual Private Cloud: https://aws.amazon.com/vpc/
+
+.. _Elastic IP Addresses: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html
+
+
+
 .. Last references:
 
 .. _Auto Scaling Groups: https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html
