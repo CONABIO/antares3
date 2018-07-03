@@ -18,7 +18,7 @@ Antares
 
    dependencies
    install
-   setup
+   deployment
    cli
    download
    ingest

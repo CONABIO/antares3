@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Setup/first time use &mdash; antares3 0.3.0 documentation</title>
+  <title>Deployment &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -87,19 +87,22 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Setup/first time use</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#configuration-files">Configuration Files</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#open-datacube">Open DataCube</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#antares3">Antares3</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Deployment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#single-machine">Single machine</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setup">Setup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuration-files">Configuration files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#init">Init</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#local">Local</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">Open DataCube</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id2">Antares3</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#cloud-deployment">Cloud deployment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#amazon-web-services">Amazon Web Services</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cluster">Cluster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#local">Local</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cloud">Cloud</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#amazon-web-services-and-sun-grid-engine">Amazon Web Services and Sun Grid Engine</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">Open DataCube</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id4">Antares3</a></li>
 </ul>
@@ -166,13 +169,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Setup/first time use</li>
+      <li>Deployment</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/setup.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/deployment.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -185,14 +188,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="setup-first-time-use">
-<h1>Setup/first time use<a class="headerlink" href="#setup-first-time-use" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="deployment">
+<h1>Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="single-machine">
+<h2>Single machine<a class="headerlink" href="#single-machine" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
+<p>Activate a <code class="docutils literal notranslate"><span class="pre">python3</span></code> virtual environmemt and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install antares and all its dependencies (square brackets need to be escaped in zsh)</span>
+pip install git+https://github.com/CONABIO/antares3.git#egg<span class="o">=</span>antares3<span class="o">[</span>all<span class="o">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
 <p>Initial setup of both <code class="docutils literal notranslate"><span class="pre">datacube</span></code> (used as backend for antares) and <code class="docutils literal notranslate"><span class="pre">antares</span></code> itself requires a few one time actions.</p>
 <div class="section" id="configuration-files">
-<h2>Configuration Files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
+<h4>Configuration files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h4>
 <p>Both <code class="docutils literal notranslate"><span class="pre">datacube</span></code> and <code class="docutils literal notranslate"><span class="pre">antares</span></code> require configuration files to operate. In both cases these configuration files must be placed at the root of the user’s home directory (<code class="docutils literal notranslate"><span class="pre">~/</span></code>).</p>
 <div class="section" id="open-datacube">
-<h3>Open DataCube<a class="headerlink" href="#open-datacube" title="Permalink to this headline">¶</a></h3>
+<h5>Open DataCube<a class="headerlink" href="#open-datacube" title="Permalink to this headline">¶</a></h5>
 <p>In the case of datacube, the configuration file must be named <code class="docutils literal notranslate"><span class="pre">.datacube.conf</span></code> and contains database connection specifications. See <a class="reference external" href="http://datacube-core.readthedocs.io/en/stable/ops/db_setup.html#create-configuration-file">datacube doc</a> for more details.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">datacube</span><span class="p">]</span>
 <span class="n">db_database</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_name</span><span class="o">&gt;</span>
@@ -208,7 +223,7 @@
 </div>
 </div>
 <div class="section" id="antares3">
-<h3>Antares3<a class="headerlink" href="#antares3" title="Permalink to this headline">¶</a></h3>
+<h5>Antares3<a class="headerlink" href="#antares3" title="Permalink to this headline">¶</a></h5>
 <p>The configuration file used by antares contain various fields related to data location, password and database details, and must be named <code class="docutils literal notranslate"><span class="pre">.antares</span></code>. Place it at the root of the user’s home directory (<code class="docutils literal notranslate"><span class="pre">~/</span></code>). Depending on the <code class="docutils literal notranslate"><span class="pre">antares</span></code> functionalities you are planning to use, some field may be left empty. For instance <code class="docutils literal notranslate"><span class="pre">SCIHUB_USER</span></code> and <code class="docutils literal notranslate"><span class="pre">SCIHUB_PASSWORD</span></code> are not required if you are not planning to query or download sentinel data.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span><span class="o">=</span>
 <span class="n">DEBUG</span><span class="o">=</span><span class="kc">True</span>
@@ -231,8 +246,10 @@
 </div>
 </div>
 </div>
-<div class="section" id="local">
-<h2>Local<a class="headerlink" href="#local" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="init">
+<h4>Init<a class="headerlink" href="#init" title="Permalink to this headline">¶</a></h4>
+</div>
+</div>
 <div class="section" id="id1">
 <h3>Open DataCube<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>createdb datacube
@@ -255,15 +272,66 @@ antares init -c mex
 <p>This will create a <code class="docutils literal notranslate"><span class="pre">madmex</span></code> directory under <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> where ingestion files for all different suported dataset will be stored.</p>
 </div>
 </div>
-<div class="section" id="cloud-deployment">
-<h2>Cloud deployment<a class="headerlink" href="#cloud-deployment" title="Permalink to this headline">¶</a></h2>
-<p>This section uses configuration files at the top of this page.</p>
-<div class="section" id="amazon-web-services">
-<h3>Amazon Web Services<a class="headerlink" href="#amazon-web-services" title="Permalink to this headline">¶</a></h3>
-<p>It’s assumed that a Cluster is already configured and variable <code class="docutils literal notranslate"><span class="pre">mount_point</span></code> is set to path of shared volume. See <a href="#id5"><span class="problematic" id="id6">`Installation-Cloud Deployment`_</span></a> .</p>
+<div class="section" id="cluster">
+<h2>Cluster<a class="headerlink" href="#cluster" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="local">
+<h3>Local<a class="headerlink" href="#local" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="cloud">
+<h3>Cloud<a class="headerlink" href="#cloud" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="amazon-web-services-and-sun-grid-engine">
+<h4>Amazon Web Services and Sun Grid Engine<a class="headerlink" href="#amazon-web-services-and-sun-grid-engine" title="Permalink to this headline">¶</a></h4>
+<p><strong>0. Prerequisites</strong></p>
+<p>* Configure <a class="reference external" href="https://aws.amazon.com/vpc/">Amazon Virtual Private Cloud</a> on AWS with properly <a class="reference external" href="https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html">VPCs and Subnets</a> configured according to your application.</p>
+<p>* Configure <a class="reference external" href="https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html">Security Groups for Your VPC</a>  with ports 6444 TCP and 6445 UDP for communication within instances via SGE and port 80 for web SGE, port 2043 for <a class="reference external" href="https://aws.amazon.com/efs/">Amazon Elastic File System</a> service on AWS and port 22 to ssh to instances from your machine.</p>
+<p>* Configure <a class="reference external" href="https://aws.amazon.com/efs/">Amazon Elastic File System</a> service on AWS (shared volume via Network File System -NFS-).</p>
+<p>* Create a bucket on S3 (see <a class="reference external" href="https://aws.amazon.com/s3/">Amazon S3</a>) if using driver S3 of Open DataCube (see <a class="reference external" href="https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config">Open DataCube Ingestion Config</a>). <a class="reference external" href="http://boto3.readthedocs.io/en/latest/index.html">Boto3 Documentation</a> and AWS suggests as a best practice using <a class="reference external" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html">IAM Roles for Amazon EC2</a> to access this bucket. See <a class="reference external" href="http://boto3.readthedocs.io/en/latest/guide/configuration.html#best-practices-for-configuring-credentials">Best Practices for Configuring Credentials</a>.</p>
+<p>* <strong>(Not mandatory but useful)</strong> Configure an <a class="reference external" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html">Elastic IP Addresses</a>  on AWS. Master node will have this elastic ip.</p>
+<p>* AWS provide a managed relational database service <a class="reference external" href="https://aws.amazon.com/rds/">Amazon Relational Database Service (RDS)</a> with several database instance types and a <a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a>  database engine.</p>
+<blockquote>
+<div><p>* Configure <a class="reference external" href="https://aws.amazon.com/rds/">Amazon Relational Database Service (RDS)</a>  with <a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a>  version 9.5 + with properly <a class="reference external" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html">Amazon RDS Security Groups</a> and subnet group for the RDS configured (see <a class="reference external" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Tutorials.WebServerDB.CreateVPC.html">Tutorial Create an Amazon VPC for Use with an Amazon RDS DB Instance</a>).</p>
+<p>* Configure <a class="reference external" href="https://postgis.net/">Postgis</a> extension to <a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a>  for storing and managing spatial information in the instance of <a class="reference external" href="https://aws.amazon.com/rds/">Amazon Relational Database Service (RDS)</a> you created.</p>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">AWS gives you necessary steps to setup Postgis extension in <a class="reference external" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.PostgreSQL.CommonDBATasks.html#Appendix.PostgreSQL.CommonDBATasks.PostGIS">Working with PostGis</a> documentation.</p>
+</div>
+<p>We use the following bash script to setup <a class="reference external" href="https://postgis.net/">Postgis</a> extension in database instance:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">##First argument its the name of database created on RDS, following arguments are self explanatory</span>
+<span class="nv">db</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">db_user</span><span class="o">=</span><span class="nv">$2</span>
+<span class="nv">db_host</span><span class="o">=</span><span class="nv">$3</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;create extension postgis;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;create extension fuzzystrmatch;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;create extension postgis_tiger_geocoder;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;create extension postgis_topology;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;alter schema tiger owner to rds_superuser;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;alter schema tiger_data owner to rds_superuser;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;alter schema topology owner to rds_superuser;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;CREATE FUNCTION exec(text) returns text language plpgsql volatile AS \$f\$ BEGIN EXECUTE \$1; RETURN \$1; END; \$f\$;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;SELECT exec(&#39;ALTER TABLE &#39; || quote_ident(s.nspname) || &#39;.&#39; || quote_ident(s.relname) || &#39; OWNER TO rds_superuser;&#39;) FROM (SELECT nspname, relname FROM pg_class c JOIN pg_namespace n ON (c.relnamespace = n.oid) WHERE nspname in (&#39;tiger&#39;,&#39;topology&#39;) AND relkind IN (&#39;r&#39;,&#39;S&#39;,&#39;v&#39;) ORDER BY relkind = &#39;S&#39;) s;&quot;</span>
+</pre></div>
+</div>
+<p>Make sure a file <code class="docutils literal notranslate"><span class="pre">.pgpass</span></code> is in <code class="docutils literal notranslate"><span class="pre">/home/ubuntu</span></code> path so you are not prompted with the password for every command. The contents of this file are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">db_host</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">port</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">name</span> <span class="n">of</span> <span class="n">database</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">name</span> <span class="n">of</span> <span class="n">database</span> <span class="n">user</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">database</span> <span class="n">password</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>and permissions of this <code class="docutils literal notranslate"><span class="pre">.pgpass</span></code> are:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chmod <span class="m">0600</span> /home/ubuntu/.pgpass
+
+
+<span class="se">\*</span> **<span class="o">(</span>Not mandatory but useful<span class="o">)</span>** You can either work with the database configured in RDS or create a new one with:
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>createdb -h &lt;db_host&gt; -U &lt;db_user&gt; &lt;database_name&gt;
+</pre></div>
+</div>
+<p>It’s assumed that a Cluster is already configured and variable <code class="docutils literal notranslate"><span class="pre">mount_point</span></code> is set to path of shared volume. See <a href="#id9"><span class="problematic" id="id10">`Installation-Cloud Deployment`_</span></a> .</p>
+</div>
 <div class="section" id="id3">
 <h4>Open DataCube<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
-<p>Log in to an instance of <a class="reference external" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html">Auto Scaling Groups</a> configured in <a href="#id7"><span class="problematic" id="id8">`Dependencies-Cloud Deployment`_</span></a> in step 2, create on the <code class="docutils literal notranslate"><span class="pre">$mount_point/.datacube.conf</span></code> file the datacube configuration file and execute:</p>
+<p>Log in to an instance of <a class="reference external" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html">Auto Scaling Groups</a> configured in <a href="#id11"><span class="problematic" id="id12">`Dependencies-Cloud Deployment`_</span></a> in step 2, create on the <code class="docutils literal notranslate"><span class="pre">$mount_point/.datacube.conf</span></code> file the datacube configuration file and execute:</p>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
 <p class="last">Open Datacube supports NETCDF CF and S3 drivers for storage (see <a class="reference external" href="https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config">Open DataCube Ingestion Config</a>). Different software dependencies are required for different drivers and different <code class="docutils literal notranslate"><span class="pre">datacube</span> <span class="pre">system</span> <span class="pre">init</span></code> command.</p>
@@ -303,7 +371,7 @@ antares init -c mex
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>antares init -c mex
 </pre></div>
 </div>
-<p>Use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute following bash script in all instances with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code>, <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> configured in <a href="#id9"><span class="problematic" id="id10">`Dependencies-Cloud Deployment`_</span></a> in step 2, or use a tool for cluster management like <a class="reference external" href="https://github.com/duncs/clusterssh">clusterssh</a> .</p>
+<p>Use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute following bash script in all instances with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code>, <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> configured in <a href="#id13"><span class="problematic" id="id14">`Dependencies-Cloud Deployment`_</span></a> in step 2, or use a tool for cluster management like <a class="reference external" href="https://github.com/duncs/clusterssh">clusterssh</a> .</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="nb">source</span> /home/ubuntu/.profile
 su ubuntu -c <span class="s2">&quot;/home/ubuntu/.local/bin/antares init&quot;</span>
