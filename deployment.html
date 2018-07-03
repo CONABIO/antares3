@@ -105,8 +105,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#local">Local</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#cloud">Cloud</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#amazon-web-services">Amazon Web Services</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">Open DataCube</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4">Antares3</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">Open DataCube</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Antares3</a></li>
 </ul>
 </li>
 </ul>
@@ -345,7 +345,7 @@ psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --d
 <p>* Install dependencies for SGE, antares3 and Open Datacube.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Modify variables <code class="docutils literal notranslate"><span class="pre">region</span></code>, <code class="docutils literal notranslate"><span class="pre">name_instance</span></code>, <code class="docutils literal notranslate"><span class="pre">shared_volume</span></code> with your own configuration.</p>
+<p class="last">Modify variables <code class="docutils literal notranslate"><span class="pre">region</span></code>, <code class="docutils literal notranslate"><span class="pre">name_instance</span></code>, <code class="docutils literal notranslate"><span class="pre">shared_volume</span></code> and <code class="docutils literal notranslate"><span class="pre">user</span></code> with your own configuration.</p>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1">##Bash script to create AMI of AWS for master and nodes:</span>
@@ -353,6 +353,7 @@ psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --d
 <span class="nv">region</span><span class="o">=</span>&lt;region&gt;
 <span class="nv">name_instance</span><span class="o">=</span>conabio-dask-sge
 <span class="nv">shared_volume</span><span class="o">=</span>/shared_volume
+<span class="nv">user</span><span class="o">=</span>ubuntu
 <span class="c1">##System update</span>
 apt-get update
 <span class="c1">##Install awscli</span>
@@ -364,10 +365,10 @@ pip3 install awscli --upgrade
 <span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/public-ipv4<span class="k">)</span>
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Name,Value<span class="o">=</span><span class="nv">$name_instance</span>-<span class="nv">$PUBLIC_IP</span> --region<span class="o">=</span><span class="nv">$region</span>
 <span class="c1">##Set locales for OpenDataCube</span>
-<span class="nb">echo</span> <span class="s2">&quot;export LC_ALL=C.UTF-8&quot;</span> &gt;&gt; /home/ubuntu/.profile
-<span class="nb">echo</span> <span class="s2">&quot;export LANG=C.UTF-8&quot;</span> &gt;&gt; /home/ubuntu/.profile
+<span class="nb">echo</span> <span class="s2">&quot;export LC_ALL=C.UTF-8&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
+<span class="nb">echo</span> <span class="s2">&quot;export LANG=C.UTF-8&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
 <span class="c1">##Set variable mount_point</span>
-<span class="nb">echo</span> <span class="s2">&quot;export mount_point=</span><span class="nv">$shared_volume</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
+<span class="nb">echo</span> <span class="s2">&quot;export mount_point=</span><span class="nv">$shared_volume</span><span class="s2">&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
 <span class="c1">##Dependencies for sge, antares3 and open datacube</span>
 apt-get install -y nfs-common openssh-server openjdk-8-jre xsltproc apache2 git htop postgresql-client <span class="se">\</span>
 python-software-properties <span class="se">\</span>
@@ -420,9 +421,8 @@ pip3 install bokeh
 pip3 install --upgrade python-dateutil
 <span class="c1">##Create shared volume</span>
 mkdir <span class="nv">$shared_volume</span>
-<span class="c1">##Create directories for antares3 and locale settings for open datacube</span>
-mkdir -p /home/ubuntu/git <span class="o">&amp;&amp;</span> mkdir -p /home/ubuntu/sandbox
-<span class="nb">echo</span> <span class="s2">&quot;alias python=python3&quot;</span> &gt;&gt; /home/ubuntu/.bash_aliases
+<span class="c1">##Locale settings for open datacube</span>
+<span class="nb">echo</span> <span class="s2">&quot;alias python=python3&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.bash_aliases
 <span class="c1">#dependencies for antares3 &amp; datacube</span>
 pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install cloudpickle <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span>.0a12 --no-binary rasterio <span class="o">&amp;&amp;</span> pip3 install scipy
 pip3 install sklearn
@@ -447,12 +447,13 @@ sudo mount -t nfs4 -o <span class="nv">nfsvers</span><span class="o">=</span><sp
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1">#First parameter is name of queue on SGE</span>
 <span class="c1">#Second parameter is number of slots that queue of SGE will have</span>
-<span class="nb">source</span> /home/ubuntu/.profile
+<span class="c1">#Third parameter is user</span>
+<span class="nb">source</span> /home/<span class="nv">$user</span>/.profile
 <span class="nv">queue_name</span><span class="o">=</span><span class="nv">$1</span>
 <span class="nv">slots</span><span class="o">=</span><span class="nv">$2</span>
 <span class="nv">type_value</span><span class="o">=</span><span class="nv">$type_value</span>
 <span class="nv">region</span><span class="o">=</span><span class="nv">$region</span>
-qconf -am ubuntu
+qconf -am <span class="nv">$user</span>
 <span class="c1">##queue of SGE, this needs to be executed for registering nodes:</span>
 <span class="nb">echo</span> -e <span class="s2">&quot;group_name @allhosts\nhostlist NONE&quot;</span> &gt; <span class="nv">$mount_point</span>/host_group_sge.txt
 qconf -Ahgrp <span class="nv">$mount_point</span>/host_group_sge.txt
@@ -480,22 +481,24 @@ aws ec2 describe-instances --region<span class="o">=</span><span class="nv">$reg
 <p>Once created an AMI of AWS from previous step, use the following bash script to configure instances using <a class="reference external" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html">Auto Scaling Groups</a> service of AWS.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Modify variables <code class="docutils literal notranslate"><span class="pre">region</span></code>, <code class="docutils literal notranslate"><span class="pre">name_instance</span></code> and <code class="docutils literal notranslate"><span class="pre">type_value</span></code> with your own configuration. Here instances are tagged with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code> and <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> so we can use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute bash scripts (for example) on instances with this tag.</p>
+<p class="last">Modify variables <code class="docutils literal notranslate"><span class="pre">region</span></code>, <code class="docutils literal notranslate"><span class="pre">name_instance</span></code>, <code class="docutils literal notranslate"><span class="pre">type_value</span></code> and <code class="docutils literal notranslate"><span class="pre">user</span></code> with your own configuration. Here instances are tagged with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code> and <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> so we can use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute bash scripts (for example) on instances with this tag.</p>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="nv">region</span><span class="o">=</span>&lt;region&gt;
 <span class="nv">name_instance</span><span class="o">=</span>conabio-dask-sge-node
 <span class="nv">type_value</span><span class="o">=</span>Node-dask-sge
+<span class="nv">user</span><span class="o">=</span>ubuntu
 <span class="c1">##Tag instances of type node</span>
 <span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/instance-id<span class="k">)</span>
 <span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/public-ipv4<span class="k">)</span>
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Name,Value<span class="o">=</span><span class="nv">$name_instance</span>-<span class="nv">$PUBLIC_IP</span> --region<span class="o">=</span><span class="nv">$region</span>
 <span class="c1">##Next line is useful so RunCommand can execute bash scripts (for example) on instances with Key=Type, Value=$type_value</span>
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Type,Value<span class="o">=</span><span class="nv">$type_value</span> --region<span class="o">=</span><span class="nv">$region</span>
-<span class="nb">echo</span> <span class="s2">&quot;export region=</span><span class="nv">$region</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
-<span class="nb">echo</span> <span class="s2">&quot;export type_value=</span><span class="nv">$type_value</span><span class="s2">&quot;</span> &gt;&gt; /home/ubuntu/.profile
-<span class="c1">##Uncomment next line if you want to install Antares3 on your AutoScalingGroup</span>
-<span class="c1">#su ubuntu -c &quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;export region=</span><span class="nv">$region</span><span class="s2">&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
+<span class="nb">echo</span> <span class="s2">&quot;export type_value=</span><span class="nv">$type_value</span><span class="s2">&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
+<span class="c1">##Uncomment next two lines if you want to install Antares3 on your AutoScalingGroup</span>
+<span class="c1">#su $user -c &quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
+<span class="c1">#echo &quot;export PATH=$PATH:/home/$user/.local/bin/&quot; &gt;&gt; ~/.profile</span>
 </pre></div>
 </div>
 <p><strong>Example using</strong> <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> <strong>service of AWS with Tag Name and Tag Value</strong></p>
@@ -511,11 +514,12 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 <p>We also use Elastic File System of AWS (shared file storage, see <a class="reference external" href="https://aws.amazon.com/efs/">Amazon Elastic File System</a>), which multiple Amazon EC2 instances running in multiple Availability Zones (AZs) within the same region can access it. Change variable <code class="docutils literal notranslate"><span class="pre">efs_dns</span></code> according to your <code class="docutils literal notranslate"><span class="pre">DNS</span> <span class="pre">name</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Modify variables <code class="docutils literal notranslate"><span class="pre">eip</span></code>, <code class="docutils literal notranslate"><span class="pre">name_instance</span></code>, <code class="docutils literal notranslate"><span class="pre">efs_dns</span></code>, <code class="docutils literal notranslate"><span class="pre">queue_name</span></code> and <code class="docutils literal notranslate"><span class="pre">slots</span></code> with your own configuration.  Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example. In this example the instances have two cores each of them.</p>
+<p class="last">Modify variables <code class="docutils literal notranslate"><span class="pre">user</span></code>, <code class="docutils literal notranslate"><span class="pre">eip</span></code>, <code class="docutils literal notranslate"><span class="pre">name_instance</span></code>, <code class="docutils literal notranslate"><span class="pre">efs_dns</span></code>, <code class="docutils literal notranslate"><span class="pre">queue_name</span></code> and <code class="docutils literal notranslate"><span class="pre">slots</span></code> with your own configuration.  Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example. In this example the instances have two cores each of them.</p>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1">##variables</span>
-<span class="nb">source</span> /home/ubuntu/.profile
+<span class="nv">user</span><span class="o">=</span>ubuntu
+<span class="nb">source</span> /home/<span class="nv">$user</span>/.profile
 <span class="nv">eip</span><span class="o">=</span>&lt;Allocation ID of Elastic IP&gt;
 <span class="nv">name_instance</span><span class="o">=</span>conabio-dask-sge-master
 <span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS name of EFS&gt;
@@ -542,21 +546,23 @@ bash <span class="nv">$mount_point</span>/create-dask-sge-queue.sh <span class="
 <p><strong>3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3</strong></p>
 <p>Use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute following bash script in all instances with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code>, <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> already configured in step 2, or use a tool for cluster management like <a class="reference external" href="https://github.com/duncs/clusterssh">clusterssh</a> . (You can also have the line that install OpenDataCube and Antares3 on the bash script configured in step 2 in instances of AutoScalingGroup)</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-<span class="nb">source</span> /home/ubuntu/.profile
+<span class="nv">user</span><span class="o">=</span>ubuntu
+<span class="nb">source</span> /home/<span class="nv">$user</span>/.profile
 <span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS name of EFS&gt;
 mount -t nfs4 -o <span class="nv">nfsvers</span><span class="o">=</span><span class="m">4</span>.1,rsize<span class="o">=</span><span class="m">1048576</span>,wsize<span class="o">=</span><span class="m">1048576</span>,hard,timeo<span class="o">=</span><span class="m">600</span>,retrans<span class="o">=</span><span class="m">2</span> <span class="nv">$efs_dns</span>:/ <span class="nv">$mount_point</span>
 <span class="c1">##Ip for sun grid engine master</span>
 <span class="nv">master_dns</span><span class="o">=</span><span class="k">$(</span>cat <span class="nv">$mount_point</span>/ip_master.txt<span class="k">)</span>
 <span class="nb">echo</span> <span class="nv">$master_dns</span> &gt; /var/lib/gridengine/default/common/act_qmaster
 /etc/init.d/gridengine-exec restart
-<span class="c1">##Install open datacube and antares3</span>
-su ubuntu -c <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
+<span class="c1">##Install antares3</span>
+su <span class="nv">$user</span> -c <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;export PATH=</span><span class="nv">$PATH</span><span class="s2">:/home/</span><span class="nv">$user</span><span class="s2">/.local/bin/&quot;</span> &gt;&gt; ~/.profile
 <span class="c1">##Create symbolic link to configuration files for antares3</span>
-ln -sf <span class="nv">$mount_point</span>/.antares /home/ubuntu/.antares
+ln -sf <span class="nv">$mount_point</span>/.antares /home/<span class="nv">$user</span>/.antares
 <span class="c1">##Create symbolic link to configuration files for datacube in all instances</span>
-ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/ubuntu/.datacube.conf
+ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/<span class="nv">$user</span>/.datacube.conf
 <span class="c1">##Uncomment next line if you want to init antares (previously installed)</span>
-<span class="c1">#su ubuntu -c &quot;/home/ubuntu/.local/bin/antares init&quot;</span>
+<span class="c1">#su $user -c &quot;/home/$user/.local/bin/antares init&quot;</span>
 </pre></div>
 </div>
 <p><strong>3.3 Run SGE commands to init cluster</strong></p>
@@ -621,13 +627,38 @@ qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1
 </pre></div>
 </div>
 </div>
-<p>It’s assumed that a Cluster is already configured and variable <code class="docutils literal notranslate"><span class="pre">mount_point</span></code> is set to path of shared volume. See <a href="#id15"><span class="problematic" id="id16">`Installation-Cloud Deployment`_</span></a> .</p>
-</div>
-</div>
 </div>
 <div class="section" id="id3">
-<h4>Open DataCube<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
-<p>Log in to an instance of <a class="reference external" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html">Auto Scaling Groups</a> configured in <a href="#id17"><span class="problematic" id="id18">`Dependencies-Cloud Deployment`_</span></a> in step 2, create on the <code class="docutils literal notranslate"><span class="pre">$mount_point/.datacube.conf</span></code> file the datacube configuration file and execute:</p>
+<h6>6. Init<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h6>
+<p>In step 1 it was configured variable <code class="docutils literal notranslate"><span class="pre">mount_point</span></code> which is a path to a shared volume.</p>
+</div>
+</div>
+</div>
+<div class="section" id="id4">
+<h4>Open DataCube<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<p>Log in to an instance of <a class="reference external" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html">Auto Scaling Groups</a> configured in step 2 and create in <code class="docutils literal notranslate"><span class="pre">$mount_point/.datacube.conf</span></code> the datacube configuration file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">user</span><span class="p">]</span>
+<span class="n">default_environment</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">datacube</span> <span class="ow">or</span> <span class="n">s3aio_env</span><span class="p">,</span> <span class="n">first</span> <span class="k">for</span> <span class="n">netcdf</span> <span class="ow">and</span> <span class="n">second</span> <span class="k">for</span> <span class="n">s3</span><span class="o">&gt;</span>
+
+<span class="p">[</span><span class="n">datacube</span><span class="p">]</span>
+<span class="n">db_hostname</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_host</span><span class="o">&gt;</span>
+<span class="n">db_database</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_name</span><span class="o">&gt;</span>
+<span class="n">db_username</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_user</span><span class="o">&gt;</span>
+<span class="n">db_password</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_password</span><span class="o">&gt;</span>
+
+<span class="n">execution_engine</span><span class="o">.</span><span class="n">use_s3</span><span class="p">:</span> <span class="o">&lt;</span><span class="kc">True</span> <span class="ow">or</span> <span class="kc">False</span><span class="o">&gt;</span>
+
+<span class="p">[</span><span class="n">s3aio_env</span><span class="p">]</span>
+<span class="n">db_hostname</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_host</span><span class="o">&gt;</span>
+<span class="n">db_database</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_name</span><span class="o">&gt;</span>
+<span class="n">db_username</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_user</span><span class="o">&gt;</span>
+<span class="n">db_password</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_password</span><span class="o">&gt;</span>
+<span class="n">index_driver</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">default</span> <span class="ow">or</span> <span class="n">s3aio_index</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">first</span> <span class="k">for</span> <span class="n">netcdf</span> <span class="ow">and</span> <span class="n">second</span> <span class="k">for</span> <span class="n">s3</span><span class="o">&gt;</span>
+
+<span class="n">execution_engine</span><span class="o">.</span><span class="n">use_s3</span><span class="p">:</span> <span class="o">&gt;</span><span class="kc">True</span> <span class="ow">or</span> <span class="kc">False</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>and execute:</p>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
 <p class="last">Open Datacube supports NETCDF CF and S3 drivers for storage (see <a class="reference external" href="https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config">Open DataCube Ingestion Config</a>). Different software dependencies are required for different drivers and different <code class="docutils literal notranslate"><span class="pre">datacube</span> <span class="pre">system</span> <span class="pre">init</span></code> command.</p>
@@ -660,20 +691,41 @@ qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1
 </div>
 </div>
 </div>
-<div class="section" id="id4">
-<h4>Antares3<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id5">
+<h4>Antares3<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <p>Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.</p>
-<p>Log in to master node, copy paste in <code class="docutils literal notranslate"><span class="pre">$mount_point/.antares</span></code> the configuration file for <code class="docutils literal notranslate"><span class="pre">antares</span></code> and execute:</p>
+<p>Log in to master node and create in <code class="docutils literal notranslate"><span class="pre">$mount_point/.antares</span></code> the configuration file for <code class="docutils literal notranslate"><span class="pre">antares</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span><span class="o">=</span>
+<span class="n">DEBUG</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">DJANGO_LOG_LEVEL</span><span class="o">=</span><span class="n">DEBUG</span>
+<span class="n">DATABASE_NAME</span><span class="o">=</span>
+<span class="n">DATABASE_USER</span><span class="o">=</span>
+<span class="n">DATABASE_PASSWORD</span><span class="o">=</span>
+<span class="n">DATABASE_HOST</span><span class="o">=</span>
+<span class="n">DATABASE_PORT</span><span class="o">=</span>
+<span class="n">ALLOWED_HOSTS</span><span class="o">=</span>
+<span class="n">SERIALIZED_OBJECTS_DIR</span><span class="o">=</span>
+<span class="n">USGS_USER</span><span class="o">=</span>
+<span class="n">USGS_PASSWORD</span><span class="o">=</span>
+<span class="n">SCIHUB_USER</span><span class="o">=</span>
+<span class="n">SCIHUB_PASSWORD</span><span class="o">=</span>
+<span class="n">TEMP_DIR</span><span class="o">=</span>
+<span class="n">INGESTION_PATH</span><span class="o">=</span>
+<span class="n">BIS_LICENSE</span><span class="o">=</span>
+</pre></div>
+</div>
+<p>and execute:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>antares init -c mex
 </pre></div>
 </div>
-<p>Use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute following bash script in all instances with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code>, <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> configured in <a href="#id19"><span class="problematic" id="id20">`Dependencies-Cloud Deployment`_</span></a> in step 2, or use a tool for cluster management like <a class="reference external" href="https://github.com/duncs/clusterssh">clusterssh</a> .</p>
+<p>Use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute following bash script in all instances with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code>, <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> configured in step 2, or use a tool for cluster management like <a class="reference external" href="https://github.com/duncs/clusterssh">clusterssh</a> . Modify variable <code class="docutils literal notranslate"><span class="pre">user</span></code> according to your user.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-<span class="nb">source</span> /home/ubuntu/.profile
-su ubuntu -c <span class="s2">&quot;/home/ubuntu/.local/bin/antares init&quot;</span>
+<span class="nv">user</span><span class="o">=</span>ubuntu
+<span class="nb">source</span> /home/<span class="nv">$user</span>/.profile
+su <span class="nv">$user</span> -c <span class="s2">&quot;antares init&quot;</span>
 </pre></div>
 </div>
-<p>This will create a <code class="docutils literal notranslate"><span class="pre">madmex</span></code> directory under <code class="docutils literal notranslate"><span class="pre">/home/ubuntu/.config/</span></code> where ingestion files for all different suported dataset will be stored.</p>
+<p>This will create a <code class="docutils literal notranslate"><span class="pre">madmex</span></code> directory under <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> where ingestion files for all different suported dataset will be stored.</p>
 </div>
 </div>
 </div>
