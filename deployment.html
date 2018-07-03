@@ -499,6 +499,10 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 <h6>3. Init Cluster<a class="headerlink" href="#init-cluster" title="Permalink to this headline">¶</a></h6>
 <p><strong>Example with one master and two nodes. Install Open DataCube and Antares3 in all nodes.</strong></p>
 <p>Using instances of <a class="reference external" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html">Auto Scaling Groups</a> configured in step 2 we have to configure SGE queue on master node and register nodes on this queue.</p>
+<div class="section" id="just-testing-title">
+<h7>Just testing title<a class="headerlink" href="#just-testing-title" title="Permalink to this headline">¶</a></h7>
+<p>(—-)</p>
+</div>
 <div class="section" id="assign-elastic-ip-to-master-node-and-create-sun-grid-engine-queue">
 <h7>3.1 Assign Elastic IP to master node and create Sun Grid Engine queue<a class="headerlink" href="#assign-elastic-ip-to-master-node-and-create-sun-grid-engine-queue" title="Permalink to this headline">¶</a></h7>
 <p>Run the following bash script using <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> or login to an instance from your autoscaling group to run it (doesn’t matter which one). The instance where  the bash script is executed will be the <strong>master node</strong> of our cluster.</p>
