@@ -2,6 +2,8 @@
 Deployment
 **********
 
+
+==============
 Single machine
 ==============
 
@@ -120,6 +122,8 @@ Cloud
 
 Amazon Web Services
 ^^^^^^^^^^^^^^^^^^^
+
+
 
 Prerequisites
 """""""""""""
