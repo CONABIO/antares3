@@ -413,7 +413,7 @@ Header 6
 
 
 Otherheader7
-~~~~~~~~~~~~
+::::::::::::
 
 
 Just testing title

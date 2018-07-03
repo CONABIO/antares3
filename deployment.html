@@ -510,15 +510,14 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 <h6>Header 6<a class="headerlink" href="#header-6" title="Permalink to this headline">¶</a></h6>
 <div class="section" id="otherheader7">
 <h7>Otherheader7<a class="headerlink" href="#otherheader7" title="Permalink to this headline">¶</a></h7>
-</div>
 <div class="section" id="just-testing-title">
-<h7>Just testing title<a class="headerlink" href="#just-testing-title" title="Permalink to this headline">¶</a></h7>
+<h8>Just testing title<a class="headerlink" href="#just-testing-title" title="Permalink to this headline">¶</a></h8>
 <div class="section" id="other-title">
-<h8>other title<a class="headerlink" href="#other-title" title="Permalink to this headline">¶</a></h8>
+<h9>other title<a class="headerlink" href="#other-title" title="Permalink to this headline">¶</a></h9>
 </div>
 </div>
 <div class="section" id="assign-elastic-ip-to-master-node-and-create-sun-grid-engine-queue">
-<h7>3. Assign Elastic IP to master node and create Sun Grid Engine queue<a class="headerlink" href="#assign-elastic-ip-to-master-node-and-create-sun-grid-engine-queue" title="Permalink to this headline">¶</a></h7>
+<h8>3. Assign Elastic IP to master node and create Sun Grid Engine queue<a class="headerlink" href="#assign-elastic-ip-to-master-node-and-create-sun-grid-engine-queue" title="Permalink to this headline">¶</a></h8>
 <p>Run the following bash script using <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> or login to an instance from your autoscaling group to run it (doesn’t matter which one). The instance where  the bash script is executed will be the <strong>master node</strong> of our cluster.</p>
 <p>We use an elastic IP provided by AWS for the node that will be the <strong>master node</strong>, so change variable <code class="docutils literal notranslate"><span class="pre">eip</span></code> according to your <code class="docutils literal notranslate"><span class="pre">Allocation</span> <span class="pre">ID</span></code> (see <a class="reference external" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html">Elastic IP Addresses</a>).</p>
 <p>We also use Elastic File System of AWS (shared file storage, see <a class="reference external" href="https://aws.amazon.com/efs/">Amazon Elastic File System</a>), which multiple Amazon EC2 instances running in multiple Availability Zones (AZs) within the same region can access it. Change variable <code class="docutils literal notranslate"><span class="pre">efs_dns</span></code> according to your <code class="docutils literal notranslate"><span class="pre">DNS</span> <span class="pre">name</span></code>.</p>
@@ -554,7 +553,7 @@ bash <span class="nv">$mount_point</span>/create-dask-sge-queue.sh <span class="
 </div>
 </div>
 <div class="section" id="restart-gridengine-exec-on-nodes-and-install-open-datacube-and-antares3">
-<h7>3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3<a class="headerlink" href="#restart-gridengine-exec-on-nodes-and-install-open-datacube-and-antares3" title="Permalink to this headline">¶</a></h7>
+<h8>3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3<a class="headerlink" href="#restart-gridengine-exec-on-nodes-and-install-open-datacube-and-antares3" title="Permalink to this headline">¶</a></h8>
 <p>Use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute following bash script in all instances with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code>, <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> already configured in step 2, or use a tool for cluster management like <a class="reference external" href="https://github.com/duncs/clusterssh">clusterssh</a> . (You can also have the line that install OpenDataCube and Antares3 on the bash script configured in step 2 in instances of AutoScalingGroup)</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="nb">source</span> /home/ubuntu/.profile
@@ -576,7 +575,7 @@ ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/ubuntu/.datacub
 </div>
 </div>
 <div class="section" id="run-sge-commands-to-init-cluster">
-<h7>3.3 Run SGE commands to init cluster<a class="headerlink" href="#run-sge-commands-to-init-cluster" title="Permalink to this headline">¶</a></h7>
+<h8>3.3 Run SGE commands to init cluster<a class="headerlink" href="#run-sge-commands-to-init-cluster" title="Permalink to this headline">¶</a></h8>
 <p>Login to master node and execute:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start dask-scheduler on master node. The file scheduler.json will be created on $mount_point (shared_volume) of EFS</span>
 qsub -b y -l <span class="nv">h</span><span class="o">=</span><span class="nv">$HOSTNAME</span> dask-scheduler --scheduler-file <span class="nv">$mount_point</span>/scheduler.json
@@ -639,6 +638,7 @@ qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1
 </div>
 </div>
 <p>It’s assumed that a Cluster is already configured and variable <code class="docutils literal notranslate"><span class="pre">mount_point</span></code> is set to path of shared volume. See <a href="#id15"><span class="problematic" id="id16">`Installation-Cloud Deployment`_</span></a> .</p>
+</div>
 </div>
 </div>
 </div>
