@@ -176,11 +176,11 @@ Amazon Web Services and Sun Grid Engine
     and permissions of this ``.pgpass`` are:
 
     .. code-block:: bash
+        
+        chmod 0600 ~/.pgpass
 
-        chmod 0600 /home/ubuntu/.pgpass
 
-
-        \* **(Not mandatory but useful)** You can either work with the database configured in RDS or create a new one with:
+    \* **(Not mandatory but useful)** You can either work with the database configured in RDS or create a new one with:
 
     .. code-block:: bash
 
