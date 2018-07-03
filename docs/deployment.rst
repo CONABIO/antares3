@@ -218,7 +218,7 @@ The following bash script can be used in **User data** configuration of the inst
 
 .. note:: 
 
-    Modify variables ``region``, ``name_instance``, ``shared_volume`` with your own configuration.
+    Modify variables ``region``, ``name_instance``, ``shared_volume`` and ``user`` with your own configuration.
 
 .. code-block:: bash
 
@@ -228,6 +228,7 @@ The following bash script can be used in **User data** configuration of the inst
     region=<region>
     name_instance=conabio-dask-sge
     shared_volume=/shared_volume
+    user=ubuntu
     ##System update
     apt-get update
     ##Install awscli
@@ -239,10 +240,10 @@ The following bash script can be used in **User data** configuration of the inst
     PUBLIC_IP=$(curl -s http://instance-data/latest/meta-data/public-ipv4)
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
     ##Set locales for OpenDataCube
-    echo "export LC_ALL=C.UTF-8" >> /home/ubuntu/.profile
-    echo "export LANG=C.UTF-8" >> /home/ubuntu/.profile
+    echo "export LC_ALL=C.UTF-8" >> /home/$user/.profile
+    echo "export LANG=C.UTF-8" >> /home/$user/.profile
     ##Set variable mount_point
-    echo "export mount_point=$shared_volume" >> /home/ubuntu/.profile
+    echo "export mount_point=$shared_volume" >> /home/$user/.profile
     ##Dependencies for sge, antares3 and open datacube
     apt-get install -y nfs-common openssh-server openjdk-8-jre xsltproc apache2 git htop postgresql-client \
     python-software-properties \
@@ -295,9 +296,8 @@ The following bash script can be used in **User data** configuration of the inst
     pip3 install --upgrade python-dateutil
     ##Create shared volume
     mkdir $shared_volume
-    ##Create directories for antares3 and locale settings for open datacube
-    mkdir -p /home/ubuntu/git && mkdir -p /home/ubuntu/sandbox
-    echo "alias python=python3" >> /home/ubuntu/.bash_aliases
+    ##Locale settings for open datacube
+    echo "alias python=python3" >> /home/$user/.bash_aliases
     #dependencies for antares3 & datacube
     pip3 install numpy && pip3 install cloudpickle && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0a12 --no-binary rasterio && pip3 install scipy
     pip3 install sklearn
@@ -332,12 +332,13 @@ Then open an editor an copy-paste next bash script in ``$mount_point/create-dask
     #!/bin/bash
     #First parameter is name of queue on SGE
     #Second parameter is number of slots that queue of SGE will have
-    source /home/ubuntu/.profile
+    #Third parameter is user 
+    source /home/$user/.profile
     queue_name=$1
     slots=$2
     type_value=$type_value
     region=$region
-    qconf -am ubuntu
+    qconf -am $user
     ##queue of SGE, this needs to be executed for registering nodes:
     echo -e "group_name @allhosts\nhostlist NONE" > $mount_point/host_group_sge.txt
     qconf -Ahgrp $mount_point/host_group_sge.txt
@@ -372,7 +373,7 @@ Once created an AMI of AWS from previous step, use the following bash script to 
 
 .. note:: 
 
-    Modify variables ``region``, ``name_instance`` and ``type_value`` with your own configuration. Here instances are tagged with **Key** ``Type`` and **Value** ``Node-dask-sge`` so we can use `RunCommand`_ service of AWS to execute bash scripts (for example) on instances with this tag.
+    Modify variables ``region``, ``name_instance``, ``type_value`` and ``user`` with your own configuration. Here instances are tagged with **Key** ``Type`` and **Value** ``Node-dask-sge`` so we can use `RunCommand`_ service of AWS to execute bash scripts (for example) on instances with this tag.
 
 .. code-block:: bash
 
@@ -380,16 +381,18 @@ Once created an AMI of AWS from previous step, use the following bash script to 
     region=<region>
     name_instance=conabio-dask-sge-node
     type_value=Node-dask-sge
+    user=ubuntu
     ##Tag instances of type node
     INSTANCE_ID=$(curl -s http://instance-data/latest/meta-data/instance-id)
     PUBLIC_IP=$(curl -s http://instance-data/latest/meta-data/public-ipv4)
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
     ##Next line is useful so RunCommand can execute bash scripts (for example) on instances with Key=Type, Value=$type_value
     aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Type,Value=$type_value --region=$region
-    echo "export region=$region" >> /home/ubuntu/.profile
-    echo "export type_value=$type_value" >> /home/ubuntu/.profile
-    ##Uncomment next line if you want to install Antares3 on your AutoScalingGroup
-    #su ubuntu -c "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop"
+    echo "export region=$region" >> /home/$user/.profile
+    echo "export type_value=$type_value" >> /home/$user/.profile
+    ##Uncomment next two lines if you want to install Antares3 on your AutoScalingGroup
+    #su $user -c "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop"
+    #echo "export PATH=$PATH:/home/$user/.local/bin/" >> ~/.profile
 
 
 
@@ -421,13 +424,14 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
 
 .. note:: 
 
-    Modify variables ``eip``, ``name_instance``, ``efs_dns``, ``queue_name`` and ``slots`` with your own configuration.  Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example. In this example the instances have two cores each of them.
+    Modify variables ``user``, ``eip``, ``name_instance``, ``efs_dns``, ``queue_name`` and ``slots`` with your own configuration.  Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example. In this example the instances have two cores each of them.
 
 .. code-block:: bash
 
     #!/bin/bash
     ##variables
-    source /home/ubuntu/.profile
+    user=ubuntu
+    source /home/$user/.profile
     eip=<Allocation ID of Elastic IP>
     name_instance=conabio-dask-sge-master
     efs_dns=<DNS name of EFS>
@@ -459,21 +463,23 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
 .. code-block:: bash
 
     #!/bin/bash
-    source /home/ubuntu/.profile
+    user=ubuntu
+    source /home/$user/.profile
     efs_dns=<DNS name of EFS>
     mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 $efs_dns:/ $mount_point
     ##Ip for sun grid engine master
     master_dns=$(cat $mount_point/ip_master.txt)
     echo $master_dns > /var/lib/gridengine/default/common/act_qmaster
     /etc/init.d/gridengine-exec restart
-    ##Install open datacube and antares3
-    su ubuntu -c "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop"
+    ##Install antares3
+    su $user -c "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop"
+    echo "export PATH=$PATH:/home/$user/.local/bin/" >> ~/.profile
     ##Create symbolic link to configuration files for antares3
-    ln -sf $mount_point/.antares /home/ubuntu/.antares
+    ln -sf $mount_point/.antares /home/$user/.antares
     ##Create symbolic link to configuration files for datacube in all instances
-    ln -sf $mount_point/.datacube.conf /home/ubuntu/.datacube.conf
+    ln -sf $mount_point/.datacube.conf /home/$user/.datacube.conf
     ##Uncomment next line if you want to init antares (previously installed)
-    #su ubuntu -c "/home/ubuntu/.local/bin/antares init"
+    #su $user -c "/home/$user/.local/bin/antares init"
 
 **3.3 Run SGE commands to init cluster**
 
@@ -583,15 +589,42 @@ from **<public DNS of master>:8787/graph** we have:
 
 
 
+6. Init
++++++++
 
-
-
-It's assumed that a Cluster is already configured and variable ``mount_point`` is set to path of shared volume. See `Installation-Cloud Deployment`_ .
+In step 1 it was configured variable ``mount_point`` which is a path to a shared volume.
 
 Open DataCube
 ^^^^^^^^^^^^^
 
-Log in to an instance of `Auto Scaling Groups`_ configured in `Dependencies-Cloud Deployment`_ in step 2, create on the ``$mount_point/.datacube.conf`` file the datacube configuration file and execute:
+Log in to an instance of `Auto Scaling Groups`_ configured in step 2 and create in ``$mount_point/.datacube.conf`` the datacube configuration file:
+
+
+::
+
+    [user]
+    default_environment: <datacube or s3aio_env, first for netcdf and second for s3>
+    
+    [datacube]
+    db_hostname: <database_host>
+    db_database: <database_name>
+    db_username: <database_user>
+    db_password: <database_password>
+    
+    execution_engine.use_s3: <True or False>
+    
+    [s3aio_env]
+    db_hostname: <database_host>
+    db_database: <database_name>
+    db_username: <database_user>
+    db_password: <database_password>
+    index_driver: <default or s3aio_index>, first for netcdf and second for s3>
+    
+    execution_engine.use_s3: >True or False>
+
+
+
+and execute:
 
 .. attention:: 
 
@@ -644,23 +677,50 @@ Antares3
 
 Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.
 
-Log in to master node, copy paste in ``$mount_point/.antares`` the configuration file for ``antares`` and execute:
+Log in to master node and create in ``$mount_point/.antares`` the configuration file for ``antares``:
+
+
+::
+
+    SECRET_KEY=
+    DEBUG=True
+    DJANGO_LOG_LEVEL=DEBUG
+    DATABASE_NAME=
+    DATABASE_USER=
+    DATABASE_PASSWORD=
+    DATABASE_HOST=
+    DATABASE_PORT=
+    ALLOWED_HOSTS=
+    SERIALIZED_OBJECTS_DIR=
+    USGS_USER=
+    USGS_PASSWORD=
+    SCIHUB_USER=
+    SCIHUB_PASSWORD=
+    TEMP_DIR=
+    INGESTION_PATH=
+    BIS_LICENSE=
+
+
+
+
+and execute:
 
 .. code-block:: bash
 
     antares init -c mex
  
-Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` configured in `Dependencies-Cloud Deployment`_ in step 2, or use a tool for cluster management like `clusterssh`_ . 
+Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` configured in step 2, or use a tool for cluster management like `clusterssh`_ . Modify variable ``user`` according to your user.
 
 
 
 .. code-block:: bash
 
     #!/bin/bash
-    source /home/ubuntu/.profile
-    su ubuntu -c "/home/ubuntu/.local/bin/antares init"
+    user=ubuntu
+    source /home/$user/.profile
+    su $user -c "antares init"
 
-This will create a ``madmex`` directory under ``/home/ubuntu/.config/`` where ingestion files for all different suported dataset will be stored.
+This will create a ``madmex`` directory under ``~/.config/`` where ingestion files for all different suported dataset will be stored.
 
 
 
