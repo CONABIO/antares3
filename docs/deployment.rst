@@ -411,13 +411,18 @@ Using instances of `Auto Scaling Groups`_ configured in step 2 we have to config
 Header 6
 ++++++++
 
+
+Otherheader7
+~~~~~~~~~~~~
+
+
 Just testing title
 ~~~~~~~~~~~~~~~~~~
 
 other title
 ###########
 
-3.1 Assign Elastic IP to master node and create Sun Grid Engine queue
+3. Assign Elastic IP to master node and create Sun Grid Engine queue
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Run the following bash script using `RunCommand`_ or login to an instance from your autoscaling group to run it (doesn't matter which one). The instance where  the bash script is executed will be the **master node** of our cluster.
