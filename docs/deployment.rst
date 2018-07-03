@@ -74,12 +74,12 @@ The configuration file used by antares contain various fields related to data lo
     INGESTION_PATH=
     BIS_LICENSE=
 
-
 Init
-^^^^
+----
+
 
 Open DataCube
--------------
+^^^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -94,7 +94,7 @@ Check that datacube is properly setup by running
 
 
 Antares3
---------
+^^^^^^^^
 
 Antares setup consists of enabling the postgis extension for the database, setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.
 
@@ -105,7 +105,6 @@ Antares setup consists of enabling the postgis extension for the database, setti
     antares init -c mex
 
 This will create a ``madmex`` directory under ``~/.config/`` where ingestion files for all different suported dataset will be stored.
-
 
 
 Cluster
@@ -144,48 +143,48 @@ Amazon Web Services and Sun Grid Engine
 
     \* Configure `Postgis`_ extension to `PostgreSQL`_  for storing and managing spatial information in the instance of `Amazon Relational Database Service (RDS)`_ you created.
 
-.. note:: 
+    .. note:: 
 
-    AWS gives you necessary steps to setup Postgis extension in `Working with PostGis`_ documentation.
-
-
-We use the following bash script to setup `Postgis`_ extension in database instance:
-
-.. code-block:: bash
-
-    #!/bin/bash
-    ##First argument its the name of database created on RDS, following arguments are self explanatory
-    db=$1
-    db_user=$2
-    db_host=$3
-    psql -h $db_host -U $db_user --dbname=$db --command "create extension postgis;"
-    psql -h $db_host -U $db_user --dbname=$db --command "create extension fuzzystrmatch;"
-    psql -h $db_host -U $db_user --dbname=$db --command "create extension postgis_tiger_geocoder;"
-    psql -h $db_host -U $db_user --dbname=$db --command "create extension postgis_topology;"
-    psql -h $db_host -U $db_user --dbname=$db --command "alter schema tiger owner to rds_superuser;"
-    psql -h $db_host -U $db_user --dbname=$db --command "alter schema tiger_data owner to rds_superuser;"
-    psql -h $db_host -U $db_user --dbname=$db --command "alter schema topology owner to rds_superuser;"
-    psql -h $db_host -U $db_user --dbname=$db --command "CREATE FUNCTION exec(text) returns text language plpgsql volatile AS \$f\$ BEGIN EXECUTE \$1; RETURN \$1; END; \$f\$;"
-    psql -h $db_host -U $db_user --dbname=$db --command "SELECT exec('ALTER TABLE ' || quote_ident(s.nspname) || '.' || quote_ident(s.relname) || ' OWNER TO rds_superuser;') FROM (SELECT nspname, relname FROM pg_class c JOIN pg_namespace n ON (c.relnamespace = n.oid) WHERE nspname in ('tiger','topology') AND relkind IN ('r','S','v') ORDER BY relkind = 'S') s;"
-
-Make sure a file ``.pgpass`` is in ``/home/ubuntu`` path so you are not prompted with the password for every command. The contents of this file are:
-
-::
-
-<db_host>:<port>:<name of database>:<name of database user>:<database password>
-
-and permissions of this ``.pgpass`` are:
-
-.. code-block:: bash
-
-    chmod 0600 /home/ubuntu/.pgpass
+        AWS gives you necessary steps to setup Postgis extension in `Working with PostGis`_ documentation.
 
 
-    \* **(Not mandatory but useful)** You can either work with the database configured in RDS or create a new one with:
+    We use the following bash script to setup `Postgis`_ extension in database instance:
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    createdb -h <db_host> -U <db_user> <database_name>
+        #!/bin/bash
+        ##First argument its the name of database created on RDS, following arguments are self explanatory
+        db=$1
+        db_user=$2
+        db_host=$3
+        psql -h $db_host -U $db_user --dbname=$db --command "create extension postgis;"
+        psql -h $db_host -U $db_user --dbname=$db --command "create extension fuzzystrmatch;"
+        psql -h $db_host -U $db_user --dbname=$db --command "create extension postgis_tiger_geocoder;"
+        psql -h $db_host -U $db_user --dbname=$db --command "create extension postgis_topology;"
+        psql -h $db_host -U $db_user --dbname=$db --command "alter schema tiger owner to rds_superuser;"
+        psql -h $db_host -U $db_user --dbname=$db --command "alter schema tiger_data owner to rds_superuser;"
+        psql -h $db_host -U $db_user --dbname=$db --command "alter schema topology owner to rds_superuser;"
+        psql -h $db_host -U $db_user --dbname=$db --command "CREATE FUNCTION exec(text) returns text language plpgsql volatile AS \$f\$ BEGIN EXECUTE \$1; RETURN \$1; END; \$f\$;"
+        psql -h $db_host -U $db_user --dbname=$db --command "SELECT exec('ALTER TABLE ' || quote_ident(s.nspname) || '.' || quote_ident(s.relname) || ' OWNER TO rds_superuser;') FROM (SELECT nspname, relname FROM pg_class c JOIN pg_namespace n ON (c.relnamespace = n.oid) WHERE nspname in ('tiger','topology') AND relkind IN ('r','S','v') ORDER BY relkind = 'S') s;"
+
+    Make sure a file ``.pgpass`` is in ``/home/ubuntu`` path so you are not prompted with the password for every command. The contents of this file are:
+
+    ::
+
+    <db_host>:<port>:<name of database>:<name of database user>:<database password>
+
+    and permissions of this ``.pgpass`` are:
+
+    .. code-block:: bash
+
+        chmod 0600 /home/ubuntu/.pgpass
+
+
+        \* **(Not mandatory but useful)** You can either work with the database configured in RDS or create a new one with:
+
+    .. code-block:: bash
+
+        createdb -h <db_host> -U <db_user> <database_name>
 
 
 
