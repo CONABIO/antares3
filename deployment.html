@@ -104,7 +104,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#cluster">Cluster</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#local">Local</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#cloud">Cloud</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#amazon-web-services-and-sun-grid-engine">Amazon Web Services and Sun Grid Engine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amazon-web-services">Amazon Web Services</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">Open DataCube</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id4">Antares3</a></li>
 </ul>
@@ -281,9 +281,10 @@ antares init -c mex
 </div>
 <div class="section" id="cloud">
 <h3>Cloud<a class="headerlink" href="#cloud" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="amazon-web-services-and-sun-grid-engine">
-<h4>Amazon Web Services and Sun Grid Engine<a class="headerlink" href="#amazon-web-services-and-sun-grid-engine" title="Permalink to this headline">¶</a></h4>
-<p><strong>0. Prerequisites</strong></p>
+<div class="section" id="amazon-web-services">
+<h4>Amazon Web Services<a class="headerlink" href="#amazon-web-services" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="prerequisites">
+<h5>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h5>
 <p>* Configure <a class="reference external" href="https://aws.amazon.com/vpc/">Amazon Virtual Private Cloud</a> on AWS with properly <a class="reference external" href="https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html">VPCs and Subnets</a> configured according to your application.</p>
 <p>* Configure <a class="reference external" href="https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html">Security Groups for Your VPC</a>  with ports 6444 TCP and 6445 UDP for communication within instances via SGE and port 80 for web SGE, port 2043 for <a class="reference external" href="https://aws.amazon.com/efs/">Amazon Elastic File System</a> service on AWS and port 22 to ssh to instances from your machine.</p>
 <p>* Configure <a class="reference external" href="https://aws.amazon.com/efs/">Amazon Elastic File System</a> service on AWS (shared volume via Network File System -NFS-).</p>
@@ -327,7 +328,11 @@ psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --d
 </pre></div>
 </div>
 </div></blockquote>
+</div>
+<div class="section" id="amazon-web-services-and-sun-grid-engine">
+<h5>Amazon Web Services and Sun Grid Engine<a class="headerlink" href="#amazon-web-services-and-sun-grid-engine" title="Permalink to this headline">¶</a></h5>
 <p>It’s assumed that a Cluster is already configured and variable <code class="docutils literal notranslate"><span class="pre">mount_point</span></code> is set to path of shared volume. See <a href="#id9"><span class="problematic" id="id10">`Installation-Cloud Deployment`_</span></a> .</p>
+</div>
 </div>
 <div class="section" id="id3">
 <h4>Open DataCube<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>

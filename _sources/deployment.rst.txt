@@ -117,10 +117,12 @@ Local
 Cloud
 ------
 
-Amazon Web Services and Sun Grid Engine
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**0. Prerequisites**
+Amazon Web Services
+^^^^^^^^^^^^^^^^^^^
+
+Prerequisites
+"""""""""""""
 
 \* Configure `Amazon Virtual Private Cloud`_ on AWS with properly `VPCs and Subnets`_ configured according to your application.
 
@@ -187,7 +189,8 @@ Amazon Web Services and Sun Grid Engine
         createdb -h <db_host> -U <db_user> <database_name>
 
 
-
+Amazon Web Services and Sun Grid Engine
+"""""""""""""""""""""""""""""""""""""""
 
 
 
