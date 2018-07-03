@@ -508,6 +508,9 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 </div>
 <div class="section" id="header-6">
 <h6>Header 6<a class="headerlink" href="#header-6" title="Permalink to this headline">¶</a></h6>
+<div class="section" id="otherheader7">
+<h7>Otherheader7<a class="headerlink" href="#otherheader7" title="Permalink to this headline">¶</a></h7>
+</div>
 <div class="section" id="just-testing-title">
 <h7>Just testing title<a class="headerlink" href="#just-testing-title" title="Permalink to this headline">¶</a></h7>
 <div class="section" id="other-title">
@@ -515,7 +518,7 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 </div>
 </div>
 <div class="section" id="assign-elastic-ip-to-master-node-and-create-sun-grid-engine-queue">
-<h7>3.1 Assign Elastic IP to master node and create Sun Grid Engine queue<a class="headerlink" href="#assign-elastic-ip-to-master-node-and-create-sun-grid-engine-queue" title="Permalink to this headline">¶</a></h7>
+<h7>3. Assign Elastic IP to master node and create Sun Grid Engine queue<a class="headerlink" href="#assign-elastic-ip-to-master-node-and-create-sun-grid-engine-queue" title="Permalink to this headline">¶</a></h7>
 <p>Run the following bash script using <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> or login to an instance from your autoscaling group to run it (doesn’t matter which one). The instance where  the bash script is executed will be the <strong>master node</strong> of our cluster.</p>
 <p>We use an elastic IP provided by AWS for the node that will be the <strong>master node</strong>, so change variable <code class="docutils literal notranslate"><span class="pre">eip</span></code> according to your <code class="docutils literal notranslate"><span class="pre">Allocation</span> <span class="pre">ID</span></code> (see <a class="reference external" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html">Elastic IP Addresses</a>).</p>
 <p>We also use Elastic File System of AWS (shared file storage, see <a class="reference external" href="https://aws.amazon.com/efs/">Amazon Elastic File System</a>), which multiple Amazon EC2 instances running in multiple Availability Zones (AZs) within the same region can access it. Change variable <code class="docutils literal notranslate"><span class="pre">efs_dns</span></code> according to your <code class="docutils literal notranslate"><span class="pre">DNS</span> <span class="pre">name</span></code>.</p>
