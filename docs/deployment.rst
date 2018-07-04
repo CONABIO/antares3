@@ -730,7 +730,7 @@ Kubernetes is an open-source system for automating deployment, scaling, and mana
 
 The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
 
-1) Configure a domain and a subdomain with their respective hosted zones. For the following description the `Route 53`_ service of AWS was used to create the domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a gossip based Kubernetes cluster can be used instead (see for example this `issue`_ and this `entry of blog`_).
+1) Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create the domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a gossip based Kubernetes cluster can be used instead (see for example this `issue`_ and this `entry of blog`_).
 
 
 
@@ -749,7 +749,7 @@ The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
 
 .. _Kubernetes: https://kubernetes.io/
 
-.. _Picking the right solution: https://kubernetes.io/docs/setup/pick-right-solution/#table-of-solutions
+.. _Picking the right solution: https://kubernetes.io/docs/setup/pick-right-solution/
 
 .. _kops - Kubernetes Operations: https://github.com/kubernetes/kops
 
