@@ -105,8 +105,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#local">Local</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#cloud">Cloud</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#amazon-web-services">Amazon Web Services</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4">Open DataCube</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id5">Antares3</a></li>
 </ul>
 </li>
 </ul>
@@ -631,11 +629,8 @@ qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1
 <div class="section" id="id3">
 <h6>6. Init<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h6>
 <p>In step 1 it was configured variable <code class="docutils literal notranslate"><span class="pre">mount_point</span></code> which is a path to a shared volume.</p>
-</div>
-</div>
-</div>
 <div class="section" id="id4">
-<h4>Open DataCube<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<h7>Open DataCube<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h7>
 <p>Log in to an instance of <a class="reference external" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html">Auto Scaling Groups</a> configured in step 2 and create in <code class="docutils literal notranslate"><span class="pre">$mount_point/.datacube.conf</span></code> the datacube configuration file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">user</span><span class="p">]</span>
 <span class="n">default_environment</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">datacube</span> <span class="ow">or</span> <span class="n">s3aio_env</span><span class="p">,</span> <span class="n">first</span> <span class="k">for</span> <span class="n">netcdf</span> <span class="ow">and</span> <span class="n">second</span> <span class="k">for</span> <span class="n">s3</span><span class="o">&gt;</span>
@@ -655,7 +650,7 @@ qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1
 <span class="n">db_password</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_password</span><span class="o">&gt;</span>
 <span class="n">index_driver</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">default</span> <span class="ow">or</span> <span class="n">s3aio_index</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">first</span> <span class="k">for</span> <span class="n">netcdf</span> <span class="ow">and</span> <span class="n">second</span> <span class="k">for</span> <span class="n">s3</span><span class="o">&gt;</span>
 
-<span class="n">execution_engine</span><span class="o">.</span><span class="n">use_s3</span><span class="p">:</span> <span class="o">&gt;</span><span class="kc">True</span> <span class="ow">or</span> <span class="kc">False</span><span class="o">&gt;</span>
+<span class="n">execution_engine</span><span class="o">.</span><span class="n">use_s3</span><span class="p">:</span> <span class="o">&lt;</span><span class="kc">True</span> <span class="ow">or</span> <span class="kc">False</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>and execute:</p>
@@ -692,7 +687,7 @@ qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1
 </div>
 </div>
 <div class="section" id="id5">
-<h4>Antares3<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<h7>Antares3<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h7>
 <p>Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.</p>
 <p>Log in to master node and create in <code class="docutils literal notranslate"><span class="pre">$mount_point/.antares</span></code> the configuration file for <code class="docutils literal notranslate"><span class="pre">antares</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span><span class="o">=</span>
@@ -726,6 +721,17 @@ su <span class="nv">$user</span> -c <span class="s2">&quot;antares init&quot;</s
 </pre></div>
 </div>
 <p>This will create a <code class="docutils literal notranslate"><span class="pre">madmex</span></code> directory under <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> where ingestion files for all different suported dataset will be stored.</p>
+</div>
+</div>
+</div>
+<div class="section" id="amazon-web-services-and-kubernetes">
+<h5>Amazon Web Services and Kubernetes<a class="headerlink" href="#amazon-web-services-and-kubernetes" title="Permalink to this headline">¶</a></h5>
+<p>Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications (see <a class="reference external" href="https://kubernetes.io/">Kubernetes</a> and <a class="reference external" href="https://github.com/kubernetes/kubernetes">Kubernetes github page</a> ). There are a lot of ways to deploy a Kubernetes cluster, for instance see <a class="reference external" href="https://kubernetes.io/docs/setup/pick-right-solution/#table-of-solutions">Picking the right solution</a>.</p>
+<p>The nex steps follow <a class="reference external" href="https://kubernetes.io/docs/setup/custom-cloud/kops/">kops</a> and <a class="reference external" href="https://github.com/kubernetes/kops">kops - Kubernetes Operations</a> guides:</p>
+<ol class="arabic simple">
+<li>Configure a domain and a subdomain with their respective hosted zones. For the following description the <a class="reference external" href="https://aws.amazon.com/route53/?nc1=h_ls">Route 53</a> service of AWS was used to create the domain <code class="docutils literal notranslate"><span class="pre">conabio-route53.net</span></code> and subdomain <code class="docutils literal notranslate"><span class="pre">antares3.conabio-route53.net</span></code>. Also a gossip based Kubernetes cluster can be used instead (see for example this <a class="reference external" href="https://github.com/kubernetes/kops/issues/2858">issue</a> and this <a class="reference external" href="http://blog.arungupta.me/gossip-kubernetes-aws-kops/">entry of blog</a>).</li>
+</ol>
+</div>
 </div>
 </div>
 </div>
