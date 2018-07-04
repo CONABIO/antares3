@@ -612,7 +612,7 @@ The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
 
 1) Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create the domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a gossip based Kubernetes cluster can be used instead (see for example this `issue`_ and this `entry of blog`_).
 
-
+2) Install kops and kubectl.
 
 
 

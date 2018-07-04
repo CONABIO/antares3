@@ -86,7 +86,6 @@
               <p class="caption"><span class="caption-text">User guide</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../deployment.html">Deployment</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="single_machine.html">Single machine</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Amazon Web Services</a><ul>
@@ -641,6 +640,7 @@ su <span class="nv">$user</span> -c <span class="s2">&quot;antares init&quot;</s
 <p>The nex steps follow <a class="reference external" href="https://kubernetes.io/docs/setup/custom-cloud/kops/">kops</a> and <a class="reference external" href="https://github.com/kubernetes/kops">kops - Kubernetes Operations</a> guides:</p>
 <ol class="arabic simple">
 <li>Configure a domain and a subdomain with their respective hosted zones. For the following description <a class="reference external" href="https://aws.amazon.com/route53/?nc1=h_ls">Route 53</a> service of AWS was used to create the domain <code class="docutils literal notranslate"><span class="pre">conabio-route53.net</span></code> and subdomain <code class="docutils literal notranslate"><span class="pre">antares3.conabio-route53.net</span></code>. Also a gossip based Kubernetes cluster can be used instead (see for example this <a class="reference external" href="https://github.com/kubernetes/kops/issues/2858">issue</a> and this <a class="reference external" href="http://blog.arungupta.me/gossip-kubernetes-aws-kops/">entry of blog</a>).</li>
+<li>Install kops and kubectl.</li>
 </ol>
 </div>
 </div>
