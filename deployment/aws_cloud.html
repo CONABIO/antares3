@@ -95,7 +95,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#create-ami-of-aws-from-bash-script">1. Create AMI of AWS from bash script.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#configure-an-autoscaling-group-of-aws-using-ami">2. Configure an Autoscaling group of AWS using AMI</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#init-cluster">3. Init Cluster</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#init">6. Init</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#init">4. Init</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#amazon-web-services-and-kubernetes">Amazon Web Services and Kubernetes</a></li>
@@ -409,6 +409,8 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 <h3>3. Init Cluster<a class="headerlink" href="#init-cluster" title="Permalink to this headline">¶</a></h3>
 <p><strong>Example with one master and two nodes. Install Open DataCube and Antares3 in all nodes.</strong></p>
 <p>Using instances of <a class="reference external" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html">Auto Scaling Groups</a> configured in step 2 we have to configure SGE queue on master node and register nodes on this queue.</p>
+<div class="section" id="assign-elastic-ip-to-master-node-and-create-sun-grid-engine-queue">
+<h4>3.1 Assign Elastic IP to master node and create Sun Grid Engine queue<a class="headerlink" href="#assign-elastic-ip-to-master-node-and-create-sun-grid-engine-queue" title="Permalink to this headline">¶</a></h4>
 <p><strong>3.1 Assign Elastic IP to master node and create Sun Grid Engine queue</strong></p>
 <p>Run the following bash script using <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> or login to an instance from your autoscaling group to run it (doesn’t matter which one). The instance where  the bash script is executed will be the <strong>master node</strong> of our cluster.</p>
 <p>We use an elastic IP provided by AWS for the node that will be the <strong>master node</strong>, so change variable <code class="docutils literal notranslate"><span class="pre">eip</span></code> according to your <code class="docutils literal notranslate"><span class="pre">Allocation</span> <span class="pre">ID</span></code> (see <a class="reference external" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html">Elastic IP Addresses</a>).</p>
@@ -444,6 +446,9 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 bash <span class="nv">$mount_point</span>/create-dask-sge-queue.sh <span class="nv">$queue_name</span> <span class="nv">$slots</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="restart-gridengine-exec-on-nodes-and-install-open-datacube-and-antares3">
+<h4>3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3<a class="headerlink" href="#restart-gridengine-exec-on-nodes-and-install-open-datacube-and-antares3" title="Permalink to this headline">¶</a></h4>
 <p><strong>3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3</strong></p>
 <p>Use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute following bash script in all instances with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code>, <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> already configured in step 2, or use a tool for cluster management like <a class="reference external" href="https://github.com/duncs/clusterssh">clusterssh</a> . (You can also have the line that install OpenDataCube and Antares3 on the bash script configured in step 2 in instances of AutoScalingGroup)</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
@@ -466,6 +471,9 @@ ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/<span class="nv
 <span class="c1">#su $user -c &quot;/home/$user/.local/bin/antares init&quot;</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="run-sge-commands-to-init-cluster">
+<h4>3.3 Run SGE commands to init cluster<a class="headerlink" href="#run-sge-commands-to-init-cluster" title="Permalink to this headline">¶</a></h4>
 <p><strong>3.3 Run SGE commands to init cluster</strong></p>
 <p>Login to master node and execute:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start dask-scheduler on master node. The file scheduler.json will be created on $mount_point (shared_volume) of EFS</span>
@@ -496,6 +504,9 @@ qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1
 <p>or</p>
 <p><strong>&lt;public DNS of worker&gt;:8789</strong></p>
 <a class="reference internal image-reference" href="https://dl.dropboxusercontent.com/s/rnapd51c565huij/bokeh_2_sphinx_docu.png?dl=0"><img alt="https://dl.dropboxusercontent.com/s/rnapd51c565huij/bokeh_2_sphinx_docu.png?dl=0" src="https://dl.dropboxusercontent.com/s/rnapd51c565huij/bokeh_2_sphinx_docu.png?dl=0" style="width: 400px;" /></a>
+</div>
+<div class="section" id="run-an-example">
+<h4>Run an example<a class="headerlink" href="#run-an-example" title="Permalink to this headline">¶</a></h4>
 <p><strong>Run an example.</strong></p>
 <p>On master or node execute:</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dask.distributed</span> <span class="k">import</span> <span class="n">Client</span>
@@ -529,8 +540,9 @@ qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1
 </div>
 </div>
 </div>
+</div>
 <div class="section" id="init">
-<h3>6. Init<a class="headerlink" href="#init" title="Permalink to this headline">¶</a></h3>
+<h3>4. Init<a class="headerlink" href="#init" title="Permalink to this headline">¶</a></h3>
 <p>In step 1 it was configured variable <code class="docutils literal notranslate"><span class="pre">mount_point</span></code> which is a path to a shared volume.</p>
 <div class="section" id="open-datacube">
 <h4>Open DataCube<a class="headerlink" href="#open-datacube" title="Permalink to this headline">¶</a></h4>
@@ -588,9 +600,8 @@ qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1
 </pre></div>
 </div>
 </div>
-</div>
 <div class="section" id="antares3">
-<h4>Antares3<a class="headerlink" href="#antares3" title="Permalink to this headline">¶</a></h4>
+<h5>Antares3<a class="headerlink" href="#antares3" title="Permalink to this headline">¶</a></h5>
 <p>Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.</p>
 <p>Log in to master node and create in <code class="docutils literal notranslate"><span class="pre">$mount_point/.antares</span></code> the configuration file for <code class="docutils literal notranslate"><span class="pre">antares</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span><span class="o">=</span>
@@ -624,6 +635,7 @@ su <span class="nv">$user</span> -c <span class="s2">&quot;antares init&quot;</s
 </pre></div>
 </div>
 <p>This will create a <code class="docutils literal notranslate"><span class="pre">madmex</span></code> directory under <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> where ingestion files for all different suported dataset will be stored.</p>
+</div>
 </div>
 </div>
 </div>

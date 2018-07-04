@@ -89,10 +89,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../deployment.html">Deployment</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Single machine</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">Installation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#setup">Setup</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#init">Init</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setup">Setup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuration-files">Configuration files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#init">Init</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Open DataCube</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Antares3</a></li>
 </ul>
 </li>
 </ul>
@@ -183,8 +187,6 @@
 <h1>Single machine<a class="headerlink" href="#single-machine" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id1">
-<h3>Installation<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Activate a <code class="docutils literal notranslate"><span class="pre">python3</span></code> virtual environmemt and run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install antares and all its dependencies (square brackets need to be escaped in zsh)</span>
 pip install git+https://github.com/CONABIO/antares3.git#egg<span class="o">=</span>antares3<span class="o">[</span>all<span class="o">]</span>
@@ -192,13 +194,13 @@ pip install git+https://github.com/CONABIO/antares3.git#egg<span class="o">=</sp
 </div>
 </div>
 <div class="section" id="setup">
-<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
 <p>Initial setup of both <code class="docutils literal notranslate"><span class="pre">datacube</span></code> (used as backend for antares) and <code class="docutils literal notranslate"><span class="pre">antares</span></code> itself requires a few one time actions.</p>
 <div class="section" id="configuration-files">
-<h4>Configuration files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h4>
+<h3>Configuration files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h3>
 <p>Both <code class="docutils literal notranslate"><span class="pre">datacube</span></code> and <code class="docutils literal notranslate"><span class="pre">antares</span></code> require configuration files to operate. In both cases these configuration files must be placed at the root of the user’s home directory (<code class="docutils literal notranslate"><span class="pre">~/</span></code>).</p>
 <div class="section" id="open-datacube">
-<h5>Open DataCube<a class="headerlink" href="#open-datacube" title="Permalink to this headline">¶</a></h5>
+<h4>Open DataCube<a class="headerlink" href="#open-datacube" title="Permalink to this headline">¶</a></h4>
 <p>In the case of datacube, the configuration file must be named <code class="docutils literal notranslate"><span class="pre">.datacube.conf</span></code> and contains database connection specifications. See <a class="reference external" href="http://datacube-core.readthedocs.io/en/stable/ops/db_setup.html#create-configuration-file">datacube doc</a> for more details.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">datacube</span><span class="p">]</span>
 <span class="n">db_database</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_name</span><span class="o">&gt;</span>
@@ -214,7 +216,7 @@ pip install git+https://github.com/CONABIO/antares3.git#egg<span class="o">=</sp
 </div>
 </div>
 <div class="section" id="antares3">
-<h5>Antares3<a class="headerlink" href="#antares3" title="Permalink to this headline">¶</a></h5>
+<h4>Antares3<a class="headerlink" href="#antares3" title="Permalink to this headline">¶</a></h4>
 <p>The configuration file used by antares contain various fields related to data location, password and database details, and must be named <code class="docutils literal notranslate"><span class="pre">.antares</span></code>. Place it at the root of the user’s home directory (<code class="docutils literal notranslate"><span class="pre">~/</span></code>). Depending on the <code class="docutils literal notranslate"><span class="pre">antares</span></code> functionalities you are planning to use, some field may be left empty. For instance <code class="docutils literal notranslate"><span class="pre">SCIHUB_USER</span></code> and <code class="docutils literal notranslate"><span class="pre">SCIHUB_PASSWORD</span></code> are not required if you are not planning to query or download sentinel data.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span><span class="o">=</span>
 <span class="n">DEBUG</span><span class="o">=</span><span class="kc">True</span>
@@ -239,9 +241,9 @@ pip install git+https://github.com/CONABIO/antares3.git#egg<span class="o">=</sp
 </div>
 </div>
 <div class="section" id="init">
-<h3>Init<a class="headerlink" href="#init" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id2">
-<h4>Open DataCube<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<h2>Init<a class="headerlink" href="#init" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Open DataCube<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>createdb datacube
 datacube -v system init
 </pre></div>
@@ -251,8 +253,8 @@ datacube -v system init
 </pre></div>
 </div>
 </div>
-<div class="section" id="id3">
-<h4>Antares3<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id2">
+<h3>Antares3<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>Antares setup consists of enabling the postgis extension for the database, setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Replace yourdatabase by the name of the database</span>
 psql -d yourdatabase -c <span class="s2">&quot;CREATE EXTENSION postgis;&quot;</span>
@@ -260,7 +262,6 @@ antares init -c mex
 </pre></div>
 </div>
 <p>This will create a <code class="docutils literal notranslate"><span class="pre">madmex</span></code> directory under <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> where ingestion files for all different suported dataset will be stored.</p>
-</div>
 </div>
 </div>
 </div>

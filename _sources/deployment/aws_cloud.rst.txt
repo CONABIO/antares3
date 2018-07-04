@@ -2,9 +2,8 @@
 Amazon Web Services
 *******************
 
-
 Prerequisites
-"""""""""""""
+=============
 
 \* Configure `Amazon Virtual Private Cloud`_ on AWS with properly `VPCs and Subnets`_ configured according to your application.
 
@@ -72,11 +71,11 @@ Prerequisites
 
 
 Amazon Web Services and Sun Grid Engine
-"""""""""""""""""""""""""""""""""""""""
-
+=======================================
 
 1. Create AMI of AWS from bash script.
-++++++++++++++++++++++++++++++++++++++
+--------------------------------------
+
 
 Launch an instance with AMI ``Ubuntu 16.04 LTS``.
 
@@ -243,9 +242,8 @@ Once bash script was created unmount the shared volume and terminate instance:
 
 You can use this instance to create AMI of AWS `Create an AMI from an Amazon EC2 Instace`_.
 
-
 2. Configure an Autoscaling group of AWS using AMI
-++++++++++++++++++++++++++++++++++++++++++++++++++
+--------------------------------------------------
 
 Once created an AMI of AWS from previous step, use the following bash script to configure instances using `Auto Scaling Groups`_ service of AWS.
 
@@ -280,16 +278,16 @@ Once created an AMI of AWS from previous step, use the following bash script to 
 .. image:: https://dl.dropboxusercontent.com/s/kubf3ibnuv5axx4/aws_runcommand_sphix_docu.png?dl=0
     :width: 600
 
-
-
 3. Init Cluster
-+++++++++++++++
+---------------
 
 **Example with one master and two nodes. Install Open DataCube and Antares3 in all nodes.**
 
 Using instances of `Auto Scaling Groups`_ configured in step 2 we have to configure SGE queue on master node and register nodes on this queue.
 
 
+3.1 Assign Elastic IP to master node and create Sun Grid Engine queue
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **3.1 Assign Elastic IP to master node and create Sun Grid Engine queue**
 
@@ -333,6 +331,8 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
     ##Execute bash script create-dask-sge-queue already created on Dependencies-Cloud Deployment
     bash $mount_point/create-dask-sge-queue.sh $queue_name $slots
 
+3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3**
 
@@ -359,6 +359,9 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
     ln -sf $mount_point/.datacube.conf /home/$user/.datacube.conf
     ##Uncomment next line if you want to init antares (previously installed)
     #su $user -c "/home/$user/.local/bin/antares init"
+
+3.3 Run SGE commands to init cluster
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **3.3 Run SGE commands to init cluster**
 
@@ -421,6 +424,8 @@ or
 .. image:: https://dl.dropboxusercontent.com/s/rnapd51c565huij/bokeh_2_sphinx_docu.png?dl=0
     :width: 400
 
+Run an example
+^^^^^^^^^^^^^^
 
 **Run an example.**
    
@@ -466,16 +471,15 @@ from **<public DNS of master>:8787/graph** we have:
         qdel 1 2
 
 
+4. Init
+-------
 
-
-6. Init
-+++++++
 
 In step 1 it was configured variable ``mount_point`` which is a path to a shared volume.
 
-
 Open DataCube
-~~~~~~~~~~~~~
+^^^^^^^^^^^^^
+
 
 Log in to an instance of `Auto Scaling Groups`_ configured in step 2 and create in ``$mount_point/.datacube.conf`` the datacube configuration file:
 
@@ -601,8 +605,10 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
 
 This will create a ``madmex`` directory under ``~/.config/`` where ingestion files for all different suported dataset will be stored.
 
+
 Amazon Web Services and Kubernetes
-""""""""""""""""""""""""""""""""""
+==================================
+
 
 Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications (see `Kubernetes`_ and `Kubernetes github page`_ ). There are a lot of ways to deploy a Kubernetes cluster, for instance see `Picking the right solution`_.
 
