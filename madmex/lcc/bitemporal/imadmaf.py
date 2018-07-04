@@ -243,10 +243,11 @@ class MAF(object):
     
 class MAD(object):
     
-    def __init__(self):
-        pass
+    def __init__(self, weights=None, lmbda=0.0):
+        self.lmbda = lmbda
+        
     
-    def fit(self, X, Y):
+    def fit(self, X, Y, weights=None):
         self.X = X
         self.Y = Y
         if len(self.X.shape) == 2:
@@ -258,18 +259,39 @@ class MAD(object):
             self.bands, self.rows, self.cols = self.X.shape
         else:
             logger.error('An image of 3 or 2 dimensions is expected.')
-                
+        if weights is None:
+            self.weights = numpy.ones((self.rows, self.cols))
+        else:
+            self.weights = weights                
     def transform(self, X, Y):
         
         X_centered = (X - numpy.mean(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis])
         Y_centered = (Y - numpy.mean(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis])
+        #print(self.weights)
+        X_weigthed = X_centered * self.weights
+        Y_weigthed = Y_centered * self.weights
 
         X_pixel_band = X_centered.reshape(self.bands, self.rows * self.cols)
         Y_pixel_band = Y_centered.reshape(self.bands, self.rows * self.cols)
-
         
-        sigma_11 = numpy.matmul(X_pixel_band, X_pixel_band.T) / (X_pixel_band.shape[1] - 1)
-        sigma_22 = numpy.matmul(Y_pixel_band, Y_pixel_band.T) / (Y_pixel_band.shape[1] - 1)
+        X_pixel_band_weigthed = X_weigthed.reshape(self.bands, self.rows * self.cols)
+        Y_pixel_band_weigthed = Y_weigthed.reshape(self.bands, self.rows * self.cols)
+        
+        sigma_11 = numpy.matmul(X_pixel_band_weigthed, X_pixel_band.T) / (numpy.sum(self.weights) - 1)
+        
+        
+        sigma_11 = (1-self.lmbda) * sigma_11 + self.lmbda * numpy.eye(self.bands)
+        
+        print("sigma_11")
+        print(sigma_11)
+        
+        sigma_22 = numpy.matmul(Y_pixel_band_weigthed, Y_pixel_band.T) / (numpy.sum(self.weights) - 1)
+        sigma_22 = (1-self.lmbda) * sigma_22 + self.lmbda * numpy.eye(self.bands)
+        
+        
+        print("sigma_22")
+        print(sigma_22)
+        
         sigma_12 = numpy.matmul(X_pixel_band, Y_pixel_band.T) / (X_pixel_band.shape[1] - 1)
         lower_11 = numpy.linalg.cholesky(sigma_11)
         lower_22 = numpy.linalg.cholesky(sigma_22)
@@ -292,55 +314,62 @@ class MAD(object):
         eig_values_1, eig_vectors_1 = numpy.linalg.eig(eig_problem_1)
         eig_values_2, eig_vectors_2 = numpy.linalg.eig(eig_problem_2)
 
+
+        
+
         
         eig_vectors_transformed_1 = numpy.matmul(lower_11_inverse.T, eig_vectors_1)
         eig_vectors_transformed_2 = numpy.matmul(lower_22_inverse.T, eig_vectors_2)
         
         
-        print(eig_vectors_transformed_1)
-        print(eig_vectors_transformed_2)
+        
         
         sort_index_1 = numpy.flip(eig_values_1.argsort(), 0)
-        
         sort_index_2 = numpy.flip(eig_values_2.argsort(), 0)
-        
-        print(sort_index_1)
-        print(sort_index_2)
         
         vector_u = eig_vectors_transformed_1[:, sort_index_1]
         vector_v = eig_vectors_transformed_2[:, sort_index_2]
         
-        
-        print(vector_u)
-        print(vector_v)
+        variance_u = numpy.diag(1/numpy.sqrt(numpy.diag(sigma_11)))
+        s = numpy.squeeze(numpy.sum(numpy.matmul(variance_u, numpy.matmul(sigma_11, vector_u)),axis=0))
+        vector_u = numpy.matmul(vector_u, numpy.diag(s / numpy.abs(s)))
         
         signs_vector = numpy.diag(numpy.dot(numpy.dot(vector_u.T, sigma_12), vector_v))
-        signs = -signs_vector / numpy.abs(signs_vector)
+        signs = numpy.diag(signs_vector / numpy.abs(signs_vector))        
+        vector_v = numpy.matmul(vector_v, signs)
         
-        U = numpy.matmul(vector_u.T, X_pixel_band).reshape(self.bands, self.rows, self.cols)        
-        V = numpy.matmul(vector_v.T * signs, Y_pixel_band).reshape(self.bands, self.rows, self.cols)
         
-        print("X_pixel_band")
-        print(X_pixel_band.shape)
-        print(X_pixel_band)
-        print("Y_pixel_band")
-        print(Y_pixel_band.shape)
-        print(Y_pixel_band)
+        U = numpy.matmul(vector_u.T, X_pixel_band)    
+        V = numpy.matmul(vector_v.T, Y_pixel_band)
         
         M = U - V
         
+        norm_a_squared = numpy.diag(numpy.matmul(vector_u.T, vector_u))
+        norm_b_squared = numpy.diag(numpy.matmul(vector_v.T, vector_v))
         
+        '''
+        print("norm_a_squared")
+        print(norm_a_squared)
         
-        return eig_values_1[sort_index_1], M
+        print("norm_b_squared")
+        print(norm_b_squared)
+        '''
         
-    def fit_transform(self, X, Y):
-        self.fit(X, Y)
+        mu = numpy.sqrt(eig_values_2[sort_index_1])
+        sigma_squared = (2 - self.lmbda * (norm_a_squared + norm_b_squared)) / (1 - self.lmbda) - 2 * mu
+        rho = mu * (1 - self.lmbda) / numpy.sqrt((1 - self.lmbda * norm_a_squared) * (1 - self.lmbda * norm_b_squared))
+
+        return M.reshape(self.bands, self.rows, self.cols), sigma_squared, rho
+        
+    def fit_transform(self, X, Y, weights=None):
+        self.fit(X, Y, weights)
         return self.transform(X, Y)
     
 class IRMAD(object):
-    def __init__(self, max_iterations=25, min_delta=0.02):
+    def __init__(self, max_iterations=50, min_delta=0.001, lmbda=0.0):
         self.max_iterations = max_iterations
         self.threshold = min_delta
+        self.lmbda = lmbda
     
     def fit(self, X, Y):
         self.X = X
@@ -355,46 +384,31 @@ class IRMAD(object):
         else:
             logger.error('An image of 3 or 2 dimensions is expected.')
     
-    def transform(self, X, Y):        
-        
+    def transform(self, X, Y):
         i = 0
-        delta = 100.0
+        delta = 1.0
         old_rho = numpy.ones((self.X.shape[0]))
         weights = numpy.ones((self.X.shape[1],self.X.shape[2]))
         while i < self.max_iterations and delta > self.threshold:
-            X_weighted = weights * X
-            Y_weighted = weights * Y
-            rho_squared, M = MAD().fit_transform(X_weighted, Y_weighted)
-            sigma_2 = 2 * (1 - numpy.sqrt(rho_squared))
-            
-            M_std = (M - numpy.mean(M, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]) / numpy.std(M, axis=(1,2))[:,numpy.newaxis,numpy.newaxis]
-            
-            
-            print("M_std statistics.")
-            print(numpy.mean(M_std, axis=(1,2)))
-            print(numpy.std(M_std, axis=(1,2)))
-            
-            
-            chi_square = numpy.tensordot(1 / sigma_2 , numpy.multiply(M_std, M_std), axes=1)
-            
-            print("test")
-            print(chi_square[0,0])
-            print(M_std[0,0,0] * M_std[0,0,0] / (sigma_2[0]) +
-                  M_std[1,0,0] * M_std[1,0,0] / (sigma_2[1]) +
-                  M_std[2,0,0] * M_std[2,0,0] / (sigma_2[2]) +
-                  M_std[3,0,0] * M_std[3,0,0] / (sigma_2[3]) +
-                  M_std[4,0,0] * M_std[4,0,0] / (sigma_2[4]))
-            
-            
-            weights = 1 - stats.chi2.cdf(chi_square, len(rho_squared))
-            
-            print(weights)
-            delta = numpy.linalg.norm(rho_squared - old_rho)
-            print(delta)
-            print(delta)
-            old_rho = rho_squared
-            i = i + 1
             print('Iteration #%s' % i)
+            print('delta: %s' % delta)
+            M, sigma_squared, rho = MAD(lmbda=self.lmbda).fit_transform(X, Y, weights)
+            
+            print("sigma_squared")
+            print(sigma_squared)
+            #print("M")
+            #print(M)
+            
+            
+            chi_square = numpy.tensordot(1 / sigma_squared, numpy.multiply(M, M), axes=1)
+            #print("chi_square")
+            #print(chi_square.shape)
+            #print(chi_square)
+            weights = 1 - stats.chi2.cdf(chi_square, self.bands)
+            #print(weights)
+            delta = max(abs(rho - old_rho))
+            old_rho = rho
+            i = i + 1
         return M
     
     def fit_transform(self, X, Y):
