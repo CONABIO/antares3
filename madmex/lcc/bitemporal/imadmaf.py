@@ -76,11 +76,18 @@ class IMAD(object):
         while (delta > self.min_delta) and (i < self.max_iterations) and flag:
             try:
                 logger.info('iMAD iteration: %d', i)
-                weighted_sum = numpy.sum(self.weights)
+                weighted_sum = len(self.weights)
+                
+                
                 means = numpy.average(self.image_bands_flattened, axis=1, weights=self.weights)
                 dmc = self.image_bands_flattened - means[:, numpy.newaxis]
                 dmc = numpy.multiply(dmc, numpy.sqrt(self.weights))
-                sigma = numpy.dot(dmc, dmc.T) / weighted_sum
+                
+                print("OLD")
+                
+                sigma = numpy.dot(dmc, dmc.T) / (weighted_sum - 1)
+                
+                
                 s11 = sigma[0:self.bands, 0:self.bands]
                 s22 = sigma[self.bands:, self.bands:]
                 s12 = sigma[0:self.bands, self.bands:]
@@ -89,14 +96,18 @@ class IMAD(object):
                 
                 
                 
+                
                 lamda_a, a = linalg.eig(numpy.dot(s12, aux_1), s11)
                 
                 
                 
                 
-                print("OLD")
                 print(lamda_a)
                 print(a)
+                
+                
+                #print(lamda_a)
+                #print(a)
                 
                 #print(lamda_a)
                 
@@ -250,100 +261,76 @@ class MAD(object):
                 
     def transform(self, X, Y):
         
-        #print('variance')
-        
-        
-        print("NEW")
-        
-        
-        #print(X - numpy.mean(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis])
-        #print(Y - numpy.mean(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis])
-        X_centered = (X - numpy.mean(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]) # / numpy.std(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]
-        Y_centered = (Y - numpy.mean(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]) # / numpy.std(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis]
+        X_centered = (X - numpy.mean(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis])
+        Y_centered = (Y - numpy.mean(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis])
+
         X_pixel_band = X_centered.reshape(self.bands, self.rows * self.cols)
         Y_pixel_band = Y_centered.reshape(self.bands, self.rows * self.cols)
+
+        
         sigma_11 = numpy.matmul(X_pixel_band, X_pixel_band.T) / (X_pixel_band.shape[1] - 1)
-        #print("compare cov numpy")
-        #print(numpy.cov(X.reshape(self.bands, self.rows * self.cols)))
-        #print(numpy.cov(X_pixel_band))
-        #print(sigma_11)
         sigma_22 = numpy.matmul(Y_pixel_band, Y_pixel_band.T) / (Y_pixel_band.shape[1] - 1)
         sigma_12 = numpy.matmul(X_pixel_band, Y_pixel_band.T) / (X_pixel_band.shape[1] - 1)
         lower_11 = numpy.linalg.cholesky(sigma_11)
         lower_22 = numpy.linalg.cholesky(sigma_22)
-        lower_11_inverse = numpy.linalg.inv(lower_11)
-        lower_22_inverse = numpy.linalg.inv(lower_22)
+        lower_11_inverse = numpy.round(numpy.linalg.inv(lower_11), decimals=10)
+        lower_22_inverse = numpy.round(numpy.linalg.inv(lower_22), decimals=10)
         sigma_11_inverse = numpy.linalg.inv(sigma_11)
         sigma_22_inverse = numpy.linalg.inv(sigma_22)
-        
-        #print("variance std")
-        #print(numpy.std(X, axis=(1,2), dtype=float64))
-        
-        
         
         eig_problem_1 = numpy.matmul(lower_11_inverse, 
                                      numpy.matmul(sigma_12, 
                                                   numpy.matmul(sigma_22_inverse, 
                                                                numpy.matmul(sigma_12.T, lower_11_inverse.T))))
+
         eig_problem_1 = (eig_problem_1 + eig_problem_1.T) * 0.5
-        
         eig_problem_2 = numpy.matmul(lower_22_inverse, 
                                      numpy.matmul(sigma_12.T, 
                                                   numpy.matmul(sigma_11_inverse, 
                                                                numpy.matmul(sigma_12, lower_22_inverse.T)))) 
-        
-        
-        #eig_problem_1 = numpy.matmul(sigma_12, numpy.matmul(sigma_22_inverse, sigma_12.T))
-        #eig_problem_2 = numpy.matmul(sigma_12.T, numpy.matmul(sigma_11_inverse, sigma_12))
-        
-        
-        #print(eig_problem_1)
-        #print(sigma_11)
-        
+        eig_problem_2 = (eig_problem_2 + eig_problem_2.T) * 0.5
         eig_values_1, eig_vectors_1 = numpy.linalg.eig(eig_problem_1)
         eig_values_2, eig_vectors_2 = numpy.linalg.eig(eig_problem_2)
+
         
-        eig_vectors_1 = numpy.matmul(lower_11_inverse.T, eig_vectors_1)
-        eig_vectors_2 = numpy.matmul(lower_22_inverse.T, eig_vectors_2)
-        
-        print(eig_values_1)
+        eig_vectors_transformed_1 = numpy.matmul(lower_11_inverse.T, eig_vectors_1)
+        eig_vectors_transformed_2 = numpy.matmul(lower_22_inverse.T, eig_vectors_2)
         
         
-        #print("variance via eigen")
-        variance_sigma_11 = numpy.diag(numpy.dot(eig_vectors_1.T, numpy.dot(sigma_11, eig_vectors_1)))
-        #print(variance_sigma_11)
+        print(eig_vectors_transformed_1)
+        print(eig_vectors_transformed_2)
         
         sort_index_1 = numpy.flip(eig_values_1.argsort(), 0)
+        
         sort_index_2 = numpy.flip(eig_values_2.argsort(), 0)
-        vector_u = eig_vectors_1[:, sort_index_1]
-        vector_v = eig_vectors_2[:, sort_index_2]
+        
+        print(sort_index_1)
+        print(sort_index_2)
+        
+        vector_u = eig_vectors_transformed_1[:, sort_index_1]
+        vector_v = eig_vectors_transformed_2[:, sort_index_2]
+        
         
         print(vector_u)
         print(vector_v)
         
-       
-        #print(eig_values_1)
-        
         signs_vector = numpy.diag(numpy.dot(numpy.dot(vector_u.T, sigma_12), vector_v))
         signs = -signs_vector / numpy.abs(signs_vector)
         
-        #print(vector_u.shape)
-        #print(X_centered.shape)
+        U = numpy.matmul(vector_u.T, X_pixel_band).reshape(self.bands, self.rows, self.cols)        
+        V = numpy.matmul(vector_v.T * signs, Y_pixel_band).reshape(self.bands, self.rows, self.cols)
         
-        #print(eig_values_1[sort_index_1])
-        #print(vector_u)
+        print("X_pixel_band")
+        print(X_pixel_band.shape)
+        print(X_pixel_band)
+        print("Y_pixel_band")
+        print(Y_pixel_band.shape)
+        print(Y_pixel_band)
         
-        #print(X_centered)
-        
-        U = numpy.tensordot(vector_u.T, X_centered, axes=1)
-        #print(U.reshape(self.bands, self.rows * self.cols))
-        #print(U)
-        V = numpy.tensordot(vector_v.T * signs, Y_centered, axes=1)      
-        #print(V)
         M = U - V
         
-        print(M)
-
+        
+        
         return eig_values_1[sort_index_1], M
         
     def fit_transform(self, X, Y):
