@@ -6,6 +6,9 @@ Single machine
 
 
 Installation
+============
+
+Installation
 ------------
 
 Activate a ``python3`` virtual environmemt and run:
