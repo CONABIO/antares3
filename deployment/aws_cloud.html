@@ -28,7 +28,9 @@
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Command line interface" href="../cli.html" />
+    <link rel="prev" title="Single machine" href="single_machine.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -82,10 +84,23 @@
             
             
               <p class="caption"><span class="caption-text">User guide</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../deployment.html">Deployment</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../deployment.html">Deployment</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../deployment.html#single-machine">Single machine</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../deployment.html#distributed-cluster">Distributed cluster</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="single_machine.html">Single machine</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Amazon Web Services</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amazon-web-services-and-sun-grid-engine">Amazon Web Services and Sun Grid Engine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amazon-web-services-and-kubernetes">Amazon Web Services and Kubernetes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../cli.html">Command line interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../download.html">Downloading data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ingest.html">Ingesting data</a></li>
@@ -144,6 +159,8 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
+          <li><a href="../deployment.html">Deployment</a> &raquo;</li>
+        
       <li>Amazon Web Services</li>
     
     
@@ -165,6 +182,457 @@
             
   <div class="section" id="amazon-web-services">
 <h1>Amazon Web Services<a class="headerlink" href="#amazon-web-services" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>* Configure <a class="reference external" href="https://aws.amazon.com/vpc/">Amazon Virtual Private Cloud</a> on AWS with properly <a class="reference external" href="https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html">VPCs and Subnets</a> configured according to your application.</p>
+<p>* Configure <a class="reference external" href="https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html">Security Groups for Your VPC</a>  with ports 6444 TCP and 6445 UDP for communication within instances via SGE and port 80 for web SGE, port 2043 for <a class="reference external" href="https://aws.amazon.com/efs/">Amazon Elastic File System</a> service on AWS and port 22 to ssh to instances from your machine.</p>
+<p>* Configure <a class="reference external" href="https://aws.amazon.com/efs/">Amazon Elastic File System</a> service on AWS (shared volume via Network File System -NFS-).</p>
+<p>* Create a bucket on S3 (see <a class="reference external" href="https://aws.amazon.com/s3/">Amazon S3</a>) if using driver S3 of Open DataCube (see <a class="reference external" href="https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config">Open DataCube Ingestion Config</a>). <a class="reference external" href="http://boto3.readthedocs.io/en/latest/index.html">Boto3 Documentation</a> and AWS suggests as a best practice using <a class="reference external" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html">IAM Roles for Amazon EC2</a> to access this bucket. See <a class="reference external" href="http://boto3.readthedocs.io/en/latest/guide/configuration.html#best-practices-for-configuring-credentials">Best Practices for Configuring Credentials</a>.</p>
+<p>* <strong>(Not mandatory but useful)</strong> Configure an <a class="reference external" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html">Elastic IP Addresses</a>  on AWS. Master node will have this elastic ip.</p>
+<p>* AWS provide a managed relational database service <a class="reference external" href="https://aws.amazon.com/rds/">Amazon Relational Database Service (RDS)</a> with several database instance types and a <a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a>  database engine.</p>
+<blockquote>
+<div><p>* Configure <a class="reference external" href="https://aws.amazon.com/rds/">Amazon Relational Database Service (RDS)</a>  with <a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a>  version 9.5 + with properly <a class="reference external" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html">Amazon RDS Security Groups</a> and subnet group for the RDS configured (see <a class="reference external" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Tutorials.WebServerDB.CreateVPC.html">Tutorial Create an Amazon VPC for Use with an Amazon RDS DB Instance</a>).</p>
+<p>* Configure <a class="reference external" href="https://postgis.net/">Postgis</a> extension to <a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a>  for storing and managing spatial information in the instance of <a class="reference external" href="https://aws.amazon.com/rds/">Amazon Relational Database Service (RDS)</a> you created.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">AWS gives you necessary steps to setup Postgis extension in <a class="reference external" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Appendix.PostgreSQL.CommonDBATasks.html#Appendix.PostgreSQL.CommonDBATasks.PostGIS">Working with PostGis</a> documentation.</p>
+</div>
+<p>We use the following bash script to setup <a class="reference external" href="https://postgis.net/">Postgis</a> extension in database instance:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">##First argument its the name of database created on RDS, following arguments are self explanatory</span>
+<span class="nv">db</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">db_user</span><span class="o">=</span><span class="nv">$2</span>
+<span class="nv">db_host</span><span class="o">=</span><span class="nv">$3</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;create extension postgis;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;create extension fuzzystrmatch;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;create extension postgis_tiger_geocoder;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;create extension postgis_topology;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;alter schema tiger owner to rds_superuser;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;alter schema tiger_data owner to rds_superuser;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;alter schema topology owner to rds_superuser;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;CREATE FUNCTION exec(text) returns text language plpgsql volatile AS \$f\$ BEGIN EXECUTE \$1; RETURN \$1; END; \$f\$;&quot;</span>
+psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --dbname<span class="o">=</span><span class="nv">$db</span> --command <span class="s2">&quot;SELECT exec(&#39;ALTER TABLE &#39; || quote_ident(s.nspname) || &#39;.&#39; || quote_ident(s.relname) || &#39; OWNER TO rds_superuser;&#39;) FROM (SELECT nspname, relname FROM pg_class c JOIN pg_namespace n ON (c.relnamespace = n.oid) WHERE nspname in (&#39;tiger&#39;,&#39;topology&#39;) AND relkind IN (&#39;r&#39;,&#39;S&#39;,&#39;v&#39;) ORDER BY relkind = &#39;S&#39;) s;&quot;</span>
+</pre></div>
+</div>
+<p>Make sure a file <code class="docutils literal notranslate"><span class="pre">.pgpass</span></code> is in <code class="docutils literal notranslate"><span class="pre">/home/ubuntu</span></code> path so you are not prompted with the password for every command. The contents of this file are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">db_host</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">port</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">name</span> <span class="n">of</span> <span class="n">database</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">name</span> <span class="n">of</span> <span class="n">database</span> <span class="n">user</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">database</span> <span class="n">password</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>and permissions of this <code class="docutils literal notranslate"><span class="pre">.pgpass</span></code> are:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chmod <span class="m">0600</span> ~/.pgpass
+</pre></div>
+</div>
+<p>* <strong>(Not mandatory but useful)</strong> You can either work with the database configured in RDS or create a new one with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>createdb -h &lt;db_host&gt; -U &lt;db_user&gt; &lt;database_name&gt;
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="amazon-web-services-and-sun-grid-engine">
+<h2>Amazon Web Services and Sun Grid Engine<a class="headerlink" href="#amazon-web-services-and-sun-grid-engine" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="create-ami-of-aws-from-bash-script">
+<h3>1. Create AMI of AWS from bash script.<a class="headerlink" href="#create-ami-of-aws-from-bash-script" title="Permalink to this headline">¶</a></h3>
+<p>Launch an instance with AMI <code class="docutils literal notranslate"><span class="pre">Ubuntu</span> <span class="pre">16.04</span> <span class="pre">LTS</span></code>.</p>
+<p>The following bash script can be used in <strong>User data</strong> configuration of the instance to:</p>
+<p>* Install AWS cli.</p>
+<p>* Install package <code class="docutils literal notranslate"><span class="pre">amazon-ssm-agent.deb</span></code> to use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of EC2.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">RunCommand service is not a mandatory installation for antares3, Open Datacube nor SGE, we use it for it’s simplicity to execute commands on all of the instances (see  <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a>). You can use instead <a class="reference external" href="https://github.com/duncs/clusterssh">clusterssh</a>  or other tool for cluster management.</p>
+</div>
+<p>* Tag your instance with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Name</span></code> and <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">$name_instance</span></code>.</p>
+<p>* Install dependencies for SGE, antares3 and Open Datacube.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Modify variables <code class="docutils literal notranslate"><span class="pre">region</span></code>, <code class="docutils literal notranslate"><span class="pre">name_instance</span></code>, <code class="docutils literal notranslate"><span class="pre">shared_volume</span></code> and <code class="docutils literal notranslate"><span class="pre">user</span></code> with your own configuration.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">##Bash script to create AMI of AWS for master and nodes:</span>
+<span class="c1">##variables:</span>
+<span class="nv">region</span><span class="o">=</span>&lt;region&gt;
+<span class="nv">name_instance</span><span class="o">=</span>conabio-dask-sge
+<span class="nv">shared_volume</span><span class="o">=</span>/shared_volume
+<span class="nv">user</span><span class="o">=</span>ubuntu
+<span class="c1">##System update</span>
+apt-get update
+<span class="c1">##Install awscli</span>
+apt-get install -y python3-pip <span class="o">&amp;&amp;</span> pip3 install --upgrade <span class="nv">pip</span><span class="o">==</span><span class="m">9</span>.0.3
+pip3 install awscli --upgrade
+<span class="c1">##Tag instance</span>
+<span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/instance-id<span class="k">)</span>
+<span class="nv">PUBLIC_IP_LOCAL</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/local-ipv4<span class="k">)</span>
+<span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/public-ipv4<span class="k">)</span>
+aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Name,Value<span class="o">=</span><span class="nv">$name_instance</span>-<span class="nv">$PUBLIC_IP</span> --region<span class="o">=</span><span class="nv">$region</span>
+<span class="c1">##Set locales for OpenDataCube</span>
+<span class="nb">echo</span> <span class="s2">&quot;export LC_ALL=C.UTF-8&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
+<span class="nb">echo</span> <span class="s2">&quot;export LANG=C.UTF-8&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
+<span class="c1">##Set variable mount_point</span>
+<span class="nb">echo</span> <span class="s2">&quot;export mount_point=</span><span class="nv">$shared_volume</span><span class="s2">&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
+<span class="c1">##Dependencies for sge, antares3 and open datacube</span>
+apt-get install -y nfs-common openssh-server openjdk-8-jre xsltproc apache2 git htop postgresql-client <span class="se">\</span>
+python-software-properties <span class="se">\</span>
+libssl-dev <span class="se">\</span>
+libffi-dev <span class="se">\</span>
+python3-dev <span class="se">\</span>
+python3-setuptools
+<span class="c1">##For RunCommand service of EC2</span>
+wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+dpkg -i amazon-ssm-agent.deb
+systemctl <span class="nb">enable</span> amazon-ssm-agent
+<span class="c1">##For web SGE</span>
+<span class="nb">echo</span> <span class="s2">&quot;&lt;VirtualHost *:80&gt;</span>
+<span class="s2">    ServerAdmin webmaster@localhost</span>
+<span class="s2">    DocumentRoot /var/www/</span>
+<span class="s2">    ErrorLog </span><span class="si">${</span><span class="nv">APACHE_LOG_DIR</span><span class="si">}</span><span class="s2">/error.log</span>
+<span class="s2">    # Possible values include: debug, info, notice, warn, error, crit,</span>
+<span class="s2">    # alert, emerg.</span>
+<span class="s2">    LogLevel warn</span>
+<span class="s2">    CustomLog </span><span class="si">${</span><span class="nv">APACHE_LOG_DIR</span><span class="si">}</span><span class="s2">/access.log combined</span>
+<span class="s2">    &lt;Directory /var/www/qstat&gt;</span>
+<span class="s2">            Options +ExecCGI</span>
+<span class="s2">            AddHandler cgi-script .cgi</span>
+<span class="s2">               DirectoryIndex qstat.cgi</span>
+<span class="s2">    &lt;/Directory&gt;</span>
+<span class="s2">&lt;/VirtualHost&gt;</span>
+<span class="s2"># vim: syntax=apache ts=4 sw=4 sts=4 sr noet&quot;</span> &gt; /etc/apache2/sites-available/000-default.conf
+git clone https://github.com/styv/webqstat.git /var/www/qstat
+sed -i <span class="s1">&#39;/tools/s/./#./&#39;</span> /var/www/qstat/config.sh
+a2enmod cgid
+service apache2 start
+<span class="c1">##Install gridengine non interactively</span>
+<span class="nb">export</span> <span class="nv">DEBIAN_FRONTEND</span><span class="o">=</span>noninteractive
+apt-get install -q -y gridengine-client gridengine-exec gridengine-master
+/etc/init.d/gridengine-master restart
+service apache2 restart
+<span class="c1">##Install spatial libraries</span>
+add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable <span class="o">&amp;&amp;</span> apt-get -qq update
+apt-get install -y <span class="se">\</span>
+    netcdf-bin <span class="se">\</span>
+    libnetcdf-dev <span class="se">\</span>
+    libproj-dev <span class="se">\</span>
+    libgeos-dev <span class="se">\</span>
+    gdal-bin <span class="se">\</span>
+    libgdal-dev
+<span class="c1">##Install dask distributed</span>
+pip3 install dask distributed --upgrade
+pip3 install bokeh
+<span class="c1">##Install missing package for open datacube:</span>
+pip3 install --upgrade python-dateutil
+<span class="c1">##Create shared volume</span>
+mkdir <span class="nv">$shared_volume</span>
+<span class="c1">##Locale settings for open datacube</span>
+<span class="nb">echo</span> <span class="s2">&quot;alias python=python3&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.bash_aliases
+<span class="c1">#dependencies for antares3 &amp; datacube</span>
+pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install cloudpickle <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span>.0a12 --no-binary rasterio <span class="o">&amp;&amp;</span> pip3 install scipy
+pip3 install sklearn
+pip3 install lightgbm
+pip3 install fiona --no-binary fiona
+pip3 install django
+<span class="c1">#datacube:</span>
+pip3 install git+https://github.com/opendatacube/datacube-core.git@develop#egg<span class="o">=</span>datacube<span class="o">[</span>s3<span class="o">]</span>
+</pre></div>
+</div>
+<p>Once launching of the instance was successful, log in and execute next commands:</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">We use Elastic File System of AWS (shared file storage, see <a class="reference external" href="https://aws.amazon.com/efs/">Amazon Elastic File System</a>), which multiple Amazon EC2 instances running in multiple Availability Zones (AZs) within the same region can access it. Change variable <code class="docutils literal notranslate"><span class="pre">efs_dns</span></code> according to your <code class="docutils literal notranslate"><span class="pre">DNS</span> <span class="pre">name</span></code>.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS name of EFS service&gt;
+<span class="c1">##Mount shared volume</span>
+sudo mount -t nfs4 -o <span class="nv">nfsvers</span><span class="o">=</span><span class="m">4</span>.1,rsize<span class="o">=</span><span class="m">1048576</span>,wsize<span class="o">=</span><span class="m">1048576</span>,hard,timeo<span class="o">=</span><span class="m">600</span>,retrans<span class="o">=</span><span class="m">2</span> <span class="nv">$efs_dns</span>:/ <span class="nv">$mount_point</span>
+</pre></div>
+</div>
+<p>Then open an editor an copy-paste next bash script in <code class="docutils literal notranslate"><span class="pre">$mount_point/create-dask-sge-queue.sh</span></code> file.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#First parameter is name of queue on SGE</span>
+<span class="c1">#Second parameter is number of slots that queue of SGE will have</span>
+<span class="c1">#Third parameter is user</span>
+<span class="nb">source</span> /home/<span class="nv">$user</span>/.profile
+<span class="nv">queue_name</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">slots</span><span class="o">=</span><span class="nv">$2</span>
+<span class="nv">type_value</span><span class="o">=</span><span class="nv">$type_value</span>
+<span class="nv">region</span><span class="o">=</span><span class="nv">$region</span>
+qconf -am <span class="nv">$user</span>
+<span class="c1">##queue of SGE, this needs to be executed for registering nodes:</span>
+<span class="nb">echo</span> -e <span class="s2">&quot;group_name @allhosts\nhostlist NONE&quot;</span> &gt; <span class="nv">$mount_point</span>/host_group_sge.txt
+qconf -Ahgrp <span class="nv">$mount_point</span>/host_group_sge.txt
+<span class="nb">echo</span> -e <span class="s2">&quot;qname                 </span><span class="nv">$queue_name</span><span class="s2">\nhostlist              NONE\nseq_no                0\nload_thresholds       np_load_avg=1.75\nsuspend_thresholds    NONE\nnsuspend              1\nsuspend_interval      00:05:00\npriority              0\nmin_cpu_interval      00:05:00\nprocessors            UNDEFINED\nqtype                 BATCH INTERACTIVE\nckpt_list             NONE\npe_list               make\nrerun                 FALSE\nslots                 1\ntmpdir                /tmp\nshell                 /bin/csh\nprolog                NONE\nepilog                NONE\nshell_start_mode      posix_compliant\nstarter_method        NONE\nsuspend_method        NONE\nresume_method         NONE\nterminate_method      NONE\nnotify                00:00:60\nowner_list            NONE\nuser_lists            NONE\nxuser_lists           NONE\nsubordinate_list      NONE\ncomplex_values        NONE\nprojects              NONE\nxprojects             NONE\ncalendar              NONE\ninitial_state         default\ns_rt                  INFINITY\nh_rt                  INFINITY\ns_cpu                 INFINITY\nh_cpu                 INFINITY\ns_fsize               INFINITY\nh_fsize               INFINITY\ns_data                INFINITY\nh_data                INFINITY\ns_stack               INFINITY\nh_stack               INFINITY\ns_core                INFINITY\nh_core                INFINITY\ns_rss                 INFINITY\nh_rss                 INFINITY\ns_vmem                INFINITY\nh_vmem                INFINITY&quot;</span> &gt; <span class="nv">$mount_point</span>/queue_name_sge.txt
+qconf -Aq <span class="nv">$mount_point</span>/queue_name_sge.txt
+qconf -aattr queue hostlist @allhosts <span class="nv">$queue_name</span>
+qconf -aattr queue slots <span class="nv">$slots</span> <span class="nv">$queue_name</span>
+qconf -aattr hostgroup hostlist <span class="nv">$HOSTNAME</span> @allhosts
+<span class="c1">##Get IP&#39;s of instances using awscli</span>
+aws ec2 describe-instances --region<span class="o">=</span><span class="nv">$region</span> --filter <span class="nv">Name</span><span class="o">=</span>tag:Type,Values<span class="o">=</span><span class="nv">$type_value</span> --query <span class="s1">&#39;Reservations[].Instances[].PrivateDnsName&#39;</span> <span class="p">|</span>grep compute<span class="p">|</span> cut -d<span class="s1">&#39;&quot;&#39;</span> -f2 &gt; <span class="nv">$mount_point</span>/nodes.txt
+/bin/sh -c <span class="s1">&#39;for ip in $(cat $mount_point/nodes.txt);do qconf -as $ip;done&#39;</span>
+/bin/sh -c <span class="s1">&#39;for ip in $(cat $mount_point/nodes.txt);do echo &quot;hostname $ip \nload_scaling NONE\ncomplex_values NONE\nuser_lists NONE \nxuser_lists NONE\nprojects NONE\nxprojects NONE\nusage_scaling NONE\nreport_variables NONE &quot; &gt; $mount_point/ips_nodes_format_sge.txt; qconf -Ae $mount_point/ips_nodes_format_sge.txt ; qconf -aattr hostgroup hostlist $ip @allhosts ;done&#39;</span>
+<span class="c1">##echo IP of node master</span>
+<span class="nb">echo</span> <span class="k">$(</span>hostname<span class="k">)</span>.<span class="nv">$region</span>.compute.internal &gt; <span class="nv">$mount_point</span>/ip_master.txt
+</pre></div>
+</div>
+<p>Once bash script was created unmount the shared volume and terminate instance:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo umount <span class="nv">$mount_point</span>
+</pre></div>
+</div>
+<p>You can use this instance to create AMI of AWS <a class="reference external" href="https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/tkv-create-ami-from-instance.html">Create an AMI from an Amazon EC2 Instace</a>.</p>
+</div>
+<div class="section" id="configure-an-autoscaling-group-of-aws-using-ami">
+<h3>2. Configure an Autoscaling group of AWS using AMI<a class="headerlink" href="#configure-an-autoscaling-group-of-aws-using-ami" title="Permalink to this headline">¶</a></h3>
+<p>Once created an AMI of AWS from previous step, use the following bash script to configure instances using <a class="reference external" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html">Auto Scaling Groups</a> service of AWS.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Modify variables <code class="docutils literal notranslate"><span class="pre">region</span></code>, <code class="docutils literal notranslate"><span class="pre">name_instance</span></code>, <code class="docutils literal notranslate"><span class="pre">type_value</span></code> and <code class="docutils literal notranslate"><span class="pre">user</span></code> with your own configuration. Here instances are tagged with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code> and <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> so we can use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute bash scripts (for example) on instances with this tag.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="nv">region</span><span class="o">=</span>&lt;region&gt;
+<span class="nv">name_instance</span><span class="o">=</span>conabio-dask-sge-node
+<span class="nv">type_value</span><span class="o">=</span>Node-dask-sge
+<span class="nv">user</span><span class="o">=</span>ubuntu
+<span class="c1">##Tag instances of type node</span>
+<span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/instance-id<span class="k">)</span>
+<span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/public-ipv4<span class="k">)</span>
+aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Name,Value<span class="o">=</span><span class="nv">$name_instance</span>-<span class="nv">$PUBLIC_IP</span> --region<span class="o">=</span><span class="nv">$region</span>
+<span class="c1">##Next line is useful so RunCommand can execute bash scripts (for example) on instances with Key=Type, Value=$type_value</span>
+aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Type,Value<span class="o">=</span><span class="nv">$type_value</span> --region<span class="o">=</span><span class="nv">$region</span>
+<span class="nb">echo</span> <span class="s2">&quot;export region=</span><span class="nv">$region</span><span class="s2">&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
+<span class="nb">echo</span> <span class="s2">&quot;export type_value=</span><span class="nv">$type_value</span><span class="s2">&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
+<span class="c1">##Uncomment next two lines if you want to install Antares3 on your AutoScalingGroup</span>
+<span class="c1">#su $user -c &quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
+<span class="c1">#echo &quot;export PATH=$PATH:/home/$user/.local/bin/&quot; &gt;&gt; ~/.profile</span>
+</pre></div>
+</div>
+<p><strong>Example using</strong> <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> <strong>service of AWS with Tag Name and Tag Value</strong></p>
+<a class="reference internal image-reference" href="https://dl.dropboxusercontent.com/s/kubf3ibnuv5axx4/aws_runcommand_sphix_docu.png?dl=0"><img alt="https://dl.dropboxusercontent.com/s/kubf3ibnuv5axx4/aws_runcommand_sphix_docu.png?dl=0" src="https://dl.dropboxusercontent.com/s/kubf3ibnuv5axx4/aws_runcommand_sphix_docu.png?dl=0" style="width: 600px;" /></a>
+</div>
+<div class="section" id="init-cluster">
+<h3>3. Init Cluster<a class="headerlink" href="#init-cluster" title="Permalink to this headline">¶</a></h3>
+<p><strong>Example with one master and two nodes. Install Open DataCube and Antares3 in all nodes.</strong></p>
+<p>Using instances of <a class="reference external" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html">Auto Scaling Groups</a> configured in step 2 we have to configure SGE queue on master node and register nodes on this queue.</p>
+<p><strong>3.1 Assign Elastic IP to master node and create Sun Grid Engine queue</strong></p>
+<p>Run the following bash script using <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> or login to an instance from your autoscaling group to run it (doesn’t matter which one). The instance where  the bash script is executed will be the <strong>master node</strong> of our cluster.</p>
+<p>We use an elastic IP provided by AWS for the node that will be the <strong>master node</strong>, so change variable <code class="docutils literal notranslate"><span class="pre">eip</span></code> according to your <code class="docutils literal notranslate"><span class="pre">Allocation</span> <span class="pre">ID</span></code> (see <a class="reference external" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html">Elastic IP Addresses</a>).</p>
+<p>We also use Elastic File System of AWS (shared file storage, see <a class="reference external" href="https://aws.amazon.com/efs/">Amazon Elastic File System</a>), which multiple Amazon EC2 instances running in multiple Availability Zones (AZs) within the same region can access it. Change variable <code class="docutils literal notranslate"><span class="pre">efs_dns</span></code> according to your <code class="docutils literal notranslate"><span class="pre">DNS</span> <span class="pre">name</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Modify variables <code class="docutils literal notranslate"><span class="pre">user</span></code>, <code class="docutils literal notranslate"><span class="pre">eip</span></code>, <code class="docutils literal notranslate"><span class="pre">name_instance</span></code>, <code class="docutils literal notranslate"><span class="pre">efs_dns</span></code>, <code class="docutils literal notranslate"><span class="pre">queue_name</span></code> and <code class="docutils literal notranslate"><span class="pre">slots</span></code> with your own configuration.  Elastic IP and EFS are not mandatory. You can use a NFS server instead  of EFS, for example. In this example the instances have two cores each of them.</p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">##variables</span>
+<span class="nv">user</span><span class="o">=</span>ubuntu
+<span class="nb">source</span> /home/<span class="nv">$user</span>/.profile
+<span class="nv">eip</span><span class="o">=</span>&lt;Allocation ID of Elastic IP&gt;
+<span class="nv">name_instance</span><span class="o">=</span>conabio-dask-sge-master
+<span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS name of EFS&gt;
+<span class="c1">##Name of the queue that will be used by dask-scheduler and dask-workers</span>
+<span class="nv">queue_name</span><span class="o">=</span>dask-queue.q
+<span class="c1">##Change number of slots to use for every instance, in this example the instances have 2 slots each of them</span>
+<span class="nv">slots</span><span class="o">=</span><span class="m">2</span>
+<span class="nv">region</span><span class="o">=</span><span class="nv">$region</span>
+<span class="nv">type_value</span><span class="o">=</span><span class="nv">$type_value</span>
+<span class="c1">##Mount shared volume</span>
+mount -t nfs4 -o <span class="nv">nfsvers</span><span class="o">=</span><span class="m">4</span>.1,rsize<span class="o">=</span><span class="m">1048576</span>,wsize<span class="o">=</span><span class="m">1048576</span>,hard,timeo<span class="o">=</span><span class="m">600</span>,retrans<span class="o">=</span><span class="m">2</span> <span class="nv">$efs_dns</span>:/ <span class="nv">$mount_point</span>
+mkdir -p <span class="nv">$mount_point</span>/datacube/datacube_ingest
+<span class="c1">##Tag instance</span>
+<span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/instance-id<span class="k">)</span>
+<span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/public-ipv4<span class="k">)</span>
+<span class="c1">##Assining elastic IP where this bash script is executed</span>
+aws ec2 associate-address --instance-id <span class="nv">$INSTANCE_ID</span> --allocation-id <span class="nv">$eip</span> --region <span class="nv">$region</span>
+<span class="c1">##Tag instance where this bash script is executed</span>
+aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Name,Value<span class="o">=</span><span class="nv">$name_instance</span>-<span class="nv">$PUBLIC_IP</span> --region<span class="o">=</span><span class="nv">$region</span>
+<span class="c1">##Execute bash script create-dask-sge-queue already created on Dependencies-Cloud Deployment</span>
+bash <span class="nv">$mount_point</span>/create-dask-sge-queue.sh <span class="nv">$queue_name</span> <span class="nv">$slots</span>
+</pre></div>
+</div>
+<p><strong>3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3</strong></p>
+<p>Use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute following bash script in all instances with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code>, <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> already configured in step 2, or use a tool for cluster management like <a class="reference external" href="https://github.com/duncs/clusterssh">clusterssh</a> . (You can also have the line that install OpenDataCube and Antares3 on the bash script configured in step 2 in instances of AutoScalingGroup)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="nv">user</span><span class="o">=</span>ubuntu
+<span class="nb">source</span> /home/<span class="nv">$user</span>/.profile
+<span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS name of EFS&gt;
+mount -t nfs4 -o <span class="nv">nfsvers</span><span class="o">=</span><span class="m">4</span>.1,rsize<span class="o">=</span><span class="m">1048576</span>,wsize<span class="o">=</span><span class="m">1048576</span>,hard,timeo<span class="o">=</span><span class="m">600</span>,retrans<span class="o">=</span><span class="m">2</span> <span class="nv">$efs_dns</span>:/ <span class="nv">$mount_point</span>
+<span class="c1">##Ip for sun grid engine master</span>
+<span class="nv">master_dns</span><span class="o">=</span><span class="k">$(</span>cat <span class="nv">$mount_point</span>/ip_master.txt<span class="k">)</span>
+<span class="nb">echo</span> <span class="nv">$master_dns</span> &gt; /var/lib/gridengine/default/common/act_qmaster
+/etc/init.d/gridengine-exec restart
+<span class="c1">##Install antares3</span>
+su <span class="nv">$user</span> -c <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop&quot;</span>
+<span class="nb">echo</span> <span class="s2">&quot;export PATH=</span><span class="nv">$PATH</span><span class="s2">:/home/</span><span class="nv">$user</span><span class="s2">/.local/bin/&quot;</span> &gt;&gt; ~/.profile
+<span class="c1">##Create symbolic link to configuration files for antares3</span>
+ln -sf <span class="nv">$mount_point</span>/.antares /home/<span class="nv">$user</span>/.antares
+<span class="c1">##Create symbolic link to configuration files for datacube in all instances</span>
+ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/<span class="nv">$user</span>/.datacube.conf
+<span class="c1">##Uncomment next line if you want to init antares (previously installed)</span>
+<span class="c1">#su $user -c &quot;/home/$user/.local/bin/antares init&quot;</span>
+</pre></div>
+</div>
+<p><strong>3.3 Run SGE commands to init cluster</strong></p>
+<p>Login to master node and execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start dask-scheduler on master node. The file scheduler.json will be created on $mount_point (shared_volume) of EFS</span>
+qsub -b y -l <span class="nv">h</span><span class="o">=</span><span class="nv">$HOSTNAME</span> dask-scheduler --scheduler-file <span class="nv">$mount_point</span>/scheduler.json
+</pre></div>
+</div>
+<p>The master node has two cores, one is used for dask-scheduler, the other core can be used as a dask-worker:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>qsub -b y -l <span class="nv">h</span><span class="o">=</span><span class="nv">$HOSTNAME</span> dask-worker --nthreads <span class="m">1</span> --scheduler-file <span class="nv">$mount_point</span>/scheduler.json
+</pre></div>
+</div>
+<p>If your group of autoscaling has 3 nodes, then execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start 6 (=3 nodes x 2 cores each node) dask-worker processes in an array job pointing to the same file</span>
+qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1</span> --scheduler-file <span class="nv">$mount_point</span>/scheduler.json
+</pre></div>
+</div>
+<p>You can view the web SGE on the page:</p>
+<p><strong>&lt;public DNS of master&gt;/qstat/qstat.cgi</strong></p>
+<a class="reference internal image-reference" href="https://dl.dropboxusercontent.com/s/vr2hj5m26q90std/sge_1_sphinx_docu.png?dl=0"><img alt="https://dl.dropboxusercontent.com/s/vr2hj5m26q90std/sge_1_sphinx_docu.png?dl=0" src="https://dl.dropboxusercontent.com/s/vr2hj5m26q90std/sge_1_sphinx_docu.png?dl=0" style="width: 400px;" /></a>
+<p><strong>&lt;public DNS of master&gt;/qstat/queue.cgi</strong></p>
+<a class="reference internal image-reference" href="https://dl.dropboxusercontent.com/s/4wfmbodapxx62ql/sge_2_sphinx_docu.png?dl=0"><img alt="https://dl.dropboxusercontent.com/s/4wfmbodapxx62ql/sge_2_sphinx_docu.png?dl=0" src="https://dl.dropboxusercontent.com/s/4wfmbodapxx62ql/sge_2_sphinx_docu.png?dl=0" style="width: 400px;" /></a>
+<p><strong>&lt;public DNS of master&gt;/qstat/qstat.cgi</strong></p>
+<a class="reference internal image-reference" href="https://dl.dropboxusercontent.com/s/l45t46e1lg9lolt/sge_3_sphinx_docu.png?dl=0"><img alt="https://dl.dropboxusercontent.com/s/l45t46e1lg9lolt/sge_3_sphinx_docu.png?dl=0" src="https://dl.dropboxusercontent.com/s/l45t46e1lg9lolt/sge_3_sphinx_docu.png?dl=0" style="width: 600px;" /></a>
+<p>and the state of your cluster with <a class="reference external" href="https://bokeh.pydata.org/en/latest/">bokeh</a>  at:</p>
+<p><strong>&lt;public DNS of master&gt;:8787</strong></p>
+<a class="reference internal image-reference" href="https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0"><img alt="https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0" src="https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0" style="width: 400px;" /></a>
+<p><strong>&lt;public DNS of master&gt;:8787/workers</strong></p>
+<a class="reference internal image-reference" href="https://dl.dropboxusercontent.com/s/1q6z4z10o5tv27f/bokeh_1_workers_sphinx_docu.png?dl=0"><img alt="https://dl.dropboxusercontent.com/s/1q6z4z10o5tv27f/bokeh_1_workers_sphinx_docu.png?dl=0" src="https://dl.dropboxusercontent.com/s/1q6z4z10o5tv27f/bokeh_1_workers_sphinx_docu.png?dl=0" style="width: 600px;" /></a>
+<p>or</p>
+<p><strong>&lt;public DNS of worker&gt;:8789</strong></p>
+<a class="reference internal image-reference" href="https://dl.dropboxusercontent.com/s/rnapd51c565huij/bokeh_2_sphinx_docu.png?dl=0"><img alt="https://dl.dropboxusercontent.com/s/rnapd51c565huij/bokeh_2_sphinx_docu.png?dl=0" src="https://dl.dropboxusercontent.com/s/rnapd51c565huij/bokeh_2_sphinx_docu.png?dl=0" style="width: 400px;" /></a>
+<p><strong>Run an example.</strong></p>
+<p>On master or node execute:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dask.distributed</span> <span class="k">import</span> <span class="n">Client</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">scheduler_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;mount_point&#39;</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;/scheduler.json&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">square</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">neg</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">x</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">square</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">neg</span><span class="p">,</span> <span class="n">A</span><span class="p">)</span>
+<span class="n">total</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+<span class="n">total</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+<span class="o">-</span><span class="mi">285</span>
+<span class="n">total</span>
+<span class="o">&lt;</span><span class="n">Future</span><span class="p">:</span> <span class="n">status</span><span class="p">:</span> <span class="n">finished</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">sum</span><span class="o">-</span><span class="n">ccdc2c162ed26e26fc2dc2f47e0aa479</span><span class="o">&gt;</span>
+<span class="n">client</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">81</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>from <strong>&lt;public DNS of master&gt;:8787/graph</strong> we have:</p>
+<a class="reference internal image-reference" href="https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0"><img alt="https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0" src="https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0" style="width: 600px;" /></a>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>To stop cluster on master or node execute:</p>
+<div class="last highlight-bash notranslate"><div class="highlight"><pre><span></span>qdel <span class="m">1</span> <span class="m">2</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="init">
+<h3>6. Init<a class="headerlink" href="#init" title="Permalink to this headline">¶</a></h3>
+<p>In step 1 it was configured variable <code class="docutils literal notranslate"><span class="pre">mount_point</span></code> which is a path to a shared volume.</p>
+<div class="section" id="open-datacube">
+<h4>Open DataCube<a class="headerlink" href="#open-datacube" title="Permalink to this headline">¶</a></h4>
+<p>Log in to an instance of <a class="reference external" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html">Auto Scaling Groups</a> configured in step 2 and create in <code class="docutils literal notranslate"><span class="pre">$mount_point/.datacube.conf</span></code> the datacube configuration file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">user</span><span class="p">]</span>
+<span class="n">default_environment</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">datacube</span> <span class="ow">or</span> <span class="n">s3aio_env</span><span class="p">,</span> <span class="n">first</span> <span class="k">for</span> <span class="n">netcdf</span> <span class="ow">and</span> <span class="n">second</span> <span class="k">for</span> <span class="n">s3</span><span class="o">&gt;</span>
+
+<span class="p">[</span><span class="n">datacube</span><span class="p">]</span>
+<span class="n">db_hostname</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_host</span><span class="o">&gt;</span>
+<span class="n">db_database</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_name</span><span class="o">&gt;</span>
+<span class="n">db_username</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_user</span><span class="o">&gt;</span>
+<span class="n">db_password</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_password</span><span class="o">&gt;</span>
+
+<span class="n">execution_engine</span><span class="o">.</span><span class="n">use_s3</span><span class="p">:</span> <span class="o">&lt;</span><span class="kc">True</span> <span class="ow">or</span> <span class="kc">False</span><span class="o">&gt;</span>
+
+<span class="p">[</span><span class="n">s3aio_env</span><span class="p">]</span>
+<span class="n">db_hostname</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_host</span><span class="o">&gt;</span>
+<span class="n">db_database</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_name</span><span class="o">&gt;</span>
+<span class="n">db_username</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_user</span><span class="o">&gt;</span>
+<span class="n">db_password</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_password</span><span class="o">&gt;</span>
+<span class="n">index_driver</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">default</span> <span class="ow">or</span> <span class="n">s3aio_index</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">first</span> <span class="k">for</span> <span class="n">netcdf</span> <span class="ow">and</span> <span class="n">second</span> <span class="k">for</span> <span class="n">s3</span><span class="o">&gt;</span>
+
+<span class="n">execution_engine</span><span class="o">.</span><span class="n">use_s3</span><span class="p">:</span> <span class="o">&lt;</span><span class="kc">True</span> <span class="ow">or</span> <span class="kc">False</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>and execute:</p>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">Open Datacube supports NETCDF CF and S3 drivers for storage (see <a class="reference external" href="https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config">Open DataCube Ingestion Config</a>). Different software dependencies are required for different drivers and different <code class="docutils literal notranslate"><span class="pre">datacube</span> <span class="pre">system</span> <span class="pre">init</span></code> command.</p>
+</div>
+<p>* NETCDF CF</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>datacube -v system init --no-init-users
+</pre></div>
+</div>
+<p>* S3</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>datacube -v system init -s3 --no-init-users
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <code class="docutils literal notranslate"><span class="pre">--no-init-users</span></code> flag is necessary for both drivers so we don’t have errors related to permissions. See <a class="reference external" href="https://stackoverflow.com/questions/46981873/permission-denied-to-set-session-authorization-on-amazon-postgres-rds">this question in StackOverFlow</a> .</p>
+</div>
+<p>For both drivers you can execute the following to check that Open DataCube is properly setup:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>datacube system check
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>For S3 driver additionally you can check the following tables are created in your database:</p>
+<div class="last highlight-psql notranslate"><div class="highlight"><pre><span></span><span class="kp">\dt</span> <span class="ss">agdc.*</span>
+
+<span class="go">s3_dataset</span>
+<span class="go">s3_dataset_chunk</span>
+<span class="go">s3_dataset_mapping</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="antares3">
+<h4>Antares3<a class="headerlink" href="#antares3" title="Permalink to this headline">¶</a></h4>
+<p>Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.</p>
+<p>Log in to master node and create in <code class="docutils literal notranslate"><span class="pre">$mount_point/.antares</span></code> the configuration file for <code class="docutils literal notranslate"><span class="pre">antares</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span><span class="o">=</span>
+<span class="n">DEBUG</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">DJANGO_LOG_LEVEL</span><span class="o">=</span><span class="n">DEBUG</span>
+<span class="n">DATABASE_NAME</span><span class="o">=</span>
+<span class="n">DATABASE_USER</span><span class="o">=</span>
+<span class="n">DATABASE_PASSWORD</span><span class="o">=</span>
+<span class="n">DATABASE_HOST</span><span class="o">=</span>
+<span class="n">DATABASE_PORT</span><span class="o">=</span>
+<span class="n">ALLOWED_HOSTS</span><span class="o">=</span>
+<span class="n">SERIALIZED_OBJECTS_DIR</span><span class="o">=</span>
+<span class="n">USGS_USER</span><span class="o">=</span>
+<span class="n">USGS_PASSWORD</span><span class="o">=</span>
+<span class="n">SCIHUB_USER</span><span class="o">=</span>
+<span class="n">SCIHUB_PASSWORD</span><span class="o">=</span>
+<span class="n">TEMP_DIR</span><span class="o">=</span>
+<span class="n">INGESTION_PATH</span><span class="o">=</span>
+<span class="n">BIS_LICENSE</span><span class="o">=</span>
+</pre></div>
+</div>
+<p>and execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>antares init -c mex
+</pre></div>
+</div>
+<p>Use <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> service of AWS to execute following bash script in all instances with <strong>Key</strong> <code class="docutils literal notranslate"><span class="pre">Type</span></code>, <strong>Value</strong> <code class="docutils literal notranslate"><span class="pre">Node-dask-sge</span></code> configured in step 2, or use a tool for cluster management like <a class="reference external" href="https://github.com/duncs/clusterssh">clusterssh</a> . Modify variable <code class="docutils literal notranslate"><span class="pre">user</span></code> according to your user.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="nv">user</span><span class="o">=</span>ubuntu
+<span class="nb">source</span> /home/<span class="nv">$user</span>/.profile
+su <span class="nv">$user</span> -c <span class="s2">&quot;antares init&quot;</span>
+</pre></div>
+</div>
+<p>This will create a <code class="docutils literal notranslate"><span class="pre">madmex</span></code> directory under <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> where ingestion files for all different suported dataset will be stored.</p>
+</div>
+</div>
+</div>
+<div class="section" id="amazon-web-services-and-kubernetes">
+<h2>Amazon Web Services and Kubernetes<a class="headerlink" href="#amazon-web-services-and-kubernetes" title="Permalink to this headline">¶</a></h2>
+<p>Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications (see <a class="reference external" href="https://kubernetes.io/">Kubernetes</a> and <a class="reference external" href="https://github.com/kubernetes/kubernetes">Kubernetes github page</a> ). There are a lot of ways to deploy a Kubernetes cluster, for instance see <a class="reference external" href="https://kubernetes.io/docs/setup/pick-right-solution/">Picking the right solution</a>.</p>
+<p>The nex steps follow <a class="reference external" href="https://kubernetes.io/docs/setup/custom-cloud/kops/">kops</a> and <a class="reference external" href="https://github.com/kubernetes/kops">kops - Kubernetes Operations</a> guides:</p>
+<ol class="arabic simple">
+<li>Configure a domain and a subdomain with their respective hosted zones. For the following description <a class="reference external" href="https://aws.amazon.com/route53/?nc1=h_ls">Route 53</a> service of AWS was used to create the domain <code class="docutils literal notranslate"><span class="pre">conabio-route53.net</span></code> and subdomain <code class="docutils literal notranslate"><span class="pre">antares3.conabio-route53.net</span></code>. Also a gossip based Kubernetes cluster can be used instead (see for example this <a class="reference external" href="https://github.com/kubernetes/kops/issues/2858">issue</a> and this <a class="reference external" href="http://blog.arungupta.me/gossip-kubernetes-aws-kops/">entry of blog</a>).</li>
+</ol>
+</div>
 </div>
 
 
@@ -172,6 +640,15 @@
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../cli.html" class="btn btn-neutral float-right" title="Command line interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="single_machine.html" class="btn btn-neutral" title="Single machine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
