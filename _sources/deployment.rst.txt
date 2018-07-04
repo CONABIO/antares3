@@ -6,6 +6,19 @@ Deployment
 Single machine
 ==============
 
+
+:doc:`Single-machine <deployment/single-machine>`
+
+
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: User guide
+
+   deployment/single_machine.rst
+
+
 Installation
 ------------
 
