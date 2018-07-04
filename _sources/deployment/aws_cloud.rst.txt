@@ -8,7 +8,7 @@ Prerequisites
 \* Configure `Amazon Virtual Private Cloud`_ on AWS with properly `VPCs and Subnets`_ configured according to your application.
 
 
-\* Configure `Security Groups for Your VPC`_  with ports 6444 TCP and 6445 UDP for communication within instances via SGE and port 80 for web SGE, port 2043 for `Amazon Elastic File System`_ service on AWS and port 22 to ssh to instances from your machine.
+\* Configure `Security Groups for Your VPC`_  with ports 6444 TCP and 6445 UDP for communication within instances via SGE and port 80 for web SGE, port 2043 for Amazon Elastic File System service on AWS and port 22 to ssh to instances from your machine.
 
 
 \* Configure `Amazon Elastic File System`_ service on AWS (shared volume via Network File System -NFS-).
@@ -21,17 +21,17 @@ Prerequisites
 \* AWS provide a managed relational database service `Amazon Relational Database Service (RDS)`_ with several database instance types and a `PostgreSQL`_  database engine.
 
 
-    \* Configure `Amazon Relational Database Service (RDS)`_  with `PostgreSQL`_  version 9.5 + with properly `Amazon RDS Security Groups`_ and subnet group for the RDS configured (see `Tutorial Create an Amazon VPC for Use with an Amazon RDS DB Instance`_).
+    \* Configure RDS with PostgreSQL  version 9.5 + with properly `Amazon RDS Security Groups`_ and subnet group for the RDS configured (see `Tutorial Create an Amazon VPC for Use with an Amazon RDS DB Instance`_).
 
 
-    \* Configure `Postgis`_ extension to `PostgreSQL`_  for storing and managing spatial information in the instance of `Amazon Relational Database Service (RDS)`_ you created.
+    \* Configure `Postgis`_ extension to PostgreSQL  for storing and managing spatial information in the instance of RDS you created.
 
     .. note:: 
 
         AWS gives you necessary steps to setup Postgis extension in `Working with PostGis`_ documentation.
 
 
-    We use the following bash script to setup `Postgis`_ extension in database instance:
+    We use the following bash script to setup Postgis extension in database instance:
 
     .. code-block:: bash
 
@@ -83,7 +83,7 @@ The following bash script can be used in **User data** configuration of the inst
 
 \* Install AWS cli.
 
-\* Install package ``amazon-ssm-agent.deb`` to use `RunCommand`_ service of EC2. 
+\* Install package ``amazon-ssm-agent.deb`` to use RunCommand service of EC2. 
 
 .. note:: 
  
@@ -289,7 +289,6 @@ Using instances of `Auto Scaling Groups`_ configured in step 2 we have to config
 3.1 Assign Elastic IP to master node and create Sun Grid Engine queue
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**3.1 Assign Elastic IP to master node and create Sun Grid Engine queue**
 
 Run the following bash script using `RunCommand`_ or login to an instance from your autoscaling group to run it (doesn't matter which one). The instance where  the bash script is executed will be the **master node** of our cluster.
  
@@ -334,7 +333,6 @@ We also use Elastic File System of AWS (shared file storage, see `Amazon Elastic
 3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**3.2 Restart gridengine-exec on nodes and install Open DataCube and Antares3**
 
 Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` already configured in step 2, or use a tool for cluster management like `clusterssh`_ . (You can also have the line that install OpenDataCube and Antares3 on the bash script configured in step 2 in instances of AutoScalingGroup)
 
@@ -363,7 +361,6 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
 3.3 Run SGE commands to init cluster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**3.3 Run SGE commands to init cluster**
 
 Login to master node and execute:
 
@@ -427,7 +424,6 @@ or
 Run an example
 ^^^^^^^^^^^^^^
 
-**Run an example.**
    
 On master or node execute:
 
@@ -458,7 +454,6 @@ from **<public DNS of master>:8787/graph** we have:
 
 .. image:: https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0
     :width: 600
-
 
 
 
