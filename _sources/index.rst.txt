@@ -17,7 +17,6 @@ Antares
    :caption: User guide
 
    dependencies
-   install
    deployment
    cli
    download
