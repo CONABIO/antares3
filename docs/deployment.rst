@@ -594,8 +594,9 @@ from **<public DNS of master>:8787/graph** we have:
 
 In step 1 it was configured variable ``mount_point`` which is a path to a shared volume.
 
+
 Open DataCube
-^^^^^^^^^^^^^
+~~~~~~~~~~~~~
 
 Log in to an instance of `Auto Scaling Groups`_ configured in step 2 and create in ``$mount_point/.datacube.conf`` the datacube configuration file:
 
@@ -620,7 +621,7 @@ Log in to an instance of `Auto Scaling Groups`_ configured in step 2 and create 
     db_password: <database_password>
     index_driver: <default or s3aio_index>, first for netcdf and second for s3>
     
-    execution_engine.use_s3: >True or False>
+    execution_engine.use_s3: <True or False>
 
 
 
@@ -671,9 +672,8 @@ For both drivers you can execute the following to check that Open DataCube is pr
 		s3_dataset_mapping
 
 
-
 Antares3
-^^^^^^^^
+~~~~~~~~
 
 Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.
 
@@ -722,9 +722,44 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
 
 This will create a ``madmex`` directory under ``~/.config/`` where ingestion files for all different suported dataset will be stored.
 
+Amazon Web Services and Kubernetes
+""""""""""""""""""""""""""""""""""
+
+Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications (see `Kubernetes`_ and `Kubernetes github page`_ ). There are a lot of ways to deploy a Kubernetes cluster, for instance see `Picking the right solution`_.
+
+
+The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
+
+1) Configure a domain and a subdomain with their respective hosted zones. For the following description the `Route 53`_ service of AWS was used to create the domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a gossip based Kubernetes cluster can be used instead (see for example this `issue`_ and this `entry of blog`_).
 
 
 
+
+
+
+
+
+
+
+
+
+.. Kubernetes references:
+
+.. _Kubernetes github page: https://github.com/kubernetes/kubernetes
+
+.. _Kubernetes: https://kubernetes.io/
+
+.. _Picking the right solution: https://kubernetes.io/docs/setup/pick-right-solution/#table-of-solutions
+
+.. _kops - Kubernetes Operations: https://github.com/kubernetes/kops
+
+.. _kops: https://kubernetes.io/docs/setup/custom-cloud/kops/
+
+.. _Route 53: https://aws.amazon.com/route53/?nc1=h_ls
+
+.. _entry of blog: http://blog.arungupta.me/gossip-kubernetes-aws-kops/
+
+.. _issue: https://github.com/kubernetes/kops/issues/2858  
 
 .. Dependencies references:
 
