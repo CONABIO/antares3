@@ -7,7 +7,7 @@ Single machine
 ==============
 
 
-:doc:`Single-machine <deployment/single-machine>`
+:doc:`Single-machine <deployment/single_machine.rst>`
 
 
 
