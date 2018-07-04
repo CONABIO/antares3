@@ -11,7 +11,12 @@ Single machine
 
 :doc:`deployment/single_machine`
 
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: User guide
 
+   deployment/single_machine.rst
 
 Distributed cluster
 ===================
@@ -25,6 +30,5 @@ AWS cloud computing: :doc:`deployment/aws_cloud`
    :hidden:
    :caption: User guide
 
-   deployment/single_machine.rst
    deployment/aws_cloud.rst
 
