@@ -7,9 +7,9 @@ Single machine
 ==============
 
 
-:doc:`Single-machine <deployment/single_machine.rst>`
+.. :doc:`single_machine <deployment/single_machine.rst>`
 
-
+:doc:`deployment/single_machine`
 
 .. toctree::
    :maxdepth: 1
