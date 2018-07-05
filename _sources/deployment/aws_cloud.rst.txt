@@ -469,8 +469,8 @@ from **<public DNS of master>:8787/graph** we have:
         qdel 1 2
 
 
-4. Init
--------
+4. Init Antares and Open DataCube
+---------------------------------
 
 
 In step 1 it was configured variable ``mount_point`` which is a path to a shared volume.
@@ -908,12 +908,25 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 	For master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` set 1/0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` commands (you can check your instance type of master with: ``$kops get instancegroups``).
 
 
+¿How do I ssh to an instance of Kubernetes Cluster?
+
+Using the key-pem already created for the kops user execute:
+
+.. code-block:: bash
+
+    $ssh -i <key>.pem admin@api.$CLUSTER_FULL_NAME
+
+
+.. note:: 
+
+	Make sure this <key>.pem has 400 permissions: ``$chmod 400 <key>.pem``.
+
 
 Deployment for Elastic File System
 ----------------------------------
 
 
-In order to share some files (for example ``.antares`` and ``.datacube.conf``) between all containers an ``efs-provisioner`` is used. See `efs-provisioner`_. 
+In order to share some files (for example ``.antares`` and ``.datacube.conf``) between all containers ``efs-provisioner`` is used. See `efs-provisioner`_. 
 
 
 Retrieve id's of subnets and security groups created by kops:
@@ -922,22 +935,20 @@ Retrieve id's of subnets and security groups created by kops:
 	
 	region=<region>
 	
-	subnets_kops=$(aws ec2 describe-subnets --filters "Name=tag:KubernetesCluster,Values=$CLUSTER_FULL_NAME" --region $region|jq -r 	'.Subnets[].SubnetId'|tr -s '\n' ' ')
+	subnets_kops=$(aws ec2 describe-subnets --filters "Name=tag:KubernetesCluster,Values=$CLUSTER_FULL_NAME" --region $region|jq -r '.Subnets[].SubnetId'|tr -s '\n' ' ')
 	
 	subnets_kops1=$(echo $subnets_kops|cut -d' ' -f1)
 	subnets_kops2=$(echo $subnets_kops|cut -d' ' -f2)
 	subnets_kops3=$(echo $subnets_kops|cut -d' ' -f3)
 	
-	sgroups_kops=$(aws ec2 describe-security-groups --filters "Name=tag:KubernetesCluster,Values=$CLUSTER_FULL_NAME" --region $region|jq -r 	'.SecurityGroups[].GroupId'|tr -s '\n' ' ')
+	sgroups_kops=$(aws ec2 describe-security-groups --filters "Name=tag:KubernetesCluster,Values=$CLUSTER_FULL_NAME" --region $region|jq -r '.SecurityGroups[].GroupId'|tr -s '\n' ' ')
 	
-	sgroups_master=$(aws ec2 describe-security-groups --filters "Name=tag:Name,Values=masters.$CLUSTER_FULL_NAME" --region $region|jq -r 	'.SecurityGroups[].GroupId'|tr -s '\n' ' ')
+	sgroups_master=$(aws ec2 describe-security-groups --filters "Name=tag:Name,Values=masters.$CLUSTER_FULL_NAME" --region $region|jq -r '.SecurityGroups[].GroupId'|tr -s '\n' ' ')
 	
 	sgroups_nodes=$(aws ec2 describe-security-groups --filters "Name=tag:Name,Values=nodes.$CLUSTER_FULL_NAME" --region $region|jq -r '.SecurityGroups[].GroupId'|tr -s '\n' ' ')
 
 
-Use next commands to create EFS and give access to docker containers to EFS via mount targets and security groups 	(here it's assumed that three subnets were created by ``kops create cluster`` command):
-
-
+Use next commands to create EFS and give access to docker containers to EFS via mount targets and security groups:
 
 
 .. code-block:: bash
@@ -948,7 +959,7 @@ Use next commands to create EFS and give access to docker containers to EFS via 
 	aws efs create-file-system --performance-mode maxIO --creation-token <some random integer number> --region $region
 	
 
-Set DNS and id of EFS: (last command sould output this values)
+Set DNS and id of EFS: (last command sould output this values. Here it's assumed that three subnets were created by ``kops create cluster`` command)
 
 .. code-block:: bash
 	
@@ -962,7 +973,7 @@ Set DNS and id of EFS: (last command sould output this values)
 	aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops2 --security-groups $sgroups_kops --region $region
 	aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops3 --security-groups $sgroups_kops --region $region
 	
-	#You have to poll the status of mount targets until status LifeCycleState = “available”:
+	#You have to poll the status of mount targets until status LifeCycleState = “available” so you can use EFS from instances that were created:
 	
 	#aws efs describe-mount-targets --file-system-id $efs_id --region $region
 	
@@ -987,8 +998,8 @@ In the next ``.yaml`` put **EFS id**, **region**, **AccessKeyId** and **SecretAc
 	metadata:
 	  name: efs-provisioner
 	data:
-	  file.system.id: <efs id>
-	  aws.region: <region>
+	  file.system.id: <efs id>#####Here put efs id
+	  aws.region: <region>#####Here put region
 	  provisioner.name: aws-efs
 	---
 	kind: ClusterRole
@@ -1061,16 +1072,16 @@ In the next ``.yaml`` put **EFS id**, **region**, **AccessKeyId** and **SecretAc
 	                  name: efs-provisioner
 	                  key: provisioner.name
 	            - name: AWS_ACCESS_KEY_ID
-	              value: <AccessKeyId of user kops>
+	              value: <AccessKeyId of user kops>#####Here put AccessKeyId
 	            - name: AWS_SECRET_ACCESS_KEY
-	              value: <SecretAccessKey of user kops>
+	              value: <SecretAccessKey of user kops>#####Here put SecretAccessKey
 	          volumeMounts:
 	            - name: pv-volume
 	              mountPath: /persistentvolumes
 	      volumes:
 	        - name: pv-volume
 	          nfs:
-	            server: <efs id>.efs.us-west-2.amazonaws.com
+	            server: <efs id>.efs.us-west-2.amazonaws.com #####Here put efs id
 	            path: /
 	---
 	kind: StorageClass
@@ -1122,11 +1133,117 @@ In order to be able to turn on/off cluster without deleting deployment of efs, n
 
 .. code-block:: bash
 
-    kubectl scale deployments/efs-provisioner --replicas=0 #use replicas=1 when turn on cluster
+    kubectl scale deployments/efs-provisioner --replicas=0 #use replicas=1 when turning on cluster
+
+
+Create RDS instance
+-------------------
+
+Both Antares3 and Open DataCube use PostgreSQL. Go to Prerequisites at the top of this page to setup an RDS-instance with subnet and security groups created by ``kops create cluster`` command. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of kubernetes cluster (See end of Cluster Creation section)
 
 
 Deployments for dask scheduler and worker
 -----------------------------------------
+
+Copy configuration files for antares and open datacube to efs volume
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Create ``.antares`` and ``.datacube.conf`` files in EFS:
+   
+1. Locate where is running the efs-provisioner:
+
+.. code-block:: bash
+
+	efs_prov=$(kubectl get pods --show-all |grep efs-|cut -d' ' -f1)
+
+	efs_prov_ip=$(kubectl describe pods $efs_prov|grep Node:|sed -n 's/.*ip-\(.*\).us-.*/\1/p'|sed -n 's/-/./g;p')
+
+	efs_prov_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$efs_prov_ip" --region=us-west-2|jq -r '.Reservations[].Instances[].PublicDnsName')
+
+2. Ssh to that node and enter to efs docker container:
+
+.. code-block:: bash
+
+	ssh -i conabio-kops-key.pem admin@$efs_prov_ip_publ
+
+	sudo docker exec -it <container-id-efs> /bin/sh
+
+	#with vi or vim create .antares and .datacube.conf files
+
+	$vi /persistentvolumes/.antares
+
+	$vi /persistentvolumes/.datacube.conf
+
+
+3. Create antares and datacube configuration files:
+
+
+``.antares``:
+
+::
+
+    SECRET_KEY=
+    DEBUG=True
+    DJANGO_LOG_LEVEL=DEBUG
+    DATABASE_NAME=
+    DATABASE_USER=
+    DATABASE_PASSWORD=
+    DATABASE_HOST=
+    DATABASE_PORT=
+    ALLOWED_HOSTS=
+    SERIALIZED_OBJECTS_DIR=
+    USGS_USER=
+    USGS_PASSWORD=
+    SCIHUB_USER=
+    SCIHUB_PASSWORD=
+    TEMP_DIR=
+    INGESTION_PATH=
+    BIS_LICENSE=
+
+``.datacube.conf``:
+
+::
+
+    [user]
+    default_environment: <datacube or s3aio_env, first for netcdf and second for s3>
+    
+    [datacube]
+    db_hostname: <database_host>
+    db_database: <database_name>
+    db_username: <database_user>
+    db_password: <database_password>
+    
+    execution_engine.use_s3: <True or False>
+    
+    [s3aio_env]
+    db_hostname: <database_host>
+    db_database: <database_name>
+    db_username: <database_user>
+    db_password: <database_password>
+    index_driver: <default or s3aio_index>, first for netcdf and second for s3>
+    
+    execution_engine.use_s3: <True or False>
+
+
+4. Copy ``.antares`` and ``.datacube.conf`` to ``/persistentvolumes/efs-pvc-<id>``:
+
+.. code-block:: bash
+
+    $cp /persistentvolumes/.antares /persistentvolumes/efs-pvc-<id>
+    $cp /persistentvolumes/.datacube.conf /persistentvolumes/efs-pvc-<id>
+
+5. Exit efs docker container.
+
+
+
+
+For dask scheduler:
+
+
+
+
+
+For dask worker:
 
 .. Kubernetes references:
 

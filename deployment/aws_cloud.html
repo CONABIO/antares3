@@ -94,12 +94,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#create-ami-of-aws-from-bash-script">1. Create AMI of AWS from bash script.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#configure-an-autoscaling-group-of-aws-using-ami">2. Configure an Autoscaling group of AWS using AMI</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#init-cluster">3. Init Cluster</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#init">4. Init</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#init-antares-and-open-datacube">4. Init Antares and Open DataCube</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#kubernetes-and-dask">Kubernetes and Dask</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#cluster-creation">Cluster creation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#deployment-for-elastic-file-system">Deployment for Elastic File System</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-rds-instance">Create RDS instance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#deployments-for-dask-scheduler-and-worker">Deployments for dask scheduler and worker</a></li>
 </ul>
 </li>
@@ -541,8 +542,8 @@ qsub -b y -t <span class="m">1</span>-6 dask-worker --nthreads <span class="m">1
 </div>
 </div>
 </div>
-<div class="section" id="init">
-<h3>4. Init<a class="headerlink" href="#init" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="init-antares-and-open-datacube">
+<h3>4. Init Antares and Open DataCube<a class="headerlink" href="#init-antares-and-open-datacube" title="Permalink to this headline">¶</a></h3>
 <p>In step 1 it was configured variable <code class="docutils literal notranslate"><span class="pre">mount_point</span></code> which is a path to a shared volume.</p>
 <div class="section" id="open-datacube">
 <h4>Open DataCube<a class="headerlink" href="#open-datacube" title="Permalink to this headline">¶</a></h4>
@@ -907,34 +908,43 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">nodes</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code>, setting 3/0 number of instances (3 is an example) and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and  <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code>.
 For master you can use: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">master-us-west-2a</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> set 1/0 number of instances and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code> commands (you can check your instance type of master with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">get</span> <span class="pre">instancegroups</span></code>).</p>
 </div>
+<p>¿How do I ssh to an instance of Kubernetes Cluster?</p>
+<p>Using the key-pem already created for the kops user execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$ssh</span> -i &lt;key&gt;.pem admin@api.<span class="nv">$CLUSTER_FULL_NAME</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Make sure this &lt;key&gt;.pem has 400 permissions: <code class="docutils literal notranslate"><span class="pre">$chmod</span> <span class="pre">400</span> <span class="pre">&lt;key&gt;.pem</span></code>.</p>
+</div>
 </div>
 <div class="section" id="deployment-for-elastic-file-system">
 <h3>Deployment for Elastic File System<a class="headerlink" href="#deployment-for-elastic-file-system" title="Permalink to this headline">¶</a></h3>
-<p>In order to share some files (for example <code class="docutils literal notranslate"><span class="pre">.antares</span></code> and <code class="docutils literal notranslate"><span class="pre">.datacube.conf</span></code>) between all containers an <code class="docutils literal notranslate"><span class="pre">efs-provisioner</span></code> is used. See <a class="reference external" href="https://github.com/kubernetes-incubator/external-storage/tree/master/aws/efs">efs-provisioner</a>.</p>
+<p>In order to share some files (for example <code class="docutils literal notranslate"><span class="pre">.antares</span></code> and <code class="docutils literal notranslate"><span class="pre">.datacube.conf</span></code>) between all containers <code class="docutils literal notranslate"><span class="pre">efs-provisioner</span></code> is used. See <a class="reference external" href="https://github.com/kubernetes-incubator/external-storage/tree/master/aws/efs">efs-provisioner</a>.</p>
 <p>Retrieve id’s of subnets and security groups created by kops:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
 
-<span class="nv">subnets_kops</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-subnets --filters <span class="s2">&quot;Name=tag:KubernetesCluster,Values=</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r         <span class="s1">&#39;.Subnets[].SubnetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
+<span class="nv">subnets_kops</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-subnets --filters <span class="s2">&quot;Name=tag:KubernetesCluster,Values=</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.Subnets[].SubnetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
 
 <span class="nv">subnets_kops1</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$subnets_kops</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
 <span class="nv">subnets_kops2</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$subnets_kops</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f2<span class="k">)</span>
 <span class="nv">subnets_kops3</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$subnets_kops</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f3<span class="k">)</span>
 
-<span class="nv">sgroups_kops</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:KubernetesCluster,Values=</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r         <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
+<span class="nv">sgroups_kops</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:KubernetesCluster,Values=</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
 
-<span class="nv">sgroups_master</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:Name,Values=masters.</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r    <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
+<span class="nv">sgroups_master</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:Name,Values=masters.</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
 
 <span class="nv">sgroups_nodes</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:Name,Values=nodes.</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
 </pre></div>
 </div>
-<p>Use next commands to create EFS and give access to docker containers to EFS via mount targets and security groups       (here it’s assumed that three subnets were created by <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">create</span> <span class="pre">cluster</span></code> command):</p>
+<p>Use next commands to create EFS and give access to docker containers to EFS via mount targets and security groups:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
 
 <span class="c1">#create EFS:</span>
 aws efs create-file-system --performance-mode maxIO --creation-token &lt;some random integer number&gt; --region <span class="nv">$region</span>
 </pre></div>
 </div>
-<p>Set DNS and id of EFS: (last command sould output this values)</p>
+<p>Set DNS and id of EFS: (last command sould output this values. Here it’s assumed that three subnets were created by <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">create</span> <span class="pre">cluster</span></code> command)</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
 
 <span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS of EFS&gt;
@@ -945,7 +955,7 @@ aws efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --s
 aws efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops2</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
 aws efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops3</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
 
-<span class="c1">#You have to poll the status of mount targets until status LifeCycleState = “available”:</span>
+<span class="c1">#You have to poll the status of mount targets until status LifeCycleState = “available” so you can use EFS from instances that were created:</span>
 
 <span class="c1">#aws efs describe-mount-targets --file-system-id $efs_id --region $region</span>
 
@@ -964,8 +974,8 @@ kind: ConfigMap
 metadata:
   name: efs-provisioner
 data:
-  file.system.id: &lt;efs id&gt;
-  aws.region: &lt;region&gt;
+  file.system.id: &lt;efs id&gt;#####Here put efs id
+  aws.region: &lt;region&gt;#####Here put region
   provisioner.name: aws-efs
 ---
 kind: ClusterRole
@@ -1038,16 +1048,16 @@ spec:
                   name: efs-provisioner
                   key: provisioner.name
             - name: AWS_ACCESS_KEY_ID
-              value: &lt;AccessKeyId of user kops&gt;
+              value: &lt;AccessKeyId of user kops&gt;#####Here put AccessKeyId
             - name: AWS_SECRET_ACCESS_KEY
-              value: &lt;SecretAccessKey of user kops&gt;
+              value: &lt;SecretAccessKey of user kops&gt;#####Here put SecretAccessKey
           volumeMounts:
             - name: pv-volume
               mountPath: /persistentvolumes
       volumes:
         - name: pv-volume
           nfs:
-            server: &lt;efs id&gt;.efs.us-west-2.amazonaws.com
+            server: &lt;efs id&gt;.efs.us-west-2.amazonaws.com <span class="c1">#####Here put efs id</span>
             path: /
 ---
 kind: StorageClass
@@ -1088,13 +1098,102 @@ kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclaim
 </pre></div>
 </div>
 <p>In order to be able to turn on/off cluster without deleting deployment of efs, next command is useful:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span> <span class="c1">#use replicas=1 when turn on cluster</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span> <span class="c1">#use replicas=1 when turning on cluster</span>
 </pre></div>
 </div>
 </div>
 </div>
+<div class="section" id="create-rds-instance">
+<h3>Create RDS instance<a class="headerlink" href="#create-rds-instance" title="Permalink to this headline">¶</a></h3>
+<p>Both Antares3 and Open DataCube use PostgreSQL. Go to Prerequisites at the top of this page to setup an RDS-instance with subnet and security groups created by <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">create</span> <span class="pre">cluster</span></code> command. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of kubernetes cluster (See end of Cluster Creation section)</p>
+</div>
 <div class="section" id="deployments-for-dask-scheduler-and-worker">
 <h3>Deployments for dask scheduler and worker<a class="headerlink" href="#deployments-for-dask-scheduler-and-worker" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="copy-configuration-files-for-antares-and-open-datacube-to-efs-volume">
+<h4>Copy configuration files for antares and open datacube to efs volume<a class="headerlink" href="#copy-configuration-files-for-antares-and-open-datacube-to-efs-volume" title="Permalink to this headline">¶</a></h4>
+<p>Create <code class="docutils literal notranslate"><span class="pre">.antares</span></code> and <code class="docutils literal notranslate"><span class="pre">.datacube.conf</span></code> files in EFS:</p>
+<ol class="arabic simple">
+<li>Locate where is running the efs-provisioner:</li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">efs_prov</span><span class="o">=</span><span class="k">$(</span>kubectl get pods --show-all <span class="p">|</span>grep efs-<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
+
+<span class="nv">efs_prov_ip</span><span class="o">=</span><span class="k">$(</span>kubectl describe pods <span class="nv">$efs_prov</span><span class="p">|</span>grep Node:<span class="p">|</span>sed -n <span class="s1">&#39;s/.*ip-\(.*\).us-.*/\1/p&#39;</span><span class="p">|</span>sed -n <span class="s1">&#39;s/-/./g;p&#39;</span><span class="k">)</span>
+
+<span class="nv">efs_prov_ip_publ</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-instances --filters <span class="s2">&quot;Name=private-ip-address,Values=</span><span class="nv">$efs_prov_ip</span><span class="s2">&quot;</span> --region<span class="o">=</span>us-west-2<span class="p">|</span>jq -r <span class="s1">&#39;.Reservations[].Instances[].PublicDnsName&#39;</span><span class="k">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>Ssh to that node and enter to efs docker container:</li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh -i conabio-kops-key.pem admin@<span class="nv">$efs_prov_ip_publ</span>
+
+sudo docker <span class="nb">exec</span> -it &lt;container-id-efs&gt; /bin/sh
+
+<span class="c1">#with vi or vim create .antares and .datacube.conf files</span>
+
+<span class="nv">$vi</span> /persistentvolumes/.antares
+
+<span class="nv">$vi</span> /persistentvolumes/.datacube.conf
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li>Create antares and datacube configuration files:</li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">.antares</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span><span class="o">=</span>
+<span class="n">DEBUG</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">DJANGO_LOG_LEVEL</span><span class="o">=</span><span class="n">DEBUG</span>
+<span class="n">DATABASE_NAME</span><span class="o">=</span>
+<span class="n">DATABASE_USER</span><span class="o">=</span>
+<span class="n">DATABASE_PASSWORD</span><span class="o">=</span>
+<span class="n">DATABASE_HOST</span><span class="o">=</span>
+<span class="n">DATABASE_PORT</span><span class="o">=</span>
+<span class="n">ALLOWED_HOSTS</span><span class="o">=</span>
+<span class="n">SERIALIZED_OBJECTS_DIR</span><span class="o">=</span>
+<span class="n">USGS_USER</span><span class="o">=</span>
+<span class="n">USGS_PASSWORD</span><span class="o">=</span>
+<span class="n">SCIHUB_USER</span><span class="o">=</span>
+<span class="n">SCIHUB_PASSWORD</span><span class="o">=</span>
+<span class="n">TEMP_DIR</span><span class="o">=</span>
+<span class="n">INGESTION_PATH</span><span class="o">=</span>
+<span class="n">BIS_LICENSE</span><span class="o">=</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">.datacube.conf</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">user</span><span class="p">]</span>
+<span class="n">default_environment</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">datacube</span> <span class="ow">or</span> <span class="n">s3aio_env</span><span class="p">,</span> <span class="n">first</span> <span class="k">for</span> <span class="n">netcdf</span> <span class="ow">and</span> <span class="n">second</span> <span class="k">for</span> <span class="n">s3</span><span class="o">&gt;</span>
+
+<span class="p">[</span><span class="n">datacube</span><span class="p">]</span>
+<span class="n">db_hostname</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_host</span><span class="o">&gt;</span>
+<span class="n">db_database</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_name</span><span class="o">&gt;</span>
+<span class="n">db_username</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_user</span><span class="o">&gt;</span>
+<span class="n">db_password</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_password</span><span class="o">&gt;</span>
+
+<span class="n">execution_engine</span><span class="o">.</span><span class="n">use_s3</span><span class="p">:</span> <span class="o">&lt;</span><span class="kc">True</span> <span class="ow">or</span> <span class="kc">False</span><span class="o">&gt;</span>
+
+<span class="p">[</span><span class="n">s3aio_env</span><span class="p">]</span>
+<span class="n">db_hostname</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_host</span><span class="o">&gt;</span>
+<span class="n">db_database</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_name</span><span class="o">&gt;</span>
+<span class="n">db_username</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_user</span><span class="o">&gt;</span>
+<span class="n">db_password</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">database_password</span><span class="o">&gt;</span>
+<span class="n">index_driver</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">default</span> <span class="ow">or</span> <span class="n">s3aio_index</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">first</span> <span class="k">for</span> <span class="n">netcdf</span> <span class="ow">and</span> <span class="n">second</span> <span class="k">for</span> <span class="n">s3</span><span class="o">&gt;</span>
+
+<span class="n">execution_engine</span><span class="o">.</span><span class="n">use_s3</span><span class="p">:</span> <span class="o">&lt;</span><span class="kc">True</span> <span class="ow">or</span> <span class="kc">False</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li>Copy <code class="docutils literal notranslate"><span class="pre">.antares</span></code> and <code class="docutils literal notranslate"><span class="pre">.datacube.conf</span></code> to <code class="docutils literal notranslate"><span class="pre">/persistentvolumes/efs-pvc-&lt;id&gt;</span></code>:</li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$cp</span> /persistentvolumes/.antares /persistentvolumes/efs-pvc-&lt;id&gt;
+<span class="nv">$cp</span> /persistentvolumes/.datacube.conf /persistentvolumes/efs-pvc-&lt;id&gt;
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li>Exit efs docker container.</li>
+</ol>
+<p>For dask scheduler:</p>
+<p>For dask worker:</p>
+</div>
 </div>
 </div>
 </div>
