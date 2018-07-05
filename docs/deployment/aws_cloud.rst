@@ -638,8 +638,6 @@ The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
 	INSTANCE_ID=$(curl -s http://instance-data/latest/meta-data/instance-id)
 	PUBLIC_IP=$(curl -s http://instance-data/latest/meta-data/public-ipv4)
 	aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
-	##Assing elastic IP where this bash script is executed
-	aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $eip --region $region
 	##Set variables for completion of bash commands
 	echo "export LC_ALL=C.UTF-8" >> /home/$user/.profile
 	echo "export LANG=C.UTF-8" >> /home/$user/.profile
