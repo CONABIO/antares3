@@ -901,15 +901,14 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 
 .. note:: 
 
-	You can turn on/off cluster editing screen that appears with command: 
-	``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, setting 3/0 number of instances (3 is an example) and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes``. 
+	You can scale up/down nodes of cluster with command: ``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, edit screen that appears and set 3/0 number of instances (3 is an example) and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes``. 
 
 .. note:: 
 
-	For master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` set 1/0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` commands (you can check your instance type of master with: ``$kops get instancegroups``).
+	To scale up/down master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` set 1/0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` commands (you can check your instance type of master with: ``$kops get instancegroups``).
 
 
-¿How do I ssh to an instance of Kubernetes Cluster?
+**¿How do I ssh to an instance of Kubernetes Cluster?**
 
 Using the key-pem already created for the kops user execute:
 
@@ -1130,7 +1129,7 @@ To change reclaim policy:
 	kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}
 
 
-In order to be able to turn on/off cluster without deleting deployment of efs, next command is useful:
+In order to be able to scale up/down cluster without deleting deployment of efs, next command is useful:
 
 .. code-block:: bash
 
