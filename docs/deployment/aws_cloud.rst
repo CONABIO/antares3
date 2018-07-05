@@ -611,9 +611,8 @@ Kubernetes and Dask
 Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications (see `Kubernetes`_ and `Kubernetes github page`_ ). There are a lot of ways to deploy a Kubernetes cluster, for instance see `Picking the right solution`_.
 
 
-Kubernetes cluster creation
----------------------------
-
+Cluster creation
+----------------
 
 The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
 
@@ -911,12 +910,12 @@ that will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 
 
 
-Kubernetes deployment for Elastic File System
----------------------------------------------
+Deployment for Elastic File System
+----------------------------------
 
 
-Kubernetes deployments for dask scheduler and worker
-----------------------------------------------------
+Deployments for dask scheduler and worker
+-----------------------------------------
 
 .. Kubernetes references:
 
