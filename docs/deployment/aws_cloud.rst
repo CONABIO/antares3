@@ -983,8 +983,8 @@ Set DNS and id of EFS: (last command sould output this values. Here it's assumed
 	aws ec2 authorize-security-group-ingress --group-id $sgroups_nodes --protocol tcp --port 2049 --source-group $sgroups_nodes --region $region
 
 
-Deployment for EFS
-^^^^^^^^^^^^^^^^^^
+Create yaml for deployment
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In the next ``.yaml`` put **EFS id**, **region**, **AccessKeyId** and **SecretAccessKey** generated for user kops:
 
