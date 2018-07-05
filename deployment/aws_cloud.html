@@ -853,17 +853,17 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 <p class="first admonition-title">Note</p>
 <p class="last">The instance needs the policy <strong>IAMFullAccess</strong> attach to a role created by you to have permissions to execute next command.</p>
 </div>
-<p>Group and permissions of it:</p>
+<p>Create group and permissions of it:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$aws</span> iam create-group --group-name kops
-    <span class="nv">$aws</span> iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess --group-name kops
-    <span class="nv">$aws</span> iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonRoute53FullAccess --group-name kops
-    <span class="nv">$aws</span> iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess --group-name kops
-    <span class="nv">$aws</span> iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/IAMFullAccess --group-name kops
-    <span class="nv">$aws</span> iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonVPCFullAccess --group-name kops
-    <span class="nv">$aws</span> iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess --group-name kops
+<span class="nv">$aws</span> iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess --group-name kops
+<span class="nv">$aws</span> iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonRoute53FullAccess --group-name kops
+<span class="nv">$aws</span> iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess --group-name kops
+<span class="nv">$aws</span> iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/IAMFullAccess --group-name kops
+<span class="nv">$aws</span> iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonVPCFullAccess --group-name kops
+<span class="nv">$aws</span> iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess --group-name kops
 </pre></div>
 </div>
-<p>User kops and add it to already created group kops:</p>
+<p>Create user kops and add it to already created group kops:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$aws</span> iam create-user --user-name kops
 <span class="nv">$aws</span> iam add-user-to-group --user-name kops --group-name kops
 </pre></div>
@@ -872,7 +872,7 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$aws</span> iam create-access-key --user-name kops
 </pre></div>
 </div>
-<p>that will generate an <strong>AccessKeyId</strong> and <strong>SecretAccessKey</strong> that must be kept in a safe place. Use them to configure awscli and set variables:</p>
+<p>This will generate an <strong>AccessKeyId</strong> and <strong>SecretAccessKey</strong> that must be kept in a safe place. Use them to configure awscli and set next variables:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$aws</span> configure
         AWS Access Key ID <span class="o">[</span>None<span class="o">]</span>: xxxx
         AWS Secret Access Key <span class="o">[</span>None<span class="o">]</span>: xxxxxxx
@@ -899,11 +899,13 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">You can delete cluster with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">delete</span> <span class="pre">cluster</span> <span class="pre">${CLUSTER_FULL_NAME}</span> <span class="pre">--yes</span></code> (use without <code class="docutils literal notranslate"><span class="pre">yes</span></code> flag just to see what changes are going to be applied) and don’t forget also delete S3 bucket: <code class="docutils literal notranslate"><span class="pre">$aws</span> <span class="pre">s3api</span> <span class="pre">delete-bucket</span> <span class="pre">--bucket</span> <span class="pre">${CLUSTER_FULL_NAME}-state</span></code>.</p>
+<p class="last">You can delete cluster with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">delete</span> <span class="pre">cluster</span> <span class="pre">${CLUSTER_FULL_NAME}</span> <span class="pre">--yes</span></code> (without <code class="docutils literal notranslate"><span class="pre">yes</span></code> flag is used to just see what changes are going to be applied) and don’t forget to delete S3 bucket: <code class="docutils literal notranslate"><span class="pre">$aws</span> <span class="pre">s3api</span> <span class="pre">delete-bucket</span> <span class="pre">--bucket</span> <span class="pre">${CLUSTER_FULL_NAME}-state</span></code> after cluster deletion.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">You can turn off cluster editing screen that appears with command: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">nodes</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code>, setting 0 number of instances and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and  <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code>. For master you can use: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">master-us-west-2a</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and then <code class="docutils literal notranslate"><span class="pre">update</span></code> and <code class="docutils literal notranslate"><span class="pre">update</span> <span class="pre">..</span> <span class="pre">--yes</span></code> commands (you can check your instance type of master with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">get</span> <span class="pre">instancegroups</span></code>).</p>
+<p class="last">You can turn off cluster editing screen that appears with command:
+<code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">nodes</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code>, setting 0 number of instances and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and  <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code>.
+For master you can use: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">master-us-west-2a</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> set 0 number of instances and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code> commands (you can check your instance type of master with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">get</span> <span class="pre">instancegroups</span></code>).</p>
 </div>
 </div>
 <div class="section" id="deployment-for-elastic-file-system">
