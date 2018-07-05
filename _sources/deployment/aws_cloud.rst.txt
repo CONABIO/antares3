@@ -469,6 +469,12 @@ from **<public DNS of master>:8787/graph** we have:
         qdel 1 2
 
 
+4. Create RDS instance
+----------------------
+
+Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Prerequisites at the top of this page to setup a RDS-instance with subnet and security groups of your preference. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of the dask-sge cluster, install ``postgresql-client`` and execute a ``createdb`` command.
+
+
 4. Init Antares and Open DataCube
 ---------------------------------
 
@@ -896,21 +902,21 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 
 .. note::
 
-	You can delete cluster with: ``$kops delete cluster ${CLUSTER_FULL_NAME} --yes`` (without ``yes`` flag is used to just see what changes are going to be applied) and don't forget to delete S3 bucket: ``$aws s3api delete-bucket --bucket ${CLUSTER_FULL_NAME}-state`` after cluster deletion.
+	You can delete cluster with: ``$kops delete cluster ${CLUSTER_FULL_NAME} --yes`` (without ``yes`` flag you only see what changes are going to be applied) and don't forget to delete S3 bucket: ``$aws s3api delete-bucket --bucket ${CLUSTER_FULL_NAME}-state`` after cluster deletion.
 
 
 .. note:: 
 
-	You can scale up/down nodes of cluster with command: ``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, edit screen that appears and set 3/0 number of instances (3 is an example) and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes``. 
+	You can scale up/down nodes of cluster with command: ``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, edit screen that appears and set 3/0 number of instances (3 is an example) and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes`` to apply changes. 
 
 .. note:: 
 
-	To scale up/down master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` set 1/0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` commands (you can check your instance type of master with: ``$kops get instancegroups``).
+	To scale up/down master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` (you can check your instance type of master with: ``$kops get instancegroups``) set 1/0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` to apply changes.
 
 
 **¿How do I ssh to an instance of Kubernetes Cluster?**
 
-Using the key-pem already created for the kops user execute:
+Using the key-pem already created for the kops user and execute:
 
 .. code-block:: bash
 
@@ -948,7 +954,7 @@ Retrieve id's of subnets and security groups created by kops:
 	sgroups_nodes=$(aws ec2 describe-security-groups --filters "Name=tag:Name,Values=nodes.$CLUSTER_FULL_NAME" --region $region|jq -r '.SecurityGroups[].GroupId'|tr -s '\n' ' ')
 
 
-Use next commands to create EFS and give access to docker containers to EFS via mount targets and security groups:
+Use next commands to create EFS:
 
 
 .. code-block:: bash
@@ -959,7 +965,7 @@ Use next commands to create EFS and give access to docker containers to EFS via 
 	aws efs create-file-system --performance-mode maxIO --creation-token <some random integer number> --region $region
 	
 
-Set DNS and id of EFS: (last command sould output this values. Here it's assumed that three subnets were created by ``kops create cluster`` command)
+Set DNS and id of EFS: (last command sould output this values) and give access to docker containers to EFS via mount targets and security groups. Here it's assumed that three subnets were created by ``kops create cluster`` command)
 
 .. code-block:: bash
 	
@@ -986,7 +992,7 @@ Set DNS and id of EFS: (last command sould output this values. Here it's assumed
 Create yaml for deployment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In the next ``.yaml`` put **EFS id**, **region**, **AccessKeyId** and **SecretAccessKey** generated for user kops:
+In the next ``.yaml`` put **EFS id**, **region**, **AccessKeyId** and **SecretAccessKey** already generated for user kops:
 
 
 
@@ -1127,17 +1133,17 @@ To change reclaim policy:
 	$kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}
 
 
-In order to be able to scale up/down cluster without deleting deployment of efs, next command is useful:
+In order to be able to scale up/down cluster without deleting deployment of efs (and thereby persistentvolume and claim), next command is useful:
 
 .. code-block:: bash
 
-    $kubectl scale deployments/efs-provisioner --replicas=0 #use replicas=1 when turning on cluster
+    $kubectl scale deployments/efs-provisioner --replicas=0 #use replicas=1 when scaling up cluster after a scale down was performed.
 
 
 Create RDS instance
 -------------------
 
-Both Antares3 and Open DataCube use PostgreSQL. Go to Prerequisites at the top of this page to setup an RDS-instance with subnet and security groups created by ``kops create cluster`` command. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of kubernetes cluster (See end of Cluster Creation section)
+Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Prerequisites at the top of this page to setup a RDS-instance with subnet and security groups created by ``kops create cluster`` command. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of Kubernetes cluster, install ``postgresql-client`` and execute a ``createdb`` command (to ssh to an instance of Kubernetes cluster see end of **Cluster Creation** section).
 
 
 Deployments for dask scheduler and worker
@@ -1158,7 +1164,7 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 
 	efs_prov_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$efs_prov_ip" --region=us-west-2|jq -r '.Reservations[].Instances[].PublicDnsName')
 
-2. Ssh to that node and enter to efs docker container:
+2. Ssh to that node and enter to efs docker container with ``exec`` command:
 
 .. code-block:: bash
 
@@ -1166,14 +1172,12 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 
 	sudo docker exec -it <container-id-efs> /bin/sh
 
-	#with vi or vim create .antares and .datacube.conf files
+3. Create antares and datacube configuration files:
+
+.. code-block:: bash
 
 	$vi /persistentvolumes/.antares
-
 	$vi /persistentvolumes/.datacube.conf
-
-
-3. Create antares and datacube configuration files:
 
 
 ``.antares``:
@@ -1235,14 +1239,228 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 
 
 
-For dask scheduler:
+Deployment for dask scheduler
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use next ``yaml`` file to create container for dask scheduler:
+
+.. code-block:: bash
+
+	kind: Deployment
+	apiVersion: extensions/v1beta1
+	metadata:
+	  name: antares3-scheduler
+	spec:
+	  replicas: 1
+	  template:
+	    metadata:
+	      labels:
+	        app: antares3-scheduler-app
+	    spec:
+	      containers:
+	      - name: antares3-scheduler
+	        imagePullPolicy: Always #IfNotPresent
+	        image: madmex/antares3-k8s-cluster-dependencies:latest #Docker image to be used for dask scheduler/worker container
+	        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 	8787 --scheduler-file /shared_volume/scheduler.json"]
+	        ports:
+	         - containerPort: 8787
+	         - containerPort: 8786
+	        env:
+	         - name: mount_point
+	           value: /shared_volume
+	         - name: LC_ALL
+	           value: C.UTF-8
+	         - name: LANG
+	           value: C.UTF-8
+	        resources:
+	         requests:
+	          cpu: "1"
+	          memory: 1Gi
+	         limits:
+	          cpu: "1"
+	          memory: 2Gi
+	        volumeMounts:
+	         - name: efs-pvc
+	           mountPath: "/shared_volume"
+	         - name: dshm
+	           mountPath: /dev/shm
+	      volumes:
+	       - name: efs-pvc
+	         persistentVolumeClaim:
+	          claimName: efs
+	       - name: dshm
+	         emptyDir:
+	          medium: Memory
+
+
+Create deployment of antares3-scheduler with:
+
+.. code-block:: bash
+
+    $kubectl create -f antares3-scheduler.yaml
+
+To visualize bokeh create Kubernetes service with next ``yaml`` (modify port according to your preference):
+
+.. code-block:: bash
+
+service.yaml
+
+	kind: Service
+	apiVersion: v1
+	metadata:
+	  name: antares3-scheduler-bokeh
+	spec:
+	  type: LoadBalancer
+	  ports:
+	    - port: 8787
+	      targetPort: 8787
+	      protocol: TCP
+	      nodePort: 30000 ##### Select port of your preference
+	  selector:
+	    app: antares3-scheduler-app
+
+Execute:
+
+.. code-block:: bash
+
+    $kubectl create -f service.yaml
+
+.. note:: 
+
+	Create in security groups of master and nodes of Kubernetes a rule to visualize bokeh with the port you chose.
+
+
+Deployment for dask worker
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use next ``yaml`` file to create one container for dask worker:
 
 
 
+.. code-block:: bash
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: antares3-worker
+  namespace: default
+spec:
+  replicas: 1  ##### Just one container, change it if more containers are needed
+  template:
+    metadata:
+     labels:
+      app: antares3-worker-app
+    spec:
+      #restartPolicy: Never
+      containers:
+      - name: antares3-worker
+        imagePullPolicy: Always
+        image: madmex/antares3-k8s-cluster-dependencies:v3 #Docker image to be used for dask scheduler/worker container
+        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
+        ports:
+          - containerPort: 8786
+        env:
+          - name: LC_ALL
+            value: C.UTF-8
+          - name: LANG
+            value: C.UTF-8
+          - name: mount_point
+            value: "/shared_volume"
+        resources:
+         requests:
+          cpu: "1"
+          memory: 6Gi
+         limits:
+          cpu: "1"
+          memory: 8Gi
+        volumeMounts:
+         - name: efs-pvc
+           mountPath: "/shared_volume/"
+      volumes:
+       - name: efs-pvc
+         persistentVolumeClaim:
+          claimName: efs
+       - name: dshm
+         emptyDir:
+          medium: Memory
+          sizeLimit: '1Gi'
 
 
-For dask worker:
+Create deployment of antares3-worker with:
 
+.. code-block:: bash
+
+	$kubectl create -f antares3-worker.yaml	
+
+
+.. note:: 
+
+	Use ``kubectl scale deployments/antares3-worker --replicas=2`` to have two dask-worker containers.
+
+
+Notes
+-----
+
+1. To execute antares or datacube commands:
+
+Locate where is running the scheduler:
+
+.. code-block:: bash
+
+	region=<region>
+	dask_scheduler_pod=$(kubectl get pods --show-all |grep scheduler|cut -d' ' -f1)
+	dask_scheduler_ip=$(kubectl describe pods $dask_scheduler_pod|grep Node:|sed -n 's/.*ip-\(.*\).us-.*/\1/p'|sed -n 's/-/./g;p')
+	dask_scheduler_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$dask_scheduler_ip" --region=<region>|jq -r '.Reservations[].Instances[].PublicDnsName')
+
+
+Using <key>.pem of user kops do a ssh:
+
+ssh -i <key>.pem admin@$dask_scheduler_ip_publ
+
+
+.. note:: 
+
+	Make sure this <key>.pem has 400 permissions: ``$chmod 400 <key>.pem``.
+
+
+Enter to docker container of dask-scheduler with ``exec`` command:
+
+sudo docker exec -it <container-id-dask-scheduler> bash
+
+
+2. Before scaling down cluster delete deployments:
+   
+.. code-block:: bash
+
+    $kubectl delete deployment antares3-worker
+    $kubectl delete deployment antares3-scheduler
+
+    And scale down efs-provisioner deployment:
+
+.. code-block:: bash
+
+    kubectl scale deployments/efs-provisioner --replicas=0
+
+3. Before deleting cluster delete mount targets of EFS:
+   
+.. code-block:: bash
+
+
+	efs_id=<id of efs>
+	region=<region>
+	
+	mt_id1=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut 	-d' ' -f1)
+	
+	mt_id2=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut 	-d' ' -f2)
+	
+	mt_id3=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut 	-d' ' -f3)
+	
+	aws efs delete-mount-target --mount-target-id $mt_id1
+	
+	aws efs delete-mount-target --mount-target-id $mt_id2
+	
+	aws efs delete-mount-target --mount-target-id $mt_id3
+	
 .. Kubernetes references:
 
 .. _efs-provisioner: https://github.com/kubernetes-incubator/external-storage/tree/master/aws/efs
