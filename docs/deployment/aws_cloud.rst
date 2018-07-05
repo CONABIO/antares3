@@ -1439,7 +1439,7 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
     $kubectl delete deployment antares3-worker
     $kubectl delete deployment antares3-scheduler
 
-    And scale down efs-provisioner deployment:
+and scale down efs-provisioner deployment:
 
 .. code-block:: bash
 
