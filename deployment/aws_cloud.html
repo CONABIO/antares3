@@ -902,14 +902,13 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">You can turn on/off cluster editing screen that appears with command:
-<code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">nodes</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code>, setting 3/0 number of instances (3 is an example) and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and  <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code>.</p>
+<p class="last">You can scale up/down nodes of cluster with command: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">nodes</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code>, edit screen that appears and set 3/0 number of instances (3 is an example) and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and  <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code>.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">For master you can use: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">master-us-west-2a</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> set 1/0 number of instances and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code> commands (you can check your instance type of master with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">get</span> <span class="pre">instancegroups</span></code>).</p>
+<p class="last">To scale up/down master you can use: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">master-us-west-2a</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> set 1/0 number of instances and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code> commands (you can check your instance type of master with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">get</span> <span class="pre">instancegroups</span></code>).</p>
 </div>
-<p>¿How do I ssh to an instance of Kubernetes Cluster?</p>
+<p><strong>¿How do I ssh to an instance of Kubernetes Cluster?</strong></p>
 <p>Using the key-pem already created for the kops user execute:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$ssh</span> -i &lt;key&gt;.pem admin@api.<span class="nv">$CLUSTER_FULL_NAME</span>
 </pre></div>
@@ -1098,7 +1097,7 @@ pv_id=$(kubectl get pv|grep pvc | cut -d&#39; &#39; -f1)
 kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclaimPolicy&quot;:&quot;Retain&quot;}}
 </pre></div>
 </div>
-<p>In order to be able to turn on/off cluster without deleting deployment of efs, next command is useful:</p>
+<p>In order to be able to scale up/down cluster without deleting deployment of efs, next command is useful:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span> <span class="c1">#use replicas=1 when turning on cluster</span>
 </pre></div>
 </div>
