@@ -947,7 +947,7 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
 
 <span class="c1">#create EFS:</span>
-aws efs create-file-system --performance-mode maxIO --creation-token &lt;some random integer number&gt; --region <span class="nv">$region</span>
+<span class="nv">$aws</span> efs create-file-system --performance-mode maxIO --creation-token &lt;some random integer number&gt; --region <span class="nv">$region</span>
 </pre></div>
 </div>
 <p>Set DNS and id of EFS: (last command sould output this values) and give access to docker containers to EFS via mount targets and security groups. Here it’s assumed that three subnets were created by <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">create</span> <span class="pre">cluster</span></code> command)</p>
@@ -957,9 +957,9 @@ aws efs create-file-system --performance-mode maxIO --creation-token &lt;some ra
 <span class="nv">efs_id</span><span class="o">=</span>&lt;id of EFS&gt;
 
 <span class="c1">#create mount targets for three subnets:</span>
-aws efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops1</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
-aws efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops2</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
-aws efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops3</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
+<span class="nv">$aws</span> efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops1</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
+<span class="nv">$aws</span> efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops2</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
+<span class="nv">$aws</span> efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops3</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
 
 <span class="c1">#You have to poll the status of mount targets until status LifeCycleState = “available” so you can use EFS from instances that were created:</span>
 
@@ -967,8 +967,8 @@ aws efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --s
 
 <span class="c1">#Create inbound rules for NFS on the security groups:</span>
 
-aws ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_master</span> --protocol tcp --port <span class="m">2049</span> --source-group <span class="nv">$sgroups_master</span> --region  <span class="nv">$region</span>
-aws ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_nodes</span> --protocol tcp --port <span class="m">2049</span> --source-group <span class="nv">$sgroups_nodes</span> --region <span class="nv">$region</span>
+<span class="nv">$aws</span> ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_master</span> --protocol tcp --port <span class="m">2049</span> --source-group <span class="nv">$sgroups_master</span> --region         <span class="nv">$region</span>
+<span class="nv">$aws</span> ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_nodes</span> --protocol tcp --port <span class="m">2049</span> --source-group <span class="nv">$sgroups_nodes</span> --region <span class="nv">$region</span>
 </pre></div>
 </div>
 <div class="section" id="create-yaml-for-deployment">
@@ -1128,9 +1128,8 @@ $kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclai
 <ol class="arabic simple" start="2">
 <li>Ssh to that node and enter to efs docker container with <code class="docutils literal notranslate"><span class="pre">exec</span></code> command:</li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh -i &lt;key&gt;.pem admin@<span class="nv">$efs_prov_ip_publ</span>
-
-sudo docker <span class="nb">exec</span> -it &lt;container-id-efs&gt; /bin/sh
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$ssh</span> -i &lt;key&gt;.pem admin@<span class="nv">$efs_prov_ip_publ</span>
+<span class="nv">$sudo</span> docker <span class="nb">exec</span> -it &lt;container-id-efs&gt; /bin/sh
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1349,12 +1348,10 @@ spec:
 </pre></div>
 </div>
 <p>Using &lt;key&gt;.pem of user kops do a ssh and enter to docker container of dask-scheduler with <code class="docutils literal notranslate"><span class="pre">exec</span></code> command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">block</span><span class="p">::</span> <span class="n">bash</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$ssh</span> -i &lt;key&gt;.pem admin@<span class="nv">$dask_scheduler_ip_publ</span>
+<span class="nv">$sudo</span> docker <span class="nb">exec</span> -it &lt;container-id-dask-scheduler&gt; bash
 </pre></div>
 </div>
-<blockquote>
-<div>$ssh -i &lt;key&gt;.pem <a class="reference external" href="mailto:admin&#37;&#52;&#48;$dask_scheduler_ip_publ">admin<span>&#64;</span>$dask_scheduler_ip_publ</a>
-$sudo docker exec -it &lt;container-id-dask-scheduler&gt; bash</div></blockquote>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Make sure this &lt;key&gt;.pem has 400 permissions: <code class="docutils literal notranslate"><span class="pre">$chmod</span> <span class="pre">400</span> <span class="pre">&lt;key&gt;.pem</span></code>.</p>
