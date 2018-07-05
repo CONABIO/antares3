@@ -1127,9 +1127,9 @@ Execute next commands to create deployment:
 To change reclaim policy, retrieve persistent volume and execute ``kubectl patch`` command:
 
 .. code-block:: bash
-	
-	$pv_id=$(kubectl get pv|grep pvc | cut -d' ' -f1)
-	$kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}
+
+    $pv_id=$(kubectl get pv|grep pvc | cut -d' ' -f1)
+    $kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}
 
 
 In order to be able to scale up/down cluster without deleting deployment of efs (and thereby persistentvolume and claim), next command is useful:
