@@ -1128,10 +1128,14 @@ $kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclai
 <ol class="arabic simple" start="2">
 <li>Ssh to that node and enter to efs docker container with <code class="docutils literal notranslate"><span class="pre">exec</span></code> command:</li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh -i conabio-kops-key.pem admin@<span class="nv">$efs_prov_ip_publ</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh -i &lt;key&gt;.pem admin@<span class="nv">$efs_prov_ip_publ</span>
 
 sudo docker <span class="nb">exec</span> -it &lt;container-id-efs&gt; /bin/sh
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Make sure this &lt;key&gt;.pem has 400 permissions: <code class="docutils literal notranslate"><span class="pre">$chmod</span> <span class="pre">400</span> <span class="pre">&lt;key&gt;.pem</span></code>.</p>
 </div>
 <ol class="arabic simple" start="3">
 <li>Create antares and datacube configuration files:</li>
@@ -1344,16 +1348,17 @@ spec:
 <span class="nv">$dask_scheduler_ip_publ</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-instances --filters <span class="s2">&quot;Name=private-ip-address,Values=</span><span class="nv">$dask_scheduler_ip</span><span class="s2">&quot;</span> --region<span class="o">=</span>&lt;region&gt;<span class="p">|</span>jq -r <span class="s1">&#39;.Reservations[].Instances[].PublicDnsName&#39;</span><span class="k">)</span>
 </pre></div>
 </div>
-<p>Using &lt;key&gt;.pem of user kops do a ssh:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$ssh</span> -i &lt;key&gt;.pem admin@<span class="nv">$dask_scheduler_ip_publ</span>
+<p>Using &lt;key&gt;.pem of user kops do a ssh and enter to docker container of dask-scheduler with <code class="docutils literal notranslate"><span class="pre">exec</span></code> command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">block</span><span class="p">::</span> <span class="n">bash</span>
 </pre></div>
 </div>
+<blockquote>
+<div>$ssh -i &lt;key&gt;.pem <a class="reference external" href="mailto:admin&#37;&#52;&#48;$dask_scheduler_ip_publ">admin<span>&#64;</span>$dask_scheduler_ip_publ</a>
+$sudo docker exec -it &lt;container-id-dask-scheduler&gt; bash</div></blockquote>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Make sure this &lt;key&gt;.pem has 400 permissions: <code class="docutils literal notranslate"><span class="pre">$chmod</span> <span class="pre">400</span> <span class="pre">&lt;key&gt;.pem</span></code>.</p>
 </div>
-<p>Enter to docker container of dask-scheduler with <code class="docutils literal notranslate"><span class="pre">exec</span></code> command:</p>
-<p>sudo docker exec -it &lt;container-id-dask-scheduler&gt; bash</p>
 <ol class="arabic simple" start="2">
 <li>Before scaling down cluster delete deployments:</li>
 </ol>

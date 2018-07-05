@@ -1167,9 +1167,14 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 
 .. code-block:: bash
 
-	ssh -i conabio-kops-key.pem admin@$efs_prov_ip_publ
+	ssh -i <key>.pem admin@$efs_prov_ip_publ
 
 	sudo docker exec -it <container-id-efs> /bin/sh
+
+.. note:: 
+
+	Make sure this <key>.pem has 400 permissions: ``$chmod 400 <key>.pem``.
+
 
 3. Create antares and datacube configuration files:
 
@@ -1412,21 +1417,20 @@ Locate where is running the scheduler:
 	$dask_scheduler_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$dask_scheduler_ip" --region=<region>|jq -r '.Reservations[].Instances[].PublicDnsName')
 
 
-Using <key>.pem of user kops do a ssh:
+Using <key>.pem of user kops do a ssh and enter to docker container of dask-scheduler with ``exec`` command::
 
 .. code-block:: bash
 
     $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
-
+    $sudo docker exec -it <container-id-dask-scheduler> bash
 
 .. note:: 
 
 	Make sure this <key>.pem has 400 permissions: ``$chmod 400 <key>.pem``.
 
 
-Enter to docker container of dask-scheduler with ``exec`` command:
 
-sudo docker exec -it <container-id-dask-scheduler> bash
+    
 
 
 2. Before scaling down cluster delete deployments:
