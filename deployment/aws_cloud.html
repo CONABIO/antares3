@@ -665,8 +665,6 @@ pip3 install awscli --upgrade
 <span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/instance-id<span class="k">)</span>
 <span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/public-ipv4<span class="k">)</span>
 aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Name,Value<span class="o">=</span><span class="nv">$name_instance</span>-<span class="nv">$PUBLIC_IP</span> --region<span class="o">=</span><span class="nv">$region</span>
-<span class="c1">##Assing elastic IP where this bash script is executed</span>
-aws ec2 associate-address --instance-id <span class="nv">$INSTANCE_ID</span> --allocation-id <span class="nv">$eip</span> --region <span class="nv">$region</span>
 <span class="c1">##Set variables for completion of bash commands</span>
 <span class="nb">echo</span> <span class="s2">&quot;export LC_ALL=C.UTF-8&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
 <span class="nb">echo</span> <span class="s2">&quot;export LANG=C.UTF-8&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
