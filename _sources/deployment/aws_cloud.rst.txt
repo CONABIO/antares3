@@ -1128,7 +1128,7 @@ To change reclaim policy, retrieve persistent volume and execute ``kubectl patch
 
 .. code-block:: bash
 
-    $pv_id=$(kubectl get pv|grep pvc | cut -d' ' -f1)
+    pv_id=$(kubectl get pv|grep pvc | cut -d' ' -f1)
     $kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}
 
 
@@ -1260,7 +1260,7 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 	      - name: antares3-scheduler
 	        imagePullPolicy: Always #IfNotPresent
 	        image: madmex/antares3-k8s-cluster-dependencies:latest #Docker image to be used for dask scheduler/worker container
-	        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 	8787 --scheduler-file /shared_volume/scheduler.json"]
+	        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 8787 --scheduler-file /shared_volume/scheduler.json"]
 	        ports:
 	         - containerPort: 8787
 	         - containerPort: 8786
@@ -1355,7 +1355,7 @@ Use next ``antares3-worker.yaml`` file to create one container for dask worker:
 	      - name: antares3-worker
 	        imagePullPolicy: Always
 	        image: madmex/antares3-k8s-cluster-dependencies:v3 #Docker image to be used for dask scheduler/worker container
-	        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 	1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
+	        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
 	        ports:
 	          - containerPort: 8786
 	        env:
@@ -1407,14 +1407,16 @@ Locate where is running the scheduler:
 .. code-block:: bash
 
 	region=<region>
-	dask_scheduler_pod=$(kubectl get pods --show-all |grep scheduler|cut -d' ' -f1)
-	dask_scheduler_ip=$(kubectl describe pods $dask_scheduler_pod|grep Node:|sed -n 's/.*ip-\(.*\).us-.*/\1/p'|sed -n 's/-/./g;p')
-	dask_scheduler_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$dask_scheduler_ip" --region=<region>|jq -r '.Reservations[].Instances[].PublicDnsName')
+	$dask_scheduler_pod=$(kubectl get pods --show-all |grep scheduler|cut -d' ' -f1)
+	$dask_scheduler_ip=$(kubectl describe pods $dask_scheduler_pod|grep Node:|sed -n 's/.*ip-\(.*\).us-.*/\1/p'|sed -n 's/-/./g;p')
+	$dask_scheduler_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$dask_scheduler_ip" --region=<region>|jq -r '.Reservations[].Instances[].PublicDnsName')
 
 
 Using <key>.pem of user kops do a ssh:
 
-ssh -i <key>.pem admin@$dask_scheduler_ip_publ
+.. code-block:: bash
+
+    $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
 
 
 .. note:: 
@@ -1438,7 +1440,7 @@ sudo docker exec -it <container-id-dask-scheduler> bash
 
 .. code-block:: bash
 
-    kubectl scale deployments/efs-provisioner --replicas=0
+    $kubectl scale deployments/efs-provisioner --replicas=0
 
 3. Before deleting cluster delete mount targets of EFS:
    
@@ -1454,11 +1456,11 @@ sudo docker exec -it <container-id-dask-scheduler> bash
 	
 	mt_id3=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut 	-d' ' -f3)
 	
-	aws efs delete-mount-target --mount-target-id $mt_id1
+	$aws efs delete-mount-target --mount-target-id $mt_id1
 	
-	aws efs delete-mount-target --mount-target-id $mt_id2
+	$aws efs delete-mount-target --mount-target-id $mt_id2
 	
-	aws efs delete-mount-target --mount-target-id $mt_id3
+	$aws efs delete-mount-target --mount-target-id $mt_id3
 	
 .. Kubernetes references:
 

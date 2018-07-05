@@ -1096,7 +1096,7 @@ spec:
 <p class="last">PersistentVolumes can have various reclaim policies, including “Retain”, “Recycle”, and “Delete”.For dynamically provisioned    PersistentVolumes, the default reclaim policy is “Delete”. This means that a dynamically provisioned volume is automatically deleted when a user deletes the corresponding PersistentVolumeClaim. This automatic behavior might be inappropriate if the volume contains precious data. In that case, it is more appropriate to use the “Retain” policy. With the “Retain” policy, if a user deletes a PersistentVolumeClaim, the        corresponding PersistentVolume is not be deleted. Instead, it is moved to the Released phase, where all of its data can be manually recovered. See: <a class="reference external" href="https://kubernetes.io/docs/tasks/administer-cluster/change-pv-reclaim-policy/">Why change reclaim policy of a PersistentVolume</a></p>
 </div>
 <p>To change reclaim policy, retrieve persistent volume and execute <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">patch</span></code> command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$pv_id=$(kubectl get pv|grep pvc | cut -d&#39; &#39; -f1)
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pv_id=$(kubectl get pv|grep pvc | cut -d&#39; &#39; -f1)
 $kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclaimPolicy&quot;:&quot;Retain&quot;}}
 </pre></div>
 </div>
@@ -1211,7 +1211,7 @@ spec:
       - name: antares3-scheduler
         imagePullPolicy: Always <span class="c1">#IfNotPresent</span>
         image: madmex/antares3-k8s-cluster-dependencies:latest <span class="c1">#Docker image to be used for dask scheduler/worker container</span>
-        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;/home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-scheduler --port 8786 --bokeh-port       8787 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
+        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;/home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 8787 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
         ports:
          - containerPort: <span class="m">8787</span>
          - containerPort: <span class="m">8786</span>
@@ -1292,7 +1292,7 @@ spec:
       - name: antares3-worker
         imagePullPolicy: Always
         image: madmex/antares3-k8s-cluster-dependencies:v3 <span class="c1">#Docker image to be used for dask scheduler/worker container</span>
-        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;/home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-worker --worker-port 8786 --nthreads     1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
+        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;/home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
         ports:
           - containerPort: <span class="m">8786</span>
         env:
@@ -1339,13 +1339,15 @@ spec:
 </ol>
 <p>Locate where is running the scheduler:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
-<span class="nv">dask_scheduler_pod</span><span class="o">=</span><span class="k">$(</span>kubectl get pods --show-all <span class="p">|</span>grep scheduler<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
-<span class="nv">dask_scheduler_ip</span><span class="o">=</span><span class="k">$(</span>kubectl describe pods <span class="nv">$dask_scheduler_pod</span><span class="p">|</span>grep Node:<span class="p">|</span>sed -n <span class="s1">&#39;s/.*ip-\(.*\).us-.*/\1/p&#39;</span><span class="p">|</span>sed -n <span class="s1">&#39;s/-/./g;p&#39;</span><span class="k">)</span>
-<span class="nv">dask_scheduler_ip_publ</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-instances --filters <span class="s2">&quot;Name=private-ip-address,Values=</span><span class="nv">$dask_scheduler_ip</span><span class="s2">&quot;</span> --region<span class="o">=</span>&lt;region&gt;<span class="p">|</span>jq -r <span class="s1">&#39;.Reservations[].Instances[].PublicDnsName&#39;</span><span class="k">)</span>
+<span class="nv">$dask_scheduler_pod</span><span class="o">=</span><span class="k">$(</span>kubectl get pods --show-all <span class="p">|</span>grep scheduler<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
+<span class="nv">$dask_scheduler_ip</span><span class="o">=</span><span class="k">$(</span>kubectl describe pods <span class="nv">$dask_scheduler_pod</span><span class="p">|</span>grep Node:<span class="p">|</span>sed -n <span class="s1">&#39;s/.*ip-\(.*\).us-.*/\1/p&#39;</span><span class="p">|</span>sed -n <span class="s1">&#39;s/-/./g;p&#39;</span><span class="k">)</span>
+<span class="nv">$dask_scheduler_ip_publ</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-instances --filters <span class="s2">&quot;Name=private-ip-address,Values=</span><span class="nv">$dask_scheduler_ip</span><span class="s2">&quot;</span> --region<span class="o">=</span>&lt;region&gt;<span class="p">|</span>jq -r <span class="s1">&#39;.Reservations[].Instances[].PublicDnsName&#39;</span><span class="k">)</span>
 </pre></div>
 </div>
 <p>Using &lt;key&gt;.pem of user kops do a ssh:</p>
-<p>ssh -i &lt;key&gt;.pem <a class="reference external" href="mailto:admin&#37;&#52;&#48;$dask_scheduler_ip_publ">admin<span>&#64;</span>$dask_scheduler_ip_publ</a></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$ssh</span> -i &lt;key&gt;.pem admin@<span class="nv">$dask_scheduler_ip_publ</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Make sure this &lt;key&gt;.pem has 400 permissions: <code class="docutils literal notranslate"><span class="pre">$chmod</span> <span class="pre">400</span> <span class="pre">&lt;key&gt;.pem</span></code>.</p>
@@ -1361,7 +1363,7 @@ spec:
 And scale down efs-provisioner deployment:
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
@@ -1376,11 +1378,11 @@ And scale down efs-provisioner deployment:
 
 <span class="nv">mt_id3</span><span class="o">=</span><span class="k">$(</span>aws efs describe-mount-targets --file-system-id <span class="nv">$efs_id</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.MountTargets[]|.MountTargetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="p">|</span>cut     -d<span class="s1">&#39; &#39;</span> -f3<span class="k">)</span>
 
-aws efs delete-mount-target --mount-target-id <span class="nv">$mt_id1</span>
+<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id1</span>
 
-aws efs delete-mount-target --mount-target-id <span class="nv">$mt_id2</span>
+<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id2</span>
 
-aws efs delete-mount-target --mount-target-id <span class="nv">$mt_id3</span>
+<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id3</span>
 </pre></div>
 </div>
 </div>
