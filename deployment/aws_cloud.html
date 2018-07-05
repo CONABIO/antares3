@@ -1361,10 +1361,9 @@ spec:
 </ol>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> delete deployment antares3-worker
 <span class="nv">$kubectl</span> delete deployment antares3-scheduler
-
-And scale down efs-provisioner deployment:
 </pre></div>
 </div>
+<p>and scale down efs-provisioner deployment:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span>
 </pre></div>
 </div>
