@@ -998,8 +998,8 @@ In the next ``.yaml`` put **EFS id**, **region**, **AccessKeyId** and **SecretAc
 	metadata:
 	  name: efs-provisioner
 	data:
-	  file.system.id: <efs id>#####Here put efs id
-	  aws.region: <region>#####Here put region
+	  file.system.id: <efs id> #####Here put efs id
+	  aws.region: <region> #####Here put region
 	  provisioner.name: aws-efs
 	---
 	kind: ClusterRole
@@ -1072,9 +1072,9 @@ In the next ``.yaml`` put **EFS id**, **region**, **AccessKeyId** and **SecretAc
 	                  name: efs-provisioner
 	                  key: provisioner.name
 	            - name: AWS_ACCESS_KEY_ID
-	              value: <AccessKeyId of user kops>#####Here put AccessKeyId
+	              value: <AccessKeyId of user kops> #####Here put AccessKeyId
 	            - name: AWS_SECRET_ACCESS_KEY
-	              value: <SecretAccessKey of user kops>#####Here put SecretAccessKey
+	              value: <SecretAccessKey of user kops> #####Here put SecretAccessKey
 	          volumeMounts:
 	            - name: pv-volume
 	              mountPath: /persistentvolumes

@@ -974,8 +974,8 @@ kind: ConfigMap
 metadata:
   name: efs-provisioner
 data:
-  file.system.id: &lt;efs id&gt;#####Here put efs id
-  aws.region: &lt;region&gt;#####Here put region
+  file.system.id: &lt;efs id&gt; <span class="c1">#####Here put efs id</span>
+  aws.region: &lt;region&gt; <span class="c1">#####Here put region</span>
   provisioner.name: aws-efs
 ---
 kind: ClusterRole
@@ -1048,9 +1048,9 @@ spec:
                   name: efs-provisioner
                   key: provisioner.name
             - name: AWS_ACCESS_KEY_ID
-              value: &lt;AccessKeyId of user kops&gt;#####Here put AccessKeyId
+              value: &lt;AccessKeyId of user kops&gt; <span class="c1">#####Here put AccessKeyId</span>
             - name: AWS_SECRET_ACCESS_KEY
-              value: &lt;SecretAccessKey of user kops&gt;#####Here put SecretAccessKey
+              value: &lt;SecretAccessKey of user kops&gt; <span class="c1">#####Here put SecretAccessKey</span>
           volumeMounts:
             - name: pv-volume
               mountPath: /persistentvolumes
