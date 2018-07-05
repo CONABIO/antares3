@@ -903,13 +903,195 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">You can turn off cluster editing screen that appears with command:
-<code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">nodes</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code>, setting 0 number of instances and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and  <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code>.
-For master you can use: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">master-us-west-2a</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> set 0 number of instances and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code> commands (you can check your instance type of master with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">get</span> <span class="pre">instancegroups</span></code>).</p>
+<p class="last">You can turn on/off cluster editing screen that appears with command:
+<code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">nodes</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code>, setting 3/0 number of instances (3 is an example) and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and  <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code>.
+For master you can use: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">master-us-west-2a</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> set 1/0 number of instances and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code> commands (you can check your instance type of master with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">get</span> <span class="pre">instancegroups</span></code>).</p>
 </div>
 </div>
 <div class="section" id="deployment-for-elastic-file-system">
 <h3>Deployment for Elastic File System<a class="headerlink" href="#deployment-for-elastic-file-system" title="Permalink to this headline">¶</a></h3>
+<p>In order to share some files (for example <code class="docutils literal notranslate"><span class="pre">.antares</span></code> and <code class="docutils literal notranslate"><span class="pre">.datacube.conf</span></code>) between all containers an <code class="docutils literal notranslate"><span class="pre">efs-provisioner</span></code> is used. See <a class="reference external" href="https://github.com/kubernetes-incubator/external-storage/tree/master/aws/efs">efs-provisioner</a>.</p>
+<p>Retrieve id’s of subnets and security groups created by kops:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
+
+<span class="nv">subnets_kops</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-subnets --filters <span class="s2">&quot;Name=tag:KubernetesCluster,Values=</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r         <span class="s1">&#39;.Subnets[].SubnetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
+
+<span class="nv">subnets_kops1</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$subnets_kops</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
+<span class="nv">subnets_kops2</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$subnets_kops</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f2<span class="k">)</span>
+<span class="nv">subnets_kops3</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$subnets_kops</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f3<span class="k">)</span>
+
+<span class="nv">sgroups_kops</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:KubernetesCluster,Values=</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r         <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
+
+<span class="nv">sgroups_master</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:Name,Values=masters.</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r    <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
+
+<span class="nv">sgroups_nodes</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:Name,Values=nodes.</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
+</pre></div>
+</div>
+<p>Use next commands to create EFS and give access to docker containers to EFS via mount targets and security groups       (here it’s assumed that three subnets were created by <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">create</span> <span class="pre">cluster</span></code> command):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
+
+<span class="c1">#create EFS:</span>
+aws efs create-file-system --performance-mode maxIO --creation-token &lt;some random integer number&gt; --region <span class="nv">$region</span>
+</pre></div>
+</div>
+<p>Set DNS and id of EFS: (last command sould output this values)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
+
+<span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS of EFS&gt;
+<span class="nv">efs_id</span><span class="o">=</span>&lt;id of EFS&gt;
+
+<span class="c1">#create mount targets for three subnets:</span>
+aws efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops1</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
+aws efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops2</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
+aws efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops3</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
+
+<span class="c1">#You have to poll the status of mount targets until status LifeCycleState = “available”:</span>
+
+<span class="c1">#aws efs describe-mount-targets --file-system-id $efs_id --region $region</span>
+
+<span class="c1">#Create inbound rules for NFS on the security groups:</span>
+
+aws ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_master</span> --protocol tcp --port <span class="m">2049</span> --source-group <span class="nv">$sgroups_master</span> --region  <span class="nv">$region</span>
+aws ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_nodes</span> --protocol tcp --port <span class="m">2049</span> --source-group <span class="nv">$sgroups_nodes</span> --region <span class="nv">$region</span>
+</pre></div>
+</div>
+<div class="section" id="deployment-for-efs">
+<h4>Deployment for EFS<a class="headerlink" href="#deployment-for-efs" title="Permalink to this headline">¶</a></h4>
+<p>In the next <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> put <strong>EFS id</strong>, <strong>region</strong>, <strong>AccessKeyId</strong> and <strong>SecretAccessKey</strong> generated for user kops:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: efs-provisioner
+data:
+  file.system.id: &lt;efs id&gt;
+  aws.region: &lt;region&gt;
+  provisioner.name: aws-efs
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: efs-provisioner-runner
+rules:
+  - apiGroups: <span class="o">[</span><span class="s2">&quot;&quot;</span><span class="o">]</span>
+    resources: <span class="o">[</span><span class="s2">&quot;persistentvolumes&quot;</span><span class="o">]</span>
+    verbs: <span class="o">[</span><span class="s2">&quot;get&quot;</span>, <span class="s2">&quot;list&quot;</span>, <span class="s2">&quot;watch&quot;</span>, <span class="s2">&quot;create&quot;</span>, <span class="s2">&quot;delete&quot;</span><span class="o">]</span>
+  - apiGroups: <span class="o">[</span><span class="s2">&quot;&quot;</span><span class="o">]</span>
+    resources: <span class="o">[</span><span class="s2">&quot;persistentvolumeclaims&quot;</span><span class="o">]</span>
+    verbs: <span class="o">[</span><span class="s2">&quot;get&quot;</span>, <span class="s2">&quot;list&quot;</span>, <span class="s2">&quot;watch&quot;</span>, <span class="s2">&quot;update&quot;</span><span class="o">]</span>
+  - apiGroups: <span class="o">[</span><span class="s2">&quot;storage.k8s.io&quot;</span><span class="o">]</span>
+    resources: <span class="o">[</span><span class="s2">&quot;storageclasses&quot;</span><span class="o">]</span>
+    verbs: <span class="o">[</span><span class="s2">&quot;get&quot;</span>, <span class="s2">&quot;list&quot;</span>, <span class="s2">&quot;watch&quot;</span><span class="o">]</span>
+  - apiGroups: <span class="o">[</span><span class="s2">&quot;&quot;</span><span class="o">]</span>
+    resources: <span class="o">[</span><span class="s2">&quot;events&quot;</span><span class="o">]</span>
+    verbs: <span class="o">[</span><span class="s2">&quot;list&quot;</span>, <span class="s2">&quot;watch&quot;</span>, <span class="s2">&quot;create&quot;</span>, <span class="s2">&quot;update&quot;</span>, <span class="s2">&quot;patch&quot;</span><span class="o">]</span>
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: run-efs-provisioner
+subjects:
+  - kind: ServiceAccount
+    name: efs-provisioner
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: efs-provisioner-runner
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: efs-provisioner
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: efs-provisioner
+spec:
+  replicas: <span class="m">1</span>
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: efs-provisioner
+    spec:
+      serviceAccount: efs-provisioner
+      containers:
+        - name: efs-provisioner
+          image: quay.io/external_storage/efs-provisioner:latest
+          env:
+            - name: FILE_SYSTEM_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: efs-provisioner
+                  key: file.system.id
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: efs-provisioner
+                  key: aws.region
+            - name: PROVISIONER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: efs-provisioner
+                  key: provisioner.name
+            - name: AWS_ACCESS_KEY_ID
+              value: &lt;AccessKeyId of user kops&gt;
+            - name: AWS_SECRET_ACCESS_KEY
+              value: &lt;SecretAccessKey of user kops&gt;
+          volumeMounts:
+            - name: pv-volume
+              mountPath: /persistentvolumes
+      volumes:
+        - name: pv-volume
+          nfs:
+            server: &lt;efs id&gt;.efs.us-west-2.amazonaws.com
+            path: /
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+  name: aws-efs
+provisioner: aws-efs
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: efs
+  annotations:
+    volume.beta.kubernetes.io/storage-class: <span class="s2">&quot;aws-efs&quot;</span>
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi
+---
+</pre></div>
+</div>
+<p>Execute next commands to create deployment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> create -f efs-provisioner.yaml
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">PersistentVolumes can have various reclaim policies, including “Retain”, “Recycle”, and “Delete”.For dynamically provisioned    PersistentVolumes, the default reclaim policy is “Delete”. This means that a dynamically provisioned volume is automatically deleted when a user deletes the corresponding PersistentVolumeClaim. This automatic behavior might be inappropriate if the volume contains precious data. In that case, it is more appropriate to use the “Retain” policy. With the “Retain” policy, if a user deletes a PersistentVolumeClaim, the        corresponding PersistentVolume is not be deleted. Instead, it is moved to the Released phase, where all of its data can be manually recovered. See: <a class="reference external" href="https://kubernetes.io/docs/tasks/administer-cluster/change-pv-reclaim-policy/">Why change reclaim policy of a PersistentVolume</a></p>
+</div>
+<p>To change reclaim policy:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>#retrieve persistent volume:
+
+pv_id=$(kubectl get pv|grep pvc | cut -d&#39; &#39; -f1)
+
+kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclaimPolicy&quot;:&quot;Retain&quot;}}
+</pre></div>
+</div>
+<p>In order to be able to turn on/off cluster without deleting deployment of efs, next command is useful:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span> <span class="c1">#use replicas=1 when turn on cluster</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="deployments-for-dask-scheduler-and-worker">
 <h3>Deployments for dask scheduler and worker<a class="headerlink" href="#deployments-for-dask-scheduler-and-worker" title="Permalink to this headline">¶</a></h3>
