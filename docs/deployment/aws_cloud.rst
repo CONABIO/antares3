@@ -610,6 +610,11 @@ Kubernetes and Dask
 
 Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications (see `Kubernetes`_ and `Kubernetes github page`_ ). There are a lot of ways to deploy a Kubernetes cluster, for instance see `Picking the right solution`_.
 
+
+Kubernetes cluster creation
+---------------------------
+
+
 The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
 
 1) Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create the domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a **gossip based Kubernetes cluster** can be used instead (see for example this `issue`_ and this `entry of blog`_).
@@ -773,18 +778,149 @@ You can check kops and kubectl versions with:
 	ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
 
    
+The Docker image can be built with:
+
+.. code-block:: bash
+
+	DOCKER_REPOSITORY=<name of your docker hub repository>
+	DOCKER_IMAGE_NAME=antares3-k8s-cluster-dependencies
+	DOCKER_IMAGE_VERSION=latest
+	sudo docker build --build-arg mount_point=$mount_point -t $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION . 
+	sudo docker login
+	sudo docker push $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION
+	sudo docker rmi $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION
+
+4) Set next bash variables:
+ 
+.. code-block:: bash
+
+	#Your domain name that is hosted in AWS Route 53
+	#Use: export DOMAIN_NAME="antares3.k8s.local" #for a gossip based cluster
+	export DOMAIN_NAME="antares3.conabio-route53.net"
+	
+	# Friendly name to use as an alias for your cluster
+	export CLUSTER_ALIAS="testing-k8s-deployment"
+	
+	# Leave as-is: Full DNS name of you cluster
+	export CLUSTER_FULL_NAME="${CLUSTER_ALIAS}.${DOMAIN_NAME}"
+	
+	# AWS availability zone where the cluster will be created
+	export CLUSTER_AWS_AZ="us-west-2a,us-west-2b,us-west-2c"
+	
+	# Leave as-is: AWS Route 53 hosted zone ID for your domain (don't set if gossip based cluster)
+	export DOMAIN_NAME_ZONE_ID=$(aws route53 list-hosted-zones \
+	       | jq -r '.HostedZones[] | select(.Name=="'${DOMAIN_NAME}'.") | .Id' \
+	       | sed 's/\/hostedzone\///')
+	
+	export KUBERNETES_VERSION="1.9.0"
+	
+	export KOPS_STATE_STORE="s3://${CLUSTER_FULL_NAME}-state"
+
+	export EDITOR=nano
+
+	
+5) Create AWS S3 bucket to hold information for Kubernetes cluster:
+
+.. note:: 
+
+	The instance needs the policy **AmazonS3FullAccess** attach to a role created by you to have permissions to execute next command.
+	
+.. code-block:: bash
+
+    $aws s3api create-bucket --bucket ${CLUSTER_FULL_NAME}-state
+
+
+6) Create group and user kops and generate access keys for user kops:
+
+
+.. note:: 
+	
+	The instance needs the policy **IAMFullAccess** attach to a role created by you to have permissions to execute next command.
+
+Group and permissions of it:
+
+.. code-block:: bash
+
+    $aws iam create-group --group-name kops
+	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess --group-name kops
+	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonRoute53FullAccess --group-name kops
+	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess --group-name kops
+	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/IAMFullAccess --group-name kops
+	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonVPCFullAccess --group-name kops
+	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess --group-name kops
+
+
+User kops and add it to already created group kops:
+
+.. code-block:: bash
+
+	$aws iam create-user --user-name kops
+	$aws iam add-user-to-group --user-name kops --group-name kops
+
+
+Create access keys for user kops:
+
+
+.. code-block:: bash
+
+	$aws iam create-access-key --user-name kops
+
+
+that will generate an **AccessKeyId** and **SecretAccessKey** that must be kept in a safe place. Use them to configure awscli and set variables:
+
+.. code-block:: bash
+
+	$aws configure 
+		AWS Access Key ID [None]: xxxx
+		AWS Secret Access Key [None]: xxxxxxx
+		Default region name [None]: <leave it empty>
+		Default output format [None]: <leave it empty>
+	$export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id)
+	$export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
+
+
+7) Create a Key Pair with AWS console and a Public Key. See `Amazon EC2 Key Pairs`_ sections: **Creating a Key Pair Using Amazon EC2** and **Creating a Key Pair Using Amazon EC2**. Save the Public Key in ``/home/ubuntu/.ssh/id_rsa.pub``.
+
+
+8) Deploy Kubernetes Cluster. An example is:
+
+
+.. code-block:: bash
+
+	$kops create cluster \
+	--name=${CLUSTER_FULL_NAME} \
+	--zones=${CLUSTER_AWS_AZ} \
+	--master-size="t2.medium" \
+	--node-size="t2.medium" \
+	--node-count="3" \
+	--dns-zone=${DOMAIN_NAME} \
+	--ssh-public-key="/home/ubuntu/.ssh/id_rsa.pub" \
+	--kubernetes-version=${KUBERNETES_VERSION} --yes
+
+.. note::
+
+	You can delete cluster with: ``$kops delete cluster ${CLUSTER_FULL_NAME} --yes`` (use without ``yes`` flag just to see what changes are going to be applied) and don't forget also delete S3 bucket: ``$aws s3api delete-bucket --bucket ${CLUSTER_FULL_NAME}-state``.
+
+
+.. note:: 
+
+	You can turn off cluster editing screen that appears with command: ``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, setting 0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes``. For master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` and then ``update`` and ``update .. --yes`` commands (you can check your instance type of master with: ``$kops get instancegroups``).
+
+
+	
 
 
 
+Kubernetes deployment for Elastic File System
+---------------------------------------------
 
 
-
-
-
-
-
+Kubernetes deployments for dask scheduler and worker
+----------------------------------------------------
 
 .. Kubernetes references:
+
+.. _Amazon EC2 Key Pairs: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
 
 .. _Kubernetes github page: https://github.com/kubernetes/kubernetes
 
