@@ -616,7 +616,7 @@ Cluster creation
 
 The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
 
-1) Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create the domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a **gossip based Kubernetes cluster** can be used instead (see for example this `issue`_ and this `entry of blog`_).
+1) Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a **gossip based Kubernetes cluster** can be used instead (see for example this `issue`_ and this `entry of blog`_).
 
 2) Install **same versions** of kops and kubectl. We use a ``t2.micro`` instance with AMI ``Ubuntu 16.04 LTS`` to install this tools with the next bash script:
  
@@ -905,6 +905,9 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 
 	You can turn on/off cluster editing screen that appears with command: 
 	``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, setting 3/0 number of instances (3 is an example) and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes``. 
+
+.. note:: 
+
 	For master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` set 1/0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` commands (you can check your instance type of master with: ``$kops get instancegroups``).
 
 
