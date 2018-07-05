@@ -878,10 +878,10 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 	$export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
 
 
-7. Create a Key Pair with AWS console and a Public Key. See `Amazon EC2 Key Pairs`_ sections: **Creating a Key Pair Using Amazon EC2** and **Creating a Key Pair Using Amazon EC2**. Save the Public Key in ``/home/ubuntu/.ssh/id_rsa.pub``.
+7) Create a Key Pair with AWS console and a Public Key. See `Amazon EC2 Key Pairs`_ sections: **Creating a Key Pair Using Amazon EC2** and **Creating a Key Pair Using Amazon EC2**. Save the Public Key in ``/home/ubuntu/.ssh/id_rsa.pub``.
 
 
-8. Deploy Kubernetes Cluster. An example is:
+8) Deploy Kubernetes Cluster. An example is:
 
 
 .. code-block:: bash
@@ -903,12 +903,9 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 
 .. note:: 
 
-	You can turn off cluster editing screen that appears with command: 
-	``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, setting 0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes``. 
-	For master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` set 0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` commands (you can check your instance type of master with: ``$kops get instancegroups``).
-
-
-	
+	You can turn on/off cluster editing screen that appears with command: 
+	``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, setting 3/0 number of instances (3 is an example) and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes``. 
+	For master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` set 1/0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` commands (you can check your instance type of master with: ``$kops get instancegroups``).
 
 
 
@@ -916,10 +913,224 @@ Deployment for Elastic File System
 ----------------------------------
 
 
+In order to share some files (for example ``.antares`` and ``.datacube.conf``) between all containers an ``efs-provisioner`` is used. See `efs-provisioner`_. 
+
+
+Retrieve id's of subnets and security groups created by kops:
+
+.. code-block:: bash
+	
+	region=<region>
+	
+	subnets_kops=$(aws ec2 describe-subnets --filters "Name=tag:KubernetesCluster,Values=$CLUSTER_FULL_NAME" --region $region|jq -r 	'.Subnets[].SubnetId'|tr -s '\n' ' ')
+	
+	subnets_kops1=$(echo $subnets_kops|cut -d' ' -f1)
+	subnets_kops2=$(echo $subnets_kops|cut -d' ' -f2)
+	subnets_kops3=$(echo $subnets_kops|cut -d' ' -f3)
+	
+	sgroups_kops=$(aws ec2 describe-security-groups --filters "Name=tag:KubernetesCluster,Values=$CLUSTER_FULL_NAME" --region $region|jq -r 	'.SecurityGroups[].GroupId'|tr -s '\n' ' ')
+	
+	sgroups_master=$(aws ec2 describe-security-groups --filters "Name=tag:Name,Values=masters.$CLUSTER_FULL_NAME" --region $region|jq -r 	'.SecurityGroups[].GroupId'|tr -s '\n' ' ')
+	
+	sgroups_nodes=$(aws ec2 describe-security-groups --filters "Name=tag:Name,Values=nodes.$CLUSTER_FULL_NAME" --region $region|jq -r '.SecurityGroups[].GroupId'|tr -s '\n' ' ')
+
+
+Use next commands to create EFS and give access to docker containers to EFS via mount targets and security groups 	(here it's assumed that three subnets were created by ``kops create cluster`` command):
+
+
+
+
+.. code-block:: bash
+
+	region=<region>
+
+	#create EFS:
+	aws efs create-file-system --performance-mode maxIO --creation-token <some random integer number> --region $region
+	
+
+Set DNS and id of EFS: (last command sould output this values)
+
+.. code-block:: bash
+	
+	region=<region>
+
+	efs_dns=<DNS of EFS>
+	efs_id=<id of EFS>
+	
+	#create mount targets for three subnets: 
+	aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops1 --security-groups $sgroups_kops --region $region
+	aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops2 --security-groups $sgroups_kops --region $region
+	aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops3 --security-groups $sgroups_kops --region $region
+	
+	#You have to poll the status of mount targets until status LifeCycleState = “available”:
+	
+	#aws efs describe-mount-targets --file-system-id $efs_id --region $region
+	
+	#Create inbound rules for NFS on the security groups:
+	
+	aws ec2 authorize-security-group-ingress --group-id $sgroups_master --protocol tcp --port 2049 --source-group $sgroups_master --region 	$region
+	aws ec2 authorize-security-group-ingress --group-id $sgroups_nodes --protocol tcp --port 2049 --source-group $sgroups_nodes --region $region
+
+
+Deployment for EFS
+^^^^^^^^^^^^^^^^^^
+
+In the next ``.yaml`` put **EFS id**, **region**, **AccessKeyId** and **SecretAccessKey** generated for user kops:
+
+
+
+.. code-block:: bash
+
+	---
+	apiVersion: v1
+	kind: ConfigMap
+	metadata:
+	  name: efs-provisioner
+	data:
+	  file.system.id: <efs id>
+	  aws.region: <region>
+	  provisioner.name: aws-efs
+	---
+	kind: ClusterRole
+	apiVersion: rbac.authorization.k8s.io/v1
+	metadata:
+	  name: efs-provisioner-runner
+	rules:
+	  - apiGroups: [""]
+	    resources: ["persistentvolumes"]
+	    verbs: ["get", "list", "watch", "create", "delete"]
+	  - apiGroups: [""]
+	    resources: ["persistentvolumeclaims"]
+	    verbs: ["get", "list", "watch", "update"]
+	  - apiGroups: ["storage.k8s.io"]
+	    resources: ["storageclasses"]
+	    verbs: ["get", "list", "watch"]
+	  - apiGroups: [""]
+	    resources: ["events"]
+	    verbs: ["list", "watch", "create", "update", "patch"]
+	---
+	kind: ClusterRoleBinding
+	apiVersion: rbac.authorization.k8s.io/v1
+	metadata:
+	  name: run-efs-provisioner
+	subjects:
+	  - kind: ServiceAccount
+	    name: efs-provisioner
+	    namespace: default
+	roleRef:
+	  kind: ClusterRole
+	  name: efs-provisioner-runner
+	  apiGroup: rbac.authorization.k8s.io
+	---
+	apiVersion: v1
+	kind: ServiceAccount
+	metadata:
+	  name: efs-provisioner
+	---
+	kind: Deployment
+	apiVersion: extensions/v1beta1
+	metadata:
+	  name: efs-provisioner
+	spec:
+	  replicas: 1
+	  strategy:
+	    type: Recreate
+	  template:
+	    metadata:
+	      labels:
+	        app: efs-provisioner
+	    spec:
+	      serviceAccount: efs-provisioner
+	      containers:
+	        - name: efs-provisioner
+	          image: quay.io/external_storage/efs-provisioner:latest
+	          env:
+	            - name: FILE_SYSTEM_ID
+	              valueFrom:
+	                configMapKeyRef:
+	                  name: efs-provisioner
+	                  key: file.system.id
+	            - name: AWS_REGION
+	              valueFrom:
+	                configMapKeyRef:
+	                  name: efs-provisioner
+	                  key: aws.region
+	            - name: PROVISIONER_NAME
+	              valueFrom:
+	                configMapKeyRef:
+	                  name: efs-provisioner
+	                  key: provisioner.name
+	            - name: AWS_ACCESS_KEY_ID
+	              value: <AccessKeyId of user kops>
+	            - name: AWS_SECRET_ACCESS_KEY
+	              value: <SecretAccessKey of user kops>
+	          volumeMounts:
+	            - name: pv-volume
+	              mountPath: /persistentvolumes
+	      volumes:
+	        - name: pv-volume
+	          nfs:
+	            server: <efs id>.efs.us-west-2.amazonaws.com
+	            path: /
+	---
+	kind: StorageClass
+	apiVersion: storage.k8s.io/v1beta1
+	metadata:
+	  name: aws-efs
+	provisioner: aws-efs
+	---
+	kind: PersistentVolumeClaim
+	apiVersion: v1
+	metadata:
+	  name: efs
+	  annotations:
+	    volume.beta.kubernetes.io/storage-class: "aws-efs"
+	spec:
+	  accessModes:
+	    - ReadWriteMany
+	  resources:
+	    requests:
+	      storage: 1Mi
+	---
+
+Execute next commands to create deployment:
+
+.. code-block:: bash
+
+    $kubectl create -f efs-provisioner.yaml
+
+
+.. note:: 
+
+	PersistentVolumes can have various reclaim policies, including “Retain”, “Recycle”, and “Delete”.For dynamically provisioned 	PersistentVolumes, the default reclaim policy is “Delete”. This means that a dynamically provisioned volume is automatically deleted when a user deletes the corresponding PersistentVolumeClaim. This automatic behavior might be inappropriate if the volume contains precious data. In that case, it is more appropriate to use the “Retain” policy. With the “Retain” policy, if a user deletes a PersistentVolumeClaim, the 	corresponding PersistentVolume is not be deleted. Instead, it is moved to the Released phase, where all of its data can be manually recovered. See: `Why change reclaim policy of a PersistentVolume`_ 
+	
+	.. _Why change reclaim policy of a PersistentVolume: https://kubernetes.io/docs/tasks/administer-cluster/change-pv-reclaim-policy/
+
+
+To change reclaim policy:
+
+.. code-block:: bash
+
+	#retrieve persistent volume:
+
+	pv_id=$(kubectl get pv|grep pvc | cut -d' ' -f1)
+
+	kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}
+
+
+In order to be able to turn on/off cluster without deleting deployment of efs, next command is useful:
+
+.. code-block:: bash
+
+    kubectl scale deployments/efs-provisioner --replicas=0 #use replicas=1 when turn on cluster
+
+
 Deployments for dask scheduler and worker
 -----------------------------------------
 
 .. Kubernetes references:
+
+.. _efs-provisioner: https://github.com/kubernetes-incubator/external-storage/tree/master/aws/efs
 
 .. _Amazon EC2 Key Pairs: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
 
