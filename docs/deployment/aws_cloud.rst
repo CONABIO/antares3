@@ -836,11 +836,11 @@ The Docker image can be built with:
 	
 	The instance needs the policy **IAMFullAccess** attach to a role created by you to have permissions to execute next command.
 
-Group and permissions of it:
+Create group and permissions of it:
 
 .. code-block:: bash
 
-    $aws iam create-group --group-name kops
+	$aws iam create-group --group-name kops
 	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess --group-name kops
 	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonRoute53FullAccess --group-name kops
 	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess --group-name kops
@@ -849,7 +849,7 @@ Group and permissions of it:
 	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess --group-name kops
 
 
-User kops and add it to already created group kops:
+Create user kops and add it to already created group kops:
 
 .. code-block:: bash
 
@@ -865,7 +865,7 @@ Create access keys for user kops:
 	$aws iam create-access-key --user-name kops
 
 
-that will generate an **AccessKeyId** and **SecretAccessKey** that must be kept in a safe place. Use them to configure awscli and set variables:
+This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept in a safe place. Use them to configure awscli and set next variables:
 
 .. code-block:: bash
 
@@ -898,12 +898,14 @@ that will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 
 .. note::
 
-	You can delete cluster with: ``$kops delete cluster ${CLUSTER_FULL_NAME} --yes`` (use without ``yes`` flag just to see what changes are going to be applied) and don't forget also delete S3 bucket: ``$aws s3api delete-bucket --bucket ${CLUSTER_FULL_NAME}-state``.
+	You can delete cluster with: ``$kops delete cluster ${CLUSTER_FULL_NAME} --yes`` (without ``yes`` flag is used to just see what changes are going to be applied) and don't forget to delete S3 bucket: ``$aws s3api delete-bucket --bucket ${CLUSTER_FULL_NAME}-state`` after cluster deletion.
 
 
 .. note:: 
 
-	You can turn off cluster editing screen that appears with command: ``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, setting 0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes``. For master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` and then ``update`` and ``update .. --yes`` commands (you can check your instance type of master with: ``$kops get instancegroups``).
+	You can turn off cluster editing screen that appears with command: 
+	``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, setting 0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes``. 
+	For master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` set 0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` commands (you can check your instance type of master with: ``$kops get instancegroups``).
 
 
 	
