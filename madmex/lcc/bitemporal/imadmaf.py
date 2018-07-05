@@ -134,10 +134,7 @@ class IMAD(object):
                     tmp1 = numpy.dot(numpy.dot(a.T, s11), a)
                     tmp2 = 1. / numpy.sqrt(numpy.diag(tmp1))
                     tmp3 = numpy.tile(tmp2, (self.bands, 1))
-                    
-                    #print('variance')
-                    #print(tmp3)
-                    
+
                     a = numpy.multiply(a, tmp3)
                     b = numpy.mat(b)
                     tmp1 = numpy.dot(numpy.dot(b.T, s22), b)
@@ -148,15 +145,10 @@ class IMAD(object):
                     tmp = numpy.diag(numpy.dot(numpy.dot(a.T, s12), b))
                     b = numpy.dot(b, numpy.diag(tmp / numpy.abs(tmp)))
                     # canonical and MAD variates
-                    
-                    
-                    #print(a)
-                    #print(self.image_bands_flattened[0:self.bands, :].reshape((self.bands, self.rows, self.columns)))
-                    
+
                     U = numpy.dot(a.T, (self.image_bands_flattened[0:self.bands, :] - means[0:self.bands, numpy.newaxis]))    
                     V = numpy.dot(b.T, (self.image_bands_flattened[self.bands:, :] - means[self.bands:, numpy.newaxis]))          
                     M_flat = U - V  # TODO: is this operation stable?
-                    #print(M_flat)
                     # new weights        
                     var_mad = numpy.tile(numpy.mat(2 * (1 - rho)).T, (1, data_mask_sum))
                     chi_squared = numpy.sum(numpy.multiply(M_flat, M_flat) / var_mad, 0)
@@ -222,7 +214,7 @@ class MAF(object):
             self.rows, self.columns = self.X.shape
             self.X = X[numpy.newaxis,:]
         elif len(self.X.shape) == 3:
-            self.bands, self.rows, self.columns = self.X.shape
+            self.bands, self.rows, self.cols = self.X.shape
         else:
             logger.error('An image of 3 or 2 dimensions is expected.')
     def transform(self, X):
@@ -233,9 +225,10 @@ class MAF(object):
         eig_problem = numpy.matmul(numpy.matmul(lower_inverse, gamma), lower_inverse.T)
         eig_values, eig_vectors = numpy.linalg.eig(eig_problem)
         sort_index = eig_values.argsort()
-        vector = eig_vectors[sort_index]
-        M = numpy.tensordot(vector, X, axes=1)
-        return M
+        print(eig_values[sort_index])
+        vector = eig_vectors[:, sort_index]
+        M = numpy.matmul(vector.T, X.reshape(self.bands, self.rows * self.cols))
+        return M.reshape(self.bands, self.rows, self.cols)
     
     def fit_transform(self, X):
         self.fit(X)
@@ -264,42 +257,32 @@ class MAD(object):
         else:
             self.weights = weights                
     def transform(self, X, Y):
-        
-        X_centered = (X - numpy.mean(X, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis])
-        Y_centered = (Y - numpy.mean(Y, axis=(1,2), dtype=float64)[:,numpy.newaxis,numpy.newaxis])
-        #print(self.weights)
+        W = self.weights * numpy.ones(X.shape)
+        X_mean = numpy.average(X, weights=W, axis=(1,2))
+        Y_mean = numpy.average(Y, weights=W, axis=(1,2))
+        X_centered = (X - X_mean[:,numpy.newaxis,numpy.newaxis])
+        Y_centered = (Y - Y_mean[:,numpy.newaxis,numpy.newaxis])
+
         X_weigthed = X_centered * self.weights
         Y_weigthed = Y_centered * self.weights
-
         X_pixel_band = X_centered.reshape(self.bands, self.rows * self.cols)
         Y_pixel_band = Y_centered.reshape(self.bands, self.rows * self.cols)
-        
+
         X_pixel_band_weigthed = X_weigthed.reshape(self.bands, self.rows * self.cols)
         Y_pixel_band_weigthed = Y_weigthed.reshape(self.bands, self.rows * self.cols)
-        
+
         sigma_11 = numpy.matmul(X_pixel_band_weigthed, X_pixel_band.T) / (numpy.sum(self.weights) - 1)
-        
-        
         sigma_11 = (1-self.lmbda) * sigma_11 + self.lmbda * numpy.eye(self.bands)
-        
-        print("sigma_11")
-        print(sigma_11)
-        
         sigma_22 = numpy.matmul(Y_pixel_band_weigthed, Y_pixel_band.T) / (numpy.sum(self.weights) - 1)
-        sigma_22 = (1-self.lmbda) * sigma_22 + self.lmbda * numpy.eye(self.bands)
-        
-        
-        print("sigma_22")
-        print(sigma_22)
-        
-        sigma_12 = numpy.matmul(X_pixel_band, Y_pixel_band.T) / (X_pixel_band.shape[1] - 1)
+        sigma_22 = (1-self.lmbda) * sigma_22 + self.lmbda * numpy.eye(self.bands)        
+        sigma_12 = numpy.matmul(X_pixel_band_weigthed, Y_pixel_band.T) / (numpy.sum(self.weights) - 1)
         lower_11 = numpy.linalg.cholesky(sigma_11)
         lower_22 = numpy.linalg.cholesky(sigma_22)
         lower_11_inverse = numpy.round(numpy.linalg.inv(lower_11), decimals=10)
         lower_22_inverse = numpy.round(numpy.linalg.inv(lower_22), decimals=10)
         sigma_11_inverse = numpy.linalg.inv(sigma_11)
         sigma_22_inverse = numpy.linalg.inv(sigma_22)
-        
+
         eig_problem_1 = numpy.matmul(lower_11_inverse, 
                                      numpy.matmul(sigma_12, 
                                                   numpy.matmul(sigma_22_inverse, 
@@ -314,21 +297,18 @@ class MAD(object):
         eig_values_1, eig_vectors_1 = numpy.linalg.eig(eig_problem_1)
         eig_values_2, eig_vectors_2 = numpy.linalg.eig(eig_problem_2)
 
-
-        
-
-        
         eig_vectors_transformed_1 = numpy.matmul(lower_11_inverse.T, eig_vectors_1)
         eig_vectors_transformed_2 = numpy.matmul(lower_22_inverse.T, eig_vectors_2)
-        
-        
-        
-        
+
         sort_index_1 = numpy.flip(eig_values_1.argsort(), 0)
         sort_index_2 = numpy.flip(eig_values_2.argsort(), 0)
-        
+
         vector_u = eig_vectors_transformed_1[:, sort_index_1]
         vector_v = eig_vectors_transformed_2[:, sort_index_2]
+
+        mu = numpy.sqrt(eig_values_2[sort_index_2])
+        norm_a_squared = numpy.diag(numpy.matmul(vector_u.T, vector_u))
+        norm_b_squared = numpy.diag(numpy.matmul(vector_v.T, vector_v))
         
         variance_u = numpy.diag(1/numpy.sqrt(numpy.diag(sigma_11)))
         s = numpy.squeeze(numpy.sum(numpy.matmul(variance_u, numpy.matmul(sigma_11, vector_u)),axis=0))
@@ -343,19 +323,7 @@ class MAD(object):
         V = numpy.matmul(vector_v.T, Y_pixel_band)
         
         M = U - V
-        
-        norm_a_squared = numpy.diag(numpy.matmul(vector_u.T, vector_u))
-        norm_b_squared = numpy.diag(numpy.matmul(vector_v.T, vector_v))
-        
-        '''
-        print("norm_a_squared")
-        print(norm_a_squared)
-        
-        print("norm_b_squared")
-        print(norm_b_squared)
-        '''
-        
-        mu = numpy.sqrt(eig_values_2[sort_index_1])
+
         sigma_squared = (2 - self.lmbda * (norm_a_squared + norm_b_squared)) / (1 - self.lmbda) - 2 * mu
         rho = mu * (1 - self.lmbda) / numpy.sqrt((1 - self.lmbda * norm_a_squared) * (1 - self.lmbda * norm_b_squared))
 
@@ -393,9 +361,10 @@ class IRMAD(object):
             print('Iteration #%s' % i)
             print('delta: %s' % delta)
             M, sigma_squared, rho = MAD(lmbda=self.lmbda).fit_transform(X, Y, weights)
-            
+            '''
             print("sigma_squared")
             print(sigma_squared)
+            '''
             #print("M")
             #print(M)
             
