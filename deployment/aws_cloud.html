@@ -1091,12 +1091,12 @@ spec:
 </div>
 <p>To change reclaim policy:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>#retrieve persistent volume:
-pv_id=$(kubectl get pv|grep pvc | cut -d&#39; &#39; -f1)
-kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclaimPolicy&quot;:&quot;Retain&quot;}}
+$pv_id=$(kubectl get pv|grep pvc | cut -d&#39; &#39; -f1)
+$kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclaimPolicy&quot;:&quot;Retain&quot;}}
 </pre></div>
 </div>
 <p>In order to be able to scale up/down cluster without deleting deployment of efs, next command is useful:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span> <span class="c1">#use replicas=1 when turning on cluster</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span> <span class="c1">#use replicas=1 when turning on cluster</span>
 </pre></div>
 </div>
 </div>
