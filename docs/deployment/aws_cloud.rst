@@ -681,7 +681,7 @@ You can check kops and kubectl versions with:
 	$kubectl version
 
 
-3) Use next **Dockerfile** to build a docker image for antares3:
+3) Use next **Dockerfile** to build docker image for antares3:
    
 .. code-block:: bash
 
@@ -777,7 +777,7 @@ You can check kops and kubectl versions with:
 	ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
 
    
-The Docker image can be built with:
+Build docker image with:
 
 .. code-block:: bash
 
@@ -878,10 +878,10 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 	$export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
 
 
-7) Create a Key Pair with AWS console and a Public Key. See `Amazon EC2 Key Pairs`_ sections: **Creating a Key Pair Using Amazon EC2** and **Creating a Key Pair Using Amazon EC2**. Save the Public Key in ``/home/ubuntu/.ssh/id_rsa.pub``.
+7. Create a Key Pair with AWS console and a Public Key. See `Amazon EC2 Key Pairs`_ sections: **Creating a Key Pair Using Amazon EC2** and **Creating a Key Pair Using Amazon EC2**. Save the Public Key in ``/home/ubuntu/.ssh/id_rsa.pub``.
 
 
-8) Deploy Kubernetes Cluster. An example is:
+8. Deploy Kubernetes Cluster. An example is:
 
 
 .. code-block:: bash
