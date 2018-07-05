@@ -90,14 +90,14 @@
 <li class="toctree-l2"><a class="reference internal" href="single_machine.html">Single machine</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Amazon Web Services</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#amazon-web-services-and-sun-grid-engine">Amazon Web Services and Sun Grid Engine</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sun-grid-engine-and-dask">Sun Grid Engine and Dask</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#create-ami-of-aws-from-bash-script">1. Create AMI of AWS from bash script.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#configure-an-autoscaling-group-of-aws-using-ami">2. Configure an Autoscaling group of AWS using AMI</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#init-cluster">3. Init Cluster</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#init">4. Init</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#amazon-web-services-and-kubernetes">Amazon Web Services and Kubernetes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kubernetes-and-dask">Kubernetes and Dask</a></li>
 </ul>
 </li>
 </ul>
@@ -229,8 +229,8 @@ psql -h <span class="nv">$db_host</span> -U <span class="nv">$db_user</span> --d
 </div>
 </div></blockquote>
 </div>
-<div class="section" id="amazon-web-services-and-sun-grid-engine">
-<h2>Amazon Web Services and Sun Grid Engine<a class="headerlink" href="#amazon-web-services-and-sun-grid-engine" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="sun-grid-engine-and-dask">
+<h2>Sun Grid Engine and Dask<a class="headerlink" href="#sun-grid-engine-and-dask" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="create-ami-of-aws-from-bash-script">
 <h3>1. Create AMI of AWS from bash script.<a class="headerlink" href="#create-ami-of-aws-from-bash-script" title="Permalink to this headline">¶</a></h3>
 <p>Launch an instance with AMI <code class="docutils literal notranslate"><span class="pre">Ubuntu</span> <span class="pre">16.04</span> <span class="pre">LTS</span></code>.</p>
@@ -634,14 +634,163 @@ su <span class="nv">$user</span> -c <span class="s2">&quot;antares init&quot;</s
 </div>
 </div>
 </div>
-<div class="section" id="amazon-web-services-and-kubernetes">
-<h2>Amazon Web Services and Kubernetes<a class="headerlink" href="#amazon-web-services-and-kubernetes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kubernetes-and-dask">
+<h2>Kubernetes and Dask<a class="headerlink" href="#kubernetes-and-dask" title="Permalink to this headline">¶</a></h2>
 <p>Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications (see <a class="reference external" href="https://kubernetes.io/">Kubernetes</a> and <a class="reference external" href="https://github.com/kubernetes/kubernetes">Kubernetes github page</a> ). There are a lot of ways to deploy a Kubernetes cluster, for instance see <a class="reference external" href="https://kubernetes.io/docs/setup/pick-right-solution/">Picking the right solution</a>.</p>
 <p>The nex steps follow <a class="reference external" href="https://kubernetes.io/docs/setup/custom-cloud/kops/">kops</a> and <a class="reference external" href="https://github.com/kubernetes/kops">kops - Kubernetes Operations</a> guides:</p>
 <ol class="arabic simple">
-<li>Configure a domain and a subdomain with their respective hosted zones. For the following description <a class="reference external" href="https://aws.amazon.com/route53/?nc1=h_ls">Route 53</a> service of AWS was used to create the domain <code class="docutils literal notranslate"><span class="pre">conabio-route53.net</span></code> and subdomain <code class="docutils literal notranslate"><span class="pre">antares3.conabio-route53.net</span></code>. Also a gossip based Kubernetes cluster can be used instead (see for example this <a class="reference external" href="https://github.com/kubernetes/kops/issues/2858">issue</a> and this <a class="reference external" href="http://blog.arungupta.me/gossip-kubernetes-aws-kops/">entry of blog</a>).</li>
-<li>Install kops and kubectl.</li>
+<li>Configure a domain and a subdomain with their respective hosted zones. For the following description <a class="reference external" href="https://aws.amazon.com/route53/?nc1=h_ls">Route 53</a> service of AWS was used to create the domain <code class="docutils literal notranslate"><span class="pre">conabio-route53.net</span></code> and subdomain <code class="docutils literal notranslate"><span class="pre">antares3.conabio-route53.net</span></code>. Also a <strong>gossip based Kubernetes cluster</strong> can be used instead (see for example this <a class="reference external" href="https://github.com/kubernetes/kops/issues/2858">issue</a> and this <a class="reference external" href="http://blog.arungupta.me/gossip-kubernetes-aws-kops/">entry of blog</a>).</li>
+<li>Install <strong>same versions</strong> of kops and kubectl. We use a <code class="docutils literal notranslate"><span class="pre">t2.micro</span></code> instance with AMI <code class="docutils literal notranslate"><span class="pre">Ubuntu</span> <span class="pre">16.04</span> <span class="pre">LTS</span></code> to install this tools with the next bash script:</li>
 </ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">##variables:</span>
+<span class="nv">region</span><span class="o">=</span>&lt;region&gt;
+<span class="nv">name_instance</span><span class="o">=</span>conabio-kubernetes
+<span class="nv">shared_volume</span><span class="o">=</span>/shared_volume
+<span class="nv">user</span><span class="o">=</span>ubuntu
+<span class="c1">##System update</span>
+apt-get update
+<span class="c1">##Install awscli</span>
+apt-get install -y python3-pip <span class="o">&amp;&amp;</span> pip3 install --upgrade <span class="nv">pip</span><span class="o">==</span><span class="m">9</span>.0.3
+pip3 install awscli --upgrade
+<span class="c1">##Tag instance</span>
+<span class="nv">INSTANCE_ID</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/instance-id<span class="k">)</span>
+<span class="nv">PUBLIC_IP</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/meta-data/public-ipv4<span class="k">)</span>
+aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span class="nv">Key</span><span class="o">=</span>Name,Value<span class="o">=</span><span class="nv">$name_instance</span>-<span class="nv">$PUBLIC_IP</span> --region<span class="o">=</span><span class="nv">$region</span>
+<span class="c1">##Assing elastic IP where this bash script is executed</span>
+aws ec2 associate-address --instance-id <span class="nv">$INSTANCE_ID</span> --allocation-id <span class="nv">$eip</span> --region <span class="nv">$region</span>
+<span class="c1">##Set variables for completion of bash commands</span>
+<span class="nb">echo</span> <span class="s2">&quot;export LC_ALL=C.UTF-8&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
+<span class="nb">echo</span> <span class="s2">&quot;export LANG=C.UTF-8&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
+<span class="c1">##Set variable mount_point</span>
+<span class="nb">echo</span> <span class="s2">&quot;export mount_point=</span><span class="nv">$shared_volume</span><span class="s2">&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
+<span class="c1">##Useful software for common operations</span>
+apt-get install -y nfs-common jq git htop
+<span class="c1">##For RunCommand service of EC2</span>
+wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+dpkg -i amazon-ssm-agent.deb
+systemctl <span class="nb">enable</span> amazon-ssm-agent
+<span class="c1">##Create shared volume</span>
+mkdir <span class="nv">$shared_volume</span>
+<span class="c1">##install docker for ubuntu:</span>
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg <span class="p">|</span> sudo apt-key add -
+add-apt-repository <span class="s2">&quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu </span><span class="k">$(</span>lsb_release -cs<span class="k">)</span><span class="s2"> stable&quot;</span>
+apt-get update
+apt-cache policy docker-ce
+apt-get install -y docker-ce
+service docker start
+<span class="c1">##install kops version 1.9.0:</span>
+wget -O kops https://github.com/kubernetes/kops/releases/download/1.9.0/kops-linux-amd64
+chmod +x ./kops
+sudo mv ./kops /usr/local/bin/
+<span class="c1">##install kubernetes command line tool v1.9: kubectl</span>
+wget -O kubectl https://storage.googleapis.com/kubernetes-release/release/v1.9.0/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+<span class="c1">##enable completion for kubectl:</span>
+<span class="nb">echo</span> <span class="s2">&quot;source &lt;(kubectl completion bash)&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.bashrc
+</pre></div>
+</div>
+<p>You can check kops and kubectl versions with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kops</span> version
+
+<span class="nv">$kubectl</span> version
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li>Use next <strong>Dockerfile</strong> to build a docker image for antares3:</li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>FROM ubuntu:xenial
+USER root
+
+<span class="c1">#see: https://github.com/Yelp/dumb-init/ for next line:</span>
+RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y wget curl <span class="o">&amp;&amp;</span> wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$   <span class="o">(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="o">)</span>/dumb-init_<span class="k">$(</span>curl -s         https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>_amd64 <span class="o">&amp;&amp;</span> chmod +x /usr/local/bin/    dumb-init
+
+<span class="c1">#base dependencies</span>
+RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y <span class="se">\</span>
+        openssh-server <span class="se">\</span>
+        openssl <span class="se">\</span>
+        sudo <span class="se">\</span>
+        nano <span class="se">\</span>
+        software-properties-common <span class="se">\</span>
+        python-software-properties <span class="se">\</span>
+        git <span class="se">\</span>
+        vim <span class="se">\</span>
+        vim-gtk <span class="se">\</span>
+        htop <span class="se">\</span>
+        build-essential <span class="se">\</span>
+        libssl-dev <span class="se">\</span>
+        libffi-dev <span class="se">\</span>
+        cmake <span class="se">\</span>
+        python3-dev <span class="se">\</span>
+        python3-pip <span class="se">\</span>
+        python3-setuptools <span class="se">\</span>
+        ca-certificates <span class="se">\</span>
+        postgresql-client <span class="se">\</span>
+    libudunits2-dev  <span class="o">&amp;&amp;</span> pip3 install --upgrade <span class="nv">pip</span><span class="o">==</span><span class="m">9</span>.0.3
+
+<span class="c1">#Install spatial libraries</span>
+RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable <span class="o">&amp;&amp;</span> apt-get -qq update
+RUN apt-get install -y <span class="se">\</span>
+        netcdf-bin <span class="se">\</span>
+        libnetcdf-dev <span class="se">\</span>
+        ncview <span class="se">\</span>
+        libproj-dev <span class="se">\</span>
+        libgeos-dev <span class="se">\</span>
+        gdal-bin <span class="se">\</span>
+        libgdal-dev
+
+<span class="c1">#Create user: madmex_user</span>
+RUN groupadd madmex_user
+RUN useradd madmex_user -g madmex_user -m -s /bin/bash
+RUN <span class="nb">echo</span> <span class="s2">&quot;madmex_user ALL=(ALL:ALL) NOPASSWD:ALL&quot;</span> <span class="p">|</span> <span class="o">(</span><span class="nv">EDITOR</span><span class="o">=</span><span class="s2">&quot;tee -a&quot;</span> visudo<span class="o">)</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;madmex_user:madmex_user&quot;</span> <span class="p">|</span> chpasswd
+
+<span class="c1">##Install dask distributed</span>
+RUN pip3 install dask distributed --upgrade <span class="o">&amp;&amp;</span> pip3 install bokeh
+<span class="c1">##Install missing package for open datacube:</span>
+RUN pip3 install --upgrade python-dateutil
+
+<span class="c1">#Dependencies for antares3 &amp; datacube</span>
+RUN pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span>        pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span>.0b1 --no-binary rasterio
+RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
+RUN pip3 install --no-cache --no-binary :all: psycopg2
+RUN pip3 install futures pathlib <span class="nv">setuptools</span><span class="o">==</span><span class="m">20</span>.4
+
+<span class="c1">#datacube:</span>
+RUN apt-get clean <span class="o">&amp;&amp;</span> apt-get update <span class="o">&amp;&amp;</span> apt-get install -y locales
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+RUN pip3 install git+https://github.com/opendatacube/datacube-core.git@develop#egg<span class="o">=</span>datacube<span class="o">[</span>s3<span class="o">]</span>
+
+<span class="c1">#Upgrade awscli and tools for s3:</span>
+RUN pip3 install boto3 botocore awscli --upgrade
+
+<span class="c1">#antares3:</span>
+USER madmex_user
+RUN pip3 install --user git+https://github.com/CONABIO/antares3.git@develop
+
+<span class="c1">##Set locales for OpenDataCube</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;export LC_ALL=C.UTF-8&quot;</span> &gt;&gt; ~/.profile
+RUN <span class="nb">echo</span> <span class="s2">&quot;export LANG=C.UTF-8&quot;</span> &gt;&gt; ~/.profile
+<span class="c1">#Set variables</span>
+ARG <span class="nv">mount_point</span><span class="o">=</span><span class="nv">$mount_point</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;export mount_point=</span><span class="nv">$mount_point</span><span class="s2">&quot;</span> &gt;&gt; ~/.profile
+<span class="c1">#Use python3</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;alias python=python3&quot;</span> &gt;&gt; ~/.bash_aliases
+<span class="c1">#Antares3:</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;export PATH=</span><span class="nv">$PATH</span><span class="s2">:/home/madmex_user/.local/bin/&quot;</span> &gt;&gt; ~/.profile
+<span class="c1">#Config files for datacube and antares</span>
+RUN ln -sf <span class="nv">$mount_point</span>/.antares ~/.antares
+RUN ln -sf <span class="nv">$mount_point</span>/.datacube.conf ~/.datacube.conf
+
+<span class="c1">#Final settings</span>
+WORKDIR /home/madmex_user/
+VOLUME <span class="o">[</span><span class="s2">&quot;/shared_volume&quot;</span><span class="o">]</span>
+ENTRYPOINT <span class="o">[</span><span class="s2">&quot;/usr/local/bin/dumb-init&quot;</span>, <span class="s2">&quot;--&quot;</span><span class="o">]</span>
+</pre></div>
+</div>
 </div>
 </div>
 

@@ -70,8 +70,11 @@ Prerequisites
         createdb -h <db_host> -U <db_user> <database_name>
 
 
-Amazon Web Services and Sun Grid Engine
-=======================================
+
+
+Sun Grid Engine and Dask
+========================
+
 
 1. Create AMI of AWS from bash script.
 --------------------------------------
@@ -601,18 +604,176 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
 This will create a ``madmex`` directory under ``~/.config/`` where ingestion files for all different suported dataset will be stored.
 
 
-Amazon Web Services and Kubernetes
-==================================
+Kubernetes and Dask
+===================
 
 
 Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications (see `Kubernetes`_ and `Kubernetes github page`_ ). There are a lot of ways to deploy a Kubernetes cluster, for instance see `Picking the right solution`_.
 
-
 The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
 
-1) Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create the domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a gossip based Kubernetes cluster can be used instead (see for example this `issue`_ and this `entry of blog`_).
+1) Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create the domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a **gossip based Kubernetes cluster** can be used instead (see for example this `issue`_ and this `entry of blog`_).
 
-2) Install kops and kubectl.
+2) Install **same versions** of kops and kubectl. We use a ``t2.micro`` instance with AMI ``Ubuntu 16.04 LTS`` to install this tools with the next bash script:
+ 
+
+.. code-block:: bash
+
+	#!/bin/bash
+	##variables:
+	region=<region>
+	name_instance=conabio-kubernetes
+	shared_volume=/shared_volume
+	user=ubuntu
+	##System update
+	apt-get update
+	##Install awscli
+	apt-get install -y python3-pip && pip3 install --upgrade pip==9.0.3
+	pip3 install awscli --upgrade
+	##Tag instance
+	INSTANCE_ID=$(curl -s http://instance-data/latest/meta-data/instance-id)
+	PUBLIC_IP=$(curl -s http://instance-data/latest/meta-data/public-ipv4)
+	aws ec2 create-tags --resources $INSTANCE_ID --tag Key=Name,Value=$name_instance-$PUBLIC_IP --region=$region
+	##Assing elastic IP where this bash script is executed
+	aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $eip --region $region
+	##Set variables for completion of bash commands
+	echo "export LC_ALL=C.UTF-8" >> /home/$user/.profile
+	echo "export LANG=C.UTF-8" >> /home/$user/.profile
+	##Set variable mount_point
+	echo "export mount_point=$shared_volume" >> /home/$user/.profile
+	##Useful software for common operations
+	apt-get install -y nfs-common jq git htop
+	##For RunCommand service of EC2
+	wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+	dpkg -i amazon-ssm-agent.deb
+	systemctl enable amazon-ssm-agent
+	##Create shared volume
+	mkdir $shared_volume
+	##install docker for ubuntu:
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+	add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+	apt-get update
+	apt-cache policy docker-ce
+	apt-get install -y docker-ce 
+	service docker start
+	##install kops version 1.9.0:
+	wget -O kops https://github.com/kubernetes/kops/releases/download/1.9.0/kops-linux-amd64
+	chmod +x ./kops
+	sudo mv ./kops /usr/local/bin/
+	##install kubernetes command line tool v1.9: kubectl
+	wget -O kubectl https://storage.googleapis.com/kubernetes-release/release/v1.9.0/bin/linux/amd64/kubectl
+	chmod +x ./kubectl
+	sudo mv ./kubectl /usr/local/bin/kubectl
+	##enable completion for kubectl:
+	echo "source <(kubectl completion bash)" >> /home/$user/.bashrc
+
+
+You can check kops and kubectl versions with:
+
+.. code-block:: bash
+
+	$kops version
+
+	$kubectl version
+
+
+3) Use next **Dockerfile** to build a docker image for antares3:
+   
+.. code-block:: bash
+
+
+	FROM ubuntu:xenial
+	USER root
+
+	#see: https://github.com/Yelp/dumb-init/ for next line:
+	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$	(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s 	https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/	dumb-init
+	
+	#base dependencies
+	RUN apt-get update && apt-get install -y \
+		openssh-server \
+		openssl \
+		sudo \
+		nano \
+		software-properties-common \
+		python-software-properties \
+		git \
+		vim \
+		vim-gtk \
+		htop \
+		build-essential \
+		libssl-dev \
+		libffi-dev \
+		cmake \
+		python3-dev \
+		python3-pip \
+		python3-setuptools \
+		ca-certificates \
+		postgresql-client \
+	    libudunits2-dev  && pip3 install --upgrade pip==9.0.3
+	
+	#Install spatial libraries
+	RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable && apt-get -qq update
+	RUN apt-get install -y \
+		netcdf-bin \
+		libnetcdf-dev \
+		ncview \
+		libproj-dev \
+		libgeos-dev \
+		gdal-bin \
+		libgdal-dev
+	
+	#Create user: madmex_user
+	RUN groupadd madmex_user
+	RUN useradd madmex_user -g madmex_user -m -s /bin/bash
+	RUN echo "madmex_user ALL=(ALL:ALL) NOPASSWD:ALL" | (EDITOR="tee -a" visudo)
+	RUN echo "madmex_user:madmex_user" | chpasswd
+	
+	##Install dask distributed
+	RUN pip3 install dask distributed --upgrade && pip3 install bokeh
+	##Install missing package for open datacube:
+	RUN pip3 install --upgrade python-dateutil
+	
+	#Dependencies for antares3 & datacube
+	RUN pip3 install numpy && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && 	pip3 install rasterio==1.0b1 --no-binary rasterio  
+	RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
+	RUN pip3 install --no-cache --no-binary :all: psycopg2
+	RUN pip3 install futures pathlib setuptools==20.4
+	
+	#datacube:
+	RUN apt-get clean && apt-get update && apt-get install -y locales
+	RUN locale-gen en_US.UTF-8
+	ENV LANG en_US.UTF-8
+	ENV LC_ALL en_US.UTF-8
+	RUN pip3 install git+https://github.com/opendatacube/datacube-core.git@develop#egg=datacube[s3]
+	
+	#Upgrade awscli and tools for s3:
+	RUN pip3 install boto3 botocore awscli --upgrade
+	
+	#antares3:
+	USER madmex_user
+	RUN pip3 install --user git+https://github.com/CONABIO/antares3.git@develop
+	
+	##Set locales for OpenDataCube
+	RUN echo "export LC_ALL=C.UTF-8" >> ~/.profile
+	RUN echo "export LANG=C.UTF-8" >> ~/.profile
+	#Set variables
+	ARG mount_point=$mount_point
+	RUN echo "export mount_point=$mount_point" >> ~/.profile
+	#Use python3
+	RUN echo "alias python=python3" >> ~/.bash_aliases
+	#Antares3:
+	RUN echo "export PATH=$PATH:/home/madmex_user/.local/bin/" >> ~/.profile
+	#Config files for datacube and antares
+	RUN ln -sf $mount_point/.antares ~/.antares
+	RUN ln -sf $mount_point/.datacube.conf ~/.datacube.conf
+	
+	#Final settings
+	WORKDIR /home/madmex_user/
+	VOLUME ["/shared_volume"]
+	ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
+
+   
+
 
 
 
