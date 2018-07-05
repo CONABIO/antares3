@@ -965,8 +965,8 @@ aws ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_ma
 aws ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_nodes</span> --protocol tcp --port <span class="m">2049</span> --source-group <span class="nv">$sgroups_nodes</span> --region <span class="nv">$region</span>
 </pre></div>
 </div>
-<div class="section" id="deployment-for-efs">
-<h4>Deployment for EFS<a class="headerlink" href="#deployment-for-efs" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="create-yaml-for-deployment">
+<h4>Create yaml for deployment<a class="headerlink" href="#create-yaml-for-deployment" title="Permalink to this headline">¶</a></h4>
 <p>In the next <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> put <strong>EFS id</strong>, <strong>region</strong>, <strong>AccessKeyId</strong> and <strong>SecretAccessKey</strong> generated for user kops:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>---
 apiVersion: v1
