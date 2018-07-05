@@ -992,7 +992,7 @@ Set DNS and id of EFS: (last command sould output this values) and give access t
 Create yaml for deployment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In the next ``.yaml`` put **EFS id**, **region**, **AccessKeyId** and **SecretAccessKey** already generated for user kops:
+In the next ``efs-provisioner.yaml`` put **EFS id**, **region**, **AccessKeyId** and **SecretAccessKey** already generated for user kops:
 
 
 
@@ -1124,11 +1124,10 @@ Execute next commands to create deployment:
 	.. _Why change reclaim policy of a PersistentVolume: https://kubernetes.io/docs/tasks/administer-cluster/change-pv-reclaim-policy/
 
 
-To change reclaim policy:
+To change reclaim policy, retrieve persistent volume and execute ``kubectl patch`` command:
 
 .. code-block:: bash
 	
-	#retrieve persistent volume:
 	$pv_id=$(kubectl get pv|grep pvc | cut -d' ' -f1)
 	$kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}
 
@@ -1242,7 +1241,7 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 Deployment for dask scheduler
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use next ``yaml`` file to create container for dask scheduler:
+Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler:
 
 .. code-block:: bash
 
@@ -1299,11 +1298,11 @@ Create deployment of antares3-scheduler with:
 
     $kubectl create -f antares3-scheduler.yaml
 
-To visualize bokeh create Kubernetes service with next ``yaml`` (modify port according to your preference):
+To visualize bokeh create Kubernetes service with next ``service.yaml`` (modify port according to your preference):
+
 
 .. code-block:: bash
 
-service.yaml
 
 	kind: Service
 	apiVersion: v1
@@ -1333,57 +1332,57 @@ Execute:
 Deployment for dask worker
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use next ``yaml`` file to create one container for dask worker:
+Use next ``antares3-worker.yaml`` file to create one container for dask worker:
 
 
 
 .. code-block:: bash
 
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: antares3-worker
-  namespace: default
-spec:
-  replicas: 1  ##### Just one container, change it if more containers are needed
-  template:
-    metadata:
-     labels:
-      app: antares3-worker-app
-    spec:
-      #restartPolicy: Never
-      containers:
-      - name: antares3-worker
-        imagePullPolicy: Always
-        image: madmex/antares3-k8s-cluster-dependencies:v3 #Docker image to be used for dask scheduler/worker container
-        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
-        ports:
-          - containerPort: 8786
-        env:
-          - name: LC_ALL
-            value: C.UTF-8
-          - name: LANG
-            value: C.UTF-8
-          - name: mount_point
-            value: "/shared_volume"
-        resources:
-         requests:
-          cpu: "1"
-          memory: 6Gi
-         limits:
-          cpu: "1"
-          memory: 8Gi
-        volumeMounts:
-         - name: efs-pvc
-           mountPath: "/shared_volume/"
-      volumes:
-       - name: efs-pvc
-         persistentVolumeClaim:
-          claimName: efs
-       - name: dshm
-         emptyDir:
-          medium: Memory
-          sizeLimit: '1Gi'
+	apiVersion: extensions/v1beta1
+	kind: Deployment
+	metadata:
+	  name: antares3-worker
+	  namespace: default
+	spec:
+	  replicas: 1  ##### Just one container, change it if more containers are needed
+	  template:
+	    metadata:
+	     labels:
+	      app: antares3-worker-app
+	    spec:
+	      #restartPolicy: Never
+	      containers:
+	      - name: antares3-worker
+	        imagePullPolicy: Always
+	        image: madmex/antares3-k8s-cluster-dependencies:v3 #Docker image to be used for dask scheduler/worker container
+	        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 	1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
+	        ports:
+	          - containerPort: 8786
+	        env:
+	          - name: LC_ALL
+	            value: C.UTF-8
+	          - name: LANG
+	            value: C.UTF-8
+	          - name: mount_point
+	            value: "/shared_volume"
+	        resources:
+	         requests:
+	          cpu: "1"
+	          memory: 6Gi
+	         limits:
+	          cpu: "1"
+	          memory: 8Gi
+	        volumeMounts:
+	         - name: efs-pvc
+	           mountPath: "/shared_volume/"
+	      volumes:
+	       - name: efs-pvc
+	         persistentVolumeClaim:
+	          claimName: efs
+	       - name: dshm #### This is needed for opendatacube S3 funcionality
+	         emptyDir:
+	          medium: Memory
+	          sizeLimit: '1Gi'
 
 
 Create deployment of antares3-worker with:

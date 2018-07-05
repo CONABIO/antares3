@@ -973,7 +973,7 @@ aws ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_no
 </div>
 <div class="section" id="create-yaml-for-deployment">
 <h4>Create yaml for deployment<a class="headerlink" href="#create-yaml-for-deployment" title="Permalink to this headline">¶</a></h4>
-<p>In the next <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> put <strong>EFS id</strong>, <strong>region</strong>, <strong>AccessKeyId</strong> and <strong>SecretAccessKey</strong> already generated for user kops:</p>
+<p>In the next <code class="docutils literal notranslate"><span class="pre">efs-provisioner.yaml</span></code> put <strong>EFS id</strong>, <strong>region</strong>, <strong>AccessKeyId</strong> and <strong>SecretAccessKey</strong> already generated for user kops:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>---
 apiVersion: v1
 kind: ConfigMap
@@ -1095,9 +1095,8 @@ spec:
 <p class="first admonition-title">Note</p>
 <p class="last">PersistentVolumes can have various reclaim policies, including “Retain”, “Recycle”, and “Delete”.For dynamically provisioned    PersistentVolumes, the default reclaim policy is “Delete”. This means that a dynamically provisioned volume is automatically deleted when a user deletes the corresponding PersistentVolumeClaim. This automatic behavior might be inappropriate if the volume contains precious data. In that case, it is more appropriate to use the “Retain” policy. With the “Retain” policy, if a user deletes a PersistentVolumeClaim, the        corresponding PersistentVolume is not be deleted. Instead, it is moved to the Released phase, where all of its data can be manually recovered. See: <a class="reference external" href="https://kubernetes.io/docs/tasks/administer-cluster/change-pv-reclaim-policy/">Why change reclaim policy of a PersistentVolume</a></p>
 </div>
-<p>To change reclaim policy:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>#retrieve persistent volume:
-$pv_id=$(kubectl get pv|grep pvc | cut -d&#39; &#39; -f1)
+<p>To change reclaim policy, retrieve persistent volume and execute <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">patch</span></code> command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$pv_id=$(kubectl get pv|grep pvc | cut -d&#39; &#39; -f1)
 $kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclaimPolicy&quot;:&quot;Retain&quot;}}
 </pre></div>
 </div>
@@ -1196,7 +1195,7 @@ sudo docker <span class="nb">exec</span> -it &lt;container-id-efs&gt; /bin/sh
 </div>
 <div class="section" id="deployment-for-dask-scheduler">
 <h4>Deployment for dask scheduler<a class="headerlink" href="#deployment-for-dask-scheduler" title="Permalink to this headline">¶</a></h4>
-<p>Use next <code class="docutils literal notranslate"><span class="pre">yaml</span></code> file to create container for dask scheduler:</p>
+<p>Use next <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code> file to create container for dask scheduler:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
@@ -1248,36 +1247,22 @@ spec:
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> create -f antares3-scheduler.yaml
 </pre></div>
 </div>
-<p>To visualize bokeh create Kubernetes service with next <code class="docutils literal notranslate"><span class="pre">yaml</span></code> (modify port according to your preference):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+<p>To visualize bokeh create Kubernetes service with next <code class="docutils literal notranslate"><span class="pre">service.yaml</span></code> (modify port according to your preference):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kind: Service
+apiVersion: v1
+metadata:
+  name: antares3-scheduler-bokeh
+spec:
+  type: LoadBalancer
+  ports:
+    - port: <span class="m">8787</span>
+      targetPort: <span class="m">8787</span>
+      protocol: TCP
+      nodePort: <span class="m">30000</span> <span class="c1">##### Select port of your preference</span>
+  selector:
+    app: antares3-scheduler-app
 </pre></div>
 </div>
-<p>service.yaml</p>
-<blockquote>
-<div><p>kind: Service
-apiVersion: v1
-metadata:</p>
-<blockquote>
-<div>name: antares3-scheduler-bokeh</div></blockquote>
-<dl class="docutils">
-<dt>spec:</dt>
-<dd><p class="first">type: LoadBalancer
-ports:</p>
-<blockquote>
-<div><ul class="simple">
-<li>port: 8787
-targetPort: 8787
-protocol: TCP
-nodePort: 30000 ##### Select port of your preference</li>
-</ul>
-</div></blockquote>
-<dl class="last docutils">
-<dt>selector:</dt>
-<dd>app: antares3-scheduler-app</dd>
-</dl>
-</dd>
-</dl>
-</div></blockquote>
 <p>Execute:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> create -f service.yaml
 </pre></div>
@@ -1289,95 +1274,54 @@ nodePort: 30000 ##### Select port of your preference</li>
 </div>
 <div class="section" id="deployment-for-dask-worker">
 <h4>Deployment for dask worker<a class="headerlink" href="#deployment-for-dask-worker" title="Permalink to this headline">¶</a></h4>
-<p>Use next <code class="docutils literal notranslate"><span class="pre">yaml</span></code> file to create one container for dask worker:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+<p>Use next <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> file to create one container for dask worker:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: antares3-worker
+  namespace: default
+spec:
+  replicas: <span class="m">1</span>  <span class="c1">##### Just one container, change it if more containers are needed</span>
+  template:
+    metadata:
+     labels:
+      app: antares3-worker-app
+    spec:
+      <span class="c1">#restartPolicy: Never</span>
+      containers:
+      - name: antares3-worker
+        imagePullPolicy: Always
+        image: madmex/antares3-k8s-cluster-dependencies:v3 <span class="c1">#Docker image to be used for dask scheduler/worker container</span>
+        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;/home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-worker --worker-port 8786 --nthreads     1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
+        ports:
+          - containerPort: <span class="m">8786</span>
+        env:
+          - name: LC_ALL
+            value: C.UTF-8
+          - name: LANG
+            value: C.UTF-8
+          - name: mount_point
+            value: <span class="s2">&quot;/shared_volume&quot;</span>
+        resources:
+         requests:
+          cpu: <span class="s2">&quot;1&quot;</span>
+          memory: 6Gi
+         limits:
+          cpu: <span class="s2">&quot;1&quot;</span>
+          memory: 8Gi
+        volumeMounts:
+         - name: efs-pvc
+           mountPath: <span class="s2">&quot;/shared_volume/&quot;</span>
+      volumes:
+       - name: efs-pvc
+         persistentVolumeClaim:
+          claimName: efs
+       - name: dshm <span class="c1">#### This is needed for opendatacube S3 funcionality</span>
+         emptyDir:
+          medium: Memory
+          sizeLimit: <span class="s1">&#39;1Gi&#39;</span>
 </pre></div>
 </div>
-<p>apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:</p>
-<blockquote>
-<div>name: antares3-worker
-namespace: default</div></blockquote>
-<dl class="docutils">
-<dt>spec:</dt>
-<dd><p class="first">replicas: 1  ##### Just one container, change it if more containers are needed
-template:</p>
-<blockquote class="last">
-<div><dl class="docutils">
-<dt>metadata:</dt>
-<dd><dl class="first last docutils">
-<dt>labels:</dt>
-<dd>app: antares3-worker-app</dd>
-</dl>
-</dd>
-<dt>spec:</dt>
-<dd><p class="first">#restartPolicy: Never
-containers:
-- name: antares3-worker</p>
-<blockquote>
-<div><p>imagePullPolicy: Always
-image: madmex/antares3-k8s-cluster-dependencies:v3 #Docker image to be used for dask scheduler/worker container
-command: [“/bin/bash”, “-c”, “/home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-worker –worker-port 8786 –nthreads 1 –no-bokeh –death-timeout 60 –scheduler-file /shared_volume/scheduler.json”]
-ports:</p>
-<blockquote>
-<div><ul class="simple">
-<li>containerPort: 8786</li>
-</ul>
-</div></blockquote>
-<dl class="docutils">
-<dt>env:</dt>
-<dd><ul class="first last simple">
-<li>name: LC_ALL
-value: C.UTF-8</li>
-<li>name: LANG
-value: C.UTF-8</li>
-<li>name: mount_point
-value: “/shared_volume”</li>
-</ul>
-</dd>
-<dt>resources:</dt>
-<dd><dl class="first last docutils">
-<dt>requests:</dt>
-<dd>cpu: “1”
-memory: 6Gi</dd>
-<dt>limits:</dt>
-<dd>cpu: “1”
-memory: 8Gi</dd>
-</dl>
-</dd>
-<dt>volumeMounts:</dt>
-<dd><ul class="first last simple">
-<li>name: efs-pvc
-mountPath: “/shared_volume/”</li>
-</ul>
-</dd>
-</dl>
-</div></blockquote>
-<dl class="last docutils">
-<dt>volumes:</dt>
-<dd><ul class="first last">
-<li><p class="first">name: efs-pvc
-persistentVolumeClaim:</p>
-<blockquote>
-<div><p>claimName: efs</p>
-</div></blockquote>
-</li>
-<li><p class="first">name: dshm
-emptyDir:</p>
-<blockquote>
-<div><p>medium: Memory
-sizeLimit: ‘1Gi’</p>
-</div></blockquote>
-</li>
-</ul>
-</dd>
-</dl>
-</dd>
-</dl>
-</div></blockquote>
-</dd>
-</dl>
 <p>Create deployment of antares3-worker with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> create -f antares3-worker.yaml
 </pre></div>
