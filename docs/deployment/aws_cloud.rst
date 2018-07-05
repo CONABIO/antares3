@@ -962,7 +962,7 @@ Use next commands to create EFS:
 	region=<region>
 
 	#create EFS:
-	aws efs create-file-system --performance-mode maxIO --creation-token <some random integer number> --region $region
+	$aws efs create-file-system --performance-mode maxIO --creation-token <some random integer number> --region $region
 	
 
 Set DNS and id of EFS: (last command sould output this values) and give access to docker containers to EFS via mount targets and security groups. Here it's assumed that three subnets were created by ``kops create cluster`` command)
@@ -975,9 +975,9 @@ Set DNS and id of EFS: (last command sould output this values) and give access t
 	efs_id=<id of EFS>
 	
 	#create mount targets for three subnets: 
-	aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops1 --security-groups $sgroups_kops --region $region
-	aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops2 --security-groups $sgroups_kops --region $region
-	aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops3 --security-groups $sgroups_kops --region $region
+	$aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops1 --security-groups $sgroups_kops --region $region
+	$aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops2 --security-groups $sgroups_kops --region $region
+	$aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops3 --security-groups $sgroups_kops --region $region
 	
 	#You have to poll the status of mount targets until status LifeCycleState = “available” so you can use EFS from instances that were created:
 	
@@ -985,8 +985,8 @@ Set DNS and id of EFS: (last command sould output this values) and give access t
 	
 	#Create inbound rules for NFS on the security groups:
 	
-	aws ec2 authorize-security-group-ingress --group-id $sgroups_master --protocol tcp --port 2049 --source-group $sgroups_master --region 	$region
-	aws ec2 authorize-security-group-ingress --group-id $sgroups_nodes --protocol tcp --port 2049 --source-group $sgroups_nodes --region $region
+	$aws ec2 authorize-security-group-ingress --group-id $sgroups_master --protocol tcp --port 2049 --source-group $sgroups_master --region 	$region
+	$aws ec2 authorize-security-group-ingress --group-id $sgroups_nodes --protocol tcp --port 2049 --source-group $sgroups_nodes --region $region
 
 
 Create yaml for deployment
@@ -1167,9 +1167,8 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 
 .. code-block:: bash
 
-	ssh -i <key>.pem admin@$efs_prov_ip_publ
-
-	sudo docker exec -it <container-id-efs> /bin/sh
+	$ssh -i <key>.pem admin@$efs_prov_ip_publ
+	$sudo docker exec -it <container-id-efs> /bin/sh
 
 .. note:: 
 
@@ -1417,7 +1416,7 @@ Locate where is running the scheduler:
 	$dask_scheduler_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$dask_scheduler_ip" --region=<region>|jq -r '.Reservations[].Instances[].PublicDnsName')
 
 
-Using <key>.pem of user kops do a ssh and enter to docker container of dask-scheduler with ``exec`` command::
+Using <key>.pem of user kops do a ssh and enter to docker container of dask-scheduler with ``exec`` command:
 
 .. code-block:: bash
 
