@@ -1123,9 +1123,7 @@ To change reclaim policy:
 .. code-block:: bash
 
 	#retrieve persistent volume:
-
 	pv_id=$(kubectl get pv|grep pvc | cut -d' ' -f1)
-
 	kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}
 
 

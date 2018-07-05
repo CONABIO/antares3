@@ -1091,9 +1091,7 @@ spec:
 </div>
 <p>To change reclaim policy:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>#retrieve persistent volume:
-
 pv_id=$(kubectl get pv|grep pvc | cut -d&#39; &#39; -f1)
-
 kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclaimPolicy&quot;:&quot;Retain&quot;}}
 </pre></div>
 </div>
