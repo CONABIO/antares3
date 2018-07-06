@@ -13,187 +13,16 @@ import numpy
 from scipy import linalg, stats
 
 from madmex.lcc.bitemporal import BaseBiChange
+from madmex.lcc.bitemporal.thresholding import Elliptic
 
 
 logger = logging.getLogger(__name__)
 
-class IMAD(object):
-    '''
-    This class implements The iteratively Multivariate Alteration Detection (MAD)
-    transformation of two images. Taking the difference between the canonical variates
-    from a canonical correlation analysis we obtain the MAD components. The canonical
-    correlated variates are ordered 
-    
-    '''
-    def __init__(self, max_iterations=25, min_delta=0.02):
-        self.max_iterations = max_iterations
-        self.min_delta = min_delta
-    
-    def fit(self, X, Y):
-        self.X = X
-        self.Y = Y
-        if len(self.X.shape) == 2:
-            self.bands = 1
-            self.rows, self.columns = self.X.shape
-            self.X = X[numpy.newaxis,:]
-            self.Y = Y[numpy.newaxis,:]
-        elif len(self.X.shape) == 3:
-            self.bands, self.rows, self.columns = self.X.shape
-        else:
-            logger.error('An image of 3 or 2 dimensions is expected.')
-                
-    
-    def transform(self, X, Y):
-        image_bands_flattened = numpy.zeros((2 * self.bands, self.columns * self.rows))
-        for k in range(self.bands):
-            image_bands_flattened[k, :] = numpy.ravel(self.X[k, :, :])
-            image_bands_flattened[self.bands + k, :] = numpy.ravel(self.Y[k, :, :])
-        
-        
-        
-        NO_DATA = 0
-        no_data_X = image_bands_flattened[0, :] == NO_DATA
-        no_data_Y = image_bands_flattened[self.bands, :] == NO_DATA
-        
-        
-        
-        
-        no_data_mask = (no_data_X | no_data_Y) == True
-        
-
-        data_mask = (no_data_X | no_data_Y) == False
-        
-        self.image_bands_flattened = image_bands_flattened[:, data_mask]
-        data_mask_sum = numpy.sum(data_mask)
-        self.weights = numpy.ones(int(data_mask_sum)) # we start with weights defined as ones.
-
-        self.outcorrlist = []
-        i = 0
-        logger.info('Starting iMAD iterations.')  
-        old_rho = numpy.zeros(self.bands)
-        delta = 1.0
-        flag = True
-        while (delta > self.min_delta) and (i < self.max_iterations) and flag:
-            try:
-                logger.info('iMAD iteration: %d', i)
-                weighted_sum = len(self.weights)
-                
-                
-                means = numpy.average(self.image_bands_flattened, axis=1, weights=self.weights)
-                dmc = self.image_bands_flattened - means[:, numpy.newaxis]
-                dmc = numpy.multiply(dmc, numpy.sqrt(self.weights))
-                
-                print("OLD")
-                
-                sigma = numpy.dot(dmc, dmc.T) / (weighted_sum - 1)
-                
-                
-                s11 = sigma[0:self.bands, 0:self.bands]
-                s22 = sigma[self.bands:, self.bands:]
-                s12 = sigma[0:self.bands, self.bands:]
-                s21 = sigma[self.bands:, 0:self.bands]
-                aux_1 = linalg.solve(s22, s21)
-                
-                
-                
-                
-                lamda_a, a = linalg.eig(numpy.dot(s12, aux_1), s11)
-                
-                
-                
-                
-                print(lamda_a)
-                print(a)
-                
-                
-                #print(lamda_a)
-                #print(a)
-                
-                #print(lamda_a)
-                
-                #print(dmc)
-                aux_2 = linalg.solve(s11, s12)
-                lamda_b, b = linalg.eig(numpy.dot(s21, aux_2), s22)
-                
-                
-                
-                # sort a
-                sorted_indexes = numpy.argsort(lamda_a)
-                a = a[:, sorted_indexes]
-                #print(lamda_a)
-                #print(a[:, numpy.flip(numpy.argsort(lamda_a), 0)])
-                # sort b        
-                sorted_indexes = numpy.argsort(lamda_b)
-                b = b[:, sorted_indexes]          
-                # canonical correlations        
-                rho = numpy.sqrt(numpy.real(lamda_b[sorted_indexes])) 
-                self.delta = numpy.sum(numpy.abs(rho - old_rho))
-                if(not math.isnan(self.delta)):
-                    self.outcorrlist.append(rho)
-                    # normalize dispersions  
-                    tmp1 = numpy.dot(numpy.dot(a.T, s11), a)
-                    tmp2 = 1. / numpy.sqrt(numpy.diag(tmp1))
-                    tmp3 = numpy.tile(tmp2, (self.bands, 1))
-
-                    a = numpy.multiply(a, tmp3)
-                    b = numpy.mat(b)
-                    tmp1 = numpy.dot(numpy.dot(b.T, s22), b)
-                    tmp2 = 1. / numpy.sqrt(numpy.diag(tmp1))
-                    tmp3 = numpy.tile(tmp2, (self.bands, 1))
-                    b = numpy.multiply(b, tmp3)
-                    # assure positive correlation
-                    tmp = numpy.diag(numpy.dot(numpy.dot(a.T, s12), b))
-                    b = numpy.dot(b, numpy.diag(tmp / numpy.abs(tmp)))
-                    # canonical and MAD variates
-
-                    U = numpy.dot(a.T, (self.image_bands_flattened[0:self.bands, :] - means[0:self.bands, numpy.newaxis]))    
-                    V = numpy.dot(b.T, (self.image_bands_flattened[self.bands:, :] - means[self.bands:, numpy.newaxis]))          
-                    M_flat = U - V  # TODO: is this operation stable?
-                    # new weights        
-                    var_mad = numpy.tile(numpy.mat(2 * (1 - rho)).T, (1, data_mask_sum))
-                    chi_squared = numpy.sum(numpy.multiply(M_flat, M_flat) / var_mad, 0)
-                    self.weights = numpy.squeeze(1 - numpy.array(stats.chi2._cdf(chi_squared, self.bands))) 
-                    old_rho = rho
-                    logger.info('Processing of iteration %d finished [%f] ...', i, numpy.max(self.delta))
-                    i = i + 1
-                else:
-                    flag = False
-                    logger.warning('Some error happened.')
-            except Exception as error:
-                traceback.print_exc(file=sys.stdout)
-                flag = False
-                logger.error('iMAD transform failed with error: %s', str(repr(error))) 
-                logger.error('Processing in iteration %d produced error. Taking last MAD of iteration %d' % (i, i - 1))
-        output_flat = numpy.zeros((self.bands, self.columns * self.rows))
-        output_flat[0:self.bands, data_mask] = M_flat
-        M = numpy.zeros((self.bands, self.rows, self.columns))
-        
-        
-        #print(M[0])
-        
-        for b in range(self.bands):
-            M[b, :, :] = (numpy.resize(output_flat[self.bands - (b + 1), :], (self.rows, self.columns)))
-        
-        
-        U_flat = numpy.zeros((self.bands, self.columns * self.rows))
-        U_flat[0:self.bands, data_mask] = U
-        U_final = numpy.zeros((self.bands, self.rows, self.columns))
-        for b in range(self.bands):
-            U_final[b, :, :] = (numpy.resize(U_flat[b, :], (self.rows, self.columns)))
-            
-        V_flat = numpy.zeros((self.bands, self.columns * self.rows))
-        V_flat[0:self.bands, data_mask] = V
-        V_final = numpy.zeros((self.bands, self.rows, self.columns))
-        for b in range(self.bands):
-            V_final[b, :, :] = (numpy.resize(V_flat[b, :], (self.rows, self.columns)))
-        return M, U_final, V_final, chi_squared
-
-    def fit_transform(self, X, Y):
-        self.fit(X, Y)
-        return self.transform(X, Y)
-    
 def spatial_covariance(X, h):
-
+    '''
+    This method computes the spatial covariance for an image. This is, the covariance of an
+    image with itself, but shifted by an amount specified with h.
+    '''
     X_mean = numpy.average(X, axis=(1,2))
     X_shifted = numpy.roll(numpy.roll(X, h[1], axis=1), h[0], axis=2)
     bands = X.shape[0]
@@ -204,9 +33,12 @@ def spatial_covariance(X, h):
     return C
 
 class MAF(object):
-    
-    def __init__(self, shift=(1, 1), no_data=0):
-        self.no_data = no_data
+    '''
+    This transform maximizes the autocorrelation for the image. The bands are
+    order by autocorrelation with the first band having the maximum autocorrelation
+    and subjected to be uncorrelated with the other bands.
+    '''
+    def __init__(self, shift=(1, 1)):
         self.h = numpy.array(shift)
     def fit(self, X):
         self.X = X
@@ -235,11 +67,13 @@ class MAF(object):
         return self.transform(X)
     
 class MAD(object):
-    
+    '''
+    This class computes the MAD components. These are useful in the study of phenomena
+    changes between raster images taken in different times.
+    '''
     def __init__(self, weights=None, lmbda=0.0):
         self.lmbda = lmbda
-        
-    
+
     def fit(self, X, Y, weights=None):
         self.X = X
         self.Y = Y
@@ -257,6 +91,13 @@ class MAD(object):
         else:
             self.weights = weights                
     def transform(self, X, Y):
+        '''
+        Taking the difference between the canonical variates from a canonical correlation
+        analysis we obtain the MAD components. The canonical correlated variates are ordered
+        by similarity instead of wavelength. This difference will capture the changes
+        between the images. The bands of the MAD components capture different nature of
+        changes. 
+        '''
         W = self.weights * numpy.ones(X.shape)
         X_mean = numpy.average(X, weights=W, axis=(1,2))
         Y_mean = numpy.average(Y, weights=W, axis=(1,2))
@@ -287,7 +128,6 @@ class MAD(object):
                                      numpy.matmul(sigma_12, 
                                                   numpy.matmul(sigma_22_inverse, 
                                                                numpy.matmul(sigma_12.T, lower_11_inverse.T))))
-
         eig_problem_1 = (eig_problem_1 + eig_problem_1.T) * 0.5
         eig_problem_2 = numpy.matmul(lower_22_inverse, 
                                      numpy.matmul(sigma_12.T, 
@@ -318,22 +158,27 @@ class MAD(object):
         signs = numpy.diag(signs_vector / numpy.abs(signs_vector))        
         vector_v = numpy.matmul(vector_v, signs)
         
-        
         U = numpy.matmul(vector_u.T, X_pixel_band)    
         V = numpy.matmul(vector_v.T, Y_pixel_band)
-        
-        M = U - V
 
+        M = U - V
         sigma_squared = (2 - self.lmbda * (norm_a_squared + norm_b_squared)) / (1 - self.lmbda) - 2 * mu
         rho = mu * (1 - self.lmbda) / numpy.sqrt((1 - self.lmbda * norm_a_squared) * (1 - self.lmbda * norm_b_squared))
-
         return M.reshape(self.bands, self.rows, self.cols), sigma_squared, rho
         
     def fit_transform(self, X, Y, weights=None):
+        '''
+        Helper method to call fit and transform methods.
+        '''
         self.fit(X, Y, weights)
         return self.transform(X, Y)
     
 class IRMAD(object):
+    '''
+    This class implements The iteratively Multivariate Alteration Detection (MAD)
+    transformation of two images. 
+    
+    '''
     def __init__(self, max_iterations=50, min_delta=0.001, lmbda=0.0):
         self.max_iterations = max_iterations
         self.threshold = min_delta
@@ -358,23 +203,11 @@ class IRMAD(object):
         old_rho = numpy.ones((self.X.shape[0]))
         weights = numpy.ones((self.X.shape[1],self.X.shape[2]))
         while i < self.max_iterations and delta > self.threshold:
-            print('Iteration #%s' % i)
-            print('delta: %s' % delta)
+            logger.info('Iteration #%s' % i)
+            logger.info('delta: %s' % delta)
             M, sigma_squared, rho = MAD(lmbda=self.lmbda).fit_transform(X, Y, weights)
-            '''
-            print("sigma_squared")
-            print(sigma_squared)
-            '''
-            #print("M")
-            #print(M)
-            
-            
             chi_square = numpy.tensordot(1 / sigma_squared, numpy.multiply(M, M), axes=1)
-            #print("chi_square")
-            #print(chi_square.shape)
-            #print(chi_square)
             weights = 1 - stats.chi2.cdf(chi_square, self.bands)
-            #print(weights)
             delta = max(abs(rho - old_rho))
             old_rho = rho
             i = i + 1
@@ -392,17 +225,17 @@ class BiChange(BaseBiChange):
     the output using the Maximum Autocorrelation Factor.
     '''
 
-
-    def __init__(self,  array, affine, crs, max_iterations=25, min_delta=0.02):
+    def __init__(self,  array, affine, crs, max_iterations=25, min_delta=0.01, lmbda=0.0, shift=(1, 1)):
         '''
         Constructor
         '''
         super.__init__(array=array, affine=affine, crs=crs)
         self.max_iterations = max_iterations
         self.min_delta = min_delta
+        self.lmda = lmbda
+        self.shift = shift
     def _run(self, arr0, arr1):
-        imad = IMAD(self.max_iterations, self.min_delta)
-        pass
-        #maf = MAF(imad)
-        #return get_mask(maf)
+        M = IRMAD(self.max_iterations, self.min_delta, self.lmbda).fit_transform(arr0, arr1)
+        M = MAF(self.shift).fit_transform(M)
+        return Elliptic().fit_transform(M)
         
