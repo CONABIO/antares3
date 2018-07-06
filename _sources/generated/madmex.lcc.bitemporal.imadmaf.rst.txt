@@ -20,7 +20,6 @@ madmex.lcc.bitemporal.imadmaf
    .. autosummary::
    
       BiChange
-      IMAD
       IRMAD
       MAD
       MAF

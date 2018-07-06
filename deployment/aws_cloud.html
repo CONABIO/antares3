@@ -102,6 +102,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#cluster-creation">Cluster creation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#deployment-for-elastic-file-system">Deployment for Elastic File System</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id1">Create RDS instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dockerfile-for-containers-of-antares3-and-open">Dockerfile for containers of Antares3 and Open</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#deployments-for-dask-scheduler-and-worker">Deployments for dask scheduler and worker</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">Init Antares and Open DataCube</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#notes">Notes</a></li>
@@ -549,6 +550,10 @@ ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/<span class="nv
 <div class="section" id="create-rds-instance">
 <h3>4. Create RDS instance<a class="headerlink" href="#create-rds-instance" title="Permalink to this headline">¶</a></h3>
 <p>Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Prerequisites at the top of this page to setup a RDS-instance with subnet and security groups of your preference. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of the dask-sge cluster, install <code class="docutils literal notranslate"><span class="pre">postgresql-client</span></code> and execute a <code class="docutils literal notranslate"><span class="pre">createdb</span></code> command.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Make sure in the security group for the instance of RDS you have inbound rules of <strong>ALL TCP</strong>, <strong>ALL ICMP-IPv4</strong>, <strong>PostgreSQL</strong> for  security group configured for instances.</p>
+</div>
 </div>
 <div class="section" id="init-antares-and-open-datacube">
 <h3>5. Init Antares and Open DataCube<a class="headerlink" href="#init-antares-and-open-datacube" title="Permalink to this headline">¶</a></h3>
@@ -715,116 +720,6 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
-<li>Use next <strong>Dockerfile</strong> to build docker image for antares3:</li>
-</ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>FROM ubuntu:xenial
-USER root
-
-<span class="c1">#see: https://github.com/Yelp/dumb-init/ for next line:</span>
-RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y wget curl <span class="o">&amp;&amp;</span> wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>/dumb-init_<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>_amd64 <span class="o">&amp;&amp;</span> chmod +x /usr/local/bin/ dumb-init
-
-<span class="c1">#base dependencies</span>
-RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y <span class="se">\</span>
-        openssh-server <span class="se">\</span>
-        openssl <span class="se">\</span>
-        sudo <span class="se">\</span>
-        nano <span class="se">\</span>
-        software-properties-common <span class="se">\</span>
-        python-software-properties <span class="se">\</span>
-        git <span class="se">\</span>
-        vim <span class="se">\</span>
-        vim-gtk <span class="se">\</span>
-        htop <span class="se">\</span>
-        build-essential <span class="se">\</span>
-        libssl-dev <span class="se">\</span>
-        libffi-dev <span class="se">\</span>
-        cmake <span class="se">\</span>
-        python3-dev <span class="se">\</span>
-        python3-pip <span class="se">\</span>
-        python3-setuptools <span class="se">\</span>
-        ca-certificates <span class="se">\</span>
-        postgresql-client <span class="se">\</span>
-    libudunits2-dev  <span class="o">&amp;&amp;</span> pip3 install --upgrade <span class="nv">pip</span><span class="o">==</span><span class="m">9</span>.0.3
-
-<span class="c1">#Install spatial libraries</span>
-RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable <span class="o">&amp;&amp;</span> apt-get -qq update
-RUN apt-get install -y <span class="se">\</span>
-        netcdf-bin <span class="se">\</span>
-        libnetcdf-dev <span class="se">\</span>
-        ncview <span class="se">\</span>
-        libproj-dev <span class="se">\</span>
-        libgeos-dev <span class="se">\</span>
-        gdal-bin <span class="se">\</span>
-        libgdal-dev
-
-<span class="c1">#Create user: madmex_user</span>
-RUN groupadd madmex_user
-RUN useradd madmex_user -g madmex_user -m -s /bin/bash
-RUN <span class="nb">echo</span> <span class="s2">&quot;madmex_user ALL=(ALL:ALL) NOPASSWD:ALL&quot;</span> <span class="p">|</span> <span class="o">(</span><span class="nv">EDITOR</span><span class="o">=</span><span class="s2">&quot;tee -a&quot;</span> visudo<span class="o">)</span>
-RUN <span class="nb">echo</span> <span class="s2">&quot;madmex_user:madmex_user&quot;</span> <span class="p">|</span> chpasswd
-
-<span class="c1">##Install dask distributed</span>
-RUN pip3 install dask distributed --upgrade <span class="o">&amp;&amp;</span> pip3 install bokeh
-<span class="c1">##Install missing package for open datacube:</span>
-RUN pip3 install --upgrade python-dateutil
-
-<span class="c1">#Dependencies for antares3 &amp; datacube</span>
-RUN pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span>.0b1 --no-binary rasterio
-RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
-RUN pip3 install --no-cache --no-binary :all: psycopg2
-RUN pip3 install futures pathlib <span class="nv">setuptools</span><span class="o">==</span><span class="m">20</span>.4
-
-<span class="c1">#datacube:</span>
-RUN apt-get clean <span class="o">&amp;&amp;</span> apt-get update <span class="o">&amp;&amp;</span> apt-get install -y locales
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
-RUN pip3 install git+https://github.com/opendatacube/datacube-core.git@develop#egg<span class="o">=</span>datacube<span class="o">[</span>s3<span class="o">]</span>
-
-<span class="c1">#Upgrade awscli and tools for s3:</span>
-RUN pip3 install boto3 botocore awscli --upgrade
-
-<span class="c1">#antares3:</span>
-USER madmex_user
-RUN pip3 install --user git+https://github.com/CONABIO/antares3.git@develop
-
-<span class="c1">##Set locales for OpenDataCube</span>
-RUN <span class="nb">echo</span> <span class="s2">&quot;export LC_ALL=C.UTF-8&quot;</span> &gt;&gt; ~/.profile
-RUN <span class="nb">echo</span> <span class="s2">&quot;export LANG=C.UTF-8&quot;</span> &gt;&gt; ~/.profile
-<span class="c1">#Set variables</span>
-ARG <span class="nv">mount_point</span><span class="o">=</span><span class="nv">$mount_point</span>
-RUN <span class="nb">echo</span> <span class="s2">&quot;export mount_point=</span><span class="nv">$mount_point</span><span class="s2">&quot;</span> &gt;&gt; ~/.profile
-<span class="c1">#Use python3</span>
-RUN <span class="nb">echo</span> <span class="s2">&quot;alias python=python3&quot;</span> &gt;&gt; ~/.bash_aliases
-<span class="c1">#Antares3:</span>
-RUN <span class="nb">echo</span> <span class="s2">&quot;export PATH=</span><span class="nv">$PATH</span><span class="s2">:/home/madmex_user/.local/bin/&quot;</span> &gt;&gt; ~/.profile
-<span class="c1">#Config files for datacube and antares</span>
-RUN ln -sf <span class="nv">$mount_point</span>/.antares ~/.antares
-RUN ln -sf <span class="nv">$mount_point</span>/.datacube.conf ~/.datacube.conf
-
-<span class="c1">#Final settings</span>
-WORKDIR /home/madmex_user/
-VOLUME <span class="o">[</span><span class="s2">&quot;/shared_volume&quot;</span><span class="o">]</span>
-ENTRYPOINT <span class="o">[</span><span class="s2">&quot;/usr/local/bin/dumb-init&quot;</span>, <span class="s2">&quot;--&quot;</span><span class="o">]</span>
-</pre></div>
-</div>
-<p>Build docker image with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">DOCKER_REPOSITORY</span><span class="o">=</span>&lt;name of your docker hub repository&gt;
-
-<span class="nv">DOCKER_IMAGE_NAME</span><span class="o">=</span>antares3-k8s-cluster-dependencies
-
-<span class="nv">DOCKER_IMAGE_VERSION</span><span class="o">=</span>latest
-
-sudo docker build --build-arg <span class="nv">mount_point</span><span class="o">=</span><span class="nv">$mount_point</span> -t <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOCKER_IMAGE_NAME</span>:<span class="nv">$DOCKER_IMAGE_VERSION</span> .
-
-sudo docker login
-
-sudo docker push <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOCKER_IMAGE_NAME</span>:<span class="nv">$DOCKER_IMAGE_VERSION</span>
-
-sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOCKER_IMAGE_NAME</span>:<span class="nv">$DOCKER_IMAGE_VERSION</span>
-</pre></div>
-</div>
-<ol class="arabic simple" start="4">
 <li>Set next bash variables:</li>
 </ol>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Your domain name that is hosted in AWS Route 53</span>
@@ -853,7 +748,7 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 <span class="nb">export</span> <span class="nv">EDITOR</span><span class="o">=</span>nano
 </pre></div>
 </div>
-<ol class="arabic simple" start="5">
+<ol class="arabic simple" start="4">
 <li>Create AWS S3 bucket to hold information for Kubernetes cluster:</li>
 </ol>
 <div class="admonition note">
@@ -863,7 +758,7 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$aws</span> s3api create-bucket --bucket <span class="si">${</span><span class="nv">CLUSTER_FULL_NAME</span><span class="si">}</span>-state
 </pre></div>
 </div>
-<ol class="arabic simple" start="6">
+<ol class="arabic simple" start="5">
 <li>Create group and user kops and generate access keys for user kops:</li>
 </ol>
 <div class="admonition note">
@@ -908,7 +803,7 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 <span class="nv">$export</span> <span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span><span class="k">$(</span>aws configure get aws_secret_access_key<span class="k">)</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="7">
+<ol class="arabic simple" start="6">
 <li>Create a Key Pair with AWS console and a Public Key. See <a class="reference external" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html">Amazon EC2 Key Pairs</a> sections: <strong>Creating a Key Pair Using Amazon EC2</strong> and <strong>Creating a Key Pair Using Amazon EC2</strong>. Save the Public Key in <code class="docutils literal notranslate"><span class="pre">/home/ubuntu/.ssh/id_rsa.pub</span></code>.</li>
 <li>Deploy Kubernetes Cluster. An example is:</li>
 </ol>
@@ -1137,6 +1032,121 @@ $kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclai
 <div class="section" id="id1">
 <h3>Create RDS instance<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Prerequisites at the top of this page to setup a RDS-instance with subnet and security groups created by <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">create</span> <span class="pre">cluster</span></code> command. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of Kubernetes cluster, install <code class="docutils literal notranslate"><span class="pre">postgresql-client</span></code> and execute a <code class="docutils literal notranslate"><span class="pre">createdb</span></code> command (to ssh to an instance of Kubernetes cluster see end of <strong>Cluster Creation</strong> section).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Make sure in the security group for the instance of RDS you have inbound rules of <strong>ALL TCP</strong>, <strong>ALL ICMP-IPv4</strong>, <strong>PostgreSQL</strong> for both security groups of master and nodes created by <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">create</span> <span class="pre">cluster</span></code> command.</p>
+</div>
+</div>
+<div class="section" id="dockerfile-for-containers-of-antares3-and-open">
+<h3>Dockerfile for containers of Antares3 and Open<a class="headerlink" href="#dockerfile-for-containers-of-antares3-and-open" title="Permalink to this headline">¶</a></h3>
+<p>Use next <strong>Dockerfile</strong> to build docker image for antares3:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>FROM ubuntu:xenial
+USER root
+
+<span class="c1">#see: https://github.com/Yelp/dumb-init/ for next line:</span>
+RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y wget curl <span class="o">&amp;&amp;</span> wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>/dumb-init_<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>_amd64 <span class="o">&amp;&amp;</span> chmod +x /usr/local/bin/ dumb-init
+
+<span class="c1">#base dependencies</span>
+RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y <span class="se">\</span>
+        openssh-server <span class="se">\</span>
+        openssl <span class="se">\</span>
+        sudo <span class="se">\</span>
+        nano <span class="se">\</span>
+        software-properties-common <span class="se">\</span>
+        python-software-properties <span class="se">\</span>
+        git <span class="se">\</span>
+        vim <span class="se">\</span>
+        vim-gtk <span class="se">\</span>
+        htop <span class="se">\</span>
+        build-essential <span class="se">\</span>
+        libssl-dev <span class="se">\</span>
+        libffi-dev <span class="se">\</span>
+        cmake <span class="se">\</span>
+        python3-dev <span class="se">\</span>
+        python3-pip <span class="se">\</span>
+        python3-setuptools <span class="se">\</span>
+        ca-certificates <span class="se">\</span>
+        postgresql-client <span class="se">\</span>
+    libudunits2-dev  <span class="o">&amp;&amp;</span> pip3 install --upgrade <span class="nv">pip</span><span class="o">==</span><span class="m">9</span>.0.3
+
+<span class="c1">#Install spatial libraries</span>
+RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable <span class="o">&amp;&amp;</span> apt-get -qq update
+RUN apt-get install -y <span class="se">\</span>
+        netcdf-bin <span class="se">\</span>
+        libnetcdf-dev <span class="se">\</span>
+        ncview <span class="se">\</span>
+        libproj-dev <span class="se">\</span>
+        libgeos-dev <span class="se">\</span>
+        gdal-bin <span class="se">\</span>
+        libgdal-dev
+
+<span class="c1">#Create user: madmex_user</span>
+RUN groupadd madmex_user
+RUN useradd madmex_user -g madmex_user -m -s /bin/bash
+RUN <span class="nb">echo</span> <span class="s2">&quot;madmex_user ALL=(ALL:ALL) NOPASSWD:ALL&quot;</span> <span class="p">|</span> <span class="o">(</span><span class="nv">EDITOR</span><span class="o">=</span><span class="s2">&quot;tee -a&quot;</span> visudo<span class="o">)</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;madmex_user:madmex_user&quot;</span> <span class="p">|</span> chpasswd
+
+<span class="c1">##Install dask distributed</span>
+RUN pip3 install dask distributed --upgrade <span class="o">&amp;&amp;</span> pip3 install bokeh
+<span class="c1">##Install missing package for open datacube:</span>
+RUN pip3 install --upgrade python-dateutil
+
+<span class="c1">#Dependencies for antares3 &amp; datacube</span>
+RUN pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span>.0b1 --no-binary rasterio
+RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
+RUN pip3 install --no-cache --no-binary :all: psycopg2
+RUN pip3 install futures pathlib <span class="nv">setuptools</span><span class="o">==</span><span class="m">20</span>.4
+
+<span class="c1">#datacube:</span>
+RUN apt-get clean <span class="o">&amp;&amp;</span> apt-get update <span class="o">&amp;&amp;</span> apt-get install -y locales
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+RUN pip3 install git+https://github.com/opendatacube/datacube-core.git@develop#egg<span class="o">=</span>datacube<span class="o">[</span>s3<span class="o">]</span>
+
+<span class="c1">#Upgrade awscli and tools for s3:</span>
+RUN pip3 install boto3 botocore awscli --upgrade
+
+<span class="c1">#antares3:</span>
+USER madmex_user
+RUN pip3 install --user git+https://github.com/CONABIO/antares3.git@develop
+
+<span class="c1">##Set locales for OpenDataCube</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;export LC_ALL=C.UTF-8&quot;</span> &gt;&gt; ~/.profile
+RUN <span class="nb">echo</span> <span class="s2">&quot;export LANG=C.UTF-8&quot;</span> &gt;&gt; ~/.profile
+<span class="c1">#Set variables</span>
+ARG <span class="nv">mount_point</span><span class="o">=</span><span class="nv">$mount_point</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;export mount_point=</span><span class="nv">$mount_point</span><span class="s2">&quot;</span> &gt;&gt; ~/.profile
+<span class="c1">#Use python3</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;alias python=python3&quot;</span> &gt;&gt; ~/.bash_aliases
+<span class="c1">#Antares3:</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;export PATH=</span><span class="nv">$PATH</span><span class="s2">:/home/madmex_user/.local/bin/&quot;</span> &gt;&gt; ~/.profile
+<span class="c1">#Config files for datacube and antares</span>
+RUN ln -sf <span class="nv">$mount_point</span>/.antares ~/.antares
+RUN ln -sf <span class="nv">$mount_point</span>/.datacube.conf ~/.datacube.conf
+
+<span class="c1">#Final settings</span>
+WORKDIR /home/madmex_user/
+VOLUME <span class="o">[</span><span class="s2">&quot;/shared_volume&quot;</span><span class="o">]</span>
+ENTRYPOINT <span class="o">[</span><span class="s2">&quot;/usr/local/bin/dumb-init&quot;</span>, <span class="s2">&quot;--&quot;</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Build docker image with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">DOCKER_REPOSITORY</span><span class="o">=</span>&lt;name of your docker hub repository&gt;
+
+<span class="nv">DOCKER_IMAGE_NAME</span><span class="o">=</span>antares3-k8s-cluster-dependencies
+
+<span class="nv">DOCKER_IMAGE_VERSION</span><span class="o">=</span>latest
+
+sudo docker build --build-arg <span class="nv">mount_point</span><span class="o">=</span><span class="nv">$mount_point</span> -t <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOCKER_IMAGE_NAME</span>:<span class="nv">$DOCKER_IMAGE_VERSION</span> .
+
+sudo docker login
+
+sudo docker push <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOCKER_IMAGE_NAME</span>:<span class="nv">$DOCKER_IMAGE_VERSION</span>
+
+sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOCKER_IMAGE_NAME</span>:<span class="nv">$DOCKER_IMAGE_VERSION</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="deployments-for-dask-scheduler-and-worker">
 <h3>Deployments for dask scheduler and worker<a class="headerlink" href="#deployments-for-dask-scheduler-and-worker" title="Permalink to this headline">¶</a></h3>
@@ -1482,12 +1492,12 @@ spec:
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
-<li>Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete RDS instance:</li>
+<li>Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:</li>
 </ol>
 <p>For example, to delete deployment of EFS and service (bokeh visualization):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> delete deployment efs-provisioner
 
-<span class="nv">$kubectl</span> delete deployment service
+<span class="nv">$kubectl</span> delete service antares3-scheduler-bokeh
 </pre></div>
 </div>
 <p>To delete mount targets of EFS (assuming there’s three subnets):</p>
@@ -1501,11 +1511,11 @@ spec:
 
 <span class="nv">mt_id3</span><span class="o">=</span><span class="k">$(</span>aws efs describe-mount-targets --file-system-id <span class="nv">$efs_id</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.MountTargets[]|.MountTargetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f3<span class="k">)</span>
 
-<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id1</span>
+<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id1</span> --region<span class="o">=</span><span class="nv">$region</span>
 
-<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id2</span>
+<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id2</span> --region<span class="o">=</span><span class="nv">$region</span>
 
-<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id3</span>
+<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id3</span> --region<span class="o">=</span><span class="nv">$region</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
@@ -1553,6 +1563,10 @@ spec:
 
 <span class="nv">$aws</span> iam attach-role-policy --policy-arn <span class="nv">$arn_of_policy</span> --role-name <span class="nv">$name_of_role_nodes</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Before deleting cluster delete policy attach to roles <code class="docutils literal notranslate"><span class="pre">masters.$CLUSTER_FULL_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">nodes.$CLUSTER_FULL_NAME</span></code>.</p>
 </div>
 </div>
 </div>

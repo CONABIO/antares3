@@ -369,7 +369,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fc</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span></div>
 
 
-<div class="viewcode-block" id="BaseBiChange.to_db"><a class="viewcode-back" href="../../../generated/madmex.lcc.bitemporal.BaseBiChange.to_db.html#madmex.lcc.bitemporal.BaseBiChange.to_db">[docs]</a>    <span class="k">def</span> <span class="nf">to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">pre_name</span><span class="p">,</span> <span class="n">post_name</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseBiChange.to_db"><a class="viewcode-back" href="../../../generated/madmex.lcc.bitemporal.BaseBiChange.to_db.html#madmex.lcc.bitemporal.BaseBiChange.to_db">[docs]</a>    <span class="k">def</span> <span class="nf">to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">pre_name</span><span class="p">,</span> <span class="n">post_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Write feature collection returned by label_change to the antares3 database</span>
 
 <span class="sd">        The geometries of fc are assumed to be in the crs specified in the instance</span>
@@ -384,8 +384,6 @@
 <span class="sd">                labels</span>
 <span class="sd">            post_name (str): Name of the classification used for assigning posterior</span>
 <span class="sd">                labels</span>
-<span class="sd">            name (str): Unique name/identifier to give to that series of labelled change</span>
-<span class="sd">                objects</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Function used for its side effect of writing a feature collection to</span>
@@ -402,7 +400,6 @@
         <span class="c1"># Build list of ChangeClassification </span>
         <span class="n">class_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ChangeClassification</span><span class="p">(</span><span class="n">pre_name</span><span class="o">=</span><span class="n">pre_name</span><span class="p">,</span>
                                            <span class="n">post_name</span><span class="o">=</span><span class="n">post_name</span><span class="p">,</span>
-                                           <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                                            <span class="n">change_object</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                                            <span class="n">pre_tag_id</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
                                            <span class="n">post_tag_id</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>

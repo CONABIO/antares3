@@ -199,7 +199,7 @@
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">spatial_covariance</span></code>(X,&nbsp;h)</td>
-<td></td>
+<td>This method computes the spatial covariance for an image.</td>
 </tr>
 </tbody>
 </table>
@@ -213,17 +213,14 @@
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">BiChange</span></code>(array,&nbsp;affine,&nbsp;crs[,&nbsp;…])</td>
 <td>Process to detect land cover change using the iteratively reweighted Multivariate Alteration Detection algorithm and then postprocesing the output using the Maximum Autocorrelation Factor.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">IMAD</span></code>([max_iterations,&nbsp;min_delta])</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">IRMAD</span></code>([max_iterations,&nbsp;min_delta,&nbsp;lmbda])</td>
 <td>This class implements The iteratively Multivariate Alteration Detection (MAD) transformation of two images.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">IRMAD</span></code>([max_iterations,&nbsp;min_delta,&nbsp;lmbda])</td>
-<td></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAD</span></code>([weights,&nbsp;lmbda])</td>
+<td>This class computes the MAD components.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAD</span></code>([weights,&nbsp;lmbda])</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAF</span></code>([shift,&nbsp;no_data])</td>
-<td></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAF</span></code>([shift])</td>
+<td>This transform maximizes the autocorrelation for the image.</td>
 </tr>
 </tbody>
 </table>
