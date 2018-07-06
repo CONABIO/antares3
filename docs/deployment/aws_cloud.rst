@@ -698,7 +698,7 @@ You can check kops and kubectl versions with:
 	USER root
 
 	#see: https://github.com/Yelp/dumb-init/ for next line:
-	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$	(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s 	https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/	dumb-init
+	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/ dumb-init
 	
 	#base dependencies
 	RUN apt-get update && apt-get install -y \
@@ -1010,7 +1010,7 @@ Set DNS and id of EFS: (last command sould output this values) and give access t
 	
 	#Create inbound rules for NFS on the security groups:
 	
-	$aws ec2 authorize-security-group-ingress --group-id $sgroups_master --protocol tcp --port 2049 --source-group $sgroups_master --region 	$region
+	$aws ec2 authorize-security-group-ingress --group-id $sgroups_master --protocol tcp --port 2049 --source-group $sgroups_master --region $region
 
 	$aws ec2 authorize-security-group-ingress --group-id $sgroups_nodes --protocol tcp --port 2049 --source-group $sgroups_nodes --region $region
 
@@ -1030,8 +1030,8 @@ In the next ``efs-provisioner.yaml`` put **EFS id**, **region**, **AccessKeyId**
 	metadata:
 	  name: efs-provisioner
 	data:
-	  file.system.id: <efs id> #####Here put efs id
-	  aws.region: <region> #####Here put region
+	  file.system.id: <efs id> ##### Here put efs id
+	  aws.region: <region> ##### Here put region
 	  provisioner.name: aws-efs
 	---
 	kind: ClusterRole
@@ -1612,11 +1612,11 @@ To delete mount targets of EFS (assuming there's three subnets):
 
 	region=<region>
 	
-	mt_id1=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut 	-d' ' -f1)
+	mt_id1=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f1)
 	
-	mt_id2=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut 	-d' ' -f2)
+	mt_id2=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f2)
 	
-	mt_id3=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut 	-d' ' -f3)
+	mt_id3=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f3)
 	
 	$aws efs delete-mount-target --mount-target-id $mt_id1
 	
