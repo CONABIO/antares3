@@ -130,6 +130,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#write-output-to-a-vector-file">Write output to a vector file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualization-and-observations">Visualization and observations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#land-cover">Land cover</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#land-cover-change">Land cover change</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -204,7 +209,7 @@
 <p>Fully understanding the tutorial requires knowledge of some key python geospatial concepts and data structures. They are briefly reminded below:</p>
 <ul class="simple">
 <li>Feature collection: a valid feature collection in python is a list of geojson features. Features are dictionaries that each contain at least a geometry and a dictionary of properties. <a class="reference external" href="http://geojson.org/">The geojson specifications</a> defines the structure of valid geojson features. Sometimes, lists of <code class="docutils literal notranslate"><span class="pre">(geometry,</span> <span class="pre">value)</span></code> tuples are referred to as features collections. This is an abuse as they are not list of valid geojson features, however, this way of organizing data is often used in the internals of antares since it maps to database inserts and queries.</li>
-<li><code class="docutils literal notranslate"><span class="pre">xarray</span></code> <code class="docutils literal notranslate"><span class="pre">DataArray``s,</span> <span class="pre">``Dataset``s</span> <span class="pre">and</span> <span class="pre">``geoarrays</span></code>: The <code class="docutils literal notranslate"><span class="pre">xarray</span></code> python package introduces two data structures; the <code class="docutils literal notranslate"><span class="pre">DataArray</span></code> and the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code>. Excellent documentation can be found <a class="reference external" href="http://xarray.pydata.org/en/stable/">here</a> to understand <code class="docutils literal notranslate"><span class="pre">xarray</span></code>’s paradigm and how to work with these data structures. In the example we sometimes refer to <code class="docutils literal notranslate"><span class="pre">geoarrays</span></code>. They are <code class="docutils literal notranslate"><span class="pre">Datasets</span></code> with a few additional attributes (namely <code class="docutils literal notranslate"><span class="pre">crs</span></code>, <code class="docutils literal notranslate"><span class="pre">geobox</span></code>, <code class="docutils literal notranslate"><span class="pre">affine</span></code>, etc) and are usually returned by calls to datacube.</li>
+<li><code class="docutils literal notranslate"><span class="pre">xarray</span></code> <code class="docutils literal notranslate"><span class="pre">DataArray</span></code> s, <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> s and <code class="docutils literal notranslate"><span class="pre">geoarrays</span></code>: The <code class="docutils literal notranslate"><span class="pre">xarray</span></code> python package introduces two data structures; the <code class="docutils literal notranslate"><span class="pre">DataArray</span></code> and the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code>. Excellent documentation can be found <a class="reference external" href="http://xarray.pydata.org/en/stable/">here</a> to understand <code class="docutils literal notranslate"><span class="pre">xarray</span></code>’s paradigm and how to work with these data structures. In the example we sometimes refer to <code class="docutils literal notranslate"><span class="pre">geoarrays</span></code>. They are <code class="docutils literal notranslate"><span class="pre">Datasets</span></code> with a few additional attributes (namely <code class="docutils literal notranslate"><span class="pre">crs</span></code>, <code class="docutils literal notranslate"><span class="pre">geobox</span></code>, <code class="docutils literal notranslate"><span class="pre">affine</span></code>, etc) and are usually returned by calls to datacube.</li>
 <li>Basic python data structures and operations: lists, tuples, dictionaries and list comprehensions. Here list comprehensions is the preferred way to manipulate features collections (e.g.: change structure of features, reproject, filter on attributes, etc).</li>
 </ul>
 </div>
@@ -634,6 +639,10 @@ The complete set or subsets of these features will be used in various steps of t
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1152</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">detect_change</span></code> is the command line equivalent of the bi-temporal change detectiomn and classification steps described above.</p>
+</div>
 </div>
 </div>
 </div>
@@ -683,6 +692,30 @@ The complete set or subsets of these features will be used in various steps of t
 </pre></div>
 </div>
 <p>Antares can produce a QGIS style to enhance visualization of that particular classification scheme, by running the command line <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">generate_style</span> <span class="pre">madmex</span> <span class="pre">--type</span> <span class="pre">vector</span> <span class="pre">--filename</span> <span class="pre">madmex.qml</span></code>.</p>
+</div>
+<div class="section" id="visualization-and-observations">
+<h2>Visualization and observations<a class="headerlink" href="#visualization-and-observations" title="Permalink to this headline">¶</a></h2>
+<p>Using the previously generated file we produced maps of the various products using QGIS.</p>
+<div class="section" id="land-cover">
+<h3>Land cover<a class="headerlink" href="#land-cover" title="Permalink to this headline">¶</a></h3>
+<div class="figure" id="id1">
+<a class="reference internal image-reference" href="_images/lc_2014.jpeg"><img alt="Land cover map 2014" src="_images/lc_2014.jpeg" style="width: 1889.6000000000001px; height: 1575.2px;" /></a>
+<p class="caption"><span class="caption-text">Land cover map 2014</span></p>
+</div>
+<div class="figure" id="id2">
+<a class="reference internal image-reference" href="_images/lc_2017.jpeg"><img alt="Land cover map 2017" src="_images/lc_2017.jpeg" style="width: 1889.6000000000001px; height: 1575.2px;" /></a>
+<p class="caption"><span class="caption-text">Land cover map 2017</span></p>
+</div>
+<p>Despite using the same model for prediction, large differences appear between the two land cover maps. The most striking difference concerns a confusion between the <em>selva baja caducifolia subcaducifolia</em> and <em>tierras agricolas</em> class. Spectral proximity of these two classes is probably high, making the prediction sensible to features instability over time. While the small study area and the lack of quantitative validation figures does not allow for firm conclusion, this certainly questions the choice of reusing the same model for prediction at different time steps without prior normalization of the features.</p>
+</div>
+<div class="section" id="land-cover-change">
+<h3>Land cover change<a class="headerlink" href="#land-cover-change" title="Permalink to this headline">¶</a></h3>
+<div class="figure" id="id3">
+<a class="reference internal image-reference" href="_images/lcc.gif"><img alt="Land cover change animation" src="_images/lcc.gif" style="width: 944.8000000000001px; height: 788.0px;" /></a>
+<p class="caption"><span class="caption-text">Land cover change animation</span></p>
+</div>
+<p>The underwhelming animation above present change in land cover between 2014 and 2017.</p>
+</div>
 </div>
 </div>
 

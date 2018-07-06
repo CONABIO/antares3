@@ -11,7 +11,7 @@ Fully understanding the tutorial requires knowledge of some key python geospatia
 
 - Feature collection: a valid feature collection in python is a list of geojson features. Features are dictionaries that each contain at least a geometry and a dictionary of properties. `The geojson specifications <http://geojson.org/>`_ defines the structure of valid geojson features. Sometimes, lists of ``(geometry, value)`` tuples are referred to as features collections. This is an abuse as they are not list of valid geojson features, however, this way of organizing data is often used in the internals of antares since it maps to database inserts and queries.
 
-- ``xarray`` ``DataArray``s, ``Dataset``s and ``geoarrays``: The ``xarray`` python package introduces two data structures; the ``DataArray`` and the ``Dataset``. Excellent documentation can be found `here <http://xarray.pydata.org/en/stable/>`_ to understand ``xarray``'s paradigm and how to work with these data structures. In the example we sometimes refer to ``geoarrays``. They are ``Datasets`` with a few additional attributes (namely ``crs``, ``geobox``, ``affine``, etc) and are usually returned by calls to datacube.
+- ``xarray`` ``DataArray`` s, ``Dataset`` s and ``geoarrays``: The ``xarray`` python package introduces two data structures; the ``DataArray`` and the ``Dataset``. Excellent documentation can be found `here <http://xarray.pydata.org/en/stable/>`_ to understand ``xarray``'s paradigm and how to work with these data structures. In the example we sometimes refer to ``geoarrays``. They are ``Datasets`` with a few additional attributes (namely ``crs``, ``geobox``, ``affine``, etc) and are usually returned by calls to datacube.
 
 - Basic python data structures and operations: lists, tuples, dictionaries and list comprehensions. Here list comprehensions is the preferred way to manipulate features collections (e.g.: change structure of features, reproject, filter on attributes, etc).
 
@@ -522,6 +522,9 @@ Second filter: No change in label
     1152
 
 
+.. note:: ``antares detect_change`` is the command line equivalent of the bi-temporal change detectiomn and classification steps described above. 
+
+
 Write output to a vector file
 =============================
 
@@ -576,6 +579,41 @@ We can also write the land cover maps of 2014 and 2017 to visualize them
 
 Antares can produce a QGIS style to enhance visualization of that particular classification scheme, by running the command line ``antares generate_style madmex --type vector --filename madmex.qml``.
 
+
+Visualization and observations
+==============================
+
+Using the previously generated file we produced maps of the various products using QGIS.
+
+Land cover
+----------
+
+.. figure:: imgs/lc_2014.jpeg
+   :scale: 80 %
+   :alt: Land cover map 2014
+
+   Land cover map 2014
+
+
+.. figure:: imgs/lc_2017.jpeg
+   :scale: 80 %
+   :alt: Land cover map 2017
+
+   Land cover map 2017
+
+Despite using the same model for prediction, large differences appear between the two land cover maps. The most striking difference concerns a confusion between the *selva baja caducifolia subcaducifolia* and *tierras agricolas* class. Spectral proximity of these two classes is probably high, making the prediction sensible to features instability over time. While the small study area and the lack of quantitative validation figures does not allow for firm conclusion, this certainly questions the choice of reusing the same model for prediction at different time steps without prior normalization of the features.
+
+
+Land cover change
+-----------------
+
+.. figure:: imgs/lcc.gif
+   :scale: 80 %
+   :alt: Land cover change animation
+
+   Land cover change animation
+
+The underwhelming animation above present change in land cover between 2014 and 2017.
 
 
 
