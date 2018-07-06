@@ -707,7 +707,7 @@ You can check kops and kubectl versions with:
 	export DOMAIN_NAME="antares3.conabio-route53.net"
 	
 	# Friendly name to use as an alias for your cluster
-	export CLUSTER_ALIAS="testing-k8s-deployment"
+	export CLUSTER_ALIAS="k8s-deployment"
 	
 	# Leave as-is: Full DNS name of you cluster
 	export CLUSTER_FULL_NAME="${CLUSTER_ALIAS}.${DOMAIN_NAME}"
