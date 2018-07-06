@@ -193,15 +193,16 @@ class IMAD(object):
         return self.transform(X, Y)
     
 def spatial_covariance(X, h):
+
+    X_mean = numpy.average(X, axis=(1,2))
     X_shifted = numpy.roll(numpy.roll(X, h[1], axis=1), h[0], axis=2)
-    X_shifted_transpose = numpy.transpose(X_shifted, axes=[0,2,1])
-    product = numpy.matmul(X_shifted, X_shifted_transpose)
-    bands = product.shape[0]
-    pixels = product.shape[1] * product.shape[2]
-    bands_by_row = numpy.matmul(X_shifted, X_shifted_transpose).reshape((bands, pixels))
-    C = numpy.cov(bands_by_row)
+    bands = X.shape[0]
+    pixels = X.shape[1] * X.shape[2]
+    X_centered = (X - X_mean[:,numpy.newaxis,numpy.newaxis]).reshape(bands, pixels)
+    X_shifted_centered = (X_shifted - X_mean[:,numpy.newaxis,numpy.newaxis]).reshape(bands, pixels)
+    C = numpy.matmul(X_centered, X_shifted_centered.T) / (bands - 1)
     return C
-    
+
 class MAF(object):
     
     def __init__(self, shift=(1, 1), no_data=0):
@@ -225,7 +226,6 @@ class MAF(object):
         eig_problem = numpy.matmul(numpy.matmul(lower_inverse, gamma), lower_inverse.T)
         eig_values, eig_vectors = numpy.linalg.eig(eig_problem)
         sort_index = eig_values.argsort()
-        print(eig_values[sort_index])
         vector = eig_vectors[:, sort_index]
         M = numpy.matmul(vector.T, X.reshape(self.bands, self.rows * self.cols))
         return M.reshape(self.bands, self.rows, self.cols)
