@@ -23,7 +23,7 @@ Polygon.from_geobox = from_geobox
 
 class BaseBiChange(metaclass=abc.ABCMeta):
     """
-    Parent class imlementing generic methods related to change detection results
+    Parent class implementing generic methods related to change detection results
     handling.
     """
     def __init__(self, array, affine, crs):
