@@ -1482,8 +1482,13 @@ spec:
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
-<li>Before deleting cluster delete mount targets of EFS:</li>
+<li>Before deleting cluster delete deployment of EFS, delete mount targets of EFS and delete RDS instance:</li>
 </ol>
+<p>For example, to delete deployment of EFS:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> delete deployment efs-provisioner
+</pre></div>
+</div>
+<p>To delete mount targets of EFS (assuming there’s three subnets):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">efs_id</span><span class="o">=</span>&lt;id of efs&gt;
 
 <span class="nv">region</span><span class="o">=</span>&lt;region&gt;
