@@ -1365,7 +1365,7 @@ Execute:
 
 **State of cluster**
 
-**<public DNS of master or node (depends where dask-scheduler container is runningg)>:30000**
+**<public DNS of master or node (depends where dask-scheduler container is running)>:30000**
 
 .. image:: https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0
     :width: 400
@@ -1467,7 +1467,10 @@ In dask-scheduler container execute in a python enviroment:
     [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
 
 
-from **<public DNS of master or node (depends where dask-scheduler container is runningg)>:30000/graph** we have:
+from 
+**<public DNS of master or node (depends where dask-scheduler container is running)>:30000/graph** 
+
+we have:
 
 .. image:: https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0
     :width: 600
@@ -1534,7 +1537,7 @@ Antares3
 
 Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.
 
-Although at the end of Dockerfile there's a ``antares init`` command if we want ingest country borders we need to log in to dask-scheduler container and execute (for example to ingegst Mexico's border):
+Although in the ``antares3-scheduler.yaml`` and ``antares3-worker.yaml`` ther is an ``antares init`` command, if we want to ingest country borders we need to log in to dask-scheduler container and execute (for example to ingest Mexico's border):
 
 
 .. code-block:: bash
