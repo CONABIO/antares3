@@ -746,7 +746,7 @@ You can check kops and kubectl versions with:
 	RUN pip3 install --upgrade python-dateutil
 	
 	#Dependencies for antares3 & datacube
-	RUN pip3 install numpy && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && 	pip3 install rasterio==1.0b1 --no-binary rasterio  
+	RUN pip3 install numpy && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0b1 --no-binary rasterio  
 	RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
 	RUN pip3 install --no-cache --no-binary :all: psycopg2
 	RUN pip3 install futures pathlib setuptools==20.4
