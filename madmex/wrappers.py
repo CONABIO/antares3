@@ -353,10 +353,17 @@ def detect_and_classify_change(tiles, algorithm, change_meta, band_list, mmu,
         # Write that feature collection to the database
         BiChange.to_db(fc=fc_change, meta=change_meta, pre_name=lc_pre,
                        post_name=lc_post, name=name)
-
-
-
-
-
-
+        # Deallocate large objects and run gc.collect
+        geoarray_pre = None
+        geoarray_post = None
+        BiChange_pre = None
+        BiChange_post = None
+        fc_pre = None
+        fc_post = None
+        fc_change = None
+        gc.collect()
+        return True
+    except Exception as e:
+        print('Change detection failed because: %s' % e)
+        return False
 
