@@ -1468,6 +1468,7 @@ In dask-scheduler container execute in a python enviroment:
 
 
 from 
+
 **<public DNS of master or node (depends where dask-scheduler container is running)>:30000/graph** 
 
 we have:
