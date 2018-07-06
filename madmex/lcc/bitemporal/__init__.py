@@ -15,7 +15,7 @@ from django.contrib.gis.geos.geometry import GEOSGeometry
 from madmex.io.vector_db import from_geobox
 from madmex.util.spatial import geometry_transform
 from madmex.models import PredictClassification, ChangeObject, ChangeClassification
-from madmex.lcc.bitemporal.thresholding import Elliptic, Kapur
+from madmex.lcc.thresholding import Elliptic, Kapur
 
 # Monkeypatch Django Polygon class to instantiate it using a datacube style geobox
 Polygon.from_geobox = from_geobox
@@ -103,9 +103,9 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         self.change_array = change_array
 
     @staticmethod
-    def threshold_change(diff_image,method, **kwargs):
-        """ Applies a thresholding method to a continuous difference image
-   
+    def threshold_change(diff_image, method, **kwargs):
+        """Applies a thresholding method to a continuous difference image
+
         Takes aan array of difference images and thresholds them to produce discrete
         change/no-change image masks
 
