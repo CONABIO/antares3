@@ -13,7 +13,7 @@ class TransformBase(object):
     def fit(self, X):
         '''Sets everything in place for the transformation process. Fails in case
         the image does not have at least 2 or more than 3 dimensions.
-        
+
         Args:
             X (numpy.array): A 2 or 3 dimensional numpy array. Dimention order should
                 be (bands, y, x)
@@ -22,26 +22,27 @@ class TransformBase(object):
         '''
         if len(X.shape) == 2:
             self.bands = 1
-            self.rows, self.columns = self.X.shape
+            self.rows, self.columns = X.shape
             self.X = X[numpy.newaxis,:]
         elif len(X.shape) == 3:
             self.X = X
-            self.bands, self.rows, self.cols = self.X.shape
+            self.bands, self.rows, self.cols = X.shape
         else:
             logger.error('First parameter should be an image of 3 or 2 dimensions.')
-            
+
     def transform(self, X):
         '''Depending on the implementation, this method will transform the input into an array of
         interest.
         '''
         raise NotImplementedError('Subclasses of TransformBase must provide a transform() method.')
-    
+
     def fit_transform(self, X):
         '''
         Helper method to call fit and transform methods.
         '''
         self.fit(X)
         return self.transform(X)
+
 
 class BitransformBase(TransformBase):
     def __init__(self):
@@ -50,7 +51,7 @@ class BitransformBase(TransformBase):
     def fit(self, X, Y):
         '''Sets everything in place for the two image transformation process. Fails in case
         the images do not have the same shapes.
-        
+
         Args:
             X (numpy.array): A 2 or 3 dimensional numpy array. Dimention order should
                 be (bands, y, x)
