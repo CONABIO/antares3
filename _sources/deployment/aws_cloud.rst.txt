@@ -1067,8 +1067,9 @@ Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Pre
 
 
 
-Dockerfile for containers of Antares3 and Open
-----------------------------------------------
+Dockerfile for containers of Antares3 and OpenDataCube
+------------------------------------------------------
+
 
 Use next **Dockerfile** to build docker image for antares3:
    

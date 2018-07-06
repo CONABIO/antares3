@@ -102,7 +102,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#cluster-creation">Cluster creation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#deployment-for-elastic-file-system">Deployment for Elastic File System</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id1">Create RDS instance</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dockerfile-for-containers-of-antares3-and-open">Dockerfile for containers of Antares3 and Open</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dockerfile-for-containers-of-antares3-and-opendatacube">Dockerfile for containers of Antares3 and OpenDataCube</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#deployments-for-dask-scheduler-and-worker">Deployments for dask scheduler and worker</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">Init Antares and Open DataCube</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#notes">Notes</a></li>
@@ -1037,8 +1037,8 @@ $kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclai
 <p class="last">Make sure in the security group for the instance of RDS you have inbound rules of <strong>ALL TCP</strong>, <strong>ALL ICMP-IPv4</strong>, <strong>PostgreSQL</strong> for both security groups of master and nodes created by <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">create</span> <span class="pre">cluster</span></code> command.</p>
 </div>
 </div>
-<div class="section" id="dockerfile-for-containers-of-antares3-and-open">
-<h3>Dockerfile for containers of Antares3 and Open<a class="headerlink" href="#dockerfile-for-containers-of-antares3-and-open" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="dockerfile-for-containers-of-antares3-and-opendatacube">
+<h3>Dockerfile for containers of Antares3 and OpenDataCube<a class="headerlink" href="#dockerfile-for-containers-of-antares3-and-opendatacube" title="Permalink to this headline">¶</a></h3>
 <p>Use next <strong>Dockerfile</strong> to build docker image for antares3:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>FROM ubuntu:xenial
 USER root
