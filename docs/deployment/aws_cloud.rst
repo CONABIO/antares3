@@ -1591,13 +1591,15 @@ and scale down efs-provisioner deployment:
 
     $kubectl scale deployments/efs-provisioner --replicas=0
 
-3. Before deleting cluster delete deployment of EFS, delete mount targets of EFS and delete RDS instance:
+3. Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete RDS instance:
    
-For example, to delete deployment of EFS:
+For example, to delete deployment of EFS and service (bokeh visualization):
 
 .. code-block:: bash
 
     $kubectl delete deployment efs-provisioner
+
+    $kubectl delete deployment service
 
 
 To delete mount targets of EFS (assuming there's three subnets):
