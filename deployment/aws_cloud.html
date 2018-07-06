@@ -769,7 +769,7 @@ RUN pip3 install dask distributed --upgrade <span class="o">&amp;&amp;</span> pi
 RUN pip3 install --upgrade python-dateutil
 
 <span class="c1">#Dependencies for antares3 &amp; datacube</span>
-RUN pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span>        pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span>.0b1 --no-binary rasterio
+RUN pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span>.0b1 --no-binary rasterio
 RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
 RUN pip3 install --no-cache --no-binary :all: psycopg2
 RUN pip3 install futures pathlib <span class="nv">setuptools</span><span class="o">==</span><span class="m">20</span>.4
