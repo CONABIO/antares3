@@ -1536,15 +1536,15 @@ spec:
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">name_of_policy</span><span class="o">=</span>policy_example
 
-    <span class="nv">arn_of_policy</span><span class="o">=</span><span class="k">$(</span>aws iam list-policies --scope<span class="o">=</span>Local<span class="p">|</span> jq -r <span class="s1">&#39;.Policies[]|select(.PolicyName==&quot;&#39;</span><span class="nv">$name_of_policy</span><span class="s1">&#39;&quot;)|.Arn&#39;</span><span class="k">)</span>
+<span class="nv">arn_of_policy</span><span class="o">=</span><span class="k">$(</span>aws iam list-policies --scope<span class="o">=</span>Local<span class="p">|</span> jq -r <span class="s1">&#39;.Policies[]|select(.PolicyName==&quot;&#39;</span><span class="nv">$name_of_policy</span><span class="s1">&#39;&quot;)|.Arn&#39;</span><span class="k">)</span>
 
-    <span class="nv">name_of_role_masters</span><span class="o">=</span>masters.<span class="nv">$CLUSTER_FULL_NAME</span> <span class="c1">#This is the role name created by command kops create cluster ...</span>
+<span class="nv">name_of_role_masters</span><span class="o">=</span>masters.<span class="nv">$CLUSTER_FULL_NAME</span> <span class="c1">#This is the role name created by command kops create cluster ...</span>
 
-    <span class="nv">$aws</span> iam attach-role-policy --policy-arn <span class="nv">$arn_of_policy</span> --role-name <span class="nv">$name_of_role_masters</span>
+<span class="nv">$aws</span> iam attach-role-policy --policy-arn <span class="nv">$arn_of_policy</span> --role-name <span class="nv">$name_of_role_masters</span>
 
-    <span class="nv">name_of_role_nodes</span><span class="o">=</span>nodes.<span class="nv">$CLUSTER_FULL_NAME</span> <span class="c1">#This is the role name created by command kops create cluster ...</span>
+<span class="nv">name_of_role_nodes</span><span class="o">=</span>nodes.<span class="nv">$CLUSTER_FULL_NAME</span> <span class="c1">#This is the role name created by command kops create cluster ...</span>
 
-    <span class="nv">$aws</span> iam attach-role-policy --policy-arn <span class="nv">$arn_of_policy</span> --role-name <span class="nv">$name_of_role_nodes</span>
+<span class="nv">$aws</span> iam attach-role-policy --policy-arn <span class="nv">$arn_of_policy</span> --role-name <span class="nv">$name_of_role_nodes</span>
 </pre></div>
 </div>
 </div>

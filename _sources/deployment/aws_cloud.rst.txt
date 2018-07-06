@@ -1652,15 +1652,15 @@ and scale down efs-provisioner deployment:
 
     name_of_policy=policy_example
 
-	arn_of_policy=$(aws iam list-policies --scope=Local| jq -r '.Policies[]|select(.PolicyName=="'$name_of_policy'")|.Arn')
+    arn_of_policy=$(aws iam list-policies --scope=Local| jq -r '.Policies[]|select(.PolicyName=="'$name_of_policy'")|.Arn')
 
-	name_of_role_masters=masters.$CLUSTER_FULL_NAME #This is the role name created by command kops create cluster ...
+    name_of_role_masters=masters.$CLUSTER_FULL_NAME #This is the role name created by command kops create cluster ...
 
-	$aws iam attach-role-policy --policy-arn $arn_of_policy --role-name $name_of_role_masters
+    $aws iam attach-role-policy --policy-arn $arn_of_policy --role-name $name_of_role_masters
 
-	name_of_role_nodes=nodes.$CLUSTER_FULL_NAME #This is the role name created by command kops create cluster ...
+    name_of_role_nodes=nodes.$CLUSTER_FULL_NAME #This is the role name created by command kops create cluster ...
 
-	$aws iam attach-role-policy --policy-arn $arn_of_policy --role-name $name_of_role_nodes
+    $aws iam attach-role-policy --policy-arn $arn_of_policy --role-name $name_of_role_nodes
 
 
 
