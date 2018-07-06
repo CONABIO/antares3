@@ -1306,7 +1306,7 @@ spec:
 <p class="last">Create in security groups of master and nodes of Kubernetes a rule to visualize bokeh with the port you chose.</p>
 </div>
 <p><strong>State of cluster</strong></p>
-<p><strong>&lt;public DNS of master or node (depends where dask-scheduler container is runningg)&gt;:30000</strong></p>
+<p><strong>&lt;public DNS of master or node (depends where dask-scheduler container is running)&gt;:30000</strong></p>
 <a class="reference internal image-reference" href="https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0"><img alt="https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0" src="https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0" style="width: 400px;" /></a>
 </div>
 <div class="section" id="deployment-for-dask-worker">
@@ -1392,7 +1392,9 @@ spec:
 <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">81</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>from <strong>&lt;public DNS of master or node (depends where dask-scheduler container is runningg)&gt;:30000/graph</strong> we have:</p>
+<p>from
+<strong>&lt;public DNS of master or node (depends where dask-scheduler container is running)&gt;:30000/graph</strong></p>
+<p>we have:</p>
 <a class="reference internal image-reference" href="https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0"><img alt="https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0" src="https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0" style="width: 600px;" /></a>
 </div>
 </div>
@@ -1436,7 +1438,7 @@ spec:
 <div class="section" id="id5">
 <h4>Antares3<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <p>Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.</p>
-<p>Although at the end of Dockerfile there’s a <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">init</span></code> command if we want ingest country borders we need to log in to dask-scheduler container and execute (for example to ingegst Mexico’s border):</p>
+<p>Although in the <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> ther is an <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">init</span></code> command, if we want to ingest country borders we need to log in to dask-scheduler container and execute (for example to ingest Mexico’s border):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$antares</span> init -c mex
 </pre></div>
 </div>
