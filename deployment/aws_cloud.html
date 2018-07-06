@@ -1272,7 +1272,7 @@ spec:
        - name: efs-pvc
          persistentVolumeClaim:
           claimName: efs
-       - name: dshm
+       - name: dshm <span class="c1">##### This is needed for opendatacube S3 functionality</span>
          emptyDir:
           medium: Memory
 </pre></div>
@@ -1353,7 +1353,7 @@ spec:
        - name: efs-pvc
          persistentVolumeClaim:
           claimName: efs
-       - name: dshm <span class="c1">#### This is needed for opendatacube S3 funcionality</span>
+       - name: dshm <span class="c1">##### This is needed for opendatacube S3 functionality</span>
          emptyDir:
           medium: Memory
           sizeLimit: <span class="s1">&#39;1Gi&#39;</span>

@@ -1321,7 +1321,7 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 	       - name: efs-pvc
 	         persistentVolumeClaim:
 	          claimName: efs
-	       - name: dshm
+	       - name: dshm ##### This is needed for opendatacube S3 functionality
 	         emptyDir:
 	          medium: Memory
 
@@ -1419,7 +1419,7 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 	       - name: efs-pvc
 	         persistentVolumeClaim:
 	          claimName: efs
-	       - name: dshm #### This is needed for opendatacube S3 funcionality
+	       - name: dshm ##### This is needed for opendatacube S3 functionality
 	         emptyDir:
 	          medium: Memory
 	          sizeLimit: '1Gi'
