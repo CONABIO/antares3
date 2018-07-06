@@ -524,18 +524,9 @@ and execute:
 	Open Datacube supports NETCDF CF and S3 drivers for storage (see `Open DataCube Ingestion Config`_). Different software dependencies are required for different drivers and different ``datacube system init`` command.
 
 
-\* NETCDF CF
-
 .. code-block:: bash
 
     $datacube -v system init --no-init-users 
-
-
-\* S3 
-
-.. code-block:: bash
-
-    $datacube -v system init -s3 --no-init-users 
 
 
 .. note:: 
@@ -815,18 +806,24 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 	--ssh-public-key="/home/ubuntu/.ssh/id_rsa.pub" \
 	--kubernetes-version=${KUBERNETES_VERSION} --yes
 
+.. note:: 
+
+	Check status of cluster with ``kops validate cluster`` and wait until it says **Your cluster k8s-deployment.antares3.conabio-route53.net is ready**
+
+
+
 .. note::
 
-	You can delete cluster with: ``$kops delete cluster ${CLUSTER_FULL_NAME} --yes`` (without ``yes`` flag you only see what changes are going to be applied) and don't forget to delete S3 bucket: ``$aws s3api delete-bucket --bucket ${CLUSTER_FULL_NAME}-state`` after cluster deletion.
+	You can delete cluster with: ``$kops delete cluster ${CLUSTER_FULL_NAME}`` and then ``$kops delete cluster ${CLUSTER_FULL_NAME} --yes`` (without ``yes`` flag you only see what changes are going to be applied) and don't forget to delete S3 bucket: ``$aws s3api delete-bucket --bucket ${CLUSTER_FULL_NAME}-state`` after cluster deletion.
 
 
 .. note:: 
 
-	You can scale up/down nodes of cluster with command: ``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, edit screen that appears and set 3/0 number of instances in MinSize, MaxSize values (3 is an example) and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes`` to apply changes. Command ``kops validate cluster`` is useful to see state of cluster. 
+	You can scale up/down nodes of cluster with command: ``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, edit screen that appears and set 3/0 number of instances in minSize, maxSize values (3 is an example) and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes`` to apply changes. Command ``kops validate cluster`` is useful to see state of cluster. 
 
 .. note:: 
 
-	To scale up/down master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` (you can check your instance type of master with: ``$kops get instancegroups``) set 1/0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` to apply changes. Command ``kops validate cluster`` is useful to see state of cluster. 
+	To scale up/down master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` (you can check your instance type of master with: ``$kops get instancegroups``) set 1/0 number of instances in minSize, maxSize values and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` to apply changes. Command ``kops validate cluster`` is useful to see state of cluster. 
 
 
 **¿How do I ssh to an instance of Kubernetes Cluster?**
@@ -1051,7 +1048,7 @@ To change reclaim policy, retrieve persistent volume and execute ``kubectl patch
 
     pv_id=$(kubectl get pv|grep pvc | cut -d' ' -f1)
 
-    $kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}
+    $kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
 
 
 In order to be able to scale up/down cluster without deleting deployment of efs (and thereby persistentvolume and claim), next command is useful:
@@ -1085,7 +1082,7 @@ Use next **Dockerfile** to build docker image for antares3:
 	USER root
 
 	#see: https://github.com/Yelp/dumb-init/ for next line:
-	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/ dumb-init
+	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/dumb-init
 	
 	#base dependencies
 	RUN apt-get update && apt-get install -y \
@@ -1172,7 +1169,7 @@ Use next **Dockerfile** to build docker image for antares3:
 	ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
 
    
-Build docker image with:
+Build docker image with (needs a docker hub account):
 
 .. code-block:: bash
 
@@ -1428,10 +1425,10 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 	        resources:
 	         requests:
 	          cpu: "1"
-	          memory: 6Gi
+	          memory: 6Gi ##### This value depends of type of AWS instance chose
 	         limits:
 	          cpu: "1"
-	          memory: 8Gi
+	          memory: 8Gi ##### This value depends of type of AWS instance chose
 	        volumeMounts:
 	         - name: efs-pvc
 	           mountPath: "/shared_volume/"
@@ -1455,6 +1452,24 @@ Create deployment of antares3-worker with:
 .. note:: 
 
 	Use ``kubectl scale deployments/antares3-worker --replicas=2`` to have two dask-worker containers.
+
+
+**For log in to dask-scheduler:**
+
+
+Using <key>.pem of user kops do a ssh and enter to docker container of dask-scheduler with ``exec`` command:
+
+.. code-block:: bash
+
+    $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
+
+    $sudo docker exec -it <container-id-dask-scheduler> bash
+
+.. note:: 
+
+	Make sure this <key>.pem has 400 permissions: ``$chmod 400 <key>.pem``.
+
+
 
 
 
@@ -1512,18 +1527,9 @@ Log in where dask-scheduler container is running and execute:
 	Open Datacube supports NETCDF CF and S3 drivers for storage (see `Open DataCube Ingestion Config`_). Different software dependencies are required for different drivers and different ``datacube system init`` command.
 
 
-\* NETCDF CF
-
 .. code-block:: bash
 
     $datacube -v system init --no-init-users 
-
-
-\* S3 
-
-.. code-block:: bash
-
-    $datacube -v system init -s3 --no-init-users 
 
 
 .. note:: 
@@ -1563,6 +1569,7 @@ Although in the ``antares3-scheduler.yaml`` and ``antares3-worker.yaml`` ther is
 
 .. code-block:: bash
 
+	$source .profile
     $antares init -c mex
 
 Notes
@@ -1610,6 +1617,27 @@ and scale down efs-provisioner deployment:
 .. code-block:: bash
 
     $kubectl scale deployments/efs-provisioner --replicas=0
+
+and scale down nodes and master:
+
+.. code-block:: bash
+
+	#set minSize and maxSize to 0
+    $kops edit ig nodes --name $CLUSTER_FULL_NAME
+
+	$kops update cluster $CLUSTER_FULL_NAME
+
+	$kops update cluster $CLUSTER_FULL_NAME --yes
+
+	#to retrieve type and region where master is located
+	$kops get instancegroups
+
+	#set minSize and maxSize to 0
+	$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME
+
+	$kops update cluster $CLUSTER_FULL_NAME
+
+	$kops update cluster $CLUSTER_FULL_NAME --yes
 
 3. Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:
    

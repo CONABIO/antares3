@@ -587,12 +587,7 @@ ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/<span class="nv
 <p class="first admonition-title">Attention</p>
 <p class="last">Open Datacube supports NETCDF CF and S3 drivers for storage (see <a class="reference external" href="https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config">Open DataCube Ingestion Config</a>). Different software dependencies are required for different drivers and different <code class="docutils literal notranslate"><span class="pre">datacube</span> <span class="pre">system</span> <span class="pre">init</span></code> command.</p>
 </div>
-<p>* NETCDF CF</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$datacube</span> -v system init --no-init-users
-</pre></div>
-</div>
-<p>* S3</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$datacube</span> -v system init -s3 --no-init-users
 </pre></div>
 </div>
 <div class="admonition note">
@@ -824,15 +819,19 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">You can delete cluster with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">delete</span> <span class="pre">cluster</span> <span class="pre">${CLUSTER_FULL_NAME}</span> <span class="pre">--yes</span></code> (without <code class="docutils literal notranslate"><span class="pre">yes</span></code> flag you only see what changes are going to be applied) and don’t forget to delete S3 bucket: <code class="docutils literal notranslate"><span class="pre">$aws</span> <span class="pre">s3api</span> <span class="pre">delete-bucket</span> <span class="pre">--bucket</span> <span class="pre">${CLUSTER_FULL_NAME}-state</span></code> after cluster deletion.</p>
+<p class="last">Check status of cluster with <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">validate</span> <span class="pre">cluster</span></code> and wait until it says <strong>Your cluster k8s-deployment.antares3.conabio-route53.net is ready</strong></p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">You can scale up/down nodes of cluster with command: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">nodes</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code>, edit screen that appears and set 3/0 number of instances in MinSize, MaxSize values (3 is an example) and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and  <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code> to apply changes. Command <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">validate</span> <span class="pre">cluster</span></code> is useful to see state of cluster.</p>
+<p class="last">You can delete cluster with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">delete</span> <span class="pre">cluster</span> <span class="pre">${CLUSTER_FULL_NAME}</span></code> and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">delete</span> <span class="pre">cluster</span> <span class="pre">${CLUSTER_FULL_NAME}</span> <span class="pre">--yes</span></code> (without <code class="docutils literal notranslate"><span class="pre">yes</span></code> flag you only see what changes are going to be applied) and don’t forget to delete S3 bucket: <code class="docutils literal notranslate"><span class="pre">$aws</span> <span class="pre">s3api</span> <span class="pre">delete-bucket</span> <span class="pre">--bucket</span> <span class="pre">${CLUSTER_FULL_NAME}-state</span></code> after cluster deletion.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">To scale up/down master you can use: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">master-us-west-2a</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> (you can check your instance type of master with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">get</span> <span class="pre">instancegroups</span></code>) set 1/0 number of instances and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code> to apply changes. Command <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">validate</span> <span class="pre">cluster</span></code> is useful to see state of cluster.</p>
+<p class="last">You can scale up/down nodes of cluster with command: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">nodes</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code>, edit screen that appears and set 3/0 number of instances in minSize, maxSize values (3 is an example) and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and  <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code> to apply changes. Command <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">validate</span> <span class="pre">cluster</span></code> is useful to see state of cluster.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">To scale up/down master you can use: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">edit</span> <span class="pre">ig</span> <span class="pre">master-us-west-2a</span> <span class="pre">--name</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> (you can check your instance type of master with: <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">get</span> <span class="pre">instancegroups</span></code>) set 1/0 number of instances in minSize, maxSize values and then <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">$kops</span> <span class="pre">update</span> <span class="pre">cluster</span> <span class="pre">$CLUSTER_FULL_NAME</span> <span class="pre">--yes</span></code> to apply changes. Command <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">validate</span> <span class="pre">cluster</span></code> is useful to see state of cluster.</p>
 </div>
 <p><strong>¿How do I ssh to an instance of Kubernetes Cluster?</strong></p>
 <p>Using the key-pem already created for the kops user and execute:</p>
@@ -1022,9 +1021,9 @@ spec:
 <p class="last">PersistentVolumes can have various reclaim policies, including “Retain”, “Recycle”, and “Delete”.For dynamically provisioned    PersistentVolumes, the default reclaim policy is “Delete”. This means that a dynamically provisioned volume is automatically deleted when a user deletes the corresponding PersistentVolumeClaim. This automatic behavior might be inappropriate if the volume contains precious data. In that case, it is more appropriate to use the “Retain” policy. With the “Retain” policy, if a user deletes a PersistentVolumeClaim, the        corresponding PersistentVolume is not be deleted. Instead, it is moved to the Released phase, where all of its data can be manually recovered. See: <a class="reference external" href="https://kubernetes.io/docs/tasks/administer-cluster/change-pv-reclaim-policy/">Why change reclaim policy of a PersistentVolume</a></p>
 </div>
 <p>To change reclaim policy, retrieve persistent volume and execute <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">patch</span></code> command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pv_id=$(kubectl get pv|grep pvc | cut -d&#39; &#39; -f1)
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">pv_id</span><span class="o">=</span><span class="k">$(</span>kubectl get pv<span class="p">|</span>grep pvc <span class="p">|</span> cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
 
-$kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclaimPolicy&quot;:&quot;Retain&quot;}}
+<span class="nv">$kubectl</span> patch pv <span class="nv">$pv_id</span> -p <span class="s1">&#39;{&quot;spec&quot;:{&quot;persistentVolumeReclaimPolicy&quot;:&quot;Retain&quot;}}&#39;</span>
 </pre></div>
 </div>
 <p>In order to be able to scale up/down cluster without deleting deployment of efs (and thereby persistentvolume and claim), next command is useful:</p>
@@ -1048,7 +1047,7 @@ $kubectl patch pv $pv_id -p &#39;{&quot;spec&quot;:{&quot;persistentVolumeReclai
 USER root
 
 <span class="c1">#see: https://github.com/Yelp/dumb-init/ for next line:</span>
-RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y wget curl <span class="o">&amp;&amp;</span> wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>/dumb-init_<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>_amd64 <span class="o">&amp;&amp;</span> chmod +x /usr/local/bin/ dumb-init
+RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y wget curl <span class="o">&amp;&amp;</span> wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>/dumb-init_<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>_amd64 <span class="o">&amp;&amp;</span> chmod +x /usr/local/bin/dumb-init
 
 <span class="c1">#base dependencies</span>
 RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y <span class="se">\</span>
@@ -1135,7 +1134,7 @@ VOLUME <span class="o">[</span><span class="s2">&quot;/shared_volume&quot;</span
 ENTRYPOINT <span class="o">[</span><span class="s2">&quot;/usr/local/bin/dumb-init&quot;</span>, <span class="s2">&quot;--&quot;</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Build docker image with:</p>
+<p>Build docker image with (needs a docker hub account):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">DOCKER_REPOSITORY</span><span class="o">=</span>&lt;name of your docker hub repository&gt;
 
 <span class="nv">DOCKER_IMAGE_NAME</span><span class="o">=</span>antares3-k8s-cluster-dependencies
@@ -1356,10 +1355,10 @@ spec:
         resources:
          requests:
           cpu: <span class="s2">&quot;1&quot;</span>
-          memory: 6Gi
+          memory: 6Gi <span class="c1">##### This value depends of type of AWS instance chose</span>
          limits:
           cpu: <span class="s2">&quot;1&quot;</span>
-          memory: 8Gi
+          memory: 8Gi <span class="c1">##### This value depends of type of AWS instance chose</span>
         volumeMounts:
          - name: efs-pvc
            mountPath: <span class="s2">&quot;/shared_volume/&quot;</span>
@@ -1380,6 +1379,17 @@ spec:
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Use <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">scale</span> <span class="pre">deployments/antares3-worker</span> <span class="pre">--replicas=2</span></code> to have two dask-worker containers.</p>
+</div>
+<p><strong>For log in to dask-scheduler:</strong></p>
+<p>Using &lt;key&gt;.pem of user kops do a ssh and enter to docker container of dask-scheduler with <code class="docutils literal notranslate"><span class="pre">exec</span></code> command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$ssh</span> -i &lt;key&gt;.pem admin@<span class="nv">$dask_scheduler_ip_publ</span>
+
+<span class="nv">$sudo</span> docker <span class="nb">exec</span> -it &lt;container-id-dask-scheduler&gt; bash
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Make sure this &lt;key&gt;.pem has 400 permissions: <code class="docutils literal notranslate"><span class="pre">$chmod</span> <span class="pre">400</span> <span class="pre">&lt;key&gt;.pem</span></code>.</p>
 </div>
 </div>
 <div class="section" id="id2">
@@ -1421,12 +1431,7 @@ spec:
 <p class="first admonition-title">Attention</p>
 <p class="last">Open Datacube supports NETCDF CF and S3 drivers for storage (see <a class="reference external" href="https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config">Open DataCube Ingestion Config</a>). Different software dependencies are required for different drivers and different <code class="docutils literal notranslate"><span class="pre">datacube</span> <span class="pre">system</span> <span class="pre">init</span></code> command.</p>
 </div>
-<p>* NETCDF CF</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$datacube</span> -v system init --no-init-users
-</pre></div>
-</div>
-<p>* S3</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$datacube</span> -v system init -s3 --no-init-users
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1453,7 +1458,8 @@ spec:
 <h4>Antares3<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <p>Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.</p>
 <p>Although in the <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> ther is an <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">init</span></code> command, if we want to ingest country borders we need to log in to dask-scheduler container and execute (for example to ingest Mexico’s border):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$antares</span> init -c mex
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="nv">$source</span> .profile
+<span class="nv">$antares</span> init -c mex
 </pre></div>
 </div>
 </div>
@@ -1493,6 +1499,25 @@ spec:
 </div>
 <p>and scale down efs-provisioner deployment:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span>
+</pre></div>
+</div>
+<p>and scale down nodes and master:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="c1">#set minSize and maxSize to 0</span>
+<span class="nv">$kops</span> edit ig nodes --name <span class="nv">$CLUSTER_FULL_NAME</span>
+
+    <span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span>
+
+    <span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span> --yes
+
+    <span class="c1">#to retrieve type and region where master is located</span>
+    <span class="nv">$kops</span> get instancegroups
+
+    <span class="c1">#set minSize and maxSize to 0</span>
+    <span class="nv">$kops</span> edit ig master-us-west-2a --name <span class="nv">$CLUSTER_FULL_NAME</span>
+
+    <span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span>
+
+    <span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span> --yes
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
