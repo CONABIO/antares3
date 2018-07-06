@@ -589,14 +589,14 @@ Land cover
 ----------
 
 .. figure:: imgs/lc_2014.jpeg
-   :scale: 80 %
+   :scale: 30 %
    :alt: Land cover map 2014
 
    Land cover map 2014
 
 
 .. figure:: imgs/lc_2017.jpeg
-   :scale: 80 %
+   :scale: 30 %
    :alt: Land cover map 2017
 
    Land cover map 2017
@@ -608,7 +608,7 @@ Land cover change
 -----------------
 
 .. figure:: imgs/lcc.gif
-   :scale: 80 %
+   :scale: 30 %
    :alt: Land cover change animation
 
    Land cover change animation
