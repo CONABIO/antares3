@@ -630,9 +630,9 @@ Cluster creation
 
 The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
 
-1) Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a **gossip based Kubernetes cluster** can be used instead (see for example this `issue`_ and this `entry of blog`_).
+1. Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a **gossip based Kubernetes cluster** can be used instead (see for example this `issue`_ and this `entry of blog`_).
 
-2) Install **same versions** of kops and kubectl. We use a ``t2.micro`` instance with AMI ``Ubuntu 16.04 LTS`` and a role attached to it to install this tools with the next bash script:
+2. Install **same versions** of kops and kubectl. We use a ``t2.micro`` instance with AMI ``Ubuntu 16.04 LTS`` and a role attached to it to install this tools with the next bash script:
  
 
 .. code-block:: bash
@@ -693,7 +693,12 @@ You can check kops and kubectl versions with:
 	$kubectl version
 
 
-3) Set next bash variables:
+.. note:: 
+	
+	All ``kubectl`` and ``kops`` commands must be executed in this instance.
+
+
+3. Set next bash variables:
  
 .. code-block:: bash
 
@@ -723,7 +728,7 @@ You can check kops and kubectl versions with:
 	export EDITOR=nano
 
 	
-4) Create AWS S3 bucket to hold information for Kubernetes cluster:
+4. Create AWS S3 bucket to hold information for Kubernetes cluster:
 
 .. note:: 
 
@@ -734,7 +739,7 @@ You can check kops and kubectl versions with:
     $aws s3api create-bucket --bucket ${CLUSTER_FULL_NAME}-state
 
 
-5) Create group and user kops and generate access keys for user kops:
+5. Create group and user kops and generate access keys for user kops:
 
 
 .. note:: 
@@ -792,10 +797,10 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 	$export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
 
 
-6) Create a Key Pair with AWS console and a Public Key. See `Amazon EC2 Key Pairs`_ sections: **Creating a Key Pair Using Amazon EC2** and **Creating a Key Pair Using Amazon EC2**. Save the Public Key in ``/home/ubuntu/.ssh/id_rsa.pub``.
+6. Create a Key Pair with AWS console and a Public Key. See `Amazon EC2 Key Pairs`_ sections: **Creating a Key Pair Using Amazon EC2** and **Creating a Key Pair Using Amazon EC2**. Save the Public Key in ``/home/ubuntu/.ssh/id_rsa.pub``.
 
 
-7) Deploy Kubernetes Cluster. An example is:
+7. Deploy Kubernetes Cluster. An example is:
 
 
 .. code-block:: bash
