@@ -294,8 +294,8 @@ def predict_object(tile, model_name, segmentation_name,
 
 
 def detect_and_classify_change(tiles, algorithm, change_meta, band_list, mmu,
-                               lc_pre, lc_post, name, extra_args,
-                               keep_no_change=False):
+                               lc_pre, lc_post, extra_args,
+                               filter_labels=True):
     """Run a change detection algorithm between two tiles, classify the results and write to the database
 
     Meant to be called within a dask.distributed.Cluster.map() over a list of
@@ -317,11 +317,9 @@ def detect_and_classify_change(tiles, algorithm, change_meta, band_list, mmu,
             classification
         lc_post (str): Name of the post land cover map to use for change
             classification
-        name (str): Unique name/identifier to give to that series of labelled change
-            objects
         extra_args (dict): dictionary of additional arguments
-        keep_no_change (bool): Whether to apply a filter to remove objects with same
-            pre and post label. Defaults to False, in which case objects with same
+        filter_labels (bool): Whether to apply a filter to remove objects with same
+            pre and post label. Defaults to True, in which case objects with same
             label are discarded
     """
     # Load change detection class
@@ -348,11 +346,11 @@ def detect_and_classify_change(tiles, algorithm, change_meta, band_list, mmu,
         # Generate feature collection of labelled change objects
         fc_change = BiChange_pre.label_change(fc_pre, fc_post)
         # Optionally filter objects with same pre and post label
-        if not keep_no_change:
+        if filter_labels:
             fc_change = BiChange.filter_no_change(fc_change)
         # Write that feature collection to the database
         BiChange.to_db(fc=fc_change, meta=change_meta, pre_name=lc_pre,
-                       post_name=lc_post, name=name)
+                       post_name=lc_post)
         # Deallocate large objects and run gc.collect
         geoarray_pre = None
         geoarray_post = None

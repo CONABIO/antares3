@@ -475,6 +475,10 @@ from **<public DNS of master>:8787/graph** we have:
 
 Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Prerequisites at the top of this page to setup a RDS-instance with subnet and security groups of your preference. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of the dask-sge cluster, install ``postgresql-client`` and execute a ``createdb`` command.
 
+.. note:: 
+
+	Make sure in the security group for the instance of RDS you have inbound rules of **ALL TCP**, **ALL ICMP-IPv4**, **PostgreSQL** for  security group configured for instances.
+
 
 5. Init Antares and Open DataCube
 ---------------------------------
@@ -520,18 +524,9 @@ and execute:
 	Open Datacube supports NETCDF CF and S3 drivers for storage (see `Open DataCube Ingestion Config`_). Different software dependencies are required for different drivers and different ``datacube system init`` command.
 
 
-\* NETCDF CF
-
 .. code-block:: bash
 
     $datacube -v system init --no-init-users 
-
-
-\* S3 
-
-.. code-block:: bash
-
-    $datacube -v system init -s3 --no-init-users 
 
 
 .. note:: 
@@ -626,9 +621,9 @@ Cluster creation
 
 The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
 
-1) Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a **gossip based Kubernetes cluster** can be used instead (see for example this `issue`_ and this `entry of blog`_).
+1. Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a **gossip based Kubernetes cluster** can be used instead (see for example this `issue`_ and this `entry of blog`_).
 
-2) Install **same versions** of kops and kubectl. We use a ``t2.micro`` instance with AMI ``Ubuntu 16.04 LTS`` and a role attached to it to install this tools with the next bash script:
+2. Install **same versions** of kops and kubectl. We use a ``t2.micro`` instance with AMI ``Ubuntu 16.04 LTS`` and a role attached to it to install this tools with the next bash script:
  
 
 .. code-block:: bash
@@ -689,121 +684,12 @@ You can check kops and kubectl versions with:
 	$kubectl version
 
 
-3) Use next **Dockerfile** to build docker image for antares3:
-   
-.. code-block:: bash
-
-
-	FROM ubuntu:xenial
-	USER root
-
-	#see: https://github.com/Yelp/dumb-init/ for next line:
-	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/ dumb-init
+.. note:: 
 	
-	#base dependencies
-	RUN apt-get update && apt-get install -y \
-		openssh-server \
-		openssl \
-		sudo \
-		nano \
-		software-properties-common \
-		python-software-properties \
-		git \
-		vim \
-		vim-gtk \
-		htop \
-		build-essential \
-		libssl-dev \
-		libffi-dev \
-		cmake \
-		python3-dev \
-		python3-pip \
-		python3-setuptools \
-		ca-certificates \
-		postgresql-client \
-	    libudunits2-dev  && pip3 install --upgrade pip==9.0.3
-	
-	#Install spatial libraries
-	RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable && apt-get -qq update
-	RUN apt-get install -y \
-		netcdf-bin \
-		libnetcdf-dev \
-		ncview \
-		libproj-dev \
-		libgeos-dev \
-		gdal-bin \
-		libgdal-dev
-	
-	#Create user: madmex_user
-	RUN groupadd madmex_user
-	RUN useradd madmex_user -g madmex_user -m -s /bin/bash
-	RUN echo "madmex_user ALL=(ALL:ALL) NOPASSWD:ALL" | (EDITOR="tee -a" visudo)
-	RUN echo "madmex_user:madmex_user" | chpasswd
-	
-	##Install dask distributed
-	RUN pip3 install dask distributed --upgrade && pip3 install bokeh
-	##Install missing package for open datacube:
-	RUN pip3 install --upgrade python-dateutil
-	
-	#Dependencies for antares3 & datacube
-	RUN pip3 install numpy && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0b1 --no-binary rasterio  
-	RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
-	RUN pip3 install --no-cache --no-binary :all: psycopg2
-	RUN pip3 install futures pathlib setuptools==20.4
-	
-	#datacube:
-	RUN apt-get clean && apt-get update && apt-get install -y locales
-	RUN locale-gen en_US.UTF-8
-	ENV LANG en_US.UTF-8
-	ENV LC_ALL en_US.UTF-8
-	RUN pip3 install git+https://github.com/opendatacube/datacube-core.git@develop#egg=datacube[s3]
-	
-	#Upgrade awscli and tools for s3:
-	RUN pip3 install boto3 botocore awscli --upgrade
-	
-	#antares3:
-	USER madmex_user
-	RUN pip3 install --user git+https://github.com/CONABIO/antares3.git@develop
-	
-	##Set locales for OpenDataCube
-	RUN echo "export LC_ALL=C.UTF-8" >> ~/.profile
-	RUN echo "export LANG=C.UTF-8" >> ~/.profile
-	#Set variables
-	ARG mount_point=$mount_point
-	RUN echo "export mount_point=$mount_point" >> ~/.profile
-	#Use python3
-	RUN echo "alias python=python3" >> ~/.bash_aliases
-	#Antares3:
-	RUN echo "export PATH=$PATH:/home/madmex_user/.local/bin/" >> ~/.profile
-	#Config files for datacube and antares
-	RUN ln -sf $mount_point/.antares ~/.antares
-	RUN ln -sf $mount_point/.datacube.conf ~/.datacube.conf
-	
-	#Final settings
-	WORKDIR /home/madmex_user/
-	VOLUME ["/shared_volume"]
-	ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
+	All ``kubectl`` and ``kops`` commands must be executed in this instance.
 
-   
-Build docker image with:
 
-.. code-block:: bash
-
-	DOCKER_REPOSITORY=<name of your docker hub repository>
-
-	DOCKER_IMAGE_NAME=antares3-k8s-cluster-dependencies
-
-	DOCKER_IMAGE_VERSION=latest
-
-	sudo docker build --build-arg mount_point=$mount_point -t $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION . 
-
-	sudo docker login
-
-	sudo docker push $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION
-
-	sudo docker rmi $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION
-
-4) Set next bash variables:
+3. Set next bash variables:
  
 .. code-block:: bash
 
@@ -812,7 +698,7 @@ Build docker image with:
 	export DOMAIN_NAME="antares3.conabio-route53.net"
 	
 	# Friendly name to use as an alias for your cluster
-	export CLUSTER_ALIAS="testing-k8s-deployment"
+	export CLUSTER_ALIAS="k8s-deployment"
 	
 	# Leave as-is: Full DNS name of you cluster
 	export CLUSTER_FULL_NAME="${CLUSTER_ALIAS}.${DOMAIN_NAME}"
@@ -833,7 +719,7 @@ Build docker image with:
 	export EDITOR=nano
 
 	
-5) Create AWS S3 bucket to hold information for Kubernetes cluster:
+4. Create AWS S3 bucket to hold information for Kubernetes cluster:
 
 .. note:: 
 
@@ -844,7 +730,7 @@ Build docker image with:
     $aws s3api create-bucket --bucket ${CLUSTER_FULL_NAME}-state
 
 
-6) Create group and user kops and generate access keys for user kops:
+5. Create group and user kops and generate access keys for user kops:
 
 
 .. note:: 
@@ -902,10 +788,10 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 	$export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
 
 
-7) Create a Key Pair with AWS console and a Public Key. See `Amazon EC2 Key Pairs`_ sections: **Creating a Key Pair Using Amazon EC2** and **Creating a Key Pair Using Amazon EC2**. Save the Public Key in ``/home/ubuntu/.ssh/id_rsa.pub``.
+6. Create a Key Pair with AWS console and a Public Key. See `Amazon EC2 Key Pairs`_ sections: **Creating a Key Pair Using Amazon EC2** and **Creating a Key Pair Using Amazon EC2**. Save the Public Key in ``/home/ubuntu/.ssh/id_rsa.pub``.
 
 
-8) Deploy Kubernetes Cluster. An example is:
+7. Deploy Kubernetes Cluster. An example is:
 
 
 .. code-block:: bash
@@ -920,18 +806,24 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 	--ssh-public-key="/home/ubuntu/.ssh/id_rsa.pub" \
 	--kubernetes-version=${KUBERNETES_VERSION} --yes
 
+.. note:: 
+
+	Check status of cluster with ``kops validate cluster`` and wait until it says **Your cluster k8s-deployment.antares3.conabio-route53.net is ready**
+
+
+
 .. note::
 
-	You can delete cluster with: ``$kops delete cluster ${CLUSTER_FULL_NAME} --yes`` (without ``yes`` flag you only see what changes are going to be applied) and don't forget to delete S3 bucket: ``$aws s3api delete-bucket --bucket ${CLUSTER_FULL_NAME}-state`` after cluster deletion.
+	You can delete cluster with: ``$kops delete cluster ${CLUSTER_FULL_NAME}`` and then ``$kops delete cluster ${CLUSTER_FULL_NAME} --yes`` (without ``yes`` flag you only see what changes are going to be applied) and don't forget to delete S3 bucket: ``$aws s3api delete-bucket --bucket ${CLUSTER_FULL_NAME}-state`` after cluster deletion.
 
 
 .. note:: 
 
-	You can scale up/down nodes of cluster with command: ``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, edit screen that appears and set 3/0 number of instances (3 is an example) and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes`` to apply changes. 
+	You can scale up/down nodes of cluster with command: ``$kops edit ig nodes --name $CLUSTER_FULL_NAME``, edit screen that appears and set 3/0 number of instances in minSize, maxSize values (3 is an example) and then ``$kops update cluster $CLUSTER_FULL_NAME`` and  ``$kops update cluster $CLUSTER_FULL_NAME --yes`` to apply changes. Command ``kops validate cluster`` is useful to see state of cluster. 
 
 .. note:: 
 
-	To scale up/down master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` (you can check your instance type of master with: ``$kops get instancegroups``) set 1/0 number of instances and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` to apply changes.
+	To scale up/down master you can use: ``$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME`` (you can check your instance type of master with: ``$kops get instancegroups``) set 1/0 number of instances in minSize, maxSize values and then ``$kops update cluster $CLUSTER_FULL_NAME`` and ``$kops update cluster $CLUSTER_FULL_NAME --yes`` to apply changes. Command ``kops validate cluster`` is useful to see state of cluster. 
 
 
 **¿How do I ssh to an instance of Kubernetes Cluster?**
@@ -1156,7 +1048,7 @@ To change reclaim policy, retrieve persistent volume and execute ``kubectl patch
 
     pv_id=$(kubectl get pv|grep pvc | cut -d' ' -f1)
 
-    $kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}
+    $kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
 
 
 In order to be able to scale up/down cluster without deleting deployment of efs (and thereby persistentvolume and claim), next command is useful:
@@ -1170,6 +1062,131 @@ Create RDS instance
 -------------------
 
 Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Prerequisites at the top of this page to setup a RDS-instance with subnet and security groups created by ``kops create cluster`` command. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of Kubernetes cluster, install ``postgresql-client`` and execute a ``createdb`` command (to ssh to an instance of Kubernetes cluster see end of **Cluster Creation** section).
+
+.. note:: 
+
+	Make sure in the security group for the instance of RDS you have inbound rules of **ALL TCP**, **ALL ICMP-IPv4**, **PostgreSQL** for both security groups of master and nodes created by ``kops create cluster`` command.
+
+
+
+Dockerfile for containers of Antares3 and OpenDataCube
+------------------------------------------------------
+
+
+Use next **Dockerfile** to build docker image for antares3:
+   
+.. code-block:: bash
+
+
+	FROM ubuntu:xenial
+	USER root
+
+	#see: https://github.com/Yelp/dumb-init/ for next line:
+	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/dumb-init
+	
+	#base dependencies
+	RUN apt-get update && apt-get install -y \
+		openssh-server \
+		openssl \
+		sudo \
+		nano \
+		software-properties-common \
+		python-software-properties \
+		git \
+		vim \
+		vim-gtk \
+		htop \
+		build-essential \
+		libssl-dev \
+		libffi-dev \
+		cmake \
+		python3-dev \
+		python3-pip \
+		python3-setuptools \
+		ca-certificates \
+		postgresql-client \
+	    libudunits2-dev  && pip3 install --upgrade pip==9.0.3
+	
+	#Install spatial libraries
+	RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable && apt-get -qq update
+	RUN apt-get install -y \
+		netcdf-bin \
+		libnetcdf-dev \
+		ncview \
+		libproj-dev \
+		libgeos-dev \
+		gdal-bin \
+		libgdal-dev
+	
+	#Create user: madmex_user
+	RUN groupadd madmex_user
+	RUN useradd madmex_user -g madmex_user -m -s /bin/bash
+	RUN echo "madmex_user ALL=(ALL:ALL) NOPASSWD:ALL" | (EDITOR="tee -a" visudo)
+	RUN echo "madmex_user:madmex_user" | chpasswd
+	
+	##Install dask distributed
+	RUN pip3 install dask distributed --upgrade && pip3 install bokeh
+	##Install missing package for open datacube:
+	RUN pip3 install --upgrade python-dateutil
+	
+	#Dependencies for antares3 & datacube
+	RUN pip3 install numpy && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0b1 --no-binary rasterio  
+	RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
+	RUN pip3 install --no-cache --no-binary :all: psycopg2
+	RUN pip3 install futures pathlib setuptools==20.4
+	
+	#datacube:
+	RUN apt-get clean && apt-get update && apt-get install -y locales
+	RUN locale-gen en_US.UTF-8
+	ENV LANG en_US.UTF-8
+	ENV LC_ALL en_US.UTF-8
+	RUN pip3 install git+https://github.com/opendatacube/datacube-core.git@develop#egg=datacube[s3]
+	
+	#Upgrade awscli and tools for s3:
+	RUN pip3 install boto3 botocore awscli --upgrade
+	
+	#antares3:
+	USER madmex_user
+	RUN pip3 install --user git+https://github.com/CONABIO/antares3.git@develop
+	
+	##Set locales for OpenDataCube
+	RUN echo "export LC_ALL=C.UTF-8" >> ~/.profile
+	RUN echo "export LANG=C.UTF-8" >> ~/.profile
+	#Set variables
+	ARG mount_point=$mount_point
+	RUN echo "export mount_point=$mount_point" >> ~/.profile
+	#Use python3
+	RUN echo "alias python=python3" >> ~/.bash_aliases
+	#Antares3:
+	RUN echo "export PATH=$PATH:/home/madmex_user/.local/bin/" >> ~/.profile
+	#Config files for datacube and antares
+	RUN ln -sf $mount_point/.antares ~/.antares
+	RUN ln -sf $mount_point/.datacube.conf ~/.datacube.conf
+	
+	#Final settings
+	WORKDIR /home/madmex_user/
+	VOLUME ["/shared_volume"]
+	ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
+
+   
+Build docker image with (needs a docker hub account):
+
+.. code-block:: bash
+
+	DOCKER_REPOSITORY=<name of your docker hub repository>
+
+	DOCKER_IMAGE_NAME=antares3-k8s-cluster-dependencies
+
+	DOCKER_IMAGE_VERSION=latest
+
+	sudo docker build --build-arg mount_point=$mount_point -t $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION . 
+
+	sudo docker login
+
+	sudo docker push $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION
+
+	sudo docker rmi $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION
+
 
 
 Deployments for dask scheduler and worker
@@ -1408,10 +1425,10 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 	        resources:
 	         requests:
 	          cpu: "1"
-	          memory: 6Gi
+	          memory: 6Gi ##### This value depends of type of AWS instance chose
 	         limits:
 	          cpu: "1"
-	          memory: 8Gi
+	          memory: 8Gi ##### This value depends of type of AWS instance chose
 	        volumeMounts:
 	         - name: efs-pvc
 	           mountPath: "/shared_volume/"
@@ -1435,6 +1452,24 @@ Create deployment of antares3-worker with:
 .. note:: 
 
 	Use ``kubectl scale deployments/antares3-worker --replicas=2`` to have two dask-worker containers.
+
+
+**For log in to dask-scheduler:**
+
+
+Using <key>.pem of user kops do a ssh and enter to docker container of dask-scheduler with ``exec`` command:
+
+.. code-block:: bash
+
+    $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
+
+    $sudo docker exec -it <container-id-dask-scheduler> bash
+
+.. note:: 
+
+	Make sure this <key>.pem has 400 permissions: ``$chmod 400 <key>.pem``.
+
+
 
 
 
@@ -1492,18 +1527,9 @@ Log in where dask-scheduler container is running and execute:
 	Open Datacube supports NETCDF CF and S3 drivers for storage (see `Open DataCube Ingestion Config`_). Different software dependencies are required for different drivers and different ``datacube system init`` command.
 
 
-\* NETCDF CF
-
 .. code-block:: bash
 
     $datacube -v system init --no-init-users 
-
-
-\* S3 
-
-.. code-block:: bash
-
-    $datacube -v system init -s3 --no-init-users 
 
 
 .. note:: 
@@ -1543,6 +1569,7 @@ Although in the ``antares3-scheduler.yaml`` and ``antares3-worker.yaml`` ther is
 
 .. code-block:: bash
 
+	$source .profile
     $antares init -c mex
 
 Notes
@@ -1591,7 +1618,28 @@ and scale down efs-provisioner deployment:
 
     $kubectl scale deployments/efs-provisioner --replicas=0
 
-3. Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete RDS instance:
+and scale down nodes and master:
+
+.. code-block:: bash
+
+	#set minSize and maxSize to 0
+    $kops edit ig nodes --name $CLUSTER_FULL_NAME
+
+	$kops update cluster $CLUSTER_FULL_NAME
+
+	$kops update cluster $CLUSTER_FULL_NAME --yes
+
+	#to retrieve type and region where master is located
+	$kops get instancegroups
+
+	#set minSize and maxSize to 0
+	$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME
+
+	$kops update cluster $CLUSTER_FULL_NAME
+
+	$kops update cluster $CLUSTER_FULL_NAME --yes
+
+3. Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:
    
 For example, to delete deployment of EFS and service (bokeh visualization):
 
@@ -1599,7 +1647,7 @@ For example, to delete deployment of EFS and service (bokeh visualization):
 
     $kubectl delete deployment efs-provisioner
 
-    $kubectl delete deployment service
+    $kubectl delete service antares3-scheduler-bokeh
 
 
 To delete mount targets of EFS (assuming there's three subnets):
@@ -1618,11 +1666,11 @@ To delete mount targets of EFS (assuming there's three subnets):
 	
 	mt_id3=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f3)
 	
-	$aws efs delete-mount-target --mount-target-id $mt_id1
+	$aws efs delete-mount-target --mount-target-id $mt_id1 --region=$region
 	
-	$aws efs delete-mount-target --mount-target-id $mt_id2
+	$aws efs delete-mount-target --mount-target-id $mt_id2 --region=$region
 	
-	$aws efs delete-mount-target --mount-target-id $mt_id3
+	$aws efs delete-mount-target --mount-target-id $mt_id3 --region=$region
 	
 
 4. If the instances of Kubernetes cluster (and thereby containers) need access to a bucket of S3, you can use next commands after a policy was created. Here we assume that the bucket where we have data is ``bucket_example`` and the name of the policy is:  ``policy_example`` and it has entries:
@@ -1675,6 +1723,9 @@ To delete mount targets of EFS (assuming there's three subnets):
     $aws iam attach-role-policy --policy-arn $arn_of_policy --role-name $name_of_role_nodes
 
 
+.. note:: 
+
+	Before deleting cluster delete policy attach to roles ``masters.$CLUSTER_FULL_NAME`` and ``nodes.$CLUSTER_FULL_NAME``.
 
 
 .. Kubernetes references:

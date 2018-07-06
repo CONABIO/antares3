@@ -206,7 +206,7 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         return [x for x in fc if x[1] != x[2]]
 
 
-    def to_db(self, fc, meta, pre_name, post_name, name):
+    def to_db(self, fc, meta, pre_name, post_name):
         """Write feature collection returned by label_change to the antares3 database
 
         The geometries of fc are assumed to be in the crs specified in the instance
@@ -221,8 +221,6 @@ class BaseBiChange(metaclass=abc.ABCMeta):
                 labels
             post_name (str): Name of the classification used for assigning posterior
                 labels
-            name (str): Unique name/identifier to give to that series of labelled change
-                objects
 
         Returns:
             Function used for its side effect of writing a feature collection to
@@ -239,7 +237,6 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         # Build list of ChangeClassification 
         class_list = [ChangeClassification(pre_name=pre_name,
                                            post_name=post_name,
-                                           name=name,
                                            change_object=x[0],
                                            pre_tag_id=x[1][1],
                                            post_tag_id=x[1][2])
