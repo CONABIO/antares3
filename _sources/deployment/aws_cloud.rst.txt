@@ -476,7 +476,7 @@ from **<public DNS of master>:8787/graph** we have:
 Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Prerequisites at the top of this page to setup a RDS-instance with subnet and security groups of your preference. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of the dask-sge cluster, install ``postgresql-client`` and execute a ``createdb`` command.
 
 
-4. Init Antares and Open DataCube
+5. Init Antares and Open DataCube
 ---------------------------------
 
 

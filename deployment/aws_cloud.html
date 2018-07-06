@@ -95,7 +95,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#configure-an-autoscaling-group-of-aws-using-ami">2. Configure an Autoscaling group of AWS using AMI</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#init-cluster">3. Init Cluster</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#create-rds-instance">4. Create RDS instance</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#init-antares-and-open-datacube">4. Init Antares and Open DataCube</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#init-antares-and-open-datacube">5. Init Antares and Open DataCube</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#kubernetes-and-dask">Kubernetes and Dask</a><ul>
@@ -551,7 +551,7 @@ ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/<span class="nv
 <p>Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Prerequisites at the top of this page to setup a RDS-instance with subnet and security groups of your preference. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of the dask-sge cluster, install <code class="docutils literal notranslate"><span class="pre">postgresql-client</span></code> and execute a <code class="docutils literal notranslate"><span class="pre">createdb</span></code> command.</p>
 </div>
 <div class="section" id="init-antares-and-open-datacube">
-<h3>4. Init Antares and Open DataCube<a class="headerlink" href="#init-antares-and-open-datacube" title="Permalink to this headline">¶</a></h3>
+<h3>5. Init Antares and Open DataCube<a class="headerlink" href="#init-antares-and-open-datacube" title="Permalink to this headline">¶</a></h3>
 <p>In step 1 it was configured variable <code class="docutils literal notranslate"><span class="pre">mount_point</span></code> which is a path to a shared volume.</p>
 <div class="section" id="open-datacube">
 <h4>Open DataCube<a class="headerlink" href="#open-datacube" title="Permalink to this headline">¶</a></h4>
