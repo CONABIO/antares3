@@ -476,7 +476,7 @@ from **<public DNS of master>:8787/graph** we have:
 Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Prerequisites at the top of this page to setup a RDS-instance with subnet and security groups of your preference. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of the dask-sge cluster, install ``postgresql-client`` and execute a ``createdb`` command.
 
 
-4. Init Antares and Open DataCube
+5. Init Antares and Open DataCube
 ---------------------------------
 
 
@@ -698,7 +698,7 @@ You can check kops and kubectl versions with:
 	USER root
 
 	#see: https://github.com/Yelp/dumb-init/ for next line:
-	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$	(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s 	https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/	dumb-init
+	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/ dumb-init
 	
 	#base dependencies
 	RUN apt-get update && apt-get install -y \
@@ -746,7 +746,7 @@ You can check kops and kubectl versions with:
 	RUN pip3 install --upgrade python-dateutil
 	
 	#Dependencies for antares3 & datacube
-	RUN pip3 install numpy && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && 	pip3 install rasterio==1.0b1 --no-binary rasterio  
+	RUN pip3 install numpy && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0b1 --no-binary rasterio  
 	RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
 	RUN pip3 install --no-cache --no-binary :all: psycopg2
 	RUN pip3 install futures pathlib setuptools==20.4
@@ -1010,7 +1010,7 @@ Set DNS and id of EFS: (last command sould output this values) and give access t
 	
 	#Create inbound rules for NFS on the security groups:
 	
-	$aws ec2 authorize-security-group-ingress --group-id $sgroups_master --protocol tcp --port 2049 --source-group $sgroups_master --region 	$region
+	$aws ec2 authorize-security-group-ingress --group-id $sgroups_master --protocol tcp --port 2049 --source-group $sgroups_master --region $region
 
 	$aws ec2 authorize-security-group-ingress --group-id $sgroups_nodes --protocol tcp --port 2049 --source-group $sgroups_nodes --region $region
 
@@ -1030,8 +1030,8 @@ In the next ``efs-provisioner.yaml`` put **EFS id**, **region**, **AccessKeyId**
 	metadata:
 	  name: efs-provisioner
 	data:
-	  file.system.id: <efs id> #####Here put efs id
-	  aws.region: <region> #####Here put region
+	  file.system.id: <efs id> ##### Here put efs id
+	  aws.region: <region> ##### Here put region
 	  provisioner.name: aws-efs
 	---
 	kind: ClusterRole
@@ -1321,7 +1321,7 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 	       - name: efs-pvc
 	         persistentVolumeClaim:
 	          claimName: efs
-	       - name: dshm
+	       - name: dshm ##### This is needed for opendatacube S3 functionality
 	         emptyDir:
 	          medium: Memory
 
@@ -1419,7 +1419,7 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 	       - name: efs-pvc
 	         persistentVolumeClaim:
 	          claimName: efs
-	       - name: dshm #### This is needed for opendatacube S3 funcionality
+	       - name: dshm ##### This is needed for opendatacube S3 functionality
 	         emptyDir:
 	          medium: Memory
 	          sizeLimit: '1Gi'
@@ -1591,8 +1591,20 @@ and scale down efs-provisioner deployment:
 
     $kubectl scale deployments/efs-provisioner --replicas=0
 
-3. Before deleting cluster delete mount targets of EFS:
+3. Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete RDS instance:
    
+For example, to delete deployment of EFS and service (bokeh visualization):
+
+.. code-block:: bash
+
+    $kubectl delete deployment efs-provisioner
+
+    $kubectl delete deployment service
+
+
+To delete mount targets of EFS (assuming there's three subnets):
+
+
 .. code-block:: bash
 
 
@@ -1600,11 +1612,11 @@ and scale down efs-provisioner deployment:
 
 	region=<region>
 	
-	mt_id1=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut 	-d' ' -f1)
+	mt_id1=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f1)
 	
-	mt_id2=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut 	-d' ' -f2)
+	mt_id2=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f2)
 	
-	mt_id3=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut 	-d' ' -f3)
+	mt_id3=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f3)
 	
 	$aws efs delete-mount-target --mount-target-id $mt_id1
 	
@@ -1652,15 +1664,15 @@ and scale down efs-provisioner deployment:
 
     name_of_policy=policy_example
 
-	arn_of_policy=$(aws iam list-policies --scope=Local| jq -r '.Policies[]|select(.PolicyName=="'$name_of_policy'")|.Arn')
+    arn_of_policy=$(aws iam list-policies --scope=Local| jq -r '.Policies[]|select(.PolicyName=="'$name_of_policy'")|.Arn')
 
-	name_of_role_masters=masters.$CLUSTER_FULL_NAME #This is the role name created by command kops create cluster ...
+    name_of_role_masters=masters.$CLUSTER_FULL_NAME #This is the role name created by command kops create cluster ...
 
-	$aws iam attach-role-policy --policy-arn $arn_of_policy --role-name $name_of_role_masters
+    $aws iam attach-role-policy --policy-arn $arn_of_policy --role-name $name_of_role_masters
 
-	name_of_role_nodes=nodes.$CLUSTER_FULL_NAME #This is the role name created by command kops create cluster ...
+    name_of_role_nodes=nodes.$CLUSTER_FULL_NAME #This is the role name created by command kops create cluster ...
 
-	$aws iam attach-role-policy --policy-arn $arn_of_policy --role-name $name_of_role_nodes
+    $aws iam attach-role-policy --policy-arn $arn_of_policy --role-name $name_of_role_nodes
 
 
 
