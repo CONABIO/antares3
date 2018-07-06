@@ -60,14 +60,14 @@ Prerequisites
 
     .. code-block:: bash
         
-        chmod 0600 ~/.pgpass
+        $chmod 0600 ~/.pgpass
 
 
     \* **(Not mandatory but useful)** You can either work with the database configured in RDS or create a new one with:
 
     .. code-block:: bash
 
-        createdb -h <db_host> -U <db_user> <database_name>
+        $createdb -h <db_host> -U <db_user> <database_name>
 
 
 
@@ -200,8 +200,9 @@ Once launching of the instance was successful, log in and execute next commands:
 .. code-block:: bash
 
     efs_dns=<DNS name of EFS service>
+
     ##Mount shared volume
-    sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 $efs_dns:/ $mount_point
+    $sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 $efs_dns:/ $mount_point
     
 
 
@@ -240,7 +241,7 @@ Once bash script was created unmount the shared volume and terminate instance:
 
 .. code-block:: bash
 
-    sudo umount $mount_point
+    $sudo umount $mount_point
 
 
 You can use this instance to create AMI of AWS `Create an AMI from an Amazon EC2 Instace`_.
@@ -370,20 +371,20 @@ Login to master node and execute:
 .. code-block:: bash
 
     # Start dask-scheduler on master node. The file scheduler.json will be created on $mount_point (shared_volume) of EFS
-    qsub -b y -l h=$HOSTNAME dask-scheduler --scheduler-file $mount_point/scheduler.json
+    $qsub -b y -l h=$HOSTNAME dask-scheduler --scheduler-file $mount_point/scheduler.json
 
 The master node has two cores, one is used for dask-scheduler, the other core can be used as a dask-worker:
 
 .. code-block:: bash
 
-    qsub -b y -l h=$HOSTNAME dask-worker --nthreads 1 --scheduler-file $mount_point/scheduler.json
+    $qsub -b y -l h=$HOSTNAME dask-worker --nthreads 1 --scheduler-file $mount_point/scheduler.json
 
 If your group of autoscaling has 3 nodes, then execute:
 
 .. code-block:: bash
 
     # Start 6 (=3 nodes x 2 cores each node) dask-worker processes in an array job pointing to the same file
-    qsub -b y -t 1-6 dask-worker --nthreads 1 --scheduler-file $mount_point/scheduler.json
+    $qsub -b y -t 1-6 dask-worker --nthreads 1 --scheduler-file $mount_point/scheduler.json
 
 You can view the web SGE on the page:
 
@@ -523,14 +524,14 @@ and execute:
 
 .. code-block:: bash
 
-    datacube -v system init --no-init-users 
+    $datacube -v system init --no-init-users 
 
 
 \* S3 
 
 .. code-block:: bash
 
-    datacube -v system init -s3 --no-init-users 
+    $datacube -v system init -s3 --no-init-users 
 
 
 .. note:: 
@@ -543,7 +544,7 @@ For both drivers you can execute the following to check that Open DataCube is pr
 
 .. code-block:: bash
 
-    datacube system check
+    $datacube system check
 
 
 .. note:: 
@@ -594,7 +595,7 @@ and execute:
 
 .. code-block:: bash
 
-    antares init -c mex
+    $antares init -c mex
  
 Use `RunCommand`_ service of AWS to execute following bash script in all instances with **Key** ``Type``, **Value** ``Node-dask-sge`` configured in step 2, or use a tool for cluster management like `clusterssh`_ . Modify variable ``user`` according to your user.
 
@@ -603,9 +604,12 @@ Use `RunCommand`_ service of AWS to execute following bash script in all instanc
 .. code-block:: bash
 
     #!/bin/bash
+
     user=ubuntu
-    source /home/$user/.profile
-    su $user -c "antares init"
+
+    $source /home/$user/.profile
+
+    $su $user -c "antares init"
 
 This will create a ``madmex`` directory under ``~/.config/`` where ingestion files for all different suported dataset will be stored.
 
@@ -624,7 +628,7 @@ The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
 
 1) Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a **gossip based Kubernetes cluster** can be used instead (see for example this `issue`_ and this `entry of blog`_).
 
-2) Install **same versions** of kops and kubectl. We use a ``t2.micro`` instance with AMI ``Ubuntu 16.04 LTS`` to install this tools with the next bash script:
+2) Install **same versions** of kops and kubectl. We use a ``t2.micro`` instance with AMI ``Ubuntu 16.04 LTS`` and a role attached to it to install this tools with the next bash script:
  
 
 .. code-block:: bash
@@ -786,11 +790,17 @@ Build docker image with:
 .. code-block:: bash
 
 	DOCKER_REPOSITORY=<name of your docker hub repository>
+
 	DOCKER_IMAGE_NAME=antares3-k8s-cluster-dependencies
+
 	DOCKER_IMAGE_VERSION=latest
+
 	sudo docker build --build-arg mount_point=$mount_point -t $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION . 
+
 	sudo docker login
+
 	sudo docker push $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION
+
 	sudo docker rmi $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION
 
 4) Set next bash variables:
@@ -817,6 +827,7 @@ Build docker image with:
 	
 	export KUBERNETES_VERSION="1.9.0"
 	
+	#To hold cluster state information export KOPS_STATE_STORE
 	export KOPS_STATE_STORE="s3://${CLUSTER_FULL_NAME}-state"
 
 	export EDITOR=nano
@@ -845,11 +856,17 @@ Create group and permissions of it:
 .. code-block:: bash
 
 	$aws iam create-group --group-name kops
+
 	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess --group-name kops
+
 	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonRoute53FullAccess --group-name kops
+
 	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess --group-name kops
+
 	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/IAMFullAccess --group-name kops
+
 	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonVPCFullAccess --group-name kops
+
 	$aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess --group-name kops
 
 
@@ -858,6 +875,7 @@ Create user kops and add it to already created group kops:
 .. code-block:: bash
 
 	$aws iam create-user --user-name kops
+
 	$aws iam add-user-to-group --user-name kops --group-name kops
 
 
@@ -878,7 +896,9 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 		AWS Secret Access Key [None]: xxxxxxx
 		Default region name [None]: <leave it empty>
 		Default output format [None]: <leave it empty>
+
 	$export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id)
+
 	$export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
 
 
@@ -935,7 +955,7 @@ Deployment for Elastic File System
 In order to share some files (for example ``.antares`` and ``.datacube.conf``) between all containers ``efs-provisioner`` is used. See `efs-provisioner`_. 
 
 
-Retrieve id's of subnets and security groups created by kops:
+Retrieve id's of subnets and security groups created by kops. Here it's assumed that three subnets were created by ``kops create cluster`` command:
 
 .. code-block:: bash
 	
@@ -944,7 +964,9 @@ Retrieve id's of subnets and security groups created by kops:
 	subnets_kops=$(aws ec2 describe-subnets --filters "Name=tag:KubernetesCluster,Values=$CLUSTER_FULL_NAME" --region $region|jq -r '.Subnets[].SubnetId'|tr -s '\n' ' ')
 	
 	subnets_kops1=$(echo $subnets_kops|cut -d' ' -f1)
+
 	subnets_kops2=$(echo $subnets_kops|cut -d' ' -f2)
+
 	subnets_kops3=$(echo $subnets_kops|cut -d' ' -f3)
 	
 	sgroups_kops=$(aws ec2 describe-security-groups --filters "Name=tag:KubernetesCluster,Values=$CLUSTER_FULL_NAME" --region $region|jq -r '.SecurityGroups[].GroupId'|tr -s '\n' ' ')
@@ -965,18 +987,21 @@ Use next commands to create EFS:
 	$aws efs create-file-system --performance-mode maxIO --creation-token <some random integer number> --region $region
 	
 
-Set DNS and id of EFS: (last command sould output this values) and give access to docker containers to EFS via mount targets and security groups. Here it's assumed that three subnets were created by ``kops create cluster`` command)
+Set DNS and id of EFS: (last command sould output this values) and give access to docker containers to EFS via mount targets and security groups. 
 
 .. code-block:: bash
 	
 	region=<region>
 
 	efs_dns=<DNS of EFS>
+
 	efs_id=<id of EFS>
 	
 	#create mount targets for three subnets: 
 	$aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops1 --security-groups $sgroups_kops --region $region
+
 	$aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops2 --security-groups $sgroups_kops --region $region
+
 	$aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops3 --security-groups $sgroups_kops --region $region
 	
 	#You have to poll the status of mount targets until status LifeCycleState = “available” so you can use EFS from instances that were created:
@@ -986,6 +1011,7 @@ Set DNS and id of EFS: (last command sould output this values) and give access t
 	#Create inbound rules for NFS on the security groups:
 	
 	$aws ec2 authorize-security-group-ingress --group-id $sgroups_master --protocol tcp --port 2049 --source-group $sgroups_master --region 	$region
+
 	$aws ec2 authorize-security-group-ingress --group-id $sgroups_nodes --protocol tcp --port 2049 --source-group $sgroups_nodes --region $region
 
 
@@ -1049,7 +1075,7 @@ In the next ``efs-provisioner.yaml`` put **EFS id**, **region**, **AccessKeyId**
 	metadata:
 	  name: efs-provisioner
 	spec:
-	  replicas: 1
+	  replicas: 1 
 	  strategy:
 	    type: Recreate
 	  template:
@@ -1129,6 +1155,7 @@ To change reclaim policy, retrieve persistent volume and execute ``kubectl patch
 .. code-block:: bash
 
     pv_id=$(kubectl get pv|grep pvc | cut -d' ' -f1)
+
     $kubectl patch pv $pv_id -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}
 
 
@@ -1168,6 +1195,7 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 .. code-block:: bash
 
 	$ssh -i <key>.pem admin@$efs_prov_ip_publ
+
 	$sudo docker exec -it <container-id-efs> /bin/sh
 
 .. note:: 
@@ -1180,6 +1208,7 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 .. code-block:: bash
 
 	$vi /persistentvolumes/.antares
+
 	$vi /persistentvolumes/.datacube.conf
 
 
@@ -1235,6 +1264,7 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 .. code-block:: bash
 
     $cp /persistentvolumes/.antares /persistentvolumes/efs-pvc-<id>
+
     $cp /persistentvolumes/.datacube.conf /persistentvolumes/efs-pvc-<id>
 
 5. Exit efs docker container.
@@ -1254,7 +1284,7 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 	metadata:
 	  name: antares3-scheduler
 	spec:
-	  replicas: 1
+	  replicas: 1 ##### This is the number of containers that are going to be deployed. For scheduler just 1 is needed.
 	  template:
 	    metadata:
 	      labels:
@@ -1333,12 +1363,18 @@ Execute:
 	Create in security groups of master and nodes of Kubernetes a rule to visualize bokeh with the port you chose.
 
 
+**State of cluster**
+
+**<public DNS of master or node (depends where dask-scheduler container is running)>:30000**
+
+.. image:: https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0
+    :width: 400
+
+
 Deployment for dask worker
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use next ``antares3-worker.yaml`` file to create one container for dask worker:
-
-
+Use next ``antares3-worker.yaml`` file to create **one** container for dask worker:
 
 .. code-block:: bash
 
@@ -1348,7 +1384,7 @@ Use next ``antares3-worker.yaml`` file to create one container for dask worker:
 	  name: antares3-worker
 	  namespace: default
 	spec:
-	  replicas: 1  ##### Just one container, change it if more containers are needed
+	  replicas: 1  ##### This is the number of containers that are going to be deployed. Change it if more containers are needed
 	  template:
 	    metadata:
 	     labels:
@@ -1358,7 +1394,7 @@ Use next ``antares3-worker.yaml`` file to create one container for dask worker:
 	      containers:
 	      - name: antares3-worker
 	        imagePullPolicy: Always
-	        image: madmex/antares3-k8s-cluster-dependencies:v3 #Docker image to be used for dask scheduler/worker container
+	        image: madmex/antares3-k8s-cluster-dependencies:latest #Docker image to be used for dask scheduler/worker container
 	        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
 	        ports:
 	          - containerPort: 8786
@@ -1401,6 +1437,114 @@ Create deployment of antares3-worker with:
 	Use ``kubectl scale deployments/antares3-worker --replicas=2`` to have two dask-worker containers.
 
 
+
+Run an example
+^^^^^^^^^^^^^^
+
+   
+In dask-scheduler container execute in a python enviroment:
+
+.. code-block:: python3
+
+    from dask.distributed import Client
+    import os
+    client = Client(scheduler_file=os.environ['mount_point']+'/scheduler.json')
+
+    def square(x):
+        return x ** 2
+
+    def neg(x):
+        return -x
+
+    A = client.map(square, range(10))
+    B = client.map(neg, A)
+    total = client.submit(sum, B)
+    total.result()
+    -285
+    total
+    <Future: status: finished, type: int, key: sum-ccdc2c162ed26e26fc2dc2f47e0aa479>
+    client.gather(A)
+    [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+
+from 
+
+**<public DNS of master or node (depends where dask-scheduler container is running)>:30000/graph** 
+
+we have:
+
+.. image:: https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0
+    :width: 600
+
+
+Init Antares and Open DataCube
+------------------------------
+
+
+Open DataCube
+^^^^^^^^^^^^^
+
+
+Log in where dask-scheduler container is running and execute:
+
+.. attention:: 
+
+	Open Datacube supports NETCDF CF and S3 drivers for storage (see `Open DataCube Ingestion Config`_). Different software dependencies are required for different drivers and different ``datacube system init`` command.
+
+
+\* NETCDF CF
+
+.. code-block:: bash
+
+    $datacube -v system init --no-init-users 
+
+
+\* S3 
+
+.. code-block:: bash
+
+    $datacube -v system init -s3 --no-init-users 
+
+
+.. note:: 
+
+	The ``--no-init-users`` flag is necessary for both drivers so we don't have errors related to permissions. See `this question in StackOverFlow`_ .
+
+
+
+For both drivers you can execute the following to check that Open DataCube is properly setup:
+
+.. code-block:: bash
+
+    $datacube system check
+
+
+.. note:: 
+
+	For S3 driver additionally you can check the following tables are created in your database: 
+
+	.. code-block:: psql
+
+		\dt agdc.*
+
+		s3_dataset
+		s3_dataset_chunk
+		s3_dataset_mapping
+
+
+
+Antares3
+^^^^^^^^
+
+Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.
+
+Although in the ``antares3-scheduler.yaml`` and ``antares3-worker.yaml`` ther is an ``antares init`` command, if we want to ingest country borders we need to log in to dask-scheduler container and execute (for example to ingest Mexico's border):
+
+
+.. code-block:: bash
+
+    $antares init -c mex
+
 Notes
 -----
 
@@ -1411,8 +1555,11 @@ Locate where is running the scheduler:
 .. code-block:: bash
 
 	region=<region>
+
 	$dask_scheduler_pod=$(kubectl get pods --show-all |grep scheduler|cut -d' ' -f1)
+
 	$dask_scheduler_ip=$(kubectl describe pods $dask_scheduler_pod|grep Node:|sed -n 's/.*ip-\(.*\).us-.*/\1/p'|sed -n 's/-/./g;p')
+
 	$dask_scheduler_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$dask_scheduler_ip" --region=<region>|jq -r '.Reservations[].Instances[].PublicDnsName')
 
 
@@ -1421,6 +1568,7 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 .. code-block:: bash
 
     $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
+
     $sudo docker exec -it <container-id-dask-scheduler> bash
 
 .. note:: 
@@ -1429,14 +1577,12 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 
 
 
-    
-
-
 2. Before scaling down cluster delete deployments:
    
 .. code-block:: bash
 
     $kubectl delete deployment antares3-worker
+
     $kubectl delete deployment antares3-scheduler
 
 and scale down efs-provisioner deployment:
@@ -1451,6 +1597,7 @@ and scale down efs-provisioner deployment:
 
 
 	efs_id=<id of efs>
+
 	region=<region>
 	
 	mt_id1=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut 	-d' ' -f1)
@@ -1465,6 +1612,59 @@ and scale down efs-provisioner deployment:
 	
 	$aws efs delete-mount-target --mount-target-id $mt_id3
 	
+
+4. If the instances of Kubernetes cluster (and thereby containers) need access to a bucket of S3, you can use next commands after a policy was created. Here we assume that the bucket where we have data is ``bucket_example`` and the name of the policy is:  ``policy_example`` and it has entries:
+ 
+
+::
+
+	{
+	    "Version": "2012-10-17",
+	    "Statement": [
+	        {
+	            "Sid": "VisualEditor0",
+	            "Effect": "Allow",
+	            "Action": [
+	                "s3:ListBucket",
+	                "s3:GetBucketLocation"
+	            ],
+	            "Resource": [
+	                "arn:aws:s3:::bucket_example",
+	            ]
+	        },
+	        {
+	            "Sid": "VisualEditor1",
+	            "Effect": "Allow",
+	            "Action": [
+	                "s3:PutObject",
+	                "s3:GetObject",
+	                "s3:DeleteObject"
+	            ],
+	            "Resource": [
+	                "arn:aws:s3:::bucket_example/*",
+	            ]
+	        }
+	    ]
+	}
+  
+
+.. code-block:: bash
+
+    name_of_policy=policy_example
+
+	arn_of_policy=$(aws iam list-policies --scope=Local| jq -r '.Policies[]|select(.PolicyName=="'$name_of_policy'")|.Arn')
+
+	name_of_role_masters=masters.$CLUSTER_FULL_NAME #This is the role name created by command kops create cluster ...
+
+	$aws iam attach-role-policy --policy-arn $arn_of_policy --role-name $name_of_role_masters
+
+	name_of_role_nodes=nodes.$CLUSTER_FULL_NAME #This is the role name created by command kops create cluster ...
+
+	$aws iam attach-role-policy --policy-arn $arn_of_policy --role-name $name_of_role_nodes
+
+
+
+
 .. Kubernetes references:
 
 .. _efs-provisioner: https://github.com/kubernetes-incubator/external-storage/tree/master/aws/efs
