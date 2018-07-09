@@ -1471,7 +1471,7 @@ spec:
 <h3>Init Antares3 to ingest country borders<a class="headerlink" href="#init-antares3-to-ingest-country-borders" title="Permalink to this headline">¶</a></h3>
 <p>Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.</p>
 <p>Although in the <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> ther is an <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">init</span></code> command, if we want to ingest country borders we need to log in to dask-scheduler container and execute (for example to ingest Mexico’s border):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="nv">$source</span> ~/.profile
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$source</span> ~/.profile
 
 <span class="nv">$antares</span> init -c mex
 </pre></div>
