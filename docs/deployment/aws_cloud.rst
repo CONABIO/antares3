@@ -1457,6 +1457,20 @@ Create deployment of antares3-worker with:
 **For log in to dask-scheduler:**
 
 
+Locate where is running the scheduler:
+
+.. code-block:: bash
+
+	region=<region>
+
+	$dask_scheduler_pod=$(kubectl get pods --show-all |grep scheduler|cut -d' ' -f1)
+
+	$dask_scheduler_ip=$(kubectl describe pods $dask_scheduler_pod|grep Node:|sed -n 's/.*ip-\(.*\).us-.*/\1/p'|sed -n 's/-/./g;p')
+
+	$dask_scheduler_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$dask_scheduler_ip" --region=<region>|jq -r '.Reservations[].Instances[].PublicDnsName')
+
+
+
 Using <key>.pem of user kops do a ssh and enter to docker container of dask-scheduler with ``exec`` command:
 
 .. code-block:: bash
