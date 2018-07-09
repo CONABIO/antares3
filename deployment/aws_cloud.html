@@ -103,6 +103,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#deployment-for-elastic-file-system">Deployment for Elastic File System</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id1">Create RDS instance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dockerfile-for-containers-of-antares3-and-opendatacube">Dockerfile for containers of Antares3 and OpenDataCube</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#copy-configuration-files-for-antares-and-open-datacube-to-efs-volume">Copy configuration files for antares and open datacube to efs volume</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#deployments-for-dask-scheduler-and-worker">Deployments for dask scheduler and worker</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">Init Antares and Open DataCube</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#notes">Notes</a></li>
@@ -1151,10 +1152,8 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 </pre></div>
 </div>
 </div>
-<div class="section" id="deployments-for-dask-scheduler-and-worker">
-<h3>Deployments for dask scheduler and worker<a class="headerlink" href="#deployments-for-dask-scheduler-and-worker" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="copy-configuration-files-for-antares-and-open-datacube-to-efs-volume">
-<h4>Copy configuration files for antares and open datacube to efs volume<a class="headerlink" href="#copy-configuration-files-for-antares-and-open-datacube-to-efs-volume" title="Permalink to this headline">¶</a></h4>
+<h3>Copy configuration files for antares and open datacube to efs volume<a class="headerlink" href="#copy-configuration-files-for-antares-and-open-datacube-to-efs-volume" title="Permalink to this headline">¶</a></h3>
 <p>Create <code class="docutils literal notranslate"><span class="pre">.antares</span></code> and <code class="docutils literal notranslate"><span class="pre">.datacube.conf</span></code> files in EFS:</p>
 <ol class="arabic simple">
 <li>Locate where is running the efs-provisioner:</li>
@@ -1240,6 +1239,8 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 <li>Exit efs docker container.</li>
 </ol>
 </div>
+<div class="section" id="deployments-for-dask-scheduler-and-worker">
+<h3>Deployments for dask scheduler and worker<a class="headerlink" href="#deployments-for-dask-scheduler-and-worker" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="deployment-for-dask-scheduler">
 <h4>Deployment for dask scheduler<a class="headerlink" href="#deployment-for-dask-scheduler" title="Permalink to this headline">¶</a></h4>
 <p>Use next <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code> file to create container for dask scheduler:</p>
@@ -1562,6 +1563,7 @@ spec:
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">1</span>
 </pre></div>
 </div>
+<p>and create deployments for dask-scheduler and dask-worker (see <strong>Deployments for dask scheduler and worker</strong> section).</p>
 <ol class="arabic simple" start="4">
 <li>Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:</li>
 </ol>

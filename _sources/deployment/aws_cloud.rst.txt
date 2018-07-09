@@ -1188,12 +1188,9 @@ Build docker image with (needs a docker hub account):
 	sudo docker rmi $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION
 
 
-
-Deployments for dask scheduler and worker
------------------------------------------
-
 Copy configuration files for antares and open datacube to efs volume
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------------------------------------------
+
 
 Create ``.antares`` and ``.datacube.conf`` files in EFS:
    
@@ -1287,7 +1284,8 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 5. Exit efs docker container.
 
 
-
+Deployments for dask scheduler and worker
+-----------------------------------------
 
 Deployment for dask scheduler
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1689,7 +1687,7 @@ And scale up efs-provisioner deployment :
 
 	$kubectl scale deployments/efs-provisioner --replicas=1
    
-
+and create deployments for dask-scheduler and dask-worker (see **Deployments for dask scheduler and worker** section).
 
 
 4. Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:
