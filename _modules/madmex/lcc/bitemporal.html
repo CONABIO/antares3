@@ -178,7 +178,7 @@
 <span class="kn">from</span> <span class="nn">madmex.io.vector_db</span> <span class="k">import</span> <span class="n">from_geobox</span>
 <span class="kn">from</span> <span class="nn">madmex.util.spatial</span> <span class="k">import</span> <span class="n">geometry_transform</span>
 <span class="kn">from</span> <span class="nn">madmex.models</span> <span class="k">import</span> <span class="n">PredictClassification</span><span class="p">,</span> <span class="n">ChangeObject</span><span class="p">,</span> <span class="n">ChangeClassification</span>
-<span class="kn">from</span> <span class="nn">madmex.lcc.bitemporal.thresholding</span> <span class="k">import</span> <span class="n">Elliptic</span><span class="p">,</span> <span class="n">Kapur</span>
+<span class="kn">from</span> <span class="nn">madmex.lcc.thresholding</span> <span class="k">import</span> <span class="n">Elliptic</span><span class="p">,</span> <span class="n">Kapur</span>
 
 <span class="c1"># Monkeypatch Django Polygon class to instantiate it using a datacube style geobox</span>
 <span class="n">Polygon</span><span class="o">.</span><span class="n">from_geobox</span> <span class="o">=</span> <span class="n">from_geobox</span>
@@ -186,7 +186,7 @@
 
 <div class="viewcode-block" id="BaseBiChange"><a class="viewcode-back" href="../../../generated/madmex.lcc.bitemporal.BaseBiChange.html#madmex.lcc.bitemporal.BaseBiChange">[docs]</a><span class="k">class</span> <span class="nc">BaseBiChange</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Parent class imlementing generic methods related to change detection results</span>
+<span class="sd">    Parent class implementing generic methods related to change detection results</span>
 <span class="sd">    handling.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="BaseBiChange.__init__"><a class="viewcode-back" href="../../../generated/madmex.lcc.bitemporal.BaseBiChange.html#madmex.lcc.bitemporal.BaseBiChange.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">crs</span><span class="p">):</span>
@@ -266,9 +266,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">change_array</span> <span class="o">=</span> <span class="n">change_array</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">threshold_change</span><span class="p">(</span><span class="n">diff_image</span><span class="p">,</span><span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Applies a thresholding method to a continuous difference image</span>
-<span class="sd">   </span>
+    <span class="k">def</span> <span class="nf">threshold_change</span><span class="p">(</span><span class="n">diff_image</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Applies a thresholding method to a continuous difference image</span>
+
 <span class="sd">        Takes aan array of difference images and thresholds them to produce discrete</span>
 <span class="sd">        change/no-change image masks</span>
 

@@ -1490,7 +1490,7 @@ spec:
 <p class="last">Make sure this &lt;key&gt;.pem has 400 permissions: <code class="docutils literal notranslate"><span class="pre">$chmod</span> <span class="pre">400</span> <span class="pre">&lt;key&gt;.pem</span></code>.</p>
 </div>
 <ol class="arabic simple" start="2">
-<li>Before scaling down cluster delete deployments:</li>
+<li>Before scaling down cluster make sure you have exported bash variables needed for the following actions (see point 3 in Cluster creation) and delete deployments:</li>
 </ol>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> delete deployment antares3-worker
 
@@ -1501,26 +1501,57 @@ spec:
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span>
 </pre></div>
 </div>
-<p>and scale down nodes and master:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="c1">#set minSize and maxSize to 0</span>
+<p>Proceed to scale down nodes and master:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#set minSize and maxSize to 0 for nodes</span>
 <span class="nv">$kops</span> edit ig nodes --name <span class="nv">$CLUSTER_FULL_NAME</span>
 
-    <span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span>
+<span class="c1">#Next line is just to see what changes are going to be applied</span>
+<span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span>
 
-    <span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span> --yes
+<span class="c1">#Apply changes</span>
+<span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span> --yes
 
-    <span class="c1">#to retrieve type and region where master is located</span>
-    <span class="nv">$kops</span> get instancegroups
+<span class="c1">#To scale down master:</span>
+<span class="c1">#to retrieve type and region where master is located</span>
 
-    <span class="c1">#set minSize and maxSize to 0</span>
-    <span class="nv">$kops</span> edit ig master-us-west-2a --name <span class="nv">$CLUSTER_FULL_NAME</span>
+<span class="nv">$kops</span> get instancegroups
 
-    <span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span>
+<span class="c1">#set minSize and maxSize to 0</span>
 
-    <span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span> --yes
+<span class="nv">$kops</span> edit ig master-us-west-2a --name <span class="nv">$CLUSTER_FULL_NAME</span>
+
+<span class="c1">#Next line is just to see what changes are going to be applied</span>
+<span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span>
+
+<span class="c1">#Apply changes</span>
+<span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span> --yes
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
+<li>If you scale down the cluster and want to start it again, export bash variables (see point 3 in Cluster creation) configure awscli (see end of point 5 in Cluster creation) and execute:</li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#set minSize and maxSize to 0</span>
+<span class="nv">$kops</span> edit ig master-us-west-2a --name <span class="nv">$CLUSTER_FULL_NAME</span>
+
+<span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span>
+
+<span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span> --yes
+
+<span class="c1">#set minSize and maxSize to desired number of nodes. You also can select instance type</span>
+<span class="nv">$kops</span> edit ig nodes --name <span class="nv">$CLUSTER_FULL_NAME</span>
+
+<span class="c1">#Next line is just to see what changes are going to be applied</span>
+<span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span>
+
+<span class="c1">#Apply changes</span>
+<span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span> --yes
+</pre></div>
+</div>
+<p>And scale up efs-provisioner deployment :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">1</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
 <li>Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:</li>
 </ol>
 <p>For example, to delete deployment of EFS and service (bokeh visualization):</p>
@@ -1547,7 +1578,7 @@ spec:
 <span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id3</span> --region<span class="o">=</span><span class="nv">$region</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="4">
+<ol class="arabic simple" start="5">
 <li>If the instances of Kubernetes cluster (and thereby containers) need access to a bucket of S3, you can use next commands after a policy was created. Here we assume that the bucket where we have data is <code class="docutils literal notranslate"><span class="pre">bucket_example</span></code> and the name of the policy is:  <code class="docutils literal notranslate"><span class="pre">policy_example</span></code> and it has entries:</li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -1595,7 +1626,7 @@ spec:
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Before deleting cluster delete policy attach to roles <code class="docutils literal notranslate"><span class="pre">masters.$CLUSTER_FULL_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">nodes.$CLUSTER_FULL_NAME</span></code>.</p>
+<p class="last">Before deleting cluster delete policy that was attached to roles <code class="docutils literal notranslate"><span class="pre">masters.$CLUSTER_FULL_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">nodes.$CLUSTER_FULL_NAME</span></code>.</p>
 </div>
 </div>
 </div>
