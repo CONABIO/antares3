@@ -1583,8 +1583,8 @@ Although in the ``antares3-scheduler.yaml`` and ``antares3-worker.yaml`` ther is
 
 .. code-block:: bash
 
-	$source .profile
-	
+	$source ~/.profile
+
     $antares init -c mex
 
 Notes
@@ -1662,7 +1662,7 @@ Proceed to scale down nodes and master:
 	$kops update cluster $CLUSTER_FULL_NAME --yes
 
 
-3. If you scale down the cluster and want to start it again, export bash variables (see point 3 in Cluster creation) configure awscli (see end of point 5 in Cluster creation) and execute:
+3. If you scale down the cluster and want to start it again, export bash variables (see point 3 in Cluster creation) and execute:
 
 .. code-block:: bash
 
