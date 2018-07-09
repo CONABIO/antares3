@@ -8,6 +8,13 @@ import rasterio
 from pyproj import Proj
 from jinja2 import Environment, PackageLoader
 
+try:
+    import boto3
+except ImportError:
+    _has_boto3 = False
+else:
+    _has_boto3 = True
+
 LANDSAT_BANDS = {'TM': {'blue': 'sr_band1',
                         'green': 'sr_band2',
                         'red': 'sr_band3',
@@ -22,7 +29,7 @@ LANDSAT_BANDS = {'TM': {'blue': 'sr_band1',
                               'swir2': 'sr_band7'}}
 LANDSAT_BANDS['ETM'] = LANDSAT_BANDS['TM']
 
-def metadata_convert(path):
+def metadata_convert(path, bucket=None):
     """Prepare metatdata prior to datacube indexing
 
     Given a directory containing landsat surface reflectance bands and a MLT.txt
@@ -31,6 +38,8 @@ def metadata_convert(path):
     Args:
         path (str): Path of the directory containing the surface reflectance bands
             and the Landsat metadata file.
+        bucket (str or None): Name of the s3 bucket containing the data. If ``None``
+            (default), data are considered to be on a mounted filesystem
 
     Examples:
         >>> from madmex.ingestion.landsat_espa import metadata_convert
@@ -47,21 +56,41 @@ def metadata_convert(path):
     Returns:
         str: The content of the metadata for later writing to file.
     """
-    # Check that path is a dir and contains appropriate files
-    if not os.path.isdir(path):
-        raise ValueError('Argument path= is not a directory')
-    mtl_file_list = glob(os.path.join(path, '*.xml'))
-    # Filter list of xml files with regex (there could be more than one in case
-    # some bands have been opend in qgis for example)
     pattern = re.compile(r'[A-Z0-9]{4}_[A-Z0-9]{4}_\d{6}_\d{8}_\d{8}_01_(T1|T2|RT)\.xml')
-    print(mtl_file_list)
-    mtl_file_list = [x for x in mtl_file_list if pattern.search(x)]
-    print(mtl_file_list)
-    if len(mtl_file_list) != 1:
-        raise ValueError('Could not identify a unique xml metadata file')
-    mtl_file = mtl_file_list[0]
-    # Start parsing xml
-    root = ET.parse(mtl_file).getroot()
+    if bucket is None:
+        # Check that path is a dir and contains appropriate files
+        if not os.path.isdir(path):
+            raise ValueError('Argument path= is not a directory')
+        mtl_file_list = glob(os.path.join(path, '*.xml'))
+        # Filter list of xml files with regex (there could be more than one in case
+        # some bands have been opend in qgis for example)
+        mtl_file_list = [x for x in mtl_file_list if pattern.search(x)]
+        print(mtl_file_list)
+        if len(mtl_file_list) != 1:
+            raise ValueError('Could not identify a unique xml metadata file')
+        mtl_file = mtl_file_list[0]
+        # Start parsing xml
+        root = ET.parse(mtl_file).getroot()
+    else:
+        if not _has_boto3:
+            raise ImportError('boto3 is required for working with s3 buckets')
+        # OPen bucket connection
+        s3 = boto3.resource('s3')
+        my_bucket = s3.Bucket(bucket)
+        # Retrieve all the files from the directory
+        file_list = [x.key for x in my_bucket.objects.filter(Prefix=path)]
+        # Filter using regex pattern
+        mtl_file_list = [x for x in file_list if pattern.search(x)]
+        print(mtl_file_list)
+        if len(mtl_file_list) != 1:
+            raise ValueError('Could not identify a unique xml metadata file')
+        mtl_file = mtl_file_list[0]
+        # REad xml as string
+        obj = s3.Object(bucket, mtl_file)
+        xml_str = obj.get()["Body"].read()
+        # generate element tree root
+        root = ET.fromstring(xml_str)
+
     ns = 'http://espa.cr.usgs.gov/v2'
     # Build datetime from date and time
     date_str = root.find('ns:global_metadata/ns:acquisition_date',
@@ -84,9 +113,19 @@ def metadata_convert(path):
     lry = float(root.find('ns:global_metadata/ns:projection_information/ns:corner_point[@location="LR"]',
                           namespaces={'ns': ns}).attrib['y'])
     # Retrieve crs from first band
-    bands = glob(os.path.join(path, '*_sr_band2.tif'))
-    with rasterio.open(bands[0]) as src:
-        crs = src.crs
+    if bucket is None:
+        bands = glob(os.path.join(path, '*_sr_band2.tif'))
+        with rasterio.open(bands[0]) as src:
+            crs = src.crs
+    else:
+        b2_pattern = re.compile(r'.*_sr_band2.tif$')
+        bands = [x for x in file_list if b2_pattern.search(x)]
+        band2 = os.path.join('s3://', bucket, bands[0])
+        print(band2)
+        with rasterio.open(band2) as src:
+            crs = src.crs
+        path = os.path.join('s3://', bucket, path)
+
     # Get coorner coordinates in long lat by transforming from projected values 
     p = Proj(crs)
     ul_lon, ul_lat = p(ulx, uly, inverse=True)

@@ -14,6 +14,7 @@ with open('madmex/__init__.py') as f:
 extra_reqs = {'docs': ['sphinx',
                        'sphinx-rtd-theme',
                        'sphinxcontrib-programoutput'],
+              's3': ['boto3'],
               'xgboost': ['xgboost'],
               'multi': ['cloudpickle',
                         'distributed']}
