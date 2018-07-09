@@ -1213,7 +1213,7 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 
 	$ssh -i <key>.pem admin@$efs_prov_ip_publ
 
-	$sudo docker exec -it <container-id-efs> /bin/sh
+	$sudo docker exec -it <container-id-efs> /bin/sh #to retrieve container id of efs do a docker ps
 
 .. note:: 
 
@@ -1457,13 +1457,27 @@ Create deployment of antares3-worker with:
 **For log in to dask-scheduler:**
 
 
+Locate where is running the scheduler:
+
+.. code-block:: bash
+
+	region=<region>
+
+	$dask_scheduler_pod=$(kubectl get pods --show-all |grep scheduler|cut -d' ' -f1)
+
+	$dask_scheduler_ip=$(kubectl describe pods $dask_scheduler_pod|grep Node:|sed -n 's/.*ip-\(.*\).us-.*/\1/p'|sed -n 's/-/./g;p')
+
+	$dask_scheduler_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$dask_scheduler_ip" --region=<region>|jq -r '.Reservations[].Instances[].PublicDnsName')
+
+
+
 Using <key>.pem of user kops do a ssh and enter to docker container of dask-scheduler with ``exec`` command:
 
 .. code-block:: bash
 
     $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
 
-    $sudo docker exec -it <container-id-dask-scheduler> bash
+    $sudo docker exec -it <container-id-dask-scheduler> bash #to retrieve container id of dask scheduler do a docker ps
 
 .. note:: 
 
@@ -1596,7 +1610,7 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 
     $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
 
-    $sudo docker exec -it <container-id-dask-scheduler> bash
+    $sudo docker exec -it <container-id-dask-scheduler> bash #to retrieve container id of dask scheduler do a docker ps
 
 .. note:: 
 
