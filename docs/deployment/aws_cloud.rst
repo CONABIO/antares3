@@ -1524,15 +1524,15 @@ we have:
     :width: 600
 
 
-Init Antares and Open DataCube
-------------------------------
+Init Open DataCube
+------------------
+
+Log in where dask-scheduler container is running.
 
 
 Open DataCube
 ^^^^^^^^^^^^^
 
-
-Log in where dask-scheduler container is running and execute:
 
 .. attention:: 
 
@@ -1571,13 +1571,12 @@ For both drivers you can execute the following to check that Open DataCube is pr
 
 
 
-Antares3
-^^^^^^^^
+Init Antares3 to ingest country borders
+---------------------------------------
 
 Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.
 
 Although in the ``antares3-scheduler.yaml`` and ``antares3-worker.yaml`` ther is an ``antares init`` command, if we want to ingest country borders we need to log in to dask-scheduler container and execute (for example to ingest Mexico's border):
-
 
 .. code-block:: bash
 
