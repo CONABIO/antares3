@@ -1584,6 +1584,7 @@ Although in the ``antares3-scheduler.yaml`` and ``antares3-worker.yaml`` ther is
 .. code-block:: bash
 
 	$source .profile
+	
     $antares init -c mex
 
 Notes
