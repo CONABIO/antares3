@@ -1468,7 +1468,7 @@ spec:
 <h4>Antares3<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <p>Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.</p>
 <p>Although in the <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> ther is an <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">init</span></code> command, if we want to ingest country borders we need to log in to dask-scheduler container and execute (for example to ingest Mexico’s border):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="nv">$source</span> .profile
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="nv">$source</span> ~/.profile
 
 <span class="nv">$antares</span> init -c mex
 </pre></div>
@@ -1539,7 +1539,7 @@ spec:
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
-<li>If you scale down the cluster and want to start it again, export bash variables (see point 3 in Cluster creation) configure awscli (see end of point 5 in Cluster creation) and execute:</li>
+<li>If you scale down the cluster and want to start it again, export bash variables (see point 3 in Cluster creation) and execute:</li>
 </ol>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#set minSize and maxSize to 0</span>
 <span class="nv">$kops</span> edit ig master-us-west-2a --name <span class="nv">$CLUSTER_FULL_NAME</span>
