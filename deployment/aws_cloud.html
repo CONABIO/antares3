@@ -105,7 +105,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#dockerfile-for-containers-of-antares3-and-opendatacube">Dockerfile for containers of Antares3 and OpenDataCube</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#copy-configuration-files-for-antares-and-open-datacube-to-efs-volume">Copy configuration files for antares and open datacube to efs volume</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#deployments-for-dask-scheduler-and-worker">Deployments for dask scheduler and worker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">Init Antares and Open DataCube</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#init-open-datacube">Init Open DataCube</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#init-antares3-to-ingest-country-borders">Init Antares3 to ingest country borders</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#notes">Notes</a></li>
 </ul>
 </li>
@@ -1433,11 +1434,11 @@ spec:
 <a class="reference internal image-reference" href="https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0"><img alt="https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0" src="https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0" style="width: 600px;" /></a>
 </div>
 </div>
+<div class="section" id="init-open-datacube">
+<h3>Init Open DataCube<a class="headerlink" href="#init-open-datacube" title="Permalink to this headline">¶</a></h3>
+<p>Log in where dask-scheduler container is running.</p>
 <div class="section" id="id3">
-<h3>Init Antares and Open DataCube<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id4">
-<h4>Open DataCube<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
-<p>Log in where dask-scheduler container is running and execute:</p>
+<h4>Open DataCube<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
 <p class="last">Open Datacube supports NETCDF CF and S3 drivers for storage (see <a class="reference external" href="https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config">Open DataCube Ingestion Config</a>). Different software dependencies are required for different drivers and different <code class="docutils literal notranslate"><span class="pre">datacube</span> <span class="pre">system</span> <span class="pre">init</span></code> command.</p>
@@ -1465,15 +1466,15 @@ spec:
 </div>
 </div>
 </div>
-<div class="section" id="id5">
-<h4>Antares3<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="init-antares3-to-ingest-country-borders">
+<h3>Init Antares3 to ingest country borders<a class="headerlink" href="#init-antares3-to-ingest-country-borders" title="Permalink to this headline">¶</a></h3>
 <p>Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.</p>
 <p>Although in the <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> ther is an <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">init</span></code> command, if we want to ingest country borders we need to log in to dask-scheduler container and execute (for example to ingest Mexico’s border):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="nv">$source</span> ~/.profile
 
 <span class="nv">$antares</span> init -c mex
 </pre></div>
-</div>
 </div>
 </div>
 <div class="section" id="notes">
