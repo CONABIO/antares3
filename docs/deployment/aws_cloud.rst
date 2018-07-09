@@ -1604,7 +1604,7 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 
 
 
-2. Before scaling down cluster delete deployments:
+2. Before scaling down cluster make sure you have exported bash variables needed for the following actions (see point 3 in Cluster creation) and delete deployments:
    
 .. code-block:: bash
 
@@ -1618,19 +1618,38 @@ and scale down efs-provisioner deployment:
 
     $kubectl scale deployments/efs-provisioner --replicas=0
 
-and scale down nodes and master:
+Proceed to scale down nodes and master:
 
 .. code-block:: bash
 
-	#set minSize and maxSize to 0
-    $kops edit ig nodes --name $CLUSTER_FULL_NAME
+	#set minSize and maxSize to 0 for nodes
+	$kops edit ig nodes --name $CLUSTER_FULL_NAME
 
+	#Next line is just to see what changes are going to be applied
 	$kops update cluster $CLUSTER_FULL_NAME
 
+	#Apply changes
 	$kops update cluster $CLUSTER_FULL_NAME --yes
 
+	#To scale down master:
 	#to retrieve type and region where master is located
+
 	$kops get instancegroups
+
+	#set minSize and maxSize to 0
+
+	$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME
+
+	#Next line is just to see what changes are going to be applied
+	$kops update cluster $CLUSTER_FULL_NAME
+
+	#Apply changes
+	$kops update cluster $CLUSTER_FULL_NAME --yes
+
+
+3. If you scale down the cluster and want to start it again, export bash variables (see point 3 in Cluster creation) configure awscli (see end of point 5 in Cluster creation) and execute:
+
+.. code-block:: bash
 
 	#set minSize and maxSize to 0
 	$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME
@@ -1639,7 +1658,26 @@ and scale down nodes and master:
 
 	$kops update cluster $CLUSTER_FULL_NAME --yes
 
-3. Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:
+	#set minSize and maxSize to desired number of nodes. You also can select instance type
+	$kops edit ig nodes --name $CLUSTER_FULL_NAME
+
+	#Next line is just to see what changes are going to be applied
+	$kops update cluster $CLUSTER_FULL_NAME
+
+	#Apply changes
+	$kops update cluster $CLUSTER_FULL_NAME --yes
+
+
+And scale up efs-provisioner deployment :
+
+.. code-block:: bash
+
+	$kubectl scale deployments/efs-provisioner --replicas=1
+   
+
+
+
+4. Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:
    
 For example, to delete deployment of EFS and service (bokeh visualization):
 
@@ -1673,7 +1711,7 @@ To delete mount targets of EFS (assuming there's three subnets):
 	$aws efs delete-mount-target --mount-target-id $mt_id3 --region=$region
 	
 
-4. If the instances of Kubernetes cluster (and thereby containers) need access to a bucket of S3, you can use next commands after a policy was created. Here we assume that the bucket where we have data is ``bucket_example`` and the name of the policy is:  ``policy_example`` and it has entries:
+5. If the instances of Kubernetes cluster (and thereby containers) need access to a bucket of S3, you can use next commands after a policy was created. Here we assume that the bucket where we have data is ``bucket_example`` and the name of the policy is:  ``policy_example`` and it has entries:
  
 
 ::
@@ -1725,7 +1763,7 @@ To delete mount targets of EFS (assuming there's three subnets):
 
 .. note:: 
 
-	Before deleting cluster delete policy attach to roles ``masters.$CLUSTER_FULL_NAME`` and ``nodes.$CLUSTER_FULL_NAME``.
+	Before deleting cluster delete policy that was attached to roles ``masters.$CLUSTER_FULL_NAME`` and ``nodes.$CLUSTER_FULL_NAME``.
 
 
 .. Kubernetes references:
