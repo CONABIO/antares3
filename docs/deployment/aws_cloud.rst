@@ -1663,7 +1663,7 @@ Proceed to scale down nodes and master:
 
 .. code-block:: bash
 
-	#set minSize and maxSize to 0
+	#set minSize and maxSize to 1
 	$kops edit ig master-us-west-2a --name $CLUSTER_FULL_NAME
 
 	$kops update cluster $CLUSTER_FULL_NAME
