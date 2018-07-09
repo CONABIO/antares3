@@ -1213,7 +1213,7 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 
 	$ssh -i <key>.pem admin@$efs_prov_ip_publ
 
-	$sudo docker exec -it <container-id-efs> /bin/sh
+	$sudo docker exec -it <container-id-efs> /bin/sh #to retrieve container id of efs do a docker ps
 
 .. note:: 
 
@@ -1477,7 +1477,7 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 
     $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
 
-    $sudo docker exec -it <container-id-dask-scheduler> bash
+    $sudo docker exec -it <container-id-dask-scheduler> bash #to retrieve container id of dask scheduler do a docker ps
 
 .. note:: 
 
@@ -1610,7 +1610,7 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 
     $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
 
-    $sudo docker exec -it <container-id-dask-scheduler> bash
+    $sudo docker exec -it <container-id-dask-scheduler> bash #to retrieve container id of dask scheduler do a docker ps
 
 .. note:: 
 
