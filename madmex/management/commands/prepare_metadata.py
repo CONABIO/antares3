@@ -11,6 +11,8 @@ import os
 import logging
 from glob import glob
 
+from dask.distributed import Client, LocalCluster
+
 from madmex.management.base import AntaresBaseCommand
 from madmex.util import s3
 
@@ -54,7 +56,7 @@ antares prepare_metadata --path /path/to/dir/containing/srtm_terrain_metrics --d
 antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name s2_l2a_20m --outfile metadata_sentinel.yaml
 
 # Generate metadata for a single Landsat path row of landsat 8 data stored on s3
-antares prepare_metadata --path linea_base/L8 --bucket conabio-s3-oregon --dataset_name landsat_espa --outfile /home/madmex_user/sandbox/metadata_landsat_bucket.yaml --pattern .*LC08039037.*
+antares prepare_metadata --path linea_base/L8 --bucket conabio-s3-oregon --dataset_name landsat_espa --outfile /home/madmex_user/sandbox/metadata_landsat_bucket.yaml --pattern .*LC08039037.* --multi 20
 """
     def add_arguments(self, parser):
         parser.add_argument('-p', '--path',
@@ -77,11 +79,16 @@ antares prepare_metadata --path linea_base/L8 --bucket conabio-s3-oregon --datas
                             type=str,
                             default=None,
                             help='Optional regex like pattern to use in the initial query. Only supported for s3 queries')
+        parser.add_argument('-multi', '--multi',
+                            type=int,
+                            default=1,
+                            help='The optional amount of worker to use for generating metadata information in parallel')
 
     def handle(self, *args, **options):
         path = options['path']
         bucket = options['bucket']
         pattern = options['pattern']
+        multi = options['multi']
         if bucket is None:
             subdir_list = glob(os.path.join(path, '*'))
             # If the directory does not contain subdirectories it means that it's a single target directory
@@ -89,21 +96,31 @@ antares prepare_metadata --path linea_base/L8 --bucket conabio-s3-oregon --datas
                 subdir_list = [path]
         else:
             subdir_list = s3.list_folders(bucket=bucket, path=path, pattern=pattern)
-            print(subdir_list)
             if not subdir_list:
                 subdir_list = [path]
         try:
             ingest = import_module('madmex.ingestion.%s' % options['dataset_name'])
         except ImportError as e:
             raise ValueError('Invalid dataset_name argument')
-        metadata_list = []
-        # iterate over each element contained in path, for loop needed for error catching
-        for subdir in subdir_list:
-            print(subdir)
+
+        # Function to pass to map with error catcher
+        def generate_meta_str(x, bucket):
             try:
-                metadata_list.append(ingest.metadata_convert(subdir, bucket=bucket))
+                return ingest.metadata_convert(x, bucket=bucket)
             except Exception as e:
-                logger.warn('No metadata generated for %s, reason: %s' % (subdir, e))
+                logger.warn('No metadata generated for %s, reason: %s' % (x, e))
+                return None
+
+        # Set up local cluster and distribute iterator between processes
+        cluster = LocalCluster(n_workers=multi, threads_per_worker=1)
+        client = Client(cluster)
+        C = client.map(generate_meta_str,
+                       subdir_list,
+                       **{'bucket': bucket})
+        metadata_list = client.gather(C)
+        # Clean up None elements from list
+        metadata_list = [x for x in metadata_list if x is not None]
+
         # Write metadata_list to a single file
         with open(options['outfile'], 'w') as dst:
             for metadata in metadata_list:
