@@ -4,7 +4,7 @@ import re
 import uuid
 import xml.etree.ElementTree as ET
 
-import rasterio
+from rasterio.crs import CRS
 from pyproj import Proj
 from jinja2 import Environment, PackageLoader
 
@@ -67,7 +67,9 @@ def metadata_convert(path, bucket=None):
         # Start parsing xml
         root = ET.parse(mtl_file).getroot()
     else:
-        mtl_file_list = s3.list_files(bucket=bucket, path=path, pattern=r'.*\.xml$')
+        file_list = s3.list_files(bucket=bucket, path=path)
+        pattern = re.compile(r'.*\.xml$')
+        mtl_file_list = [x for x in file_list if pattern.search(x)]
         if len(mtl_file_list) != 1:
             raise ValueError('Could not identify a unique xml metadata file')
         mtl_file = mtl_file_list[0]
@@ -75,6 +77,7 @@ def metadata_convert(path, bucket=None):
         xml_str = s3.read_file(bucket, mtl_file)
         # generate element tree root
         root = ET.fromstring(xml_str)
+        path = s3.build_rasterio_path(bucket, path)
 
     ns = 'http://espa.cr.usgs.gov/v2'
     # Build datetime from date and time
@@ -97,18 +100,10 @@ def metadata_convert(path, bucket=None):
                           namespaces={'ns': ns}).attrib['x'])
     lry = float(root.find('ns:global_metadata/ns:projection_information/ns:corner_point[@location="LR"]',
                           namespaces={'ns': ns}).attrib['y'])
-    # Retrieve crs from first band
-    if bucket is None:
-        bands = glob(os.path.join(path, '*_sr_band2.tif'))
-        with rasterio.open(bands[0]) as src:
-            crs = src.crs
-    else:
-        band2 = s3.list_files(bucket=bucket, path=path, pattern=r'.*_sr_band2\.tif$')[0]
-        band2 = s3.build_rasterio_path(bucket, band2)
-        with rasterio.open(band2) as src:
-            crs = src.crs
-        path = s3.build_rasterio_path(bucket, path)
-
+    utm_zone = int(root.find('ns:global_metadata/ns:projection_information/ns:utm_proj_params/ns:zone_code',
+                             namespaces={'ns': ns}).text)
+    crs = CRS({'proj': 'utm',
+               'zone': utm_zone})
     # Get coorner coordinates in long lat by transforming from projected values 
     p = Proj(crs)
     ul_lon, ul_lat = p(ulx, uly, inverse=True)
