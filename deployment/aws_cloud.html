@@ -878,8 +878,9 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 <span class="nv">$aws</span> efs create-file-system --performance-mode maxIO --creation-token &lt;some random integer number&gt;
 </pre></div>
 </div>
-<p>Set DNS and id of EFS: (last command sould output this values) and give access to docker containers to EFS via mount targets and security groups.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS of EFS&gt;
+<p>Set DNS and id of EFS, give access to docker containers to EFS via mount targets and security groups:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#(create-file-system command should output next values)</span>
+<span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS of EFS&gt;
 
 <span class="nv">efs_id</span><span class="o">=</span>&lt;id of EFS&gt;
 
@@ -913,7 +914,7 @@ metadata:
   name: efs-provisioner
 data:
   file.system.id: &lt;efs id&gt; <span class="c1">##### Here put efs id</span>
-  aws.region: &lt;region&gt; <span class="c1">##### Here put region</span>
+  aws.region: &lt;region&gt; <span class="c1">##### Here put region,</span>
   provisioner.name: aws-efs
 ---
 kind: ClusterRole
@@ -1303,7 +1304,7 @@ spec:
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">To install recent version of antares3 one can use in the <code class="docutils literal notranslate"><span class="pre">command</span></code> value of <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code>: <code class="docutils literal notranslate"><span class="pre">command:</span> <span class="pre">[&quot;/bin/bash&quot;,</span> <span class="pre">&quot;-c&quot;,</span> <span class="pre">&quot;pip3</span> <span class="pre">install</span> <span class="pre">--user</span> <span class="pre">git+https://github.com/CONABIO/antares3.git&#64;develop</span> <span class="pre">--upgrade</span> <span class="pre">--no-deps</span> <span class="pre">&amp;&amp;</span> <span class="pre">/home/madmex_user/.local/bin/antares</span> <span class="pre">init</span> <span class="pre">&amp;&amp;</span> <span class="pre">/usr/local/bin/dask-scheduler</span> <span class="pre">--port</span> <span class="pre">8786</span> <span class="pre">--bokeh-port</span> <span class="pre">8787</span> <span class="pre">--scheduler-file</span> <span class="pre">/shared_volume/scheduler.json&quot;]</span></code></p>
+<p class="last">To install recent version of antares3 one can prepend in the <code class="docutils literal notranslate"><span class="pre">command</span></code> value of <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code>: <code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">--user</span> <span class="pre">git+https://github.com/CONABIO/antares3.git&#64;develop</span> <span class="pre">--upgrade</span> <span class="pre">--no-deps</span></code>.</p>
 </div>
 <p>Create deployment of antares3-scheduler with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> create -f antares3-scheduler.yaml
@@ -1389,7 +1390,7 @@ spec:
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">To install recent version of antares3 one can use in the <code class="docutils literal notranslate"><span class="pre">command</span></code> value of <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code>: <code class="docutils literal notranslate"><span class="pre">command:</span> <span class="pre">[&quot;/bin/bash&quot;,</span> <span class="pre">&quot;-c&quot;,</span> <span class="pre">&quot;pip3</span> <span class="pre">install</span> <span class="pre">--user</span> <span class="pre">git+https://github.com/CONABIO/antares3.git&#64;develop</span> <span class="pre">--upgrade</span> <span class="pre">--no-deps</span> <span class="pre">&amp;&amp;</span> <span class="pre">/home/madmex_user/.local/bin/antares</span> <span class="pre">init</span> <span class="pre">&amp;&amp;</span> <span class="pre">/usr/local/bin/dask-worker</span> <span class="pre">--worker-port</span> <span class="pre">8786</span> <span class="pre">--nthreads</span> <span class="pre">1</span> <span class="pre">--no-bokeh</span> <span class="pre">--death-timeout</span> <span class="pre">60</span> <span class="pre">--scheduler-file</span> <span class="pre">/shared_volume/scheduler.json&quot;]</span></code></p>
+<p class="last">To install recent version of antares3 one can prepend in the <code class="docutils literal notranslate"><span class="pre">command</span></code> value of <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code>: <code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">--user</span> <span class="pre">git+https://github.com/CONABIO/antares3.git&#64;develop</span> <span class="pre">--upgrade</span> <span class="pre">--no-deps</span></code>.</p>
 </div>
 <p>Create deployment of antares3-worker with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> create -f antares3-worker.yaml
