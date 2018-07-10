@@ -658,7 +658,7 @@ ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/<span class="nv
 <p>Kubernetes is an open-source system for automating deployment, scaling, and management of containerized applications (see <a class="reference external" href="https://kubernetes.io/">Kubernetes</a> and <a class="reference external" href="https://github.com/kubernetes/kubernetes">Kubernetes github page</a> ). There are a lot of ways to deploy a Kubernetes cluster, for instance see <a class="reference external" href="https://kubernetes.io/docs/setup/pick-right-solution/">Picking the right solution</a>.</p>
 <div class="section" id="cluster-creation">
 <h3>Cluster creation<a class="headerlink" href="#cluster-creation" title="Permalink to this headline">¶</a></h3>
-<p>The nex steps follow <a class="reference external" href="https://kubernetes.io/docs/setup/custom-cloud/kops/">kops</a> and <a class="reference external" href="https://github.com/kubernetes/kops">kops - Kubernetes Operations</a> guides:</p>
+<p>The nex steps follow <a class="reference external" href="https://kubernetes.io/docs/setup/custom-cloud/kops/">kops</a> and <a class="reference external" href="https://github.com/kubernetes/kops">kops - Kubernetes Operations</a> guides (another guide: [Step Zero: Kubernetes on AWS](<a class="reference external" href="https://zero-to-jupyterhub.readthedocs.io/en/latest/amazon/step-zero-aws.html">https://zero-to-jupyterhub.readthedocs.io/en/latest/amazon/step-zero-aws.html</a>))</p>
 <ol class="arabic simple">
 <li>Configure a domain and a subdomain with their respective hosted zones. For the following description <a class="reference external" href="https://aws.amazon.com/route53/?nc1=h_ls">Route 53</a> service of AWS was used to create domain <code class="docutils literal notranslate"><span class="pre">conabio-route53.net</span></code> and subdomain <code class="docutils literal notranslate"><span class="pre">antares3.conabio-route53.net</span></code>. Also a <strong>gossip based Kubernetes cluster</strong> can be used instead (see for example this <a class="reference external" href="https://github.com/kubernetes/kops/issues/2858">issue</a> and this <a class="reference external" href="http://blog.arungupta.me/gossip-kubernetes-aws-kops/">entry of blog</a>).</li>
 <li>Install <strong>same versions</strong> of kops and kubectl. We use a <code class="docutils literal notranslate"><span class="pre">t2.micro</span></code> instance with AMI <code class="docutils literal notranslate"><span class="pre">Ubuntu</span> <span class="pre">16.04</span> <span class="pre">LTS</span></code> and a role attached to it to install this tools with the next bash script:</li>
@@ -736,7 +736,7 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 <span class="c1"># AWS availability zone where the cluster will be created</span>
 <span class="nb">export</span> <span class="nv">CLUSTER_AWS_AZ</span><span class="o">=</span><span class="s2">&quot;us-west-2a,us-west-2b,us-west-2c&quot;</span>
 
-<span class="c1"># Leave as-is: AWS Route 53 hosted zone ID for your domain (don&#39;t set if gossip based cluster)</span>
+<span class="c1"># Leave as-is: AWS Route 53 hosted zone ID for your domain (don&#39;t set it if gossip based cluster is used)</span>
 <span class="nb">export</span> <span class="nv">DOMAIN_NAME_ZONE_ID</span><span class="o">=</span><span class="k">$(</span>aws route53 list-hosted-zones <span class="se">\</span>
        <span class="p">|</span> jq -r <span class="s1">&#39;.HostedZones[] | select(.Name==&quot;&#39;</span><span class="si">${</span><span class="nv">DOMAIN_NAME</span><span class="si">}</span><span class="s1">&#39;.&quot;) | .Id&#39;</span> <span class="se">\</span>
        <span class="p">|</span> sed <span class="s1">&#39;s/\/hostedzone\///&#39;</span><span class="k">)</span>
@@ -1543,7 +1543,7 @@ spec:
 <ol class="arabic simple" start="3">
 <li>If you scale down the cluster and want to start it again, export bash variables (see point 3 in Cluster creation) and execute:</li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#set minSize and maxSize to 0</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#set minSize and maxSize to 1</span>
 <span class="nv">$kops</span> edit ig master-us-west-2a --name <span class="nv">$CLUSTER_FULL_NAME</span>
 
 <span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span>

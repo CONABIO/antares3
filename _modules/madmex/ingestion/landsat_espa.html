@@ -171,6 +171,13 @@
 <span class="kn">from</span> <span class="nn">pyproj</span> <span class="k">import</span> <span class="n">Proj</span>
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="k">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
 
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">boto3</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">_has_boto3</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_has_boto3</span> <span class="o">=</span> <span class="kc">True</span>
+
 <span class="n">LANDSAT_BANDS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;TM&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;blue&#39;</span><span class="p">:</span> <span class="s1">&#39;sr_band1&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;green&#39;</span><span class="p">:</span> <span class="s1">&#39;sr_band2&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;red&#39;</span><span class="p">:</span> <span class="s1">&#39;sr_band3&#39;</span><span class="p">,</span>
@@ -185,7 +192,7 @@
                               <span class="s1">&#39;swir2&#39;</span><span class="p">:</span> <span class="s1">&#39;sr_band7&#39;</span><span class="p">}}</span>
 <span class="n">LANDSAT_BANDS</span><span class="p">[</span><span class="s1">&#39;ETM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LANDSAT_BANDS</span><span class="p">[</span><span class="s1">&#39;TM&#39;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="metadata_convert"><a class="viewcode-back" href="../../../generated/madmex.ingestion.landsat_espa.metadata_convert.html#madmex.ingestion.landsat_espa.metadata_convert">[docs]</a><span class="k">def</span> <span class="nf">metadata_convert</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="metadata_convert"><a class="viewcode-back" href="../../../generated/madmex.ingestion.landsat_espa.metadata_convert.html#madmex.ingestion.landsat_espa.metadata_convert">[docs]</a><span class="k">def</span> <span class="nf">metadata_convert</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Prepare metatdata prior to datacube indexing</span>
 
 <span class="sd">    Given a directory containing landsat surface reflectance bands and a MLT.txt</span>
@@ -194,6 +201,8 @@
 <span class="sd">    Args:</span>
 <span class="sd">        path (str): Path of the directory containing the surface reflectance bands</span>
 <span class="sd">            and the Landsat metadata file.</span>
+<span class="sd">        bucket (str or None): Name of the s3 bucket containing the data. If ``None``</span>
+<span class="sd">            (default), data are considered to be on a mounted filesystem</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from madmex.ingestion.landsat_espa import metadata_convert</span>
@@ -210,21 +219,41 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        str: The content of the metadata for later writing to file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Check that path is a dir and contains appropriate files</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument path= is not a directory&#39;</span><span class="p">)</span>
-    <span class="n">mtl_file_list</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;*.xml&#39;</span><span class="p">))</span>
-    <span class="c1"># Filter list of xml files with regex (there could be more than one in case</span>
-    <span class="c1"># some bands have been opend in qgis for example)</span>
     <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[A-Z0-9]</span><span class="si">{4}</span><span class="s1">_[A-Z0-9]</span><span class="si">{4}</span><span class="s1">_\d</span><span class="si">{6}</span><span class="s1">_\d</span><span class="si">{8}</span><span class="s1">_\d</span><span class="si">{8}</span><span class="s1">_01_(T1|T2|RT)\.xml&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">mtl_file_list</span><span class="p">)</span>
-    <span class="n">mtl_file_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">mtl_file_list</span> <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">mtl_file_list</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mtl_file_list</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not identify a unique xml metadata file&#39;</span><span class="p">)</span>
-    <span class="n">mtl_file</span> <span class="o">=</span> <span class="n">mtl_file_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="c1"># Start parsing xml</span>
-    <span class="n">root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">mtl_file</span><span class="p">)</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">bucket</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Check that path is a dir and contains appropriate files</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Argument path= is not a directory&#39;</span><span class="p">)</span>
+        <span class="n">mtl_file_list</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;*.xml&#39;</span><span class="p">))</span>
+        <span class="c1"># Filter list of xml files with regex (there could be more than one in case</span>
+        <span class="c1"># some bands have been opend in qgis for example)</span>
+        <span class="n">mtl_file_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">mtl_file_list</span> <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">mtl_file_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mtl_file_list</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not identify a unique xml metadata file&#39;</span><span class="p">)</span>
+        <span class="n">mtl_file</span> <span class="o">=</span> <span class="n">mtl_file_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Start parsing xml</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">mtl_file</span><span class="p">)</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_has_boto3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;boto3 is required for working with s3 buckets&#39;</span><span class="p">)</span>
+        <span class="c1"># OPen bucket connection</span>
+        <span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;s3&#39;</span><span class="p">)</span>
+        <span class="n">my_bucket</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">Bucket</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
+        <span class="c1"># Retrieve all the files from the directory</span>
+        <span class="n">file_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">my_bucket</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Prefix</span><span class="o">=</span><span class="n">path</span><span class="p">)]</span>
+        <span class="c1"># Filter using regex pattern</span>
+        <span class="n">mtl_file_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">file_list</span> <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">mtl_file_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mtl_file_list</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not identify a unique xml metadata file&#39;</span><span class="p">)</span>
+        <span class="n">mtl_file</span> <span class="o">=</span> <span class="n">mtl_file_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># REad xml as string</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">Object</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">mtl_file</span><span class="p">)</span>
+        <span class="n">xml_str</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="c1"># generate element tree root</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">xml_str</span><span class="p">)</span>
+
     <span class="n">ns</span> <span class="o">=</span> <span class="s1">&#39;http://espa.cr.usgs.gov/v2&#39;</span>
     <span class="c1"># Build datetime from date and time</span>
     <span class="n">date_str</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ns:global_metadata/ns:acquisition_date&#39;</span><span class="p">,</span>
@@ -247,9 +276,19 @@
     <span class="n">lry</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ns:global_metadata/ns:projection_information/ns:corner_point[@location=&quot;LR&quot;]&#39;</span><span class="p">,</span>
                           <span class="n">namespaces</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ns&#39;</span><span class="p">:</span> <span class="n">ns</span><span class="p">})</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>
     <span class="c1"># Retrieve crs from first band</span>
-    <span class="n">bands</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;*_sr_band2.tif&#39;</span><span class="p">))</span>
-    <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">bands</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
-        <span class="n">crs</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">crs</span>
+    <span class="k">if</span> <span class="n">bucket</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bands</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;*_sr_band2.tif&#39;</span><span class="p">))</span>
+        <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">bands</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+            <span class="n">crs</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">crs</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">b2_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*_sr_band2.tif$&#39;</span><span class="p">)</span>
+        <span class="n">bands</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">file_list</span> <span class="k">if</span> <span class="n">b2_pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+        <span class="n">band2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;s3://&#39;</span><span class="p">,</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">bands</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">band2</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">band2</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+            <span class="n">crs</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">crs</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;s3://&#39;</span><span class="p">,</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
     <span class="c1"># Get coorner coordinates in long lat by transforming from projected values </span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">Proj</span><span class="p">(</span><span class="n">crs</span><span class="p">)</span>
     <span class="n">ul_lon</span><span class="p">,</span> <span class="n">ul_lat</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">ulx</span><span class="p">,</span> <span class="n">uly</span><span class="p">,</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

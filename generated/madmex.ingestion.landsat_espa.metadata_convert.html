@@ -189,7 +189,7 @@
 <h1>madmex.ingestion.landsat_espa.metadata_convert<a class="headerlink" href="#madmex-ingestion-landsat-espa-metadata-convert" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="madmex.ingestion.landsat_espa.metadata_convert">
-<code class="descclassname">madmex.ingestion.landsat_espa.</code><code class="descname">metadata_convert</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/ingestion/landsat_espa.html#metadata_convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.ingestion.landsat_espa.metadata_convert" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">madmex.ingestion.landsat_espa.</code><code class="descname">metadata_convert</code><span class="sig-paren">(</span><em>path</em>, <em>bucket=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/ingestion/landsat_espa.html#metadata_convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.ingestion.landsat_espa.metadata_convert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare metatdata prior to datacube indexing</p>
 <blockquote>
 <div><p>Given a directory containing landsat surface reflectance bands and a MLT.txt
@@ -199,6 +199,8 @@ file, prepares a metadata string with the appropriate formating.</p>
 <dd><dl class="first last docutils">
 <dt>path (str): Path of the directory containing the surface reflectance bands</dt>
 <dd>and the Landsat metadata file.</dd>
+<dt>bucket (str or None): Name of the s3 bucket containing the data. If <code class="docutils literal notranslate"><span class="pre">None</span></code></dt>
+<dd>(default), data are considered to be on a mounted filesystem</dd>
 </dl>
 </dd>
 <dt>Examples:</dt>
