@@ -890,7 +890,7 @@ Set DNS and id of EFS, give access to docker containers to EFS via mount targets
 
 .. code-block:: bash
 	
-	#(create-file-system command should output next values)
+	#last create-file-system command should have output next values
 	efs_dns=<DNS of EFS>
 
 	efs_id=<id of EFS>
