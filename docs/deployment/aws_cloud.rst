@@ -730,11 +730,12 @@ You can check kops and kubectl versions with:
 
 	The instance needs the policy **AmazonS3FullAccess** attach to a role created by you to have permissions to execute next command.
 	
+
 .. code-block:: bash
 
-	#Bucket will be created in us-east (N. Virginia)
+    #Bucket will be created in us-east (N. Virginia)
     $aws s3api create-bucket --bucket ${CLUSTER_FULL_NAME}-state
-
+	
 
 5. Create group and user kops and generate access keys for user kops:
 
