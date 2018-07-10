@@ -886,10 +886,11 @@ Use next commands to create EFS:
 	$aws efs create-file-system --performance-mode maxIO --creation-token <some random integer number>
 	
 
-Set DNS and id of EFS: (last command sould output this values) and give access to docker containers to EFS via mount targets and security groups. 
+Set DNS and id of EFS, give access to docker containers to EFS via mount targets and security groups: 
 
 .. code-block:: bash
 	
+	#(create-file-system command should output next values)
 	efs_dns=<DNS of EFS>
 
 	efs_id=<id of EFS>
@@ -930,7 +931,7 @@ In the next ``efs-provisioner.yaml`` put **EFS id**, **region**, **AccessKeyId**
 	  name: efs-provisioner
 	data:
 	  file.system.id: <efs id> ##### Here put efs id
-	  aws.region: <region> ##### Here put region
+	  aws.region: <region> ##### Here put region,
 	  provisioner.name: aws-efs
 	---
 	kind: ClusterRole
@@ -1354,7 +1355,7 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 
 .. note:: 
 
-	To install recent version of antares3 one can use in the ``command`` value of ``antares3-scheduler.yaml``: ``command: ["/bin/bash", "-c", "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps && /home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 8787 --scheduler-file /shared_volume/scheduler.json"]``
+	To install recent version of antares3 one can prepend in the ``command`` value of ``antares3-scheduler.yaml``: ``pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps``.
 
 
 Create deployment of antares3-scheduler with:
@@ -1458,7 +1459,7 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 
 .. note:: 
 
-	To install recent version of antares3 one can use in the ``command`` value of ``antares3-scheduler.yaml``: ``command: ["/bin/bash", "-c", "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps && /home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]``
+	To install recent version of antares3 one can prepend in the ``command`` value of ``antares3-scheduler.yaml``: ``pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps``.
 
 
 Create deployment of antares3-worker with:
