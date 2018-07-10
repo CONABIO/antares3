@@ -619,7 +619,8 @@ Kubernetes is an open-source system for automating deployment, scaling, and mana
 Cluster creation
 ----------------
 
-The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides (another guide: [Step Zero: Kubernetes on AWS](https://zero-to-jupyterhub.readthedocs.io/en/latest/amazon/step-zero-aws.html))
+The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides (another guide: `Step Zero: Kubernetes on AWS`_).
+
 
 1. Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a **gossip based Kubernetes cluster** can be used instead (see for example this `issue`_ and this `entry of blog`_).
 
@@ -1799,6 +1800,9 @@ To delete mount targets of EFS (assuming there's three subnets):
 .. _entry of blog: http://blog.arungupta.me/gossip-kubernetes-aws-kops/
 
 .. _issue: https://github.com/kubernetes/kops/issues/2858  
+
+.. _Step Zero: Kubernetes on AWS: https://zero-to-jupyterhub.readthedocs.io/en/latest/amazon/step-zero-aws.html
+
 
 .. Dependencies references:
 
