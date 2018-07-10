@@ -92,3 +92,21 @@ def build_rasterio_path(bucket, path):
     """
     path = path.strip('/')
     return os.path.join('s3://', bucket, path)
+
+
+def read_file(bucket, path):
+    """Read a text file as string
+
+    Args:
+        bucket (str): Name of an existing s3 bucket
+        path (str): Path to the text object
+
+    Return:
+        str: The content of the object read as a string
+    """
+    if not _has_boto3:
+        raise ImportError('boto3 is required for working with s3 buckets')
+    s3 = boto3.resource('s3')
+    obj = s3.Object(bucket, path)
+    return obj.get()["Body"].read()
+

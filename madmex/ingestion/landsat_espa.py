@@ -8,12 +8,7 @@ import rasterio
 from pyproj import Proj
 from jinja2 import Environment, PackageLoader
 
-try:
-    import boto3
-except ImportError:
-    _has_boto3 = False
-else:
-    _has_boto3 = True
+from madmex.util import s3
 
 LANDSAT_BANDS = {'TM': {'blue': 'sr_band1',
                         'green': 'sr_band2',
@@ -72,22 +67,12 @@ def metadata_convert(path, bucket=None):
         # Start parsing xml
         root = ET.parse(mtl_file).getroot()
     else:
-        if not _has_boto3:
-            raise ImportError('boto3 is required for working with s3 buckets')
-        # OPen bucket connection
-        s3 = boto3.resource('s3')
-        my_bucket = s3.Bucket(bucket)
-        # Retrieve all the files from the directory
-        file_list = [x.key for x in my_bucket.objects.filter(Prefix=path)]
-        # Filter using regex pattern
-        mtl_file_list = [x for x in file_list if pattern.search(x)]
-        print(mtl_file_list)
+        mtl_file_list = s3.list_files(bucket=bucket, path=path, pattern=r'.*\.xml$')
         if len(mtl_file_list) != 1:
             raise ValueError('Could not identify a unique xml metadata file')
         mtl_file = mtl_file_list[0]
         # REad xml as string
-        obj = s3.Object(bucket, mtl_file)
-        xml_str = obj.get()["Body"].read()
+        xml_str = s3.read_file(bucket, mtl_file)
         # generate element tree root
         root = ET.fromstring(xml_str)
 
@@ -118,13 +103,11 @@ def metadata_convert(path, bucket=None):
         with rasterio.open(bands[0]) as src:
             crs = src.crs
     else:
-        b2_pattern = re.compile(r'.*_sr_band2.tif$')
-        bands = [x for x in file_list if b2_pattern.search(x)]
-        band2 = os.path.join('s3://', bucket, bands[0])
-        print(band2)
+        band2 = s3.list_files(bucket=bucket, path=path, pattern=r'.*_sr_band2\.tif$')[0]
+        band2 = s3.build_rasterio_path(bucket, band2)
         with rasterio.open(band2) as src:
             crs = src.crs
-        path = os.path.join('s3://', bucket, path)
+        path = s3.build_rasterio_path(bucket, path)
 
     # Get coorner coordinates in long lat by transforming from projected values 
     p = Proj(crs)
