@@ -1351,6 +1351,11 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 	          medium: Memory
 
 
+.. note:: 
+
+	To install recent version of antares3 one can use in the ``command`` value of ``antares3-scheduler.yaml``: ``command: ["/bin/bash", "-c", "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps && /home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 8787 --scheduler-file /shared_volume/scheduler.json"]``
+
+
 Create deployment of antares3-scheduler with:
 
 .. code-block:: bash
@@ -1448,6 +1453,11 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 	         emptyDir:
 	          medium: Memory
 	          sizeLimit: '1Gi'
+
+
+.. note:: 
+
+	To install recent version of antares3 one can use in the ``command`` value of ``antares3-scheduler.yaml``: ``command: ["/bin/bash", "-c", "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps && /home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]``
 
 
 Create deployment of antares3-worker with:
