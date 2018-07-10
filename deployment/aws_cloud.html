@@ -734,7 +734,11 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 <span class="nb">export</span> <span class="nv">CLUSTER_FULL_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">CLUSTER_ALIAS</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">DOMAIN_NAME</span><span class="si">}</span><span class="s2">&quot;</span>
 
 <span class="c1"># AWS availability zone where the cluster will be created</span>
-<span class="nb">export</span> <span class="nv">CLUSTER_AWS_AZ</span><span class="o">=</span><span class="s2">&quot;us-west-2a,us-west-2b,us-west-2c&quot;</span>
+
+<span class="nv">REGION</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/dynamic/instance-identity/document<span class="p">|</span>grep region<span class="p">|</span>awk -F<span class="se">\&quot;</span> <span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
+
+<span class="nb">export</span> <span class="nv">CLUSTER_AWS_AZ</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-availability-zones --region <span class="nv">$REGION</span> <span class="p">|</span> grep ZoneName <span class="p">|</span> awk <span class="s1">&#39;{print $2}&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39;,&#39;</span><span class="p">|</span>tr -d <span class="s1">&#39;&quot;&#39;</span><span class="p">|</span>sed -n <span class="s1">&#39;s/,$//p&#39;</span><span class="k">)</span>
+
 
 <span class="c1"># Leave as-is: AWS Route 53 hosted zone ID for your domain (don&#39;t set it if gossip based cluster is used)</span>
 <span class="nb">export</span> <span class="nv">DOMAIN_NAME_ZONE_ID</span><span class="o">=</span><span class="k">$(</span>aws route53 list-hosted-zones <span class="se">\</span>
@@ -756,7 +760,8 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 <p class="first admonition-title">Note</p>
 <p class="last">The instance needs the policy <strong>AmazonS3FullAccess</strong> attach to a role created by you to have permissions to execute next command.</p>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$aws</span> s3api create-bucket --bucket <span class="si">${</span><span class="nv">CLUSTER_FULL_NAME</span><span class="si">}</span>-state
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="c1">#Bucket will be created in us-east (N. Virginia)</span>
+<span class="nv">$aws</span> s3api create-bucket --bucket <span class="si">${</span><span class="nv">CLUSTER_FULL_NAME</span><span class="si">}</span>-state
 </pre></div>
 </div>
 <ol class="arabic simple" start="5">
@@ -849,9 +854,11 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 <h3>Deployment for Elastic File System<a class="headerlink" href="#deployment-for-elastic-file-system" title="Permalink to this headline">¶</a></h3>
 <p>In order to share some files (for example <code class="docutils literal notranslate"><span class="pre">.antares</span></code> and <code class="docutils literal notranslate"><span class="pre">.datacube.conf</span></code>) between all containers <code class="docutils literal notranslate"><span class="pre">efs-provisioner</span></code> is used. See <a class="reference external" href="https://github.com/kubernetes-incubator/external-storage/tree/master/aws/efs">efs-provisioner</a>.</p>
 <p>Retrieve id’s of subnets and security groups created by kops. Here it’s assumed that three subnets were created by <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">create</span> <span class="pre">cluster</span></code> command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">REGION</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/dynamic/instance-identity/document<span class="p">|</span>grep region<span class="p">|</span>awk -F<span class="se">\&quot;</span> <span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
 
-<span class="nv">subnets_kops</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-subnets --filters <span class="s2">&quot;Name=tag:KubernetesCluster,Values=</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.Subnets[].SubnetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
+<span class="nb">export</span> <span class="nv">AWS_DEFAULT_REGION</span><span class="o">=</span><span class="nv">$REGION</span>
+
+<span class="nv">subnets_kops</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-subnets --filters <span class="s2">&quot;Name=tag:KubernetesCluster,Values=</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span><span class="p">|</span>jq -r <span class="s1">&#39;.Subnets[].SubnetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
 
 <span class="nv">subnets_kops1</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$subnets_kops</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
 
@@ -859,43 +866,41 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 
 <span class="nv">subnets_kops3</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$subnets_kops</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f3<span class="k">)</span>
 
-<span class="nv">sgroups_kops</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:KubernetesCluster,Values=</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
+<span class="nv">sgroups_kops</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:KubernetesCluster,Values=</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span><span class="p">|</span>jq -r <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
 
-<span class="nv">sgroups_master</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:Name,Values=masters.</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
+<span class="nv">sgroups_master</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:Name,Values=masters.</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span><span class="p">|</span>jq -r <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
 
-<span class="nv">sgroups_nodes</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:Name,Values=nodes.</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
+<span class="nv">sgroups_nodes</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-security-groups --filters <span class="s2">&quot;Name=tag:Name,Values=nodes.</span><span class="nv">$CLUSTER_FULL_NAME</span><span class="s2">&quot;</span><span class="p">|</span>jq -r <span class="s1">&#39;.SecurityGroups[].GroupId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="k">)</span>
 </pre></div>
 </div>
 <p>Use next commands to create EFS:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
-
-<span class="c1">#create EFS:</span>
-<span class="nv">$aws</span> efs create-file-system --performance-mode maxIO --creation-token &lt;some random integer number&gt; --region <span class="nv">$region</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#create EFS (must be defined environment variable $AWS_DEFAULT_REGION:</span>
+<span class="nv">$aws</span> efs create-file-system --performance-mode maxIO --creation-token &lt;some random integer number&gt;
 </pre></div>
 </div>
 <p>Set DNS and id of EFS: (last command sould output this values) and give access to docker containers to EFS via mount targets and security groups.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
-
-<span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS of EFS&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">efs_dns</span><span class="o">=</span>&lt;DNS of EFS&gt;
 
 <span class="nv">efs_id</span><span class="o">=</span>&lt;id of EFS&gt;
 
+<span class="c1">#must be defined environment variable $AWS_DEFAULT_REGION</span>
+
 <span class="c1">#create mount targets for three subnets:</span>
-<span class="nv">$aws</span> efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops1</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
+<span class="nv">$aws</span> efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops1</span> --security-groups <span class="nv">$sgroups_kops</span>
 
-<span class="nv">$aws</span> efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops2</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
+<span class="nv">$aws</span> efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops2</span> --security-groups <span class="nv">$sgroups_kops</span>
 
-<span class="nv">$aws</span> efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops3</span> --security-groups <span class="nv">$sgroups_kops</span> --region <span class="nv">$region</span>
+<span class="nv">$aws</span> efs create-mount-target --file-system-id <span class="nv">$efs_id</span> --subnet-id <span class="nv">$subnets_kops3</span> --security-groups <span class="nv">$sgroups_kops</span>
 
 <span class="c1">#You have to poll the status of mount targets until status LifeCycleState = “available” so you can use EFS from instances that were created:</span>
 
-<span class="c1">#aws efs describe-mount-targets --file-system-id $efs_id --region $region</span>
+<span class="c1">#aws efs describe-mount-targets --file-system-id $efs_id</span>
 
 <span class="c1">#Create inbound rules for NFS on the security groups:</span>
 
-<span class="nv">$aws</span> ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_master</span> --protocol tcp --port <span class="m">2049</span> --source-group <span class="nv">$sgroups_master</span> --region <span class="nv">$region</span>
+<span class="nv">$aws</span> ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_master</span> --protocol tcp --port <span class="m">2049</span> --source-group <span class="nv">$sgroups_master</span>
 
-<span class="nv">$aws</span> ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_nodes</span> --protocol tcp --port <span class="m">2049</span> --source-group <span class="nv">$sgroups_nodes</span> --region <span class="nv">$region</span>
+<span class="nv">$aws</span> ec2 authorize-security-group-ingress --group-id <span class="nv">$sgroups_nodes</span> --protocol tcp --port <span class="m">2049</span> --source-group <span class="nv">$sgroups_nodes</span>
 </pre></div>
 </div>
 <div class="section" id="create-yaml-for-deployment">
@@ -1159,11 +1164,15 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 <ol class="arabic simple">
 <li>Locate where is running the efs-provisioner:</li>
 </ol>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">efs_prov</span><span class="o">=</span><span class="k">$(</span>kubectl get pods --show-all <span class="p">|</span>grep efs-<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">REGION</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/dynamic/instance-identity/document<span class="p">|</span>grep region<span class="p">|</span>awk -F<span class="se">\&quot;</span> <span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
+
+<span class="nb">export</span> <span class="nv">AWS_DEFAULT_REGION</span><span class="o">=</span><span class="nv">$REGION</span>
+
+<span class="nv">efs_prov</span><span class="o">=</span><span class="k">$(</span>kubectl get pods --show-all <span class="p">|</span>grep efs-<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
 
 <span class="nv">efs_prov_ip</span><span class="o">=</span><span class="k">$(</span>kubectl describe pods <span class="nv">$efs_prov</span><span class="p">|</span>grep Node:<span class="p">|</span>sed -n <span class="s1">&#39;s/.*ip-\(.*\).us-.*/\1/p&#39;</span><span class="p">|</span>sed -n <span class="s1">&#39;s/-/./g;p&#39;</span><span class="k">)</span>
 
-<span class="nv">efs_prov_ip_publ</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-instances --filters <span class="s2">&quot;Name=private-ip-address,Values=</span><span class="nv">$efs_prov_ip</span><span class="s2">&quot;</span> --region<span class="o">=</span>us-west-2<span class="p">|</span>jq -r <span class="s1">&#39;.Reservations[].Instances[].PublicDnsName&#39;</span><span class="k">)</span>
+<span class="nv">efs_prov_ip_publ</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-instances --filters <span class="s2">&quot;Name=private-ip-address,Values=</span><span class="nv">$efs_prov_ip</span><span class="s2">&quot;</span><span class="p">|</span>jq -r <span class="s1">&#39;.Reservations[].Instances[].PublicDnsName&#39;</span><span class="k">)</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
@@ -1384,13 +1393,15 @@ spec:
 </div>
 <p><strong>For log in to dask-scheduler:</strong></p>
 <p>Locate where is running the scheduler:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">REGION</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/dynamic/instance-identity/document<span class="p">|</span>grep region<span class="p">|</span>awk -F<span class="se">\&quot;</span> <span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
+
+<span class="nb">export</span> <span class="nv">AWS_DEFAULT_REGION</span><span class="o">=</span><span class="nv">$REGION</span>
 
 <span class="nv">$dask_scheduler_pod</span><span class="o">=</span><span class="k">$(</span>kubectl get pods --show-all <span class="p">|</span>grep scheduler<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
 
 <span class="nv">$dask_scheduler_ip</span><span class="o">=</span><span class="k">$(</span>kubectl describe pods <span class="nv">$dask_scheduler_pod</span><span class="p">|</span>grep Node:<span class="p">|</span>sed -n <span class="s1">&#39;s/.*ip-\(.*\).us-.*/\1/p&#39;</span><span class="p">|</span>sed -n <span class="s1">&#39;s/-/./g;p&#39;</span><span class="k">)</span>
 
-<span class="nv">$dask_scheduler_ip_publ</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-instances --filters <span class="s2">&quot;Name=private-ip-address,Values=</span><span class="nv">$dask_scheduler_ip</span><span class="s2">&quot;</span> --region<span class="o">=</span><span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.Reservations[].Instances[].PublicDnsName&#39;</span><span class="k">)</span>
+<span class="nv">$dask_scheduler_ip_publ</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-instances --filters <span class="s2">&quot;Name=private-ip-address,Values=</span><span class="nv">$dask_scheduler_ip</span><span class="s2">&quot;</span><span class="p">|</span>jq -r <span class="s1">&#39;.Reservations[].Instances[].PublicDnsName&#39;</span><span class="k">)</span>
 </pre></div>
 </div>
 <p>Using &lt;key&gt;.pem of user kops do a ssh and enter to docker container of dask-scheduler with <code class="docutils literal notranslate"><span class="pre">exec</span></code> command:</p>
@@ -1406,7 +1417,7 @@ spec:
 </div>
 <div class="section" id="id2">
 <h4>Run an example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
-<p>In dask-scheduler container execute in a python enviroment:</p>
+<p>In dask-scheduler container execute in a python environment:</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dask.distributed</span> <span class="k">import</span> <span class="n">Client</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">scheduler_file</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;mount_point&#39;</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;/scheduler.json&#39;</span><span class="p">)</span>
@@ -1483,13 +1494,15 @@ spec:
 <li>To execute antares or datacube commands:</li>
 </ol>
 <p>Locate where is running the scheduler:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">region</span><span class="o">=</span>&lt;region&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">REGION</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/dynamic/instance-identity/document<span class="p">|</span>grep region<span class="p">|</span>awk -F<span class="se">\&quot;</span> <span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
+
+<span class="nb">export</span> <span class="nv">AWS_DEFAULT_REGION</span><span class="o">=</span><span class="nv">$REGION</span>
 
 <span class="nv">$dask_scheduler_pod</span><span class="o">=</span><span class="k">$(</span>kubectl get pods --show-all <span class="p">|</span>grep scheduler<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
 
 <span class="nv">$dask_scheduler_ip</span><span class="o">=</span><span class="k">$(</span>kubectl describe pods <span class="nv">$dask_scheduler_pod</span><span class="p">|</span>grep Node:<span class="p">|</span>sed -n <span class="s1">&#39;s/.*ip-\(.*\).us-.*/\1/p&#39;</span><span class="p">|</span>sed -n <span class="s1">&#39;s/-/./g;p&#39;</span><span class="k">)</span>
 
-<span class="nv">$dask_scheduler_ip_publ</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-instances --filters <span class="s2">&quot;Name=private-ip-address,Values=</span><span class="nv">$dask_scheduler_ip</span><span class="s2">&quot;</span> --region<span class="o">=</span><span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.Reservations[].Instances[].PublicDnsName&#39;</span><span class="k">)</span>
+<span class="nv">$dask_scheduler_ip_publ</span><span class="o">=</span><span class="k">$(</span>aws ec2 describe-instances --filters <span class="s2">&quot;Name=private-ip-address,Values=</span><span class="nv">$dask_scheduler_ip</span><span class="s2">&quot;</span> <span class="p">|</span>jq -r <span class="s1">&#39;.Reservations[].Instances[].PublicDnsName&#39;</span><span class="k">)</span>
 </pre></div>
 </div>
 <p>Using &lt;key&gt;.pem of user kops do a ssh and enter to docker container of dask-scheduler with <code class="docutils literal notranslate"><span class="pre">exec</span></code> command:</p>
@@ -1575,21 +1588,23 @@ spec:
 </pre></div>
 </div>
 <p>To delete mount targets of EFS (assuming there’s three subnets):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">efs_id</span><span class="o">=</span>&lt;id of efs&gt;
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">REGION</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/dynamic/instance-identity/document<span class="p">|</span>grep region<span class="p">|</span>awk -F<span class="se">\&quot;</span> <span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
 
-<span class="nv">region</span><span class="o">=</span>&lt;region&gt;
+<span class="nb">export</span> <span class="nv">AWS_DEFAULT_REGION</span><span class="o">=</span><span class="nv">$REGION</span>
 
-<span class="nv">mt_id1</span><span class="o">=</span><span class="k">$(</span>aws efs describe-mount-targets --file-system-id <span class="nv">$efs_id</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.MountTargets[]|.MountTargetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
+<span class="nv">efs_id</span><span class="o">=</span>&lt;id of efs&gt;
 
-<span class="nv">mt_id2</span><span class="o">=</span><span class="k">$(</span>aws efs describe-mount-targets --file-system-id <span class="nv">$efs_id</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.MountTargets[]|.MountTargetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f2<span class="k">)</span>
+<span class="nv">mt_id1</span><span class="o">=</span><span class="k">$(</span>aws efs describe-mount-targets --file-system-id <span class="nv">$efs_id</span><span class="p">|</span>jq -r <span class="s1">&#39;.MountTargets[]|.MountTargetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
 
-<span class="nv">mt_id3</span><span class="o">=</span><span class="k">$(</span>aws efs describe-mount-targets --file-system-id <span class="nv">$efs_id</span> --region <span class="nv">$region</span><span class="p">|</span>jq -r <span class="s1">&#39;.MountTargets[]|.MountTargetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f3<span class="k">)</span>
+<span class="nv">mt_id2</span><span class="o">=</span><span class="k">$(</span>aws efs describe-mount-targets --file-system-id <span class="nv">$efs_id</span><span class="p">|</span>jq -r <span class="s1">&#39;.MountTargets[]|.MountTargetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f2<span class="k">)</span>
 
-<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id1</span> --region<span class="o">=</span><span class="nv">$region</span>
+<span class="nv">mt_id3</span><span class="o">=</span><span class="k">$(</span>aws efs describe-mount-targets --file-system-id <span class="nv">$efs_id</span><span class="p">|</span>jq -r <span class="s1">&#39;.MountTargets[]|.MountTargetId&#39;</span><span class="p">|</span>tr -s <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39; &#39;</span><span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f3<span class="k">)</span>
 
-<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id2</span> --region<span class="o">=</span><span class="nv">$region</span>
+<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id1</span>
 
-<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id3</span> --region<span class="o">=</span><span class="nv">$region</span>
+<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id2</span>
+
+<span class="nv">$aws</span> efs delete-mount-target --mount-target-id <span class="nv">$mt_id3</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="5">

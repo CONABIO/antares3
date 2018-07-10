@@ -705,7 +705,11 @@ You can check kops and kubectl versions with:
 	export CLUSTER_FULL_NAME="${CLUSTER_ALIAS}.${DOMAIN_NAME}"
 	
 	# AWS availability zone where the cluster will be created
-	export CLUSTER_AWS_AZ="us-west-2a,us-west-2b,us-west-2c"
+
+	REGION=$(curl -s http://instance-data/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}')
+
+	export CLUSTER_AWS_AZ=$(aws ec2 describe-availability-zones --region $REGION | grep ZoneName | awk '{print $2}'|tr -s '\n' ','|tr -d '"'|sed -n 's/,$//p')
+
 	
 	# Leave as-is: AWS Route 53 hosted zone ID for your domain (don't set it if gossip based cluster is used)
 	export DOMAIN_NAME_ZONE_ID=$(aws route53 list-hosted-zones \
@@ -728,6 +732,7 @@ You can check kops and kubectl versions with:
 	
 .. code-block:: bash
 
+	#Bucket will be created in us-east (N. Virginia)
     $aws s3api create-bucket --bucket ${CLUSTER_FULL_NAME}-state
 
 
@@ -852,9 +857,11 @@ Retrieve id's of subnets and security groups created by kops. Here it's assumed 
 
 .. code-block:: bash
 	
-	region=<region>
+	REGION=$(curl -s http://instance-data/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}')
 	
-	subnets_kops=$(aws ec2 describe-subnets --filters "Name=tag:KubernetesCluster,Values=$CLUSTER_FULL_NAME" --region $region|jq -r '.Subnets[].SubnetId'|tr -s '\n' ' ')
+	export AWS_DEFAULT_REGION=$REGION
+	
+	subnets_kops=$(aws ec2 describe-subnets --filters "Name=tag:KubernetesCluster,Values=$CLUSTER_FULL_NAME"|jq -r '.Subnets[].SubnetId'|tr -s '\n' ' ')
 	
 	subnets_kops1=$(echo $subnets_kops|cut -d' ' -f1)
 
@@ -862,11 +869,11 @@ Retrieve id's of subnets and security groups created by kops. Here it's assumed 
 
 	subnets_kops3=$(echo $subnets_kops|cut -d' ' -f3)
 	
-	sgroups_kops=$(aws ec2 describe-security-groups --filters "Name=tag:KubernetesCluster,Values=$CLUSTER_FULL_NAME" --region $region|jq -r '.SecurityGroups[].GroupId'|tr -s '\n' ' ')
+	sgroups_kops=$(aws ec2 describe-security-groups --filters "Name=tag:KubernetesCluster,Values=$CLUSTER_FULL_NAME"|jq -r '.SecurityGroups[].GroupId'|tr -s '\n' ' ')
 	
-	sgroups_master=$(aws ec2 describe-security-groups --filters "Name=tag:Name,Values=masters.$CLUSTER_FULL_NAME" --region $region|jq -r '.SecurityGroups[].GroupId'|tr -s '\n' ' ')
+	sgroups_master=$(aws ec2 describe-security-groups --filters "Name=tag:Name,Values=masters.$CLUSTER_FULL_NAME"|jq -r '.SecurityGroups[].GroupId'|tr -s '\n' ' ')
 	
-	sgroups_nodes=$(aws ec2 describe-security-groups --filters "Name=tag:Name,Values=nodes.$CLUSTER_FULL_NAME" --region $region|jq -r '.SecurityGroups[].GroupId'|tr -s '\n' ' ')
+	sgroups_nodes=$(aws ec2 describe-security-groups --filters "Name=tag:Name,Values=nodes.$CLUSTER_FULL_NAME"|jq -r '.SecurityGroups[].GroupId'|tr -s '\n' ' ')
 
 
 Use next commands to create EFS:
@@ -874,38 +881,36 @@ Use next commands to create EFS:
 
 .. code-block:: bash
 
-	region=<region>
-
-	#create EFS:
-	$aws efs create-file-system --performance-mode maxIO --creation-token <some random integer number> --region $region
+	#create EFS (must be defined environment variable $AWS_DEFAULT_REGION:
+	$aws efs create-file-system --performance-mode maxIO --creation-token <some random integer number>
 	
 
 Set DNS and id of EFS: (last command sould output this values) and give access to docker containers to EFS via mount targets and security groups. 
 
 .. code-block:: bash
 	
-	region=<region>
-
 	efs_dns=<DNS of EFS>
 
 	efs_id=<id of EFS>
+
+	#must be defined environment variable $AWS_DEFAULT_REGION
 	
 	#create mount targets for three subnets: 
-	$aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops1 --security-groups $sgroups_kops --region $region
+	$aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops1 --security-groups $sgroups_kops
 
-	$aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops2 --security-groups $sgroups_kops --region $region
+	$aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops2 --security-groups $sgroups_kops
 
-	$aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops3 --security-groups $sgroups_kops --region $region
+	$aws efs create-mount-target --file-system-id $efs_id --subnet-id $subnets_kops3 --security-groups $sgroups_kops
 	
 	#You have to poll the status of mount targets until status LifeCycleState = “available” so you can use EFS from instances that were created:
 	
-	#aws efs describe-mount-targets --file-system-id $efs_id --region $region
+	#aws efs describe-mount-targets --file-system-id $efs_id
 	
 	#Create inbound rules for NFS on the security groups:
 	
-	$aws ec2 authorize-security-group-ingress --group-id $sgroups_master --protocol tcp --port 2049 --source-group $sgroups_master --region $region
+	$aws ec2 authorize-security-group-ingress --group-id $sgroups_master --protocol tcp --port 2049 --source-group $sgroups_master
 
-	$aws ec2 authorize-security-group-ingress --group-id $sgroups_nodes --protocol tcp --port 2049 --source-group $sgroups_nodes --region $region
+	$aws ec2 authorize-security-group-ingress --group-id $sgroups_nodes --protocol tcp --port 2049 --source-group $sgroups_nodes
 
 
 Create yaml for deployment
@@ -1199,11 +1204,15 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 
 .. code-block:: bash
 
+	REGION=$(curl -s http://instance-data/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}')
+	
+	export AWS_DEFAULT_REGION=$REGION
+
 	efs_prov=$(kubectl get pods --show-all |grep efs-|cut -d' ' -f1)
 
 	efs_prov_ip=$(kubectl describe pods $efs_prov|grep Node:|sed -n 's/.*ip-\(.*\).us-.*/\1/p'|sed -n 's/-/./g;p')
 
-	efs_prov_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$efs_prov_ip" --region=us-west-2|jq -r '.Reservations[].Instances[].PublicDnsName')
+	efs_prov_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$efs_prov_ip"|jq -r '.Reservations[].Instances[].PublicDnsName')
 
 2. Ssh to that node and enter to efs docker container with ``exec`` command:
 
@@ -1460,13 +1469,15 @@ Locate where is running the scheduler:
 
 .. code-block:: bash
 
-	region=<region>
+	REGION=$(curl -s http://instance-data/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}')
+	
+	export AWS_DEFAULT_REGION=$REGION
 
 	$dask_scheduler_pod=$(kubectl get pods --show-all |grep scheduler|cut -d' ' -f1)
 
 	$dask_scheduler_ip=$(kubectl describe pods $dask_scheduler_pod|grep Node:|sed -n 's/.*ip-\(.*\).us-.*/\1/p'|sed -n 's/-/./g;p')
 
-	$dask_scheduler_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$dask_scheduler_ip" --region=$region|jq -r '.Reservations[].Instances[].PublicDnsName')
+	$dask_scheduler_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$dask_scheduler_ip"|jq -r '.Reservations[].Instances[].PublicDnsName')
 
 
 
@@ -1490,7 +1501,7 @@ Run an example
 ^^^^^^^^^^^^^^
 
    
-In dask-scheduler container execute in a python enviroment:
+In dask-scheduler container execute in a python environment:
 
 .. code-block:: python3
 
@@ -1594,13 +1605,15 @@ Locate where is running the scheduler:
 
 .. code-block:: bash
 
-	region=<region>
+	REGION=$(curl -s http://instance-data/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}')
+	
+	export AWS_DEFAULT_REGION=$REGION
 
 	$dask_scheduler_pod=$(kubectl get pods --show-all |grep scheduler|cut -d' ' -f1)
 
 	$dask_scheduler_ip=$(kubectl describe pods $dask_scheduler_pod|grep Node:|sed -n 's/.*ip-\(.*\).us-.*/\1/p'|sed -n 's/-/./g;p')
 
-	$dask_scheduler_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$dask_scheduler_ip" --region=$region|jq -r '.Reservations[].Instances[].PublicDnsName')
+	$dask_scheduler_ip_publ=$(aws ec2 describe-instances --filters "Name=private-ip-address,Values=$dask_scheduler_ip" |jq -r '.Reservations[].Instances[].PublicDnsName')
 
 
 Using <key>.pem of user kops do a ssh and enter to docker container of dask-scheduler with ``exec`` command:
@@ -1706,22 +1719,23 @@ To delete mount targets of EFS (assuming there's three subnets):
 
 .. code-block:: bash
 
+	REGION=$(curl -s http://instance-data/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}')
+	
+	export AWS_DEFAULT_REGION=$REGION
 
 	efs_id=<id of efs>
-
-	region=<region>
 	
-	mt_id1=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f1)
+	mt_id1=$(aws efs describe-mount-targets --file-system-id $efs_id|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f1)
 	
-	mt_id2=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f2)
+	mt_id2=$(aws efs describe-mount-targets --file-system-id $efs_id|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f2)
 	
-	mt_id3=$(aws efs describe-mount-targets --file-system-id $efs_id --region $region|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f3)
+	mt_id3=$(aws efs describe-mount-targets --file-system-id $efs_id|jq -r '.MountTargets[]|.MountTargetId'|tr -s '\n' ' '|cut -d' ' -f3)
 	
-	$aws efs delete-mount-target --mount-target-id $mt_id1 --region=$region
+	$aws efs delete-mount-target --mount-target-id $mt_id1
 	
-	$aws efs delete-mount-target --mount-target-id $mt_id2 --region=$region
+	$aws efs delete-mount-target --mount-target-id $mt_id2
 	
-	$aws efs delete-mount-target --mount-target-id $mt_id3 --region=$region
+	$aws efs delete-mount-target --mount-target-id $mt_id3
 	
 
 5. If the instances of Kubernetes cluster (and thereby containers) need access to a bucket of S3, you can use next commands after a policy was created. Here we assume that the bucket where we have data is ``bucket_example`` and the name of the policy is:  ``policy_example`` and it has entries:
