@@ -650,7 +650,7 @@ The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides (another
 	##Set variable mount_point
 	echo "export mount_point=$shared_volume" >> /home/$user/.profile
 	##Useful software for common operations
-	apt-get install -y nfs-common jq git htop
+	apt-get install -y nfs-common jq git htop nano
 	##For RunCommand service of EC2
 	wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
 	dpkg -i amazon-ssm-agent.deb
