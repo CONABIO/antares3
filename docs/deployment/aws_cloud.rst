@@ -619,7 +619,7 @@ Kubernetes is an open-source system for automating deployment, scaling, and mana
 Cluster creation
 ----------------
 
-The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides:
+The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides (another guide: [Step Zero: Kubernetes on AWS](https://zero-to-jupyterhub.readthedocs.io/en/latest/amazon/step-zero-aws.html))
 
 1. Configure a domain and a subdomain with their respective hosted zones. For the following description `Route 53`_ service of AWS was used to create domain ``conabio-route53.net`` and subdomain ``antares3.conabio-route53.net``. Also a **gossip based Kubernetes cluster** can be used instead (see for example this `issue`_ and this `entry of blog`_).
 
@@ -706,7 +706,7 @@ You can check kops and kubectl versions with:
 	# AWS availability zone where the cluster will be created
 	export CLUSTER_AWS_AZ="us-west-2a,us-west-2b,us-west-2c"
 	
-	# Leave as-is: AWS Route 53 hosted zone ID for your domain (don't set if gossip based cluster)
+	# Leave as-is: AWS Route 53 hosted zone ID for your domain (don't set it if gossip based cluster is used)
 	export DOMAIN_NAME_ZONE_ID=$(aws route53 list-hosted-zones \
 	       | jq -r '.HostedZones[] | select(.Name=="'${DOMAIN_NAME}'.") | .Id' \
 	       | sed 's/\/hostedzone\///')
