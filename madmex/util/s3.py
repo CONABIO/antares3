@@ -78,3 +78,17 @@ def list_files(bucket, path, pattern=None):
         out = [x for x in out if pattern.search(x)]
     return out
 
+
+def build_rasterio_path(bucket, path):
+    """Build rasterio compliant s3 path to object
+
+    Args:
+        bucket (str): Name of bucket containing the data
+        path (str): Path to append to bucket name (often to a geospatial raster
+            object, but not always)
+
+    Return:
+        str: Rasterio compliant s3 object path
+    """
+    path = path.strip('/')
+    return os.path.join('s3://', bucket, path)

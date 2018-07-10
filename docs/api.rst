@@ -225,6 +225,8 @@ Various utils
    util.spatial.geometry_transform
    util.spatial.get_geom_bbox
    util.s3.list_folders
+   util.s3.list_files
+   util.s3.build_rasterio_path
    util.db.classification_to_cmap
    util.db.get_label_encoding
    util.db.get_validation_scheme_name
