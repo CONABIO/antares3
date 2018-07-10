@@ -28,5 +28,5 @@ def list_folders(bucket, path):
     page_iterator = paginator.paginate(**params)
     out_list = []
     for page in page_iterator:
-        out_list.append([x.get('Prefix') for x in page.get('CommonPrefixes')])
-    return [item for sublist in out_list for item in sublist]
+        out_list += [x.get('Prefix') for x in page.get('CommonPrefixes')]
+    return out_list
