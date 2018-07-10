@@ -12,6 +12,7 @@ import logging
 from glob import glob
 
 from madmex.management.base import AntaresBaseCommand
+from madmex.util import s3
 
 
 logger = logging.getLogger(__name__)
@@ -51,6 +52,9 @@ antares prepare_metadata --path /path/to/dir/containing/srtm_terrain_metrics --d
 
 # Sentinel2 L2A 20m
 antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name s2_l2a_20m --outfile metadata_sentinel.yaml
+
+# Generate metadata for a single Landsat path row of landsat 8 data stored on s3
+antares prepare_metadata --path linea_base/L8 --bucket conabio-s3-oregon --dataset_name landsat_espa --outfile /home/madmex_user/sandbox/metadata_landsat_bucket.yaml --pattern .*LC08039037.*
 """
     def add_arguments(self, parser):
         parser.add_argument('-p', '--path',
@@ -65,13 +69,29 @@ antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name 
                             type=str,
                             required=True,
                             help='Name of the file to which metadata will be written. Typically of type .yaml')
+        parser.add_argument('-b', '--bucket',
+                            type=str,
+                            default=None,
+                            help='Optional name of a s3 bucket containing the data to index')
+        parser.add_argument('-pattern', '--pattern',
+                            type=str,
+                            default=None,
+                            help='Optional regex like pattern to use in the initial query. Only supported for s3 queries')
 
     def handle(self, *args, **options):
         path = options['path']
-        subdir_list = glob(os.path.join(path, '*'))
-        # If the directory does not contain subdirectories it means that it's a single target directory
-        if not any([os.path.isdir(x) for x in subdir_list]):
-            subdir_list = [path]
+        bucket = options['bucket']
+        pattern = options['pattern']
+        if bucket is None:
+            subdir_list = glob(os.path.join(path, '*'))
+            # If the directory does not contain subdirectories it means that it's a single target directory
+            if not any([os.path.isdir(x) for x in subdir_list]):
+                subdir_list = [path]
+        else:
+            subdir_list = s3.list_folders(bucket=bucket, path=path, pattern=pattern)
+            print(subdir_list)
+            if not subdir_list:
+                subdir_list = [path]
         try:
             ingest = import_module('madmex.ingestion.%s' % options['dataset_name'])
         except ImportError as e:
@@ -79,8 +99,9 @@ antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name 
         metadata_list = []
         # iterate over each element contained in path, for loop needed for error catching
         for subdir in subdir_list:
+            print(subdir)
             try:
-                metadata_list.append(ingest.metadata_convert(subdir))
+                metadata_list.append(ingest.metadata_convert(subdir, bucket=bucket))
             except Exception as e:
                 logger.warn('No metadata generated for %s, reason: %s' % (subdir, e))
         # Write metadata_list to a single file
