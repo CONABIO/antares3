@@ -760,7 +760,7 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 <p class="first admonition-title">Note</p>
 <p class="last">The instance needs the policy <strong>AmazonS3FullAccess</strong> attach to a role created by you to have permissions to execute next command.</p>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="c1">#Bucket will be created in us-east (N. Virginia)</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Bucket will be created in us-east (N. Virginia)</span>
 <span class="nv">$aws</span> s3api create-bucket --bucket <span class="si">${</span><span class="nv">CLUSTER_FULL_NAME</span><span class="si">}</span>-state
 </pre></div>
 </div>
