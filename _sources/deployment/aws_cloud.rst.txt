@@ -808,7 +808,7 @@ This will generate an **AccessKeyId** and **SecretAccessKey** that must be kept 
 
 .. note:: 
 
-	Check status of cluster with ``kops validate cluster`` and wait until it says **Your cluster k8s-deployment.antares3.conabio-route53.net is ready**
+	Check status of cluster with ``kops validate cluster`` and wait until it says **Your cluster $CLUSTER_FULL_NAME	is ready**
 
 
 
