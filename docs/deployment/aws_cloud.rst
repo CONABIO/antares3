@@ -1459,7 +1459,7 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 
 .. note:: 
 
-	To install recent version of antares3 one can prepend in the ``command`` value of ``antares3-scheduler.yaml``: ``pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps``.
+	To install recent version of antares3 one can prepend in the ``command`` value of ``antares3-worker.yaml``: ``pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps``.
 
 
 Create deployment of antares3-worker with:
