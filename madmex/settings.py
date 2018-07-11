@@ -197,3 +197,7 @@ BIS_LICENSE = os.getenv('BIS_LICENSE', '1-319-527-2680')
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Driver and ingestion bucket
+DRIVER = os.getenv('DRIVER', 'NetCDF CF')
+INGESTION_BUCKET = os.getenv('INGESTION_BUCKET', '')

@@ -4,7 +4,7 @@ output_type: s2_l2a_20m_mexico
 description: Sentinel 2 bottom of atmosphere processed with sen2cor. Resampled to 20m Mexico INEGI Lambert Conformal Conic projection with a 100 km tile size.
 
 location: '{{ ingestion_path }}'
-file_path_template: 's2_l2a_20m/mexico/s2_l2a_20m_{tile_index[0]}_{tile_index[1]}_{start_time}.nc'
+file_path_template: 's2_l2a_20m/mexico/s2_l2a_20m_{tile_index[0]}_{tile_index[1]}_{start_time}{% if netcdf %}.nc{% endif %}'
 global_attributes:
   title: CONABIO Data Cube Landsat Surface Reflectance
   summary: Sentinel 2 bottom of atmosphere reflectance processed with sen2cor
@@ -26,7 +26,8 @@ global_attributes:
   acknowledgment: ESA/copernicus
 
 storage:
-  driver: NetCDF CF
+  driver: {{ driver }}
+  bucket: '{{ bucket }}'
   ## http://spatialreference.org/ref/sr-org/mexico-albers-equal-area-conic/
   # http://spatialreference.org/ref/sr-org/mexico-inegi-lambert-conformal-conic/
   crs: PROJCS["unnamed",GEOGCS["WGS 84",DATUM["unknown",SPHEROID["WGS84",6378137,6556752.3141]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",17.5],PARAMETER["standard_parallel_2",29.5],PARAMETER["latitude_of_origin",12],PARAMETER["central_meridian",-102],PARAMETER["false_easting",2500000],PARAMETER["false_northing",0]] 
