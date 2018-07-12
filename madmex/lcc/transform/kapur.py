@@ -159,7 +159,7 @@ class Transform(TransformBase):
 
     def transform(self, X):
         change_classification = np.zeros((self.cols * self.rows),
-                                         dtype=np.int8)
+                                         dtype=np.uint8)
         positive_threshold = None
         negative_threshold = None
 

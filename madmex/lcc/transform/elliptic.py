@@ -70,4 +70,4 @@ class Transform(TransformBase):
         change_classification[change_classification==1]=0
         change_classification[change_classification==-1]=1
 
-        return change_classification
+        return change_classification.astype(np.uint8)

@@ -132,7 +132,7 @@ class BaseBiChange(metaclass=abc.ABCMeta):
             logger.error("Invalid threshold method.")
             sys.exit(0)
 
-        return change_mask.astype(np.int8)
+        return change_mask
 
 
     def filter_mmu(self, min_area):
