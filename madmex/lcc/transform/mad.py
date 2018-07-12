@@ -30,11 +30,11 @@ class Transform(BitransformBase):
         '''
         if weights is None:
             weights = numpy.ones((self.rows, self.cols))
-        W = weights * numpy.ones(X.shape)
-        X_mean = numpy.average(X, weights=W, axis=(1,2))
-        Y_mean = numpy.average(Y, weights=W, axis=(1,2))
-        X_centered = (X - X_mean[:,numpy.newaxis,numpy.newaxis])
-        Y_centered = (Y - Y_mean[:,numpy.newaxis,numpy.newaxis])
+        W = weights * numpy.ones(self.X.shape)
+        X_mean = numpy.average(self.X, weights=W, axis=(1,2))
+        Y_mean = numpy.average(self.Y, weights=W, axis=(1,2))
+        X_centered = (self.X - X_mean[:,numpy.newaxis,numpy.newaxis])
+        Y_centered = (self.Y - Y_mean[:,numpy.newaxis,numpy.newaxis])
 
         X_weigthed = X_centered * weights
         Y_weigthed = Y_centered * weights
@@ -102,4 +102,4 @@ class Transform(BitransformBase):
         Helper method to call fit and transform methods.
         '''
         self.fit(X, Y)
-        return self.transform(X, Y, weights)
+        return self.transform(self.X, self.Y, weights)

@@ -37,7 +37,7 @@ class Transform(BitransformBase):
         while i < self.max_iterations and delta > self.threshold:
             logger.info('Iteration #%s' % i)
             logger.info('delta: %s' % delta)
-            M, sigma_squared, rho = MAD(lmbda=self.lmbda).fit_transform(X, Y, weights)
+            M, sigma_squared, rho = MAD(lmbda=self.lmbda).fit_transform(self.X, self.Y, weights)
             chi_square = numpy.tensordot(1 / sigma_squared, numpy.multiply(M, M), axes=1)
             weights = 1 - stats.chi2.cdf(chi_square, self.bands)
             delta = max(abs(rho - old_rho))

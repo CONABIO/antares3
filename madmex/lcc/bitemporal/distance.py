@@ -45,7 +45,8 @@ def _hist_match_band(source, template):
 class BiChange(BaseBiChange):
     """Antares implementation of a simple distance based bi-temporal change detection algorithm
     """
-    def __init__(self, array, affine, crs, norm='hist', threshold=50):
+    def __init__(self, array, affine, crs, norm='hist', threshold='kapur',
+                 **kwargs):
         """Euclidean distance based change detection
 
         Optionally performs histogram matching to normalize input arrays, compute
@@ -54,8 +55,11 @@ class BiChange(BaseBiChange):
         Args:
             norm (str): Normalization method to use in order to match source and
                 destination arrays (one of ``'hist'`` or ``None``)
-            threshold (float): Distance value above which a change is considered a
-                change
+            threshold (float or str): If numeric, distance value above which a
+                change is considered a change. If str, one of the automatic thresholding
+                method exposed in ``madmex.lcc.bitemporal.BaseBiChange.threshold_change``
+                static method
+            **kwargs: Additional arguments to pass to the thresolding method
 
         Example:
 			>>> from madmex.lcc.bitemporal.distance import BiChange
@@ -82,6 +86,7 @@ class BiChange(BaseBiChange):
         self.algorithm = 'distance'
         self.norm = norm
         self.threshold = threshold
+        self.kwargs = kwargs
 
 
     def _run(self, arr0, arr1):
@@ -106,7 +111,12 @@ class BiChange(BaseBiChange):
         else: # 3
             dist = np.linalg.norm(arr0_t - arr1, axis=0)
         # Apply threshold and generate binary array
-        out_arr = np.where(dist > self.threshold, 1, 0).astype(np.uint8)
+        if isinstance(self.threshold, (float, int)):
+            out_arr = np.where(dist > self.threshold, 1, 0).astype(np.uint8)
+        else:
+            if self.threshold == 'kapur':
+                self.kwargs.update(symmetrical=False)
+            out_arr = self.threshold_change(dist, self.threshold, **self.kwargs)
         return out_arr
 
 

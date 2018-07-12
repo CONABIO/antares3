@@ -5,10 +5,13 @@ Created on Jun 25, 2018
 '''
 import logging
 
+import numpy
+
 from madmex.lcc.bitemporal import BaseBiChange
-from madmex.lcc.transform.kapur import Transform as Kapur
 from madmex.lcc.transform.irmad import Transform as IRMAD
+from madmex.lcc.transform.kapur import Transform as Kapur
 from madmex.lcc.transform.maf import Transform as MAF
+
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +35,6 @@ class BiChange(BaseBiChange):
     def _run(self, arr0, arr1):
         M = IRMAD(self.max_iterations, self.min_delta, self.lmbda).fit_transform(arr0, arr1)
         M = MAF(self.shift).fit_transform(M)
-        M = self.threshold_change(M, method=self.threshold, **self.kwargs)
+        M = self.threshold_change(M, method=self.threshold, **self.kwargs).astype(numpy.uint8)
         return M
 

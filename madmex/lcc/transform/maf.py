@@ -35,13 +35,13 @@ class Transform(TransformBase):
         '''
         self.h = numpy.array(shift)
     def transform(self, X):
-        sigma = spatial_covariance(X, numpy.array((0,0)))
-        gamma = 2 * sigma - spatial_covariance(X, self.h) - spatial_covariance(X, -self.h)       
+        sigma = spatial_covariance(self.X, numpy.array((0,0)))
+        gamma = 2 * sigma - spatial_covariance(self.X, self.h) - spatial_covariance(self.X, -self.h)       
         lower = numpy.linalg.cholesky(sigma)
         lower_inverse = numpy.linalg.inv(lower)
         eig_problem = numpy.matmul(numpy.matmul(lower_inverse, gamma), lower_inverse.T)
         eig_values, eig_vectors = numpy.linalg.eig(eig_problem)
         sort_index = eig_values.argsort()
         vector = eig_vectors[:, sort_index]
-        M = numpy.matmul(vector.T, X.reshape(self.bands, self.rows * self.cols))
+        M = numpy.matmul(vector.T, self.X.reshape(self.bands, self.rows * self.cols))
         return M.reshape(self.bands, self.rows, self.cols)

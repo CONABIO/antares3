@@ -1406,7 +1406,8 @@ Execute:
 Deployment for dask worker
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use next ``antares3-worker.yaml`` file to create **one** container for dask worker:
+Use next ``antares3-worker.yaml`` file to create **one** container for dask worker (example for ``t2.large`` instances which has 2 cores, see `Managing Compute Resources for Containers`_ , `Assign CPU Resources to Containers and Pods`_ and `Assign Memory Resources to Containers and Pods`_).
+
 
 .. code-block:: bash
 
@@ -1416,7 +1417,7 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 	  name: antares3-worker
 	  namespace: default
 	spec:
-	  replicas: 1  ##### This is the number of containers that are going to be deployed. Change it if more containers are needed
+	  replicas: 4  ##### This is the number of containers that are going to be deployed. Change it if more containers are needed
 	  template:
 	    metadata:
 	     labels:
@@ -1427,7 +1428,7 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 	      - name: antares3-worker
 	        imagePullPolicy: Always
 	        image: madmex/antares3-k8s-cluster-dependencies:latest #Docker image to be used for dask scheduler/worker container
-	        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
+	        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 	1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
 	        ports:
 	          - containerPort: 8786
 	        env:
@@ -1439,14 +1440,16 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 	            value: "/shared_volume"
 	        resources:
 	         requests:
-	          cpu: "1"
-	          memory: 6Gi ##### This value depends of type of AWS instance chose
+	          cpu: ".5"
+	          memory: 3.5Gi ##### This value depends of type of AWS instance chosen
 	         limits:
 	          cpu: "1"
-	          memory: 8Gi ##### This value depends of type of AWS instance chose
+	          memory: 4Gi ##### This value depends of type of AWS instance chosen
 	        volumeMounts:
 	         - name: efs-pvc
 	           mountPath: "/shared_volume/"
+	         - name: dshm
+	           mountPath: /dev/shm
 	      volumes:
 	       - name: efs-pvc
 	         persistentVolumeClaim:
@@ -1454,7 +1457,7 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 	       - name: dshm ##### This is needed for opendatacube S3 functionality
 	         emptyDir:
 	          medium: Memory
-	          sizeLimit: '1Gi'
+	          	#sizeLimit: '1Gi' #This is not working, container uses all instance capacity
 
 
 .. note:: 
@@ -1806,6 +1809,13 @@ To delete mount targets of EFS (assuming there's three subnets):
 
 
 .. Kubernetes references:
+
+.. _Assign Memory Resources to Containers and Pods: https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/#specify-a-memory-request-and-a-memory-limit
+
+.. _Assign CPU Resources to Containers and Pods: https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/
+
+
+.. _Managing Compute Resources for Containers: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
 
 .. _efs-provisioner: https://github.com/kubernetes-incubator/external-storage/tree/master/aws/efs
 
