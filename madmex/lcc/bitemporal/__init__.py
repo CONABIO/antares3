@@ -110,12 +110,12 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         change/no-change image masks
 
         Args:
-            diff_image (ndarray): a, possibly multidimensional, numpy array consisting
-            of difference images.
+            diff_image (ndarray): a 2D or 3D numpy array consisting
+            of difference image bands.
 
         Returns:
-            change_mask (ndarray): a, possibly multidimensional, numpy array
-            consisting of change (=-1) /no-change image masks (=1)
+            change_mask (ndarray): a 2D numpy array
+            consisting of change (=1) /no-change image masks (=0)
         """
         if method=="Kapur":
             model_spec = Kapur(diff_image, **kwargs)

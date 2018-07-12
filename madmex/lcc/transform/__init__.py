@@ -15,9 +15,7 @@ class TransformBase(object):
         the image does not have at least 2 or more than 3 dimensions.
 
         Args:
-            X (numpy.array): A 2 or 3 dimensional numpy array. Dimention order should
-                be (bands, y, x)
-            Y (numpy.array): A 3 dimensional numpy array. Dimention order should
+            X (numpy.array): A 2 or 3 dimensional numpy array. Dimension order should
                 be (bands, y, x)
         '''
         if len(X.shape) == 2:
@@ -53,9 +51,9 @@ class BitransformBase(TransformBase):
         the images do not have the same shapes.
 
         Args:
-            X (numpy.array): A 2 or 3 dimensional numpy array. Dimention order should
+            X (numpy.array): A 2 or 3 dimensional numpy array. Dimension order should
                 be (bands, y, x)
-            Y (numpy.array): A 3 dimensional numpy array. Dimention order should
+            Y (numpy.array): A 3 dimensional numpy array. Dimension order should
                 be (bands, y, x)
         '''
         if not X.shape == Y.shape:
