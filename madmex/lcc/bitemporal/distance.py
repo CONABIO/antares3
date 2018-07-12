@@ -114,6 +114,8 @@ class BiChange(BaseBiChange):
         if isinstance(self.threshold, (float, int)):
             out_arr = np.where(dist > self.threshold, 1, 0).astype(np.uint8)
         else:
+            if self.threshold == 'kapur':
+                self.kwargs.update(symmetrical=False)
             out_arr = self.threshold_change(dist, self.threshold, **self.kwargs)
         return out_arr
 
