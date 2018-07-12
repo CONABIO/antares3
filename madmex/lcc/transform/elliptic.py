@@ -10,10 +10,6 @@ import numpy as np
 from sklearn.covariance import EllipticEnvelope
 from madmex.lcc.transform import TransformBase
 
-
-
-logger = logging.getLogger(__name__)
-
 class Transform(TransformBase):
     '''
     This class implements the elliptic envelope method to threshold a difference
@@ -21,13 +17,13 @@ class Transform(TransformBase):
     classes partition
     '''
 
-    def __init__(self, band_subset=[0,1], outliers_fraction=0.05,
+    def __init__(self, bands_subset=[0,1], outliers_fraction=0.05,
                  assume_centered=True, support_fraction=None, auto_optimize=True,
                  no_data=None):
         '''
         Constructor
         '''
-        self.bands_subset = np.array(band_subset)
+        self.bands_subset = np.array(bands_subset)
         self.outliers_fraction = outliers_fraction
         self.assume_centered = assume_centered
         self.support_fraction = support_fraction
@@ -48,29 +44,17 @@ class Transform(TransformBase):
             data_mask = image_bands_flattened[0, :] != self.no_data
             self.image_bands_flattened = image_bands_flattened[:, data_mask]
 
-        logger.info('Fitting elliptic model.')
+        # specify and fit model
+        model_specification = EllipticEnvelope(
+            contamination=self.outliers_fraction,
+            assume_centered=self.assume_centered,
+            support_fraction=self.support_fraction)
 
-        flag = True
-        change_classification = None
+        model_specification.fit(image_bands_flattened)
 
-        try:
-
-            # specify and fit model
-            model_specification = EllipticEnvelope(
-                contamination=self.outliers_fraction,
-                assume_centered=self.assume_centered,
-                support_fraction=self.support_fraction)
-
-            model_specification.fit(image_bands_flattened)
-
-            # tag outliers
-            change_classification = model_specification.predict(\
-                                                     image_bands_flattened)*1
-
-        except Exception as error:
-            flag = False
-            logger.error('Elliptic model fitting failed with error:/ %s',
-                                                             str(repr(error)))
+        # tag outliers
+        change_classification = model_specification.predict(\
+                                                 image_bands_flattened)*1
 
         if self.no_data is not None:
 

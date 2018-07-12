@@ -122,10 +122,10 @@ class BaseBiChange(metaclass=abc.ABCMeta):
             consisting of change (=1) /no-change image masks (=0)
         """
         if method=="kapur":
-            model_spec = Kapur(diff_image, **kwargs)
+            model_spec = Kapur(**kwargs)
             change_mask = model_spec.fit_transform(diff_image)
         elif method=="elliptic":
-            model_spec = Elliptic(diff_image, **kwargs)
+            model_spec = Elliptic(**kwargs)
             change_mask = model_spec.fit_transform(diff_image)
         else:
             logger.error("Invalid threshold method.")

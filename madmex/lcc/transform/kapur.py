@@ -11,8 +11,6 @@ from madmex.lcc.transform import TransformBase
 import numpy as np
 
 
-logger = logging.getLogger(__name__)
-
 def optimal_bins(data_vector, method="shimazaki-shinomoto", bins=1000):
 
     '''
@@ -34,7 +32,6 @@ def optimal_bins(data_vector, method="shimazaki-shinomoto", bins=1000):
                                                                (-1.0)/(3.0))
 
     elif (method=="freedman-diaconis"):
-        print(method)
 
         # sorted image data
         data_vector = np.sort(data_vector)
@@ -52,7 +49,6 @@ def optimal_bins(data_vector, method="shimazaki-shinomoto", bins=1000):
         number_of_bins = np.int(np.ceil(data_range/bin_length))
 
     elif (method=="shimazaki-shinomoto"):
-        print(method)
         # propose an optimal bin size for a histogram
         # using the Shimazaki-Shinomoto method
         x_max = max(data_vector)
@@ -60,7 +56,7 @@ def optimal_bins(data_vector, method="shimazaki-shinomoto", bins=1000):
         N_MIN = 100   # minimum number of bins 
         N_MAX = 3000  # maximum number of bins 
         N = np.arange(N_MIN, N_MAX,10) # #of Bins
-        D = (x_max - x_min) / N    #Bin size vector
+        D = (x_max - x_min) / N    # bin size vector
         C = np.zeros(shape=(np.size(D), 1))
 
         # computation of the cost function
@@ -69,14 +65,13 @@ def optimal_bins(data_vector, method="shimazaki-shinomoto", bins=1000):
             ki = ki[0]
             k = np.mean(ki) # mean of event count
             v = np.var(ki)  # variance of event count
-            C[i] = (2 * k - v) / (D[i]**2) # the cost Function
+            C[i] = (2 * k - v) / (D[i]**2) # the cost function
 
         # optimal bin size selection
         idx  = np.argmin(C)
         number_of_bins = N[idx]
 
     else:
-        print("using custom number of bins")
         number_of_bins = bins
 
     return number_of_bins
@@ -168,64 +163,56 @@ class Transform(TransformBase):
         positive_threshold = None
         negative_threshold = None
 
-        try:
-            X = np.ravel(self.X[int(self.band),:,:])
-            X_copy = X
+        X = np.ravel(self.X[int(self.band),:,:])
+        X_copy = X
 
-            if self.no_data is not None:
-                # handle no data values
-                idx_keep = X != self.no_data
-                X = X[idx_keep]
+        if self.no_data is not None:
+            # handle no data values
+            idx_keep = X != self.no_data
+            X = X[idx_keep]
 
-            # sorted image
-            X = np.sort(X)
+        # sorted image
+        X = np.sort(X)
 
-            if self.clip_hist_tails is not None:
-                X = clip_histogram_tails(X,self.clip_hist_tails)
+        if self.clip_hist_tails is not None:
+            X = clip_histogram_tails(X,self.clip_hist_tails)
 
-            # decide on optimal number of bins for histogram
-            bins = optimal_bins(X,method=self.histogram)
+        # decide on optimal number of bins for histogram
+        bins = optimal_bins(X,method=self.histogram)
 
-            # generate histogram based on this number of bins
-            histo, bin_edges = np.histogram(X,bins)
+        # generate histogram based on this number of bins
+        histo, bin_edges = np.histogram(X,bins)
 
-            ### positive side
-            positive_threshold = maximum_entropy_cut(histo,bin_edges,
+        ### positive side
+        positive_threshold = maximum_entropy_cut(histo,bin_edges,
+                                                argmax=self.argmax)
+
+        if self.symmetrical:
+
+            ### negative side
+
+            # flip vectors
+            histo = histo[::-1]
+            bin_edges = bin_edges[::-1]
+
+            negative_threshold = maximum_entropy_cut(histo,bin_edges,
                                                     argmax=self.argmax)
-            
-            logger.debug('Positive threshold: %s' % positive_threshold)
-
-            if self.symmetrical:
-
-                ### negative side
-
-                # flip vectors
-                histo = histo[::-1]
-                bin_edges = bin_edges[::-1]
-
-                negative_threshold = maximum_entropy_cut(histo,bin_edges,
-                                                        argmax=self.argmax)
-
-                if self.no_data is not None:
-                    idx_keep_neg = idx_keep and (X_copy<negative_threshold)
-                    change_classification[idx_keep_neg] = 1
-
-                else:
-                    change_classification[X_copy<negative_threshold] = 1
 
             if self.no_data is not None:
-                idx_keep_neg = idx_keep and (X_copy>positive_threshold)
-                change_classification[idx_keep_neg]=1
-                change_classification[np.invert(idx_keep)]=self.no_data
+                idx_keep_neg = idx_keep and (X_copy<negative_threshold)
+                change_classification[idx_keep_neg] = 1
 
             else:
-                change_classification[X_copy>positive_threshold] = 1
+                change_classification[X_copy<negative_threshold] = 1
 
-        except Exception as error:
-            logger.error('Kapur thresholding failed with error: %s', str(repr(error)))
+        if self.no_data is not None:
+            idx_keep_neg = idx_keep and (X_copy>positive_threshold)
+            change_classification[idx_keep_neg]=1
+            change_classification[np.invert(idx_keep)]=self.no_data
 
-        logger.debug(np.unique(change_classification, return_counts=True))
-        
+        else:
+            change_classification[X_copy>positive_threshold] = 1
+
         # resize to original image shape
         change_classification = np.resize(change_classification, (self.rows, self.cols))
 
