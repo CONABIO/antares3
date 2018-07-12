@@ -5,9 +5,10 @@
 import logging
 import  math
 
-import numpy as np
+from scipy import stats
 
 from madmex.lcc.transform import TransformBase
+import numpy as np
 
 
 logger = logging.getLogger(__name__)
@@ -63,7 +64,7 @@ def optimal_bins(data_vector, method="shimazaki-shinomoto", bins=1000):
         C = np.zeros(shape=(np.size(D), 1))
 
         # computation of the cost function
-        for i in xrange(np.size(N)):
+        for i in range(np.size(N)):
             ki = np.histogram(data_vector, bins=N[i])
             ki = ki[0]
             k = np.mean(ki) # mean of event count
@@ -141,6 +142,7 @@ def maximum_entropy_cut(histo, bin_edges, argmax=True):
 
     idx_maximum_entropy = np.argmax(entropies)
     threshold = bin_edges[np.int(idx_maximum_entropy)]
+    return threshold
 
 class Transform(TransformBase):
     '''
@@ -148,12 +150,12 @@ class Transform(TransformBase):
     thresholding of difference images (like those prodced by the iMAD-MAF transform).
     '''
 
-    def __init__(self,band=1, histogram=1000, symmetrical=True,
+    def __init__(self, band=0, histogram=1000, symmetrical=True,
                  argmax=True, clip_hist_tails=3, no_data=None):
         '''
         Constructor
         '''
-        self.band=band-1
+        self.band=band
         self.argmax = argmax
         self.histogram = histogram
         self.symmetrical = symmetrical
@@ -161,10 +163,8 @@ class Transform(TransformBase):
         self.no_data = no_data
 
     def transform(self, X):
-        change_classification = np.zeros((self.columns * self.rows),
+        change_classification = np.zeros((self.cols * self.rows),
                                          dtype=np.int8)
-
-        flag = True
         positive_threshold = None
         negative_threshold = None
 
@@ -192,6 +192,8 @@ class Transform(TransformBase):
             ### positive side
             positive_threshold = maximum_entropy_cut(histo,bin_edges,
                                                     argmax=self.argmax)
+            
+            logger.debug('Positive threshold: %s' % positive_threshold)
 
             if self.symmetrical:
 
@@ -206,24 +208,25 @@ class Transform(TransformBase):
 
                 if self.no_data is not None:
                     idx_keep_neg = idx_keep and (X_copy<negative_threshold)
-                    change_classification[idx_keep_neg]=1
+                    change_classification[idx_keep_neg] = 1
 
                 else:
-                    change_classification[X_copy<negative_threshold]=1
+                    change_classification[X_copy<negative_threshold] = 1
 
             if self.no_data is not None:
                 idx_keep_neg = idx_keep and (X_copy>positive_threshold)
                 change_classification[idx_keep_neg]=1
-                change_classification[np.invert(keep)]=self.no_data
+                change_classification[np.invert(idx_keep)]=self.no_data
 
             else:
-                change_classification[X_copy>positive_threshold]=1
+                change_classification[X_copy>positive_threshold] = 1
 
         except Exception as error:
-            flag = False
             logger.error('Kapur thresholding failed with error: %s', str(repr(error)))
 
+        logger.debug(np.unique(change_classification, return_counts=True))
+        
         # resize to original image shape
-        change_classification = np.resize(change_classification,(self.rows, self.columns))
+        change_classification = np.resize(change_classification, (self.rows, self.cols))
 
         return change_classification.astype(np.int8)

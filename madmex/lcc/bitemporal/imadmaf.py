@@ -6,7 +6,7 @@ Created on Jun 25, 2018
 import logging
 
 from madmex.lcc.bitemporal import BaseBiChange
-from madmex.lcc.thresholding import Elliptic
+from madmex.lcc.transform.kapur import Transform as Kapur
 from madmex.lcc.transform.irmad import Transform as IRMAD
 from madmex.lcc.transform.maf import Transform as MAF
 
@@ -30,5 +30,5 @@ class BiChange(BaseBiChange):
     def _run(self, arr0, arr1):
         M = IRMAD(self.max_iterations, self.min_delta, self.lmbda).fit_transform(arr0, arr1)
         M = MAF(self.shift).fit_transform(M)
-        return Elliptic().fit_transform(M)
+        return Kapur().fit_transform(M)
 

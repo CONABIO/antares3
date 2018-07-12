@@ -20,7 +20,7 @@ class TransformBase(object):
         '''
         if len(X.shape) == 2:
             self.bands = 1
-            self.rows, self.columns = X.shape
+            self.rows, self.cols = X.shape
             self.X = X[numpy.newaxis,:]
         elif len(X.shape) == 3:
             self.X = X

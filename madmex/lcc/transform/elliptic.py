@@ -21,13 +21,13 @@ class Transform(TransformBase):
     classes partition
     '''
 
-    def __init__(self, bands_subset=[0,1], outliers_fraction=0.05,
+    def __init__(self, band_subset=[0,1], outliers_fraction=0.05,
                  assume_centered=True, support_fraction=None, auto_optimize=True,
                  no_data=None):
         '''
         Constructor
         '''
-        self.bands_subset = np.array(bands_subset)
+        self.bands_subset = np.array(band_subset)
         self.outliers_fraction = outliers_fraction
         self.assume_centered = assume_centered
         self.support_fraction = support_fraction
@@ -36,7 +36,7 @@ class Transform(TransformBase):
 
     def transform(self, X):
         n_used_bands = len(self.bands_subset)
-        image_bands_flattened = np.zeros((self.columns * self.rows,n_used_bands))
+        image_bands_flattened = np.zeros((self.cols * self.rows,n_used_bands))
 
         for k in range(n_used_bands):
 
@@ -74,13 +74,13 @@ class Transform(TransformBase):
 
         if self.no_data is not None:
 
-            change_classification_full = np.zeros((self.columns * self.rows))
+            change_classification_full = np.zeros((self.cols * self.rows))
             change_classification = change_classification_full[data_mask]
             change_classification[change_classification==0]=self.no_data
 
         # resize to original image shape
         change_classification = np.resize(change_classification,
-                                                   (self.rows, self.columns))
+                                                   (self.rows, self.cols))
 
         # set correct change labels
         change_classification[change_classification==1]=0
