@@ -19,16 +19,16 @@ grid_spatial:
     spatial_reference: {{ crs }}
 image:
   bands:
-    blue: {layer: 1, path: {{ blue }} }
-    green: {layer: 1, path: {{ green }} }
-    red: {layer: 1, path: {{ red }} }
-    re1: {layer: 1, path: {{ re1 }} }
-    re2: {layer: 1, path: {{ re2 }} }
-    re3: {layer: 1, path: {{ re3 }} }
-    nir: {layer: 1, path: {{ nir }} }
-    swir1: {layer: 1, path: {{ swir1 }} }
-    swir2: {layer: 1, path: {{ swir2 }} }
-    pixel_qa: {layer: 1, path: {{ qual }} }
+    blue: {layer: 1, path: "{{ blue }}" }
+    green: {layer: 1, path: "{{ green }}" }
+    red: {layer: 1, path: "{{ red }}" }
+    re1: {layer: 1, path: "{{ re1 }}" }
+    re2: {layer: 1, path: "{{ re2 }}" }
+    re3: {layer: 1, path: "{{ re3 }}" }
+    nir: {layer: 1, path: "{{ nir }}" }
+    swir1: {layer: 1, path: "{{ swir1 }}" }
+    swir2: {layer: 1, path: "{{ swir2 }}" }
+    pixel_qa: {layer: 1, path: "{{ qual }}" }
 instrument: {name: {{ instrument }} }
 lineage:
   source_datasets: {}
