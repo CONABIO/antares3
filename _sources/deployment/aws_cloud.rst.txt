@@ -1406,7 +1406,7 @@ Execute:
 Deployment for dask worker
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use next ``antares3-worker.yaml`` file to create **one** container for dask worker (example for ``t2.large`` instances which has 2 cores, see `Assign CPU Resources to Containers and Pods`_ and `Assign Memory Resources to Containers and Pods`_).
+Use next ``antares3-worker.yaml`` file to create **one** container for dask worker (example for ``t2.large`` instances which has 2 cores, see `Managing Compute Resources for Containers`_ , `Assign CPU Resources to Containers and Pods`_ and `Assign Memory Resources to Containers and Pods`_).
 
 
 .. code-block:: bash
@@ -1814,6 +1814,8 @@ To delete mount targets of EFS (assuming there's three subnets):
 
 .. _Assign CPU Resources to Containers and Pods: https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/
 
+
+.. _Managing Compute Resources for Containers: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
 
 .. _efs-provisioner: https://github.com/kubernetes-incubator/external-storage/tree/master/aws/efs
 
