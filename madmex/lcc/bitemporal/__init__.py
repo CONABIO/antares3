@@ -15,7 +15,8 @@ from django.contrib.gis.geos.geometry import GEOSGeometry
 from madmex.io.vector_db import from_geobox
 from madmex.util.spatial import geometry_transform
 from madmex.models import PredictClassification, ChangeObject, ChangeClassification
-from madmex.lcc.transform import elliptic, kapur
+from madmex.lcc.transform.elliptic import Transform as Elliptic
+from madmex.lcc.transform.kapur import Transform as Kapur
 
 # Monkeypatch Django Polygon class to instantiate it using a datacube style geobox
 Polygon.from_geobox = from_geobox
@@ -118,13 +119,13 @@ class BaseBiChange(metaclass=abc.ABCMeta):
             consisting of change (=1) /no-change image masks (=0)
         """
         if method=="Kapur":
-            model_spec = kapur(diff_image, **kwargs)
+            model_spec = Kapur(diff_image, **kwargs)
             change_mask = model_spec.fit_transform(diff_image)
         elif method=="Elliptic":
-            model_spec = elliptic(diff_image, **kwargs)
+            model_spec = Elliptic(diff_image, **kwargs)
             change_mask = model_spec.fit_transform(diff_image)
 
-        return change_mask
+        return change_mask.astype(np.int8)
 
 
     def filter_mmu(self, min_area):

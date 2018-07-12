@@ -16,7 +16,7 @@ class BiChange(BaseBiChange):
     """Antares implementation of iMAD-MAF change detection algorithm
     """
     def __init__(self,  array, affine, crs, max_iterations=25, min_delta=0.01,
-                 lmbda=0.0, shift=(1, 1)):
+                 lmbda=0.0, shift=(1, 1), threshold='kapur', **kwargs):
         '''
         Process to detect land cover change using the iteratively reweighted
         Multivariate Alteration Detection algorithm and then postprocesing
@@ -27,8 +27,11 @@ class BiChange(BaseBiChange):
         self.min_delta = min_delta
         self.lmbda = lmbda
         self.shift = shift
+        self.threshold = threshold
+        self.kwargs = kwargs
     def _run(self, arr0, arr1):
         M = IRMAD(self.max_iterations, self.min_delta, self.lmbda).fit_transform(arr0, arr1)
         M = MAF(self.shift).fit_transform(M)
-        return Kapur().fit_transform(M)
+        M = self.threshold_change(M, method=self.threshold, **self.kwargs)
+        return M
 

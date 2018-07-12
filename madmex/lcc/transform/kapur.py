@@ -229,4 +229,4 @@ class Transform(TransformBase):
         # resize to original image shape
         change_classification = np.resize(change_classification, (self.rows, self.cols))
 
-        return change_classification.astype(np.int8)
+        return change_classification
