@@ -83,7 +83,7 @@ class Transform(BitransformBase):
         norm_b_squared = numpy.diag(numpy.matmul(vector_v.T, vector_v))
     
         variance_u = numpy.diag(1/numpy.sqrt(numpy.diag(sigma_11)))
-        s = numpy.squeeze(numpy.sum(numpy.matmul(variance_u, numpy.matmul(sigma_11, vector_u)),axis=0))
+        s = numpy.sum(numpy.matmul(variance_u, numpy.matmul(sigma_11, vector_u)),axis=0)
         vector_u = numpy.matmul(vector_u, numpy.diag(s / numpy.abs(s)))
 
         signs_vector = numpy.diag(numpy.dot(numpy.dot(vector_u.T, sigma_12), vector_v))

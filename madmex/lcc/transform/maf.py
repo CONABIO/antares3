@@ -19,7 +19,7 @@ def spatial_covariance(X, h):
     pixels = X.shape[1] * X.shape[2]
     X_centered = (X - X_mean[:,numpy.newaxis,numpy.newaxis]).reshape(bands, pixels)
     X_shifted_centered = (X_shifted - X_mean[:,numpy.newaxis,numpy.newaxis]).reshape(bands, pixels)
-    C = numpy.matmul(X_centered, X_shifted_centered.T) / (bands - 1)
+    C = numpy.matmul(X_centered, X_shifted_centered.T) / (pixels - 1)
     return C
 
 class Transform(TransformBase):
