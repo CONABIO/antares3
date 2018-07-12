@@ -106,6 +106,7 @@ class BaseBiChange(metaclass=abc.ABCMeta):
             raise ValueError('Children _run method must return a 2D np.array')
         self.change_array = change_array
 
+
     @staticmethod
     def threshold_change(diff_image, method, **kwargs):
         """Applies a thresholding method to a continuous difference image
