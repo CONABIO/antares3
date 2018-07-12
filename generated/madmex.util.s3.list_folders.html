@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.util.chunk &mdash; antares3 0.3.0 documentation</title>
+  <title>madmex.util.s3.list_folders &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -29,8 +29,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="madmex.util.pprint_args" href="madmex.util.pprint_args.html" />
-    <link rel="prev" title="madmex.util.parser_extra_args" href="madmex.util.parser_extra_args.html" /> 
+    <link rel="next" title="madmex.util.s3.list_files" href="madmex.util.s3.list_files.html" />
+    <link rel="prev" title="madmex.util.spatial.get_geom_bbox" href="madmex.util.spatial.get_geom_bbox.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -110,7 +110,7 @@
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.yaml_to_dict.html">madmex.util.yaml_to_dict</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.mid_date.html">madmex.util.mid_date</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.parser_extra_args.html">madmex.util.parser_extra_args</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.util.chunk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.chunk.html">madmex.util.chunk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.pprint_args.html">madmex.util.pprint_args</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.fill_and_copy.html">madmex.util.fill_and_copy</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.join_dicts.html">madmex.util.join_dicts</a></li>
@@ -125,7 +125,7 @@
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.feature_transform.html">madmex.util.spatial.feature_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.geometry_transform.html">madmex.util.spatial.geometry_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.get_geom_bbox.html">madmex.util.spatial.get_geom_bbox</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.list_folders.html">madmex.util.s3.list_folders</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.util.s3.list_folders</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.list_files.html">madmex.util.s3.list_files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.build_rasterio_path.html">madmex.util.s3.build_rasterio_path</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.read_file.html">madmex.util.s3.read_file</a></li>
@@ -188,13 +188,13 @@
         
           <li><a href="../api.html">API reference</a> &raquo;</li>
         
-      <li>madmex.util.chunk</li>
+      <li>madmex.util.s3.list_folders</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/madmex.util.chunk.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/madmex.util.s3.list_folders.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -207,24 +207,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="madmex-util-chunk">
-<h1>madmex.util.chunk<a class="headerlink" href="#madmex-util-chunk" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="madmex-util-s3-list-folders">
+<h1>madmex.util.s3.list_folders<a class="headerlink" href="#madmex-util-s3-list-folders" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="madmex.util.chunk">
-<code class="descclassname">madmex.util.</code><code class="descname">chunk</code><span class="sig-paren">(</span><em>iterable</em>, <em>size=10000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/util.html#chunk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.util.chunk" title="Permalink to this definition">¶</a></dt>
-<dd><p>Splits an iterable into chunks</p>
+<dt id="madmex.util.s3.list_folders">
+<code class="descclassname">madmex.util.s3.</code><code class="descname">list_folders</code><span class="sig-paren">(</span><em>bucket</em>, <em>path</em>, <em>pattern=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/util/s3.html#list_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.util.s3.list_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p>List ‘sub-folders’ of a s3 bucket ‘folder’</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>list</em>) – A list or generator</li>
-<li><strong>chunk_size</strong> (<em>int</em>) – The chunking size</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bucket</strong> (<em>str</em>) – Name of an existing s3 bucket</li>
+<li><strong>path</strong> (<em>str</em>) – Path of the folder containing the sub-folders to be listed</li>
+<li><strong>pattern</strong> (<em>str</em>) – Optional regex like pattern to filter the returned directories</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A chunks generator</p>
-</td>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.util</span> <span class="k">import</span> <span class="n">s3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># List all Landsat 8 scenes of conabio-s3-oregon bucket</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s3</span><span class="o">.</span><span class="n">list_folders</span><span class="p">(</span><span class="s1">&#39;conabio-s3-oregon&#39;</span><span class="p">,</span> <span class="s1">&#39;linea_base/L8/&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Filter 039/037 path/row</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s3</span><span class="o">.</span><span class="n">list_folders</span><span class="p">(</span><span class="s1">&#39;conabio-s3-oregon&#39;</span><span class="p">,</span> <span class="s1">&#39;linea_base/L8/&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;.*LC08039037.*&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of subfolder names</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
 </tbody>
 </table>
@@ -240,10 +256,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="madmex.util.pprint_args.html" class="btn btn-neutral float-right" title="madmex.util.pprint_args" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="madmex.util.s3.list_files.html" class="btn btn-neutral float-right" title="madmex.util.s3.list_files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.util.parser_extra_args.html" class="btn btn-neutral" title="madmex.util.parser_extra_args" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.util.spatial.get_geom_bbox.html" class="btn btn-neutral" title="madmex.util.spatial.get_geom_bbox" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

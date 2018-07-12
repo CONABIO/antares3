@@ -169,14 +169,19 @@
 <span class="kn">from</span> <span class="nn">pyproj</span> <span class="k">import</span> <span class="n">Proj</span>
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="k">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
 
-<div class="viewcode-block" id="metadata_convert"><a class="viewcode-back" href="../../../generated/madmex.ingestion.bioclimatics.metadata_convert.html#madmex.ingestion.bioclimatics.metadata_convert">[docs]</a><span class="k">def</span> <span class="nf">metadata_convert</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="kn">from</span> <span class="nn">madmex.util</span> <span class="k">import</span> <span class="n">s3</span>
+
+<div class="viewcode-block" id="metadata_convert"><a class="viewcode-back" href="../../../generated/madmex.ingestion.bioclimatics.metadata_convert.html#madmex.ingestion.bioclimatics.metadata_convert">[docs]</a><span class="k">def</span> <span class="nf">metadata_convert</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">bucket</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Prepare metadata prior to datacube indexing</span>
 
-<span class="sd">    Given a directory containing bioclimatics raster information prepares  </span>
+<span class="sd">    Given a directory containing bioclimatics raster information prepares</span>
 <span class="sd">    a metadata string with the appropriate formating for indexing in the datacube</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        path (str): Path of the directory containing temperature and precipitation measurements.</span>
+<span class="sd">        path (str): Path of the directory containing temperature and</span>
+<span class="sd">            precipitation measurements.</span>
+<span class="sd">        bucket (str or None): Name of the s3 bucket containing the data. If ``None``</span>
+<span class="sd">            (default), data are considered to be on a mounted filesystem</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from madmex.ingestion.bioclimatics import metadata_convert</span>
@@ -189,59 +194,61 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        str: The content of the metadata for later writing to file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bucket</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">build_rasterio_path</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
     <span class="n">tmax_jan</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmax_1.tif&#39;</span><span class="p">)</span>
     <span class="n">tmean_jan</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmean_1.tif&#39;</span><span class="p">)</span>
     <span class="n">tmin_jan</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmin_1.tif&#39;</span><span class="p">)</span>
-    
+
     <span class="n">tmax_feb</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmax_2.tif&#39;</span><span class="p">)</span>
     <span class="n">tmean_feb</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmean_2.tif&#39;</span><span class="p">)</span>
     <span class="n">tmin_feb</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmin_2.tif&#39;</span><span class="p">)</span>
-    
+
     <span class="n">tmax_mar</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmax_3.tif&#39;</span><span class="p">)</span>
     <span class="n">tmean_mar</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmean_3.tif&#39;</span><span class="p">)</span>
     <span class="n">tmin_mar</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmin_3.tif&#39;</span><span class="p">)</span>
-    
+
     <span class="n">tmax_apr</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmax_4.tif&#39;</span><span class="p">)</span>
     <span class="n">tmean_apr</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmean_4.tif&#39;</span><span class="p">)</span>
     <span class="n">tmin_apr</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmin_4.tif&#39;</span><span class="p">)</span>
-    
+
     <span class="n">tmax_may</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmax_5.tif&#39;</span><span class="p">)</span>
     <span class="n">tmean_may</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmean_5.tif&#39;</span><span class="p">)</span>
     <span class="n">tmin_may</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmin_5.tif&#39;</span><span class="p">)</span>
-    
+
     <span class="n">tmax_jun</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmax_6.tif&#39;</span><span class="p">)</span>
     <span class="n">tmean_jun</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmean_6.tif&#39;</span><span class="p">)</span>
     <span class="n">tmin_jun</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmin_6.tif&#39;</span><span class="p">)</span>
-    
+
     <span class="n">tmax_jul</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmax_7.tif&#39;</span><span class="p">)</span>
     <span class="n">tmean_jul</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmean_7.tif&#39;</span><span class="p">)</span>
     <span class="n">tmin_jul</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmin_7.tif&#39;</span><span class="p">)</span>
-    
+
     <span class="n">tmax_aug</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmax_8.tif&#39;</span><span class="p">)</span>
     <span class="n">tmean_aug</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmean_8.tif&#39;</span><span class="p">)</span>
     <span class="n">tmin_aug</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmin_8.tif&#39;</span><span class="p">)</span>
-    
+
     <span class="n">tmax_sep</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmax_9.tif&#39;</span><span class="p">)</span>
     <span class="n">tmean_sep</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmean_9.tif&#39;</span><span class="p">)</span>
     <span class="n">tmin_sep</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmin_9.tif&#39;</span><span class="p">)</span>
-    
+
     <span class="n">tmax_oct</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmax_10.tif&#39;</span><span class="p">)</span>
     <span class="n">tmean_oct</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmean_10.tif&#39;</span><span class="p">)</span>
     <span class="n">tmin_oct</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmin_10.tif&#39;</span><span class="p">)</span>
-    
+
     <span class="n">tmax_nov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmax_11.tif&#39;</span><span class="p">)</span>
     <span class="n">tmean_nov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmean_11.tif&#39;</span><span class="p">)</span>
     <span class="n">tmin_nov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmin_11.tif&#39;</span><span class="p">)</span>
-    
+
     <span class="n">tmax_dec</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmax_12.tif&#39;</span><span class="p">)</span>
     <span class="n">tmean_dec</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmean_12.tif&#39;</span><span class="p">)</span>
     <span class="n">tmin_dec</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;tmin_12.tif&#39;</span><span class="p">)</span>
-    
+
     <span class="c1"># Check that these files exist</span>
     <span class="c1">#check_exist = [os.path.isfile(x) for x in [tmax_jan, tmean_jan, tmin_jan]]</span>
     <span class="c1">#if not all(check_exist):</span>
     <span class="c1">#    raise ValueError(&#39;Target directory must at least contain the 3 following files (tmax_1.tif, tmean_1.tif, tmin_1.tif)&#39;)</span>
-    
+
     <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tmax_jan</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
         <span class="n">crs</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">crs</span>
         <span class="n">bounds</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">bounds</span>

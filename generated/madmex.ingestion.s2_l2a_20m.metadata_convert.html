@@ -189,7 +189,7 @@
 <h1>madmex.ingestion.s2_l2a_20m.metadata_convert<a class="headerlink" href="#madmex-ingestion-s2-l2a-20m-metadata-convert" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="madmex.ingestion.s2_l2a_20m.metadata_convert">
-<code class="descclassname">madmex.ingestion.s2_l2a_20m.</code><code class="descname">metadata_convert</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/ingestion/s2_l2a_20m.html#metadata_convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.ingestion.s2_l2a_20m.metadata_convert" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">madmex.ingestion.s2_l2a_20m.</code><code class="descname">metadata_convert</code><span class="sig-paren">(</span><em>path</em>, <em>bucket=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/ingestion/s2_l2a_20m.html#metadata_convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.ingestion.s2_l2a_20m.metadata_convert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare metatdata prior to datacube indexing</p>
 <blockquote>
 <div><p>Given a directory containing sentinel2 surface reflectance bands processed
@@ -199,6 +199,8 @@ with sen2cor, prepares a metadata string with the appropriate formating.</p>
 <dd><dl class="first last docutils">
 <dt>path (str): Path of the directory containing data and metadata with SAFE</dt>
 <dd>structure. Output of sen2cor processor</dd>
+<dt>bucket (str or None): Name of the s3 bucket containing the data. If <code class="docutils literal notranslate"><span class="pre">None</span></code></dt>
+<dd>(default), data are considered to be on a mounted filesystem</dd>
 </dl>
 </dd>
 <dt>Examples:</dt>

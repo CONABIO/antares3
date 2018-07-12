@@ -1,0 +1,6 @@
+madmex.util.s3.read\_file
+=========================
+
+.. currentmodule:: madmex.util.s3
+
+.. autofunction:: read_file

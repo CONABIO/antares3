@@ -1,0 +1,6 @@
+madmex.util.s3.build\_rasterio\_path
+====================================
+
+.. currentmodule:: madmex.util.s3
+
+.. autofunction:: build_rasterio_path

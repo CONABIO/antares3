@@ -210,7 +210,8 @@
 <div class="viewcode-block" id="BiChange"><a class="viewcode-back" href="../../../../generated/madmex.lcc.bitemporal.distance.BiChange.html#madmex.lcc.bitemporal.distance.BiChange">[docs]</a><span class="k">class</span> <span class="nc">BiChange</span><span class="p">(</span><span class="n">BaseBiChange</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Antares implementation of a simple distance based bi-temporal change detection algorithm</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="BiChange.__init__"><a class="viewcode-back" href="../../../../generated/madmex.lcc.bitemporal.distance.BiChange.html#madmex.lcc.bitemporal.distance.BiChange.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">crs</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;hist&#39;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<div class="viewcode-block" id="BiChange.__init__"><a class="viewcode-back" href="../../../../generated/madmex.lcc.bitemporal.distance.BiChange.html#madmex.lcc.bitemporal.distance.BiChange.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">crs</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;hist&#39;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="s1">&#39;kapur&#39;</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Euclidean distance based change detection</span>
 
 <span class="sd">        Optionally performs histogram matching to normalize input arrays, compute</span>
@@ -219,8 +220,11 @@
 <span class="sd">        Args:</span>
 <span class="sd">            norm (str): Normalization method to use in order to match source and</span>
 <span class="sd">                destination arrays (one of ``&#39;hist&#39;`` or ``None``)</span>
-<span class="sd">            threshold (float): Distance value above which a change is considered a</span>
-<span class="sd">                change</span>
+<span class="sd">            threshold (float or str): If numeric, distance value above which a</span>
+<span class="sd">                change is considered a change. If str, one of the automatic thresholding</span>
+<span class="sd">                method exposed in ``madmex.lcc.bitemporal.BaseBiChange.threshold_change``</span>
+<span class="sd">                static method</span>
+<span class="sd">            **kwargs: Additional arguments to pass to the thresolding method</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">			&gt;&gt;&gt; from madmex.lcc.bitemporal.distance import BiChange</span>
@@ -246,7 +250,8 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="n">array</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="n">affine</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="s1">&#39;distance&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">norm</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span></div>
 
 
     <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr0</span><span class="p">,</span> <span class="n">arr1</span><span class="p">):</span>
@@ -271,7 +276,12 @@
         <span class="k">else</span><span class="p">:</span> <span class="c1"># 3</span>
             <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">arr0_t</span> <span class="o">-</span> <span class="n">arr1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="c1"># Apply threshold and generate binary array</span>
-        <span class="n">out_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dist</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="n">out_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dist</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">==</span> <span class="s1">&#39;kapur&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">symmetrical</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">out_arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold_change</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out_arr</span></div>
 
 

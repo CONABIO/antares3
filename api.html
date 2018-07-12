@@ -223,6 +223,10 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.spatial.feature_transform.html">madmex.util.spatial.feature_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.spatial.geometry_transform.html">madmex.util.spatial.geometry_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.spatial.get_geom_bbox.html">madmex.util.spatial.get_geom_bbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.s3.list_folders.html">madmex.util.s3.list_folders</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.s3.list_files.html">madmex.util.s3.list_files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.s3.build_rasterio_path.html">madmex.util.s3.build_rasterio_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.s3.read_file.html">madmex.util.s3.read_file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.db.classification_to_cmap.html">madmex.util.db.classification_to_cmap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.db.get_label_encoding.html">madmex.util.db.get_label_encoding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.db.get_validation_scheme_name.html">madmex.util.db.get_validation_scheme_name</a></li>
@@ -367,7 +371,7 @@
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.ingestion.landsat_espa.metadata_convert.html#madmex.ingestion.landsat_espa.metadata_convert" title="madmex.ingestion.landsat_espa.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.landsat_espa.metadata_convert</span></code></a>(path)</td>
 <td>Prepare metatdata prior to datacube indexing</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.ingestion.srtm_cgiar.metadata_convert.html#madmex.ingestion.srtm_cgiar.metadata_convert" title="madmex.ingestion.srtm_cgiar.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.srtm_cgiar.metadata_convert</span></code></a>(path)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.ingestion.srtm_cgiar.metadata_convert.html#madmex.ingestion.srtm_cgiar.metadata_convert" title="madmex.ingestion.srtm_cgiar.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.srtm_cgiar.metadata_convert</span></code></a>(path,&nbsp;…)</td>
 <td>Prepare metadata prior to datacube indexing</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.ingestion.s2_l2a_20m.metadata_convert.html#madmex.ingestion.s2_l2a_20m.metadata_convert" title="madmex.ingestion.s2_l2a_20m.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.s2_l2a_20m.metadata_convert</span></code></a>(path)</td>
@@ -708,6 +712,18 @@
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.spatial.get_geom_bbox.html#madmex.util.spatial.get_geom_bbox" title="madmex.util.spatial.get_geom_bbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.get_geom_bbox</span></code></a>(geometry)</td>
 <td>Given a geojson like geometry, returns its bounding box as a tuple of coordinates</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.s3.list_folders.html#madmex.util.s3.list_folders" title="madmex.util.s3.list_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.list_folders</span></code></a>(bucket,&nbsp;path[,&nbsp;pattern])</td>
+<td>List ‘sub-folders’ of a s3 bucket ‘folder’</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.s3.list_files.html#madmex.util.s3.list_files" title="madmex.util.s3.list_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.list_files</span></code></a>(bucket,&nbsp;path[,&nbsp;pattern])</td>
+<td>List objects within a ‘path’ in an s3 bucket</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.s3.build_rasterio_path.html#madmex.util.s3.build_rasterio_path" title="madmex.util.s3.build_rasterio_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.build_rasterio_path</span></code></a>(bucket,&nbsp;path)</td>
+<td>Build rasterio compliant s3 path to object</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.s3.read_file.html#madmex.util.s3.read_file" title="madmex.util.s3.read_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.read_file</span></code></a>(bucket,&nbsp;path)</td>
+<td>Read a text file as string</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.classification_to_cmap.html#madmex.util.db.classification_to_cmap" title="madmex.util.db.classification_to_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.classification_to_cmap</span></code></a>(x)</td>
 <td>Generate a colormap (cmap) object for a given classification</td>

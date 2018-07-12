@@ -169,7 +169,9 @@
 <span class="kn">from</span> <span class="nn">pyproj</span> <span class="k">import</span> <span class="n">Proj</span>
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="k">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
 
-<div class="viewcode-block" id="metadata_convert"><a class="viewcode-back" href="../../../generated/madmex.ingestion.srtm_cgiar.metadata_convert.html#madmex.ingestion.srtm_cgiar.metadata_convert">[docs]</a><span class="k">def</span> <span class="nf">metadata_convert</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="kn">from</span> <span class="nn">madmex.util</span> <span class="k">import</span> <span class="n">s3</span>
+
+<div class="viewcode-block" id="metadata_convert"><a class="viewcode-back" href="../../../generated/madmex.ingestion.srtm_cgiar.metadata_convert.html#madmex.ingestion.srtm_cgiar.metadata_convert">[docs]</a><span class="k">def</span> <span class="nf">metadata_convert</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">bucket</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Prepare metadata prior to datacube indexing</span>
 
 <span class="sd">    Given a directory containing srtm derived terrain metrics (elevation, aspect, slope)</span>
@@ -177,6 +179,8 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        path (str): Path of the directory containing the 3 terrain metrics calculated from srtm.</span>
+<span class="sd">        bucket (str or None): Name of the s3 bucket containing the data. If ``None``</span>
+<span class="sd">            (default), data are considered to be on a mounted filesystem</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from madmex.ingestion.srtm_cgiar import metadata_convert</span>
@@ -189,11 +193,20 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        str: The content of the metadata for later writing to file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bucket</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">file_list</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">list_files</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span>
+                                  <span class="sa">r</span><span class="s1">&#39;.*(srtm_mosaic|slope_mosaic|aspect_mosaic)\.tif$&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">check_exist</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">check_exist</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">build_rasterio_path</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
     <span class="n">elevation</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;srtm_mosaic.tif&#39;</span><span class="p">)</span>
     <span class="n">slope</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;slope_mosaic.tif&#39;</span><span class="p">)</span>
     <span class="n">aspect</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;aspect_mosaic.tif&#39;</span><span class="p">)</span>
     <span class="c1"># Check that these files exist</span>
-    <span class="n">check_exist</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">elevation</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">]]</span>
+    <span class="k">if</span> <span class="n">bucket</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">check_exist</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">elevation</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">]]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">check_exist</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Target directory must at least contain the 3 following files (srtm_mosaic.tif, slope_mosaic.tif, aspect_mosaic.tif)&#39;</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">elevation</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
