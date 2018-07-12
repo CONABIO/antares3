@@ -21,7 +21,7 @@ class Transform(TransformBase):
     classes partition
     '''
 
-    def __init__(self,self, bands_subset=[0,1], outliers_fraction=0.05,
+    def __init__(self, bands_subset=[0,1], outliers_fraction=0.05,
                  assume_centered=True, support_fraction=None, auto_optimize=True,
                  no_data=None):
         '''
