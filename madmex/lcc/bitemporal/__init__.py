@@ -2,25 +2,28 @@
 
 import abc
 import json
+import logging
+import sys
 
-from rasterio import features
-from rasterio.crs import CRS as rasterioCRS
-from shapely import geometry
 from affine import Affine
-import numpy as np
 from datacube.utils.geometry import CRS, GeoBox
 from django.contrib.gis.geos import Polygon
 from django.contrib.gis.geos.geometry import GEOSGeometry
+from rasterio import features
+from rasterio.crs import CRS as rasterioCRS
+from shapely import geometry
 
 from madmex.io.vector_db import from_geobox
-from madmex.util.spatial import geometry_transform
-from madmex.models import PredictClassification, ChangeObject, ChangeClassification
 from madmex.lcc.transform.elliptic import Transform as Elliptic
 from madmex.lcc.transform.kapur import Transform as Kapur
+from madmex.models import PredictClassification, ChangeObject, ChangeClassification
+from madmex.util.spatial import geometry_transform
+import numpy as np
+
 
 # Monkeypatch Django Polygon class to instantiate it using a datacube style geobox
 Polygon.from_geobox = from_geobox
-
+logger = logging.getLogger(__name__)
 
 class BaseBiChange(metaclass=abc.ABCMeta):
     """
@@ -118,12 +121,15 @@ class BaseBiChange(metaclass=abc.ABCMeta):
             change_mask (ndarray): a 2D numpy array
             consisting of change (=1) /no-change image masks (=0)
         """
-        if method=="Kapur":
+        if method=="kapur":
             model_spec = Kapur(diff_image, **kwargs)
             change_mask = model_spec.fit_transform(diff_image)
-        elif method=="Elliptic":
+        elif method=="elliptic":
             model_spec = Elliptic(diff_image, **kwargs)
             change_mask = model_spec.fit_transform(diff_image)
+        else:
+            logger.error("Invalid threshold method.")
+            sys.exit(0)
 
         return change_mask.astype(np.int8)
 
