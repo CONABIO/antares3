@@ -8,8 +8,9 @@ from rasterio.crs import CRS
 from pyproj import Proj
 from jinja2 import Environment, PackageLoader
 
+from madmex.util import s3
 
-def metadata_convert(path):
+def metadata_convert(path, bucket=None):
     """Prepare metatdata prior to datacube indexing
 
     Given a directory containing sentinel2 surface reflectance bands processed
@@ -18,6 +19,8 @@ def metadata_convert(path):
     Args:
         path (str): Path of the directory containing data and metadata with SAFE
             structure. Output of sen2cor processor
+        bucket (str or None): Name of the s3 bucket containing the data. If ``None``
+            (default), data are considered to be on a mounted filesystem
 
     Examples:
         >>> from madmex.ingestion.sentinel2_sr_20m import metadata_convert
@@ -37,16 +40,26 @@ def metadata_convert(path):
     def get_namespace(element):
         m = re.match('\{(.*)\}', element.tag)
         return m.group(1) if m else ''
+    # List all files in directory
+    if bucket is None:
+        all_files = glob(os.path.join(path, '**'), recursive=True)
+    else:
+        all_files = s3.list_files(bucket, path)
     # Check that path is a dir and contains appropriate files
-    if not os.path.isdir(path):
-        raise ValueError('Argument path= is not a directory')
-    mtl_file = glob(os.path.join(path, 'GRANULE/**/MTD_TL.xml'))[0]
+    if len(all_files) <= 1:
+        raise ValueError('Argument path= is not a directory, or doesn\'t contain any files')
+    mtl_pattern = re.compile(r'.*GRANULE.*MTD_TL\.xml$')
+    mtl_file = [x for x in all_files if mtl_pattern.search(x)][0]
     # Extract metadata from filename
     # satellite = os.path.basename(path)[:3]
     satellite = 'sentinel2' # using generic name for both satellite to avoid mismatch with product description
     instrument = 'MSI'
     # Start parsing xml
-    root = ET.parse(mtl_file).getroot()
+    if bucket is None:
+        root = ET.parse(mtl_file).getroot()
+    else:
+        xml_str = s3.read_file(bucket, mtl_file)
+        root = ET.fromstring(xml_str)
     n1 = get_namespace(root)
     date_str = root.find('n1:General_Info/SENSING_TIME',
                          namespaces={'n1': n1}).text
@@ -73,7 +86,10 @@ def metadata_convert(path):
     ur_lon, ur_lat = p(lrx, uly, inverse=True)
     # FUnction to get band path from its suffix
     def get_band(suffix):
-        band = glob(os.path.join(path, 'GRANULE/**/IMG_DATA/R20m/*%s_20m.jp2' % suffix))[0]
+        pattern = re.compile(r'GRANULE/.*/IMG_DATA/R20m/*%s_20m\.jp2$' % suffix)
+        band = [x for x in all_files if pattern.search(x)][0]
+        if bucket is not None:
+            band = s3.build_rasterio_path(bucket, band)
         return band
     # Prepare metadata fields
     meta_out = {
@@ -108,7 +124,6 @@ def metadata_convert(path):
         'qual': get_band('SCL'),
         'instrument': instrument,
         'platform': satellite,
-
     }
     # Load template
     env = Environment(loader=PackageLoader('madmex', 'templates'))
