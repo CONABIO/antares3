@@ -583,7 +583,32 @@ Log in to master node and create in ``$mount_point/.antares`` the configuration 
     INGESTION_PATH=
     BIS_LICENSE=
 
+::
 
+	# Django settings
+	SECRET_KEY=
+	DEBUG=True
+	DJANGO_LOG_LEVEL=DEBUG
+	ALLOWED_HOSTS=
+	# Database
+	DATABASE_NAME=
+	DATABASE_USER=
+	DATABASE_PASSWORD=
+	DATABASE_HOST=
+	DATABASE_PORT=
+	# Datacube
+	SERIALIZED_OBJECTS_DIR=
+	INGESTION_PATH=
+	DRIVER=<s3aio or 'NETCDF CF'>
+	INGESTION_BUCKET=<name of s3 bucket>
+	# Query and download
+	USGS_USER=
+	USGS_PASSWORD=
+	SCIHUB_USER=
+	SCIHUB_PASSWORD=
+	# Misc
+	BIS_LICENSE=
+	TEMP_DIR=
 
 
 and execute:
@@ -1235,26 +1260,33 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 
 
 ``.antares``:
-
+	
 ::
 
-    SECRET_KEY=
-    DEBUG=True
-    DJANGO_LOG_LEVEL=DEBUG
-    DATABASE_NAME=
-    DATABASE_USER=
-    DATABASE_PASSWORD=
-    DATABASE_HOST=
-    DATABASE_PORT=
-    ALLOWED_HOSTS=
-    SERIALIZED_OBJECTS_DIR=
-    USGS_USER=
-    USGS_PASSWORD=
-    SCIHUB_USER=
-    SCIHUB_PASSWORD=
-    TEMP_DIR=
-    INGESTION_PATH=
-    BIS_LICENSE=
+	# Django settings
+	SECRET_KEY=
+	DEBUG=True
+	DJANGO_LOG_LEVEL=DEBUG
+	ALLOWED_HOSTS=
+	# Database
+	DATABASE_NAME=
+	DATABASE_USER=
+	DATABASE_PASSWORD=
+	DATABASE_HOST=
+	DATABASE_PORT=
+	# Datacube
+	SERIALIZED_OBJECTS_DIR=
+	INGESTION_PATH=
+	DRIVER=<s3aio or 'NETCDF CF'>
+	INGESTION_BUCKET=<name of s3 bucket>
+	# Query and download
+	USGS_USER=
+	USGS_PASSWORD=
+	SCIHUB_USER=
+	SCIHUB_PASSWORD=
+	# Misc
+	BIS_LICENSE=
+	TEMP_DIR=
 
 ``.datacube.conf``:
 
