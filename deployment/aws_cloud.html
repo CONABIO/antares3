@@ -685,17 +685,13 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 <span class="nb">echo</span> <span class="s2">&quot;export mount_point=</span><span class="nv">$shared_volume</span><span class="s2">&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.profile
 <span class="c1">##Useful software for common operations</span>
 apt-get install -y nfs-common jq git htop nano
-<span class="c1">##For RunCommand service of EC2</span>
-wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
-dpkg -i amazon-ssm-agent.deb
-systemctl <span class="nb">enable</span> amazon-ssm-agent
 <span class="c1">##Create shared volume</span>
 mkdir <span class="nv">$shared_volume</span>
 <span class="c1">##install docker for ubuntu:</span>
+apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg <span class="p">|</span> sudo apt-key add -
 add-apt-repository <span class="s2">&quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu </span><span class="k">$(</span>lsb_release -cs<span class="k">)</span><span class="s2"> stable&quot;</span>
 apt-get update
-apt-cache policy docker-ce
 apt-get install -y docker-ce
 service docker start
 <span class="c1">##install kops version 1.9.0:</span>
