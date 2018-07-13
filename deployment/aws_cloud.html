@@ -615,25 +615,6 @@ ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/<span class="nv
 <h5>Antares3<a class="headerlink" href="#antares3" title="Permalink to this headline">¶</a></h5>
 <p>Antares setup consists of setting up the database schemas, ingesting country borders in a table and deploy the configuration files specific to each dataset.</p>
 <p>Log in to master node and create in <code class="docutils literal notranslate"><span class="pre">$mount_point/.antares</span></code> the configuration file for <code class="docutils literal notranslate"><span class="pre">antares</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span><span class="o">=</span>
-<span class="n">DEBUG</span><span class="o">=</span><span class="kc">True</span>
-<span class="n">DJANGO_LOG_LEVEL</span><span class="o">=</span><span class="n">DEBUG</span>
-<span class="n">DATABASE_NAME</span><span class="o">=</span>
-<span class="n">DATABASE_USER</span><span class="o">=</span>
-<span class="n">DATABASE_PASSWORD</span><span class="o">=</span>
-<span class="n">DATABASE_HOST</span><span class="o">=</span>
-<span class="n">DATABASE_PORT</span><span class="o">=</span>
-<span class="n">ALLOWED_HOSTS</span><span class="o">=</span>
-<span class="n">SERIALIZED_OBJECTS_DIR</span><span class="o">=</span>
-<span class="n">USGS_USER</span><span class="o">=</span>
-<span class="n">USGS_PASSWORD</span><span class="o">=</span>
-<span class="n">SCIHUB_USER</span><span class="o">=</span>
-<span class="n">SCIHUB_PASSWORD</span><span class="o">=</span>
-<span class="n">TEMP_DIR</span><span class="o">=</span>
-<span class="n">INGESTION_PATH</span><span class="o">=</span>
-<span class="n">BIS_LICENSE</span><span class="o">=</span>
-</pre></div>
-</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Django settings</span>
 <span class="n">SECRET_KEY</span><span class="o">=</span>
 <span class="n">DEBUG</span><span class="o">=</span><span class="kc">True</span>

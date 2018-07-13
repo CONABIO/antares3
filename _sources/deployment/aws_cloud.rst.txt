@@ -562,27 +562,6 @@ Antares setup consists of setting up the database schemas, ingesting country bor
 
 Log in to master node and create in ``$mount_point/.antares`` the configuration file for ``antares``:
 
-
-::
-
-    SECRET_KEY=
-    DEBUG=True
-    DJANGO_LOG_LEVEL=DEBUG
-    DATABASE_NAME=
-    DATABASE_USER=
-    DATABASE_PASSWORD=
-    DATABASE_HOST=
-    DATABASE_PORT=
-    ALLOWED_HOSTS=
-    SERIALIZED_OBJECTS_DIR=
-    USGS_USER=
-    USGS_PASSWORD=
-    SCIHUB_USER=
-    SCIHUB_PASSWORD=
-    TEMP_DIR=
-    INGESTION_PATH=
-    BIS_LICENSE=
-
 ::
 
 	# Django settings
