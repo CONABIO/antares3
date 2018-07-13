@@ -1270,7 +1270,7 @@ spec:
       - name: antares3-scheduler
         imagePullPolicy: Always <span class="c1">#IfNotPresent</span>
         image: madmex/antares3-k8s-cluster-dependencies:latest <span class="c1">#Docker image to be used for dask scheduler/worker container</span>
-        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;/home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 8787 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
+        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps &amp;&amp; /home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 8787 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
         ports:
          - containerPort: <span class="m">8787</span>
          - containerPort: <span class="m">8786</span>
@@ -1284,10 +1284,10 @@ spec:
         resources:
          requests:
           cpu: <span class="s2">&quot;1&quot;</span>
-          memory: 1Gi
+          memory: 1Gi <span class="c1">##### This value depends of type of AWS instance chosen</span>
          limits:
           cpu: <span class="s2">&quot;1&quot;</span>
-          memory: 2Gi
+          memory: 2Gi <span class="c1">##### This value depends of type of AWS instance chosen</span>
         volumeMounts:
          - name: efs-pvc
            mountPath: <span class="s2">&quot;/shared_volume&quot;</span>
@@ -1301,10 +1301,6 @@ spec:
          emptyDir:
           medium: Memory
 </pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">To install recent version of antares3 one can prepend in the <code class="docutils literal notranslate"><span class="pre">command</span></code> value of <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code>: <code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">--user</span> <span class="pre">git+https://github.com/CONABIO/antares3.git&#64;develop</span> <span class="pre">--upgrade</span> <span class="pre">--no-deps</span></code>.</p>
 </div>
 <p>Create deployment of antares3-scheduler with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> create -f antares3-scheduler.yaml
@@ -1340,7 +1336,8 @@ spec:
 </div>
 <div class="section" id="deployment-for-dask-worker">
 <h4>Deployment for dask worker<a class="headerlink" href="#deployment-for-dask-worker" title="Permalink to this headline">¶</a></h4>
-<p>Use next <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> file to create <strong>one</strong> container for dask worker (example for <code class="docutils literal notranslate"><span class="pre">t2.large</span></code> instances which has 2 cores, see <a class="reference external" href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/">Managing Compute Resources for Containers</a> , <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/">Assign CPU Resources to Containers and Pods</a> and <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/#specify-a-memory-request-and-a-memory-limit">Assign Memory Resources to Containers and Pods</a>).</p>
+<p>Use next <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> file to create <strong>one</strong> container for dask worker.</p>
+<p>Example for <code class="docutils literal notranslate"><span class="pre">t2.large</span></code> instances which have 2 cores. Two instances were started. See <a class="reference external" href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/">Managing Compute Resources for Containers</a> , <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/">Assign CPU Resources to Containers and Pods</a> and <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/#specify-a-memory-request-and-a-memory-limit">Assign Memory Resources to Containers and Pods</a> to learn how to change the requests and limits values for cpu and memory of containers.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -1358,7 +1355,7 @@ spec:
       - name: antares3-worker
         imagePullPolicy: Always
         image: madmex/antares3-k8s-cluster-dependencies:latest <span class="c1">#Docker image to be used for dask scheduler/worker container</span>
-        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;/home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-worker --worker-port 8786 --nthreads     1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
+        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps &amp;&amp; /home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-worker --worker-port 8786 --nthreads      1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
         ports:
           - containerPort: <span class="m">8786</span>
         env:
@@ -1387,12 +1384,8 @@ spec:
        - name: dshm <span class="c1">##### This is needed for opendatacube S3 functionality</span>
          emptyDir:
           medium: Memory
-                <span class="c1">#sizeLimit: &#39;1Gi&#39; #This is not working, container uses all instance capacity</span>
+           <span class="c1">#sizeLimit: &#39;1Gi&#39; #This is not working right now. Containers use all instance&#39;s capacity</span>
 </pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">To install recent version of antares3 one can prepend in the <code class="docutils literal notranslate"><span class="pre">command</span></code> value of <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code>: <code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">--user</span> <span class="pre">git+https://github.com/CONABIO/antares3.git&#64;develop</span> <span class="pre">--upgrade</span> <span class="pre">--no-deps</span></code>.</p>
 </div>
 <p>Create deployment of antares3-worker with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> create -f antares3-worker.yaml
@@ -1565,8 +1558,19 @@ spec:
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
-<li>If you scale down the cluster and want to start it again, export bash variables (see point 3 in Cluster creation) and execute:</li>
+<li>If you scale down the cluster and want to start it again, export next bash variables:</li>
 </ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">DOMAIN_NAME</span><span class="o">=</span><span class="s2">&quot;antares3.conabio-route53.net&quot;</span>
+<span class="nb">export</span> <span class="nv">CLUSTER_ALIAS</span><span class="o">=</span><span class="s2">&quot;k8s-deployment&quot;</span>
+<span class="nb">export</span> <span class="nv">CLUSTER_FULL_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">CLUSTER_ALIAS</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">DOMAIN_NAME</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">export</span> <span class="nv">KOPS_STATE_STORE</span><span class="o">=</span><span class="s2">&quot;s3://</span><span class="si">${</span><span class="nv">CLUSTER_FULL_NAME</span><span class="si">}</span><span class="s2">-state&quot;</span>
+<span class="nb">export</span> <span class="nv">KUBERNETES_VERSION</span><span class="o">=</span><span class="s2">&quot;1.9.0&quot;</span>
+<span class="nb">export</span> <span class="nv">EDITOR</span><span class="o">=</span>nano
+<span class="nv">REGION</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/dynamic/instance-identity/document<span class="p">|</span>grep region<span class="p">|</span>awk -F<span class="se">\&quot;</span> <span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
+<span class="nb">export</span> <span class="nv">AWS_DEFAULT_REGION</span><span class="o">=</span><span class="nv">$REGION</span>
+</pre></div>
+</div>
+<p>and execute:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#set minSize and maxSize to 1</span>
 <span class="nv">$kops</span> edit ig master-us-west-2a --name <span class="nv">$CLUSTER_FULL_NAME</span>
 

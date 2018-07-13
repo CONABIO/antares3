@@ -1321,7 +1321,7 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 	      - name: antares3-scheduler
 	        imagePullPolicy: Always #IfNotPresent
 	        image: madmex/antares3-k8s-cluster-dependencies:latest #Docker image to be used for dask scheduler/worker container
-	        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 8787 --scheduler-file /shared_volume/scheduler.json"]
+	        command: ["/bin/bash", "-c", "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps && /home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 8787 --scheduler-file /shared_volume/scheduler.json"]
 	        ports:
 	         - containerPort: 8787
 	         - containerPort: 8786
@@ -1335,10 +1335,10 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 	        resources:
 	         requests:
 	          cpu: "1"
-	          memory: 1Gi
+	          memory: 1Gi ##### This value depends of type of AWS instance chosen
 	         limits:
 	          cpu: "1"
-	          memory: 2Gi
+	          memory: 2Gi ##### This value depends of type of AWS instance chosen
 	        volumeMounts:
 	         - name: efs-pvc
 	           mountPath: "/shared_volume"
@@ -1351,11 +1351,6 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 	       - name: dshm ##### This is needed for opendatacube S3 functionality
 	         emptyDir:
 	          medium: Memory
-
-
-.. note:: 
-
-	To install recent version of antares3 one can prepend in the ``command`` value of ``antares3-scheduler.yaml``: ``pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps``.
 
 
 Create deployment of antares3-scheduler with:
@@ -1406,7 +1401,9 @@ Execute:
 Deployment for dask worker
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use next ``antares3-worker.yaml`` file to create **one** container for dask worker (example for ``t2.large`` instances which has 2 cores, see `Managing Compute Resources for Containers`_ , `Assign CPU Resources to Containers and Pods`_ and `Assign Memory Resources to Containers and Pods`_).
+Use next ``antares3-worker.yaml`` file to create **one** container for dask worker. 
+
+Example for ``t2.large`` instances which have 2 cores. Two instances were started. See `Managing Compute Resources for Containers`_ , `Assign CPU Resources to Containers and Pods`_ and `Assign Memory Resources to Containers and Pods`_ to learn how to change the requests and limits values for cpu and memory of containers.
 
 
 .. code-block:: bash
@@ -1428,7 +1425,7 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 	      - name: antares3-worker
 	        imagePullPolicy: Always
 	        image: madmex/antares3-k8s-cluster-dependencies:latest #Docker image to be used for dask scheduler/worker container
-	        command: ["/bin/bash", "-c", "/home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 	1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
+	        command: ["/bin/bash", "-c", "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps && /home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 	1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
 	        ports:
 	          - containerPort: 8786
 	        env:
@@ -1457,12 +1454,8 @@ Use next ``antares3-worker.yaml`` file to create **one** container for dask work
 	       - name: dshm ##### This is needed for opendatacube S3 functionality
 	         emptyDir:
 	          medium: Memory
-	          	#sizeLimit: '1Gi' #This is not working, container uses all instance capacity
+	           #sizeLimit: '1Gi' #This is not working right now. Containers use all instance's capacity
 
-
-.. note:: 
-
-	To install recent version of antares3 one can prepend in the ``command`` value of ``antares3-worker.yaml``: ``pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps``.
 
 
 Create deployment of antares3-worker with:
@@ -1688,7 +1681,21 @@ Proceed to scale down nodes and master:
 	$kops update cluster $CLUSTER_FULL_NAME --yes
 
 
-3. If you scale down the cluster and want to start it again, export bash variables (see point 3 in Cluster creation) and execute:
+3. If you scale down the cluster and want to start it again, export next bash variables:
+   
+.. code-block:: bash
+
+	export DOMAIN_NAME="antares3.conabio-route53.net"
+	export CLUSTER_ALIAS="k8s-deployment"
+	export CLUSTER_FULL_NAME="${CLUSTER_ALIAS}.${DOMAIN_NAME}"
+	export KOPS_STATE_STORE="s3://${CLUSTER_FULL_NAME}-state"
+	export KUBERNETES_VERSION="1.9.0"
+	export EDITOR=nano
+	REGION=$(curl -s http://instance-data/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}')
+	export AWS_DEFAULT_REGION=$REGION
+
+
+and execute:
 
 .. code-block:: bash
 
