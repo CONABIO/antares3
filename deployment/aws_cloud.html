@@ -634,6 +634,32 @@ ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/<span class="nv
 <span class="n">BIS_LICENSE</span><span class="o">=</span>
 </pre></div>
 </div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Django settings</span>
+<span class="n">SECRET_KEY</span><span class="o">=</span>
+<span class="n">DEBUG</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">DJANGO_LOG_LEVEL</span><span class="o">=</span><span class="n">DEBUG</span>
+<span class="n">ALLOWED_HOSTS</span><span class="o">=</span>
+<span class="c1"># Database</span>
+<span class="n">DATABASE_NAME</span><span class="o">=</span>
+<span class="n">DATABASE_USER</span><span class="o">=</span>
+<span class="n">DATABASE_PASSWORD</span><span class="o">=</span>
+<span class="n">DATABASE_HOST</span><span class="o">=</span>
+<span class="n">DATABASE_PORT</span><span class="o">=</span>
+<span class="c1"># Datacube</span>
+<span class="n">SERIALIZED_OBJECTS_DIR</span><span class="o">=</span>
+<span class="n">INGESTION_PATH</span><span class="o">=</span>
+<span class="n">DRIVER</span><span class="o">=&lt;</span><span class="n">s3aio</span> <span class="ow">or</span> <span class="s1">&#39;NETCDF CF&#39;</span><span class="o">&gt;</span>
+<span class="n">INGESTION_BUCKET</span><span class="o">=&lt;</span><span class="n">name</span> <span class="n">of</span> <span class="n">s3</span> <span class="n">bucket</span><span class="o">&gt;</span>
+<span class="c1"># Query and download</span>
+<span class="n">USGS_USER</span><span class="o">=</span>
+<span class="n">USGS_PASSWORD</span><span class="o">=</span>
+<span class="n">SCIHUB_USER</span><span class="o">=</span>
+<span class="n">SCIHUB_PASSWORD</span><span class="o">=</span>
+<span class="c1"># Misc</span>
+<span class="n">BIS_LICENSE</span><span class="o">=</span>
+<span class="n">TEMP_DIR</span><span class="o">=</span>
+</pre></div>
+</div>
 <p>and execute:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$antares</span> init -c mex
 </pre></div>
@@ -1193,23 +1219,30 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">.antares</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SECRET_KEY</span><span class="o">=</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Django settings</span>
+<span class="n">SECRET_KEY</span><span class="o">=</span>
 <span class="n">DEBUG</span><span class="o">=</span><span class="kc">True</span>
 <span class="n">DJANGO_LOG_LEVEL</span><span class="o">=</span><span class="n">DEBUG</span>
+<span class="n">ALLOWED_HOSTS</span><span class="o">=</span>
+<span class="c1"># Database</span>
 <span class="n">DATABASE_NAME</span><span class="o">=</span>
 <span class="n">DATABASE_USER</span><span class="o">=</span>
 <span class="n">DATABASE_PASSWORD</span><span class="o">=</span>
 <span class="n">DATABASE_HOST</span><span class="o">=</span>
 <span class="n">DATABASE_PORT</span><span class="o">=</span>
-<span class="n">ALLOWED_HOSTS</span><span class="o">=</span>
+<span class="c1"># Datacube</span>
 <span class="n">SERIALIZED_OBJECTS_DIR</span><span class="o">=</span>
+<span class="n">INGESTION_PATH</span><span class="o">=</span>
+<span class="n">DRIVER</span><span class="o">=&lt;</span><span class="n">s3aio</span> <span class="ow">or</span> <span class="s1">&#39;NETCDF CF&#39;</span><span class="o">&gt;</span>
+<span class="n">INGESTION_BUCKET</span><span class="o">=&lt;</span><span class="n">name</span> <span class="n">of</span> <span class="n">s3</span> <span class="n">bucket</span><span class="o">&gt;</span>
+<span class="c1"># Query and download</span>
 <span class="n">USGS_USER</span><span class="o">=</span>
 <span class="n">USGS_PASSWORD</span><span class="o">=</span>
 <span class="n">SCIHUB_USER</span><span class="o">=</span>
 <span class="n">SCIHUB_PASSWORD</span><span class="o">=</span>
-<span class="n">TEMP_DIR</span><span class="o">=</span>
-<span class="n">INGESTION_PATH</span><span class="o">=</span>
+<span class="c1"># Misc</span>
 <span class="n">BIS_LICENSE</span><span class="o">=</span>
+<span class="n">TEMP_DIR</span><span class="o">=</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">.datacube.conf</span></code>:</p>
