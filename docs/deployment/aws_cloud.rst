@@ -651,18 +651,14 @@ The nex steps follow `kops`_ and `kops - Kubernetes Operations`_ guides (another
 	echo "export mount_point=$shared_volume" >> /home/$user/.profile
 	##Useful software for common operations
 	apt-get install -y nfs-common jq git htop nano
-	##For RunCommand service of EC2
-	wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
-	dpkg -i amazon-ssm-agent.deb
-	systemctl enable amazon-ssm-agent
 	##Create shared volume
 	mkdir $shared_volume
 	##install docker for ubuntu:
+	apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 	add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 	apt-get update
-	apt-cache policy docker-ce
-	apt-get install -y docker-ce 
+	apt-get install -y docker-ce
 	service docker start
 	##install kops version 1.9.0:
 	wget -O kops https://github.com/kubernetes/kops/releases/download/1.9.0/kops-linux-amd64
