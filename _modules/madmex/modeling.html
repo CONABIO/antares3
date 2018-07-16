@@ -171,9 +171,10 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">dill</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">metrics</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">OneHotEncoder</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="k">import</span> <span class="n">IsolationForest</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">madmex.models</span> <span class="k">import</span> <span class="n">Model</span>
@@ -255,6 +256,8 @@
         <span class="sd">&quot;&quot;&quot;Performs outliers detection and removal using Isolation Forest anomaly score</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            X (np.ndarray): Array of independent variables of shape (n,m)</span>
+<span class="sd">            y (np.ndarray): Array of dependent variable of shape (n,)</span>
 <span class="sd">            contamination (float): The amount of contamination of the data set,</span>
 <span class="sd">                i.e. the proportion of outliers in the data set. Used when</span>
 <span class="sd">                fitting to define the threshold on the decision function.</span>
@@ -280,10 +283,11 @@
         <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">grouped</span><span class="p">:</span>
             <span class="n">isolation_forest</span> <span class="o">=</span> <span class="n">IsolationForest</span><span class="p">(</span><span class="n">contamination</span><span class="o">=</span><span class="n">contamination</span><span class="p">,</span>
                                                <span class="n">max_samples</span><span class="o">=</span><span class="n">max_samples</span><span class="p">,</span>
+                                               <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
                                                <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="n">isolation_forest</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="n">is_inlier</span> <span class="o">=</span> <span class="n">isolation_forest</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="nb">print</span><span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="n">is_inlier</span><span class="p">))</span>
+            <span class="n">is_inlier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">is_inlier</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
             <span class="n">X_out</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">is_inlier</span><span class="p">,:]</span>
             <span class="n">X_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">X_out</span><span class="p">)</span>
             <span class="n">y_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">X_out</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>

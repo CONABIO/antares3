@@ -175,7 +175,7 @@ usage: antares model_fit [-h] [--version] [-v {0,1,2,3}] [--settings SETTINGS]
                          [-long LONG LONG] [-region REGION] [-sample SAMPLE]
                          [-name NAME] [-sp SPATIAL_AGGREGATION]
                          [-categorical_variables [CATEGORICAL_VARIABLES [CATEGORICAL_VARIABLES ...]]]
-                         [-filename FILENAME]
+                         [--remove-outliers] [-filename FILENAME]
                          [-extra [EXTRA_KWARGS [EXTRA_KWARGS ...]]]
                          [-sc SCHEDULER]
 
@@ -233,6 +233,7 @@ optional arguments:
                         Function to use for spatially aggregating the pixels over the training geometries (defaults to mean)
   -categorical_variables [CATEGORICAL_VARIABLES [CATEGORICAL_VARIABLES ...]], --categorical_variables [CATEGORICAL_VARIABLES [CATEGORICAL_VARIABLES ...]]
                         List of categorical variables to be encoded using One Hot Encoding before model fit
+  --remove-outliers     Perform outlier removal via isolation forest anomaly score before model fitting
   -filename FILENAME, --filename FILENAME
                         Name of a pickle file to store X and y array. Optional, no model is fitted when used
   -extra [EXTRA_KWARGS [EXTRA_KWARGS ...]], --extra_kwargs [EXTRA_KWARGS [EXTRA_KWARGS ...]]
