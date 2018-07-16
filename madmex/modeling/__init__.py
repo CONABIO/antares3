@@ -8,7 +8,7 @@ import abc
 import logging
 import dill
 
-import numpy
+import numpy as np
 from sklearn import metrics
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import IsolationForest
@@ -121,7 +121,6 @@ class BaseModel(abc.ABC):
                                                **kwargs)
             isolation_forest.fit(g[1])
             is_inlier = isolation_forest.predict(g[1])
-            print(all(is_inlier))
             X_out = g[1][is_inlier,:]
             X_list.append(X_out)
             y_out = np.empty_like(X_out[:,0], dtype=np.int16)
