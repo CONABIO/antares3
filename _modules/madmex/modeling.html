@@ -179,6 +179,7 @@
 <span class="kn">from</span> <span class="nn">madmex.models</span> <span class="k">import</span> <span class="n">Model</span>
 <span class="kn">from</span> <span class="nn">madmex.settings</span> <span class="k">import</span> <span class="n">SERIALIZED_OBJECTS_DIR</span>
 <span class="kn">from</span> <span class="nn">madmex.util</span> <span class="k">import</span> <span class="n">randomword</span>
+<span class="kn">from</span> <span class="nn">madmex.util.numpy</span> <span class="k">import</span> <span class="n">groupby</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -198,11 +199,13 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">categorical_features</span> <span class="o">=</span> <span class="n">categorical_features</span></div>
 
+
 <div class="viewcode-block" id="BaseModel.fit"><a class="viewcode-back" href="../../generated/madmex.modeling.BaseModel.fit.html#madmex.modeling.BaseModel.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        This method will train the classifier with given data.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Children of BaseModel need to implement their own fit method&#39;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="BaseModel.predict"><a class="viewcode-back" href="../../generated/madmex.modeling.BaseModel.predict.html#madmex.modeling.BaseModel.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -210,11 +213,13 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Children of BaseModel need to implement their own predict method&#39;</span><span class="p">)</span></div>
 
+
     <span class="k">def</span> <span class="nf">predict_confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        For every unseen observation, get the highest probability</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Children of BaseModel need to implement their own predict_confidence method&#39;</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="BaseModel.hot_encode_training"><a class="viewcode-back" href="../../generated/madmex.modeling.BaseModel.hot_encode_training.html#madmex.modeling.BaseModel.hot_encode_training">[docs]</a>    <span class="k">def</span> <span class="nf">hot_encode_training</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Apply one hot encoding to one or several predictors determined by the list</span>
@@ -236,12 +241,58 @@
             <span class="n">X</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">X</span></div>
 
+
 <div class="viewcode-block" id="BaseModel.hot_encode_predict"><a class="viewcode-back" href="../../generated/madmex.modeling.BaseModel.hot_encode_predict.html#madmex.modeling.BaseModel.hot_encode_predict">[docs]</a>    <span class="k">def</span> <span class="nf">hot_encode_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Hot Encode data on which prediction is to be performed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enc</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">X</span></div>
+
+
+<div class="viewcode-block" id="BaseModel.remove_outliers"><a class="viewcode-back" href="../../generated/madmex.modeling.BaseModel.remove_outliers.html#madmex.modeling.BaseModel.remove_outliers">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">remove_outliers</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">contamination</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Performs outliers detection and removal using Isolation Forest anomaly score</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            contamination (float): The amount of contamination of the data set,</span>
+<span class="sd">                i.e. the proportion of outliers in the data set. Used when</span>
+<span class="sd">                fitting to define the threshold on the decision function.</span>
+<span class="sd">            max_sample (float): Proportion of observations to draw from X to fit</span>
+<span class="sd">                each estimator</span>
+<span class="sd">            **kwargs: Arguments passed to ``sklearn.ensemble.IsolationForest``</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; from sklearn.datasets import make_classification</span>
+<span class="sd">            &gt;&gt;&gt; from madmex.modeling import BaseModel</span>
+<span class="sd">            &gt;&gt;&gt; X, y = make_classification(n_samples=10000, n_features=10,</span>
+<span class="sd">            &gt;&gt;&gt;                            n_classes=5, n_informative=6)</span>
+<span class="sd">            &gt;&gt;&gt; X_clean, y_clean = BaseModel.remove_outliers(X, y)</span>
+<span class="sd">            &gt;&gt;&gt; print(&#39;Input shape:&#39;, X.shape, &#39;Output shape:&#39;, X_clean.shape)</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            tuple: Tuple of filtered X and y arrays (X, y)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Split X</span>
+        <span class="n">grouped</span> <span class="o">=</span> <span class="n">groupby</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">X_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">y_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">grouped</span><span class="p">:</span>
+            <span class="n">isolation_forest</span> <span class="o">=</span> <span class="n">IsolationForest</span><span class="p">(</span><span class="n">contamination</span><span class="o">=</span><span class="n">contamination</span><span class="p">,</span>
+                                               <span class="n">max_samples</span><span class="o">=</span><span class="n">max_samples</span><span class="p">,</span>
+                                               <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">isolation_forest</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">is_inlier</span> <span class="o">=</span> <span class="n">isolation_forest</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="n">is_inlier</span><span class="p">))</span>
+            <span class="n">X_out</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">is_inlier</span><span class="p">,:]</span>
+            <span class="n">X_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">X_out</span><span class="p">)</span>
+            <span class="n">y_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">X_out</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+            <span class="n">y_out</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">y_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_out</span><span class="p">)</span>
+        <span class="c1"># Concatenate returned arrays</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">X_list</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">y_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseModel.save"><a class="viewcode-back" href="../../generated/madmex.modeling.BaseModel.save.html#madmex.modeling.BaseModel.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
@@ -251,6 +302,7 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
             <span class="n">dill</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="BaseModel.load"><a class="viewcode-back" href="../../generated/madmex.modeling.BaseModel.load.html#madmex.modeling.BaseModel.load">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -259,6 +311,7 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">dill</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">obj</span></div>
+
 
 <div class="viewcode-block" id="BaseModel.from_db"><a class="viewcode-back" href="../../generated/madmex.modeling.BaseModel.from_db.html#madmex.modeling.BaseModel.from_db">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_db</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -274,6 +327,7 @@
         <span class="n">model_row</span> <span class="o">=</span> <span class="n">Model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="n">filepath</span> <span class="o">=</span> <span class="n">model_row</span><span class="o">.</span><span class="n">path</span>
         <span class="k">return</span> <span class="n">inst</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="BaseModel.to_db"><a class="viewcode-back" href="../../generated/madmex.modeling.BaseModel.to_db.html#madmex.modeling.BaseModel.to_db">[docs]</a>    <span class="k">def</span> <span class="nf">to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">recipe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">training_set</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Write the instance of the class to the datbase</span>

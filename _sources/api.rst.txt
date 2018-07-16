@@ -2,8 +2,7 @@
 
 *************
 API reference
-*************
-
+************* 
 Api
 ===
 
@@ -113,6 +112,7 @@ Base class
    modeling.BaseModel.to_db
    modeling.BaseModel.hot_encode_training
    modeling.BaseModel.hot_encode_predict
+   modeling.BaseModel.remove_outliers
 
 Implemented models
 ------------------
@@ -221,6 +221,7 @@ Various utils
    util.local.filter_files_from_folder
    util.xarray.to_float
    util.xarray.to_int
+   util.numpy.groupby
    util.spatial.feature_transform
    util.spatial.geometry_transform
    util.spatial.get_geom_bbox

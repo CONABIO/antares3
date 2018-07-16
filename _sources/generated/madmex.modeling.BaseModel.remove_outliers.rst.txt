@@ -1,0 +1,6 @@
+madmex.modeling.BaseModel.remove\_outliers
+==========================================
+
+.. currentmodule:: madmex.modeling
+
+.. automethod:: BaseModel.remove_outliers

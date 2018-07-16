@@ -30,7 +30,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="madmex.modeling.supervised.xgb.Model" href="madmex.modeling.supervised.xgb.Model.html" />
-    <link rel="prev" title="madmex.modeling.BaseModel.hot_encode_predict" href="madmex.modeling.BaseModel.hot_encode_predict.html" /> 
+    <link rel="prev" title="madmex.modeling.BaseModel.remove_outliers" href="madmex.modeling.BaseModel.remove_outliers.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -239,13 +239,16 @@
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_confidence</span></code>(X)</td>
 <td>Get confidence of every prediction</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(filepath)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_outliers</span></code>(y[,&nbsp;contamination,&nbsp;max_samples])</td>
+<td>Performs outliers detection and removal using Isolation Forest anomaly score</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(filepath)</td>
 <td>Write entire object to file</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code>(X,&nbsp;y)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code>(X,&nbsp;y)</td>
 <td>Test the model given a dataset and a target vector.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_db</span></code>(name[,&nbsp;recipe,&nbsp;training_set])</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_db</span></code>(name[,&nbsp;recipe,&nbsp;training_set])</td>
 <td>Write the instance of the class to the datbase</td>
 </tr>
 </tbody>
@@ -265,7 +268,7 @@
         <a href="madmex.modeling.supervised.xgb.Model.html" class="btn btn-neutral float-right" title="madmex.modeling.supervised.xgb.Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.modeling.BaseModel.hot_encode_predict.html" class="btn btn-neutral" title="madmex.modeling.BaseModel.hot_encode_predict" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.modeling.BaseModel.remove_outliers.html" class="btn btn-neutral" title="madmex.modeling.BaseModel.remove_outliers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

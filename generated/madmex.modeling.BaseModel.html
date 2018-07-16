@@ -111,6 +111,7 @@
 <li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.to_db.html">madmex.modeling.BaseModel.to_db</a></li>
 <li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.hot_encode_training.html">madmex.modeling.BaseModel.hot_encode_training</a></li>
 <li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.hot_encode_predict.html">madmex.modeling.BaseModel.hot_encode_predict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="madmex.modeling.BaseModel.remove_outliers.html">madmex.modeling.BaseModel.remove_outliers</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api.html#implemented-models">Implemented models</a></li>
@@ -248,10 +249,13 @@ to be used with the xarray package.</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_confidence</span></code>(X)</td>
 <td>For every unseen observation, get the highest probability</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="madmex.modeling.BaseModel.save.html#madmex.modeling.BaseModel.save" title="madmex.modeling.BaseModel.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(filepath)</td>
+<tr class="row-odd"><td><a class="reference internal" href="madmex.modeling.BaseModel.remove_outliers.html#madmex.modeling.BaseModel.remove_outliers" title="madmex.modeling.BaseModel.remove_outliers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_outliers</span></code></a>(y[,&nbsp;contamination,&nbsp;max_samples])</td>
+<td>Performs outliers detection and removal using Isolation Forest anomaly score</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="madmex.modeling.BaseModel.save.html#madmex.modeling.BaseModel.save" title="madmex.modeling.BaseModel.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(filepath)</td>
 <td>Write entire object to file</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="madmex.modeling.BaseModel.to_db.html#madmex.modeling.BaseModel.to_db" title="madmex.modeling.BaseModel.to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_db</span></code></a>(name[,&nbsp;recipe,&nbsp;training_set])</td>
+<tr class="row-odd"><td><a class="reference internal" href="madmex.modeling.BaseModel.to_db.html#madmex.modeling.BaseModel.to_db" title="madmex.modeling.BaseModel.to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_db</span></code></a>(name[,&nbsp;recipe,&nbsp;training_set])</td>
 <td>Write the instance of the class to the datbase</td>
 </tr>
 </tbody>

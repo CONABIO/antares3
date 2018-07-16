@@ -21,6 +21,7 @@ madmex.modeling.BaseModel
       ~BaseModel.load
       ~BaseModel.predict
       ~BaseModel.predict_confidence
+      ~BaseModel.remove_outliers
       ~BaseModel.save
       ~BaseModel.to_db
    

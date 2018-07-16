@@ -154,6 +154,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.to_db.html">madmex.modeling.BaseModel.to_db</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.hot_encode_training.html">madmex.modeling.BaseModel.hot_encode_training</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.hot_encode_predict.html">madmex.modeling.BaseModel.hot_encode_predict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.modeling.BaseModel.remove_outliers.html">madmex.modeling.BaseModel.remove_outliers</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#implemented-models">Implemented models</a><ul>
@@ -220,6 +221,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.local.filter_files_from_folder.html">madmex.util.local.filter_files_from_folder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.xarray.to_float.html">madmex.util.xarray.to_float</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.xarray.to_int.html">madmex.util.xarray.to_int</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.numpy.groupby.html">madmex.util.numpy.groupby</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.spatial.feature_transform.html">madmex.util.spatial.feature_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.spatial.geometry_transform.html">madmex.util.spatial.geometry_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.spatial.get_geom_bbox.html">madmex.util.spatial.get_geom_bbox</a></li>
@@ -498,6 +500,9 @@
 <tr class="row-odd"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.hot_encode_predict.html#madmex.modeling.BaseModel.hot_encode_predict" title="madmex.modeling.BaseModel.hot_encode_predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.hot_encode_predict</span></code></a>(X)</td>
 <td>Hot Encode data on which prediction is to be performed</td>
 </tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.modeling.BaseModel.remove_outliers.html#madmex.modeling.BaseModel.remove_outliers" title="madmex.modeling.BaseModel.remove_outliers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modeling.BaseModel.remove_outliers</span></code></a>(y[,&nbsp;…])</td>
+<td>Performs outliers detection and removal using Isolation Forest anomaly score</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -704,34 +709,37 @@
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.xarray.to_int.html#madmex.util.xarray.to_int" title="madmex.util.xarray.to_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.xarray.to_int</span></code></a>(x)</td>
 <td>TAkes a DataArray in float and converts it to int, converting Nan to nodata flags</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.spatial.feature_transform.html#madmex.util.spatial.feature_transform" title="madmex.util.spatial.feature_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.feature_transform</span></code></a>(feature,&nbsp;crs_out)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.numpy.groupby.html#madmex.util.numpy.groupby" title="madmex.util.numpy.groupby"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.numpy.groupby</span></code></a>(X,&nbsp;y)</td>
+<td>Split a 2D array along the zero dimension using an array of groups</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.spatial.feature_transform.html#madmex.util.spatial.feature_transform" title="madmex.util.spatial.feature_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.feature_transform</span></code></a>(feature,&nbsp;crs_out)</td>
 <td>Reproject a feature</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.spatial.geometry_transform.html#madmex.util.spatial.geometry_transform" title="madmex.util.spatial.geometry_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.geometry_transform</span></code></a>(geometry,&nbsp;…)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.spatial.geometry_transform.html#madmex.util.spatial.geometry_transform" title="madmex.util.spatial.geometry_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.geometry_transform</span></code></a>(geometry,&nbsp;…)</td>
 <td>Reproject a geometry</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.spatial.get_geom_bbox.html#madmex.util.spatial.get_geom_bbox" title="madmex.util.spatial.get_geom_bbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.get_geom_bbox</span></code></a>(geometry)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.spatial.get_geom_bbox.html#madmex.util.spatial.get_geom_bbox" title="madmex.util.spatial.get_geom_bbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.get_geom_bbox</span></code></a>(geometry)</td>
 <td>Given a geojson like geometry, returns its bounding box as a tuple of coordinates</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.s3.list_folders.html#madmex.util.s3.list_folders" title="madmex.util.s3.list_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.list_folders</span></code></a>(bucket,&nbsp;path[,&nbsp;pattern])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.s3.list_folders.html#madmex.util.s3.list_folders" title="madmex.util.s3.list_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.list_folders</span></code></a>(bucket,&nbsp;path[,&nbsp;pattern])</td>
 <td>List ‘sub-folders’ of a s3 bucket ‘folder’</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.s3.list_files.html#madmex.util.s3.list_files" title="madmex.util.s3.list_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.list_files</span></code></a>(bucket,&nbsp;path[,&nbsp;pattern])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.s3.list_files.html#madmex.util.s3.list_files" title="madmex.util.s3.list_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.list_files</span></code></a>(bucket,&nbsp;path[,&nbsp;pattern])</td>
 <td>List objects within a ‘path’ in an s3 bucket</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.s3.build_rasterio_path.html#madmex.util.s3.build_rasterio_path" title="madmex.util.s3.build_rasterio_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.build_rasterio_path</span></code></a>(bucket,&nbsp;path)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.s3.build_rasterio_path.html#madmex.util.s3.build_rasterio_path" title="madmex.util.s3.build_rasterio_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.build_rasterio_path</span></code></a>(bucket,&nbsp;path)</td>
 <td>Build rasterio compliant s3 path to object</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.s3.read_file.html#madmex.util.s3.read_file" title="madmex.util.s3.read_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.read_file</span></code></a>(bucket,&nbsp;path)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.s3.read_file.html#madmex.util.s3.read_file" title="madmex.util.s3.read_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.read_file</span></code></a>(bucket,&nbsp;path)</td>
 <td>Read a text file as string</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.classification_to_cmap.html#madmex.util.db.classification_to_cmap" title="madmex.util.db.classification_to_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.classification_to_cmap</span></code></a>(x)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.db.classification_to_cmap.html#madmex.util.db.classification_to_cmap" title="madmex.util.db.classification_to_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.classification_to_cmap</span></code></a>(x)</td>
 <td>Generate a colormap (cmap) object for a given classification</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.db.get_label_encoding.html#madmex.util.db.get_label_encoding" title="madmex.util.db.get_label_encoding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_label_encoding</span></code></a>(scheme[,&nbsp;inverse])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.get_label_encoding.html#madmex.util.db.get_label_encoding" title="madmex.util.db.get_label_encoding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_label_encoding</span></code></a>(scheme[,&nbsp;inverse])</td>
 <td>Get label –&gt; Numeric code correspondance for a given classification scheme as a dictionary</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.get_validation_scheme_name.html#madmex.util.db.get_validation_scheme_name" title="madmex.util.db.get_validation_scheme_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_validation_scheme_name</span></code></a>(name)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.db.get_validation_scheme_name.html#madmex.util.db.get_validation_scheme_name" title="madmex.util.db.get_validation_scheme_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_validation_scheme_name</span></code></a>(name)</td>
 <td>Given the name/identifier of an ingested validation dataset, returns its scheme name</td>
 </tr>
 </tbody>

@@ -21,6 +21,7 @@ madmex.modeling.supervised.rf.Model
       ~Model.load
       ~Model.predict
       ~Model.predict_confidence
+      ~Model.remove_outliers
       ~Model.save
       ~Model.score
       ~Model.to_db

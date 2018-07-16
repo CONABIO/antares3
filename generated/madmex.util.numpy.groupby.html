@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.util.db.classification_to_cmap &mdash; antares3 0.3.0 documentation</title>
+  <title>madmex.util.numpy.groupby &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -29,8 +29,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="madmex.util.db.get_label_encoding" href="madmex.util.db.get_label_encoding.html" />
-    <link rel="prev" title="madmex.util.s3.read_file" href="madmex.util.s3.read_file.html" /> 
+    <link rel="next" title="madmex.util.spatial.feature_transform" href="madmex.util.spatial.feature_transform.html" />
+    <link rel="prev" title="madmex.util.xarray.to_int" href="madmex.util.xarray.to_int.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -122,7 +122,7 @@
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.local.filter_files_from_folder.html">madmex.util.local.filter_files_from_folder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.xarray.to_float.html">madmex.util.xarray.to_float</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.xarray.to_int.html">madmex.util.xarray.to_int</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.numpy.groupby.html">madmex.util.numpy.groupby</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.util.numpy.groupby</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.feature_transform.html">madmex.util.spatial.feature_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.geometry_transform.html">madmex.util.spatial.geometry_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.get_geom_bbox.html">madmex.util.spatial.get_geom_bbox</a></li>
@@ -130,7 +130,7 @@
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.list_files.html">madmex.util.s3.list_files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.build_rasterio_path.html">madmex.util.s3.build_rasterio_path</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.read_file.html">madmex.util.s3.read_file</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.util.db.classification_to_cmap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.db.classification_to_cmap.html">madmex.util.db.classification_to_cmap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.db.get_label_encoding.html">madmex.util.db.get_label_encoding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.db.get_validation_scheme_name.html">madmex.util.db.get_validation_scheme_name</a></li>
 </ul>
@@ -189,13 +189,13 @@
         
           <li><a href="../api.html">API reference</a> &raquo;</li>
         
-      <li>madmex.util.db.classification_to_cmap</li>
+      <li>madmex.util.numpy.groupby</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/madmex.util.db.classification_to_cmap.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/madmex.util.numpy.groupby.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -208,25 +208,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="madmex-util-db-classification-to-cmap">
-<h1>madmex.util.db.classification_to_cmap<a class="headerlink" href="#madmex-util-db-classification-to-cmap" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="madmex-util-numpy-groupby">
+<h1>madmex.util.numpy.groupby<a class="headerlink" href="#madmex-util-numpy-groupby" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="madmex.util.db.classification_to_cmap">
-<code class="descclassname">madmex.util.db.</code><code class="descname">classification_to_cmap</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/util/db.html#classification_to_cmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.util.db.classification_to_cmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a colormap (cmap) object for a given classification</p>
-<p>Colors are read from the database. The cmap can later be written to the metadata
-of a GeoTiff file using the write_colormap rasterio method
-0 is always considered no value and is therefore assigned no full transparency</p>
+<dt id="madmex.util.numpy.groupby">
+<code class="descclassname">madmex.util.numpy.</code><code class="descname">groupby</code><span class="sig-paren">(</span><em>X</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/util/numpy.html#groupby"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.util.numpy.groupby" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split a 2D array along the zero dimension using an array of groups</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>str</em>) – Name of an existing classification, registered in the madmex_predictclassification
-table</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>np.ndarray</em>) – 2D array of independent variables. Must be of shape (n,m)</li>
+<li><strong>y</strong> (<em>np.ndarray</em>) – Array of classes/groups (dependent variable of a classification)
+Must be of shape (n)</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A color map object {value0: [R, G, B, Alpha], …}</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Generator of (group, np.ndarray) tupples. The second element correspond
+to the split X array</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">zip</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -242,10 +246,10 @@ table</td>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="madmex.util.db.get_label_encoding.html" class="btn btn-neutral float-right" title="madmex.util.db.get_label_encoding" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="madmex.util.spatial.feature_transform.html" class="btn btn-neutral float-right" title="madmex.util.spatial.feature_transform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.util.s3.read_file.html" class="btn btn-neutral" title="madmex.util.s3.read_file" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.util.xarray.to_int.html" class="btn btn-neutral" title="madmex.util.xarray.to_int" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
