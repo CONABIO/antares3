@@ -121,6 +121,7 @@ class BaseModel(abc.ABC):
                                                **kwargs)
             isolation_forest.fit(g[1])
             is_inlier = isolation_forest.predict(g[1])
+            is_inlier = np.where(is_inlier == 1, True, False)
             X_out = g[1][is_inlier,:]
             X_list.append(X_out)
             y_out = np.empty_like(X_out[:,0], dtype=np.int16)
