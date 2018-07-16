@@ -16,6 +16,7 @@ import os
 from madmex.models import Model
 from madmex.settings import SERIALIZED_OBJECTS_DIR
 from madmex.util import randomword
+from madmex.util.numpy import groupby
 
 LOGGER = logging.getLogger(__name__)
 
@@ -35,11 +36,13 @@ class BaseModel(abc.ABC):
         '''
         self.categorical_features = categorical_features
 
+
     def fit(self, X, y):
         '''
         This method will train the classifier with given data.
         '''
         NotImplementedError('Children of BaseModel need to implement their own fit method')
+
 
     def predict(self, X):
         '''
@@ -47,11 +50,13 @@ class BaseModel(abc.ABC):
         '''
         NotImplementedError('Children of BaseModel need to implement their own predict method')
 
+
     def predict_confidence(self, X):
         '''
         For every unseen observation, get the highest probability
         '''
         NotImplementedError('Children of BaseModel need to implement their own predict_confidence method')
+
 
     def hot_encode_training(self, X):
         """Apply one hot encoding to one or several predictors determined by the list
@@ -73,12 +78,58 @@ class BaseModel(abc.ABC):
             X = enc.transform(X)
         return X
 
+
     def hot_encode_predict(self, X):
         """Hot Encode data on which prediction is to be performed
         """
         if self.categorical_features is not None:
             X = self.enc.transform(X)
         return X
+
+
+    @staticmethod
+    def remove_outliers(X, y, contamination=0.1, max_samples=0.5, **kwargs):
+        """Performs outliers detection and removal using Isolation Forest anomaly score
+
+        Args:
+            contamination (float): The amount of contamination of the data set,
+                i.e. the proportion of outliers in the data set. Used when
+                fitting to define the threshold on the decision function.
+            max_sample (float): Proportion of observations to draw from X to fit
+                each estimator
+            **kwargs: Arguments passed to ``sklearn.ensemble.IsolationForest``
+
+        Example:
+            >>> from sklearn.datasets import make_classification
+            >>> from madmex.modeling import BaseModel
+            >>> X, y = make_classification(n_samples=10000, n_features=10,
+            >>>                            n_classes=5, n_informative=6)
+            >>> X_clean, y_clean = BaseModel.remove_outliers(X, y)
+            >>> print('Input shape:', X.shape, 'Output shape:', X_clean.shape)
+
+        Return:
+            tuple: Tuple of filtered X and y arrays (X, y)
+        """
+        # Split X
+        grouped = groupby(X, y)
+        X_list = []
+        y_list = []
+        for g in grouped:
+            isolation_forest = IsolationForest(contamination=contamination,
+                                               max_samples=max_samples,
+                                               **kwargs)
+            isolation_forest.fit(g[1])
+            is_inlier = isolation_forest.predict(g[1])
+            print(all(is_inlier))
+            X_out = g[1][is_inlier,:]
+            X_list.append(X_out)
+            y_out = np.empty_like(X_out[:,0], dtype=np.int16)
+            y_out[:] = g[0]
+            y_list.append(y_out)
+        # Concatenate returned arrays
+        X = np.concatenate(X_list)
+        y = np.concatenate(y_list)
+        return (X, y)
 
 
     def save(self, filepath):
@@ -88,6 +139,7 @@ class BaseModel(abc.ABC):
         with open(filepath, 'wb') as dst:
             dill.dump(self, dst)
 
+
     @staticmethod
     def load(filepath):
         '''
@@ -96,6 +148,7 @@ class BaseModel(abc.ABC):
         with open(filepath, 'rb') as src:
             obj = dill.load(src)
         return obj
+
 
     @classmethod
     def from_db(cls, name):
@@ -111,6 +164,7 @@ class BaseModel(abc.ABC):
         model_row = Model.objects.get(name=name)
         filepath = model_row.path
         return inst.load(filepath)
+
 
     def to_db(self, name, recipe=None, training_set=None):
         """Write the instance of the class to the datbase

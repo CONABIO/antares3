@@ -112,6 +112,7 @@ Base class
    modeling.BaseModel.to_db
    modeling.BaseModel.hot_encode_training
    modeling.BaseModel.hot_encode_predict
+   modeling.BaseModel.remove_outliers
 
 Implemented models
 ------------------
