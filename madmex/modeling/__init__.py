@@ -11,6 +11,7 @@ import dill
 import numpy
 from sklearn import metrics
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.ensemble import IsolationForest
 
 import os
 from madmex.models import Model
