@@ -2,8 +2,7 @@
 
 *************
 API reference
-*************
-
+************* 
 Api
 ===
 
@@ -221,6 +220,7 @@ Various utils
    util.local.filter_files_from_folder
    util.xarray.to_float
    util.xarray.to_int
+   util.numpy.groupby
    util.spatial.feature_transform
    util.spatial.geometry_transform
    util.spatial.get_geom_bbox
