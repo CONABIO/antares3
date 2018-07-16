@@ -93,6 +93,8 @@ class BaseModel(abc.ABC):
         """Performs outliers detection and removal using Isolation Forest anomaly score
 
         Args:
+            X (np.ndarray): Array of independent variables of shape (n,m)
+            y (np.ndarray): Array of dependent variable of shape (n,)
             contamination (float): The amount of contamination of the data set,
                 i.e. the proportion of outliers in the data set. Used when
                 fitting to define the threshold on the decision function.
@@ -118,6 +120,7 @@ class BaseModel(abc.ABC):
         for g in grouped:
             isolation_forest = IsolationForest(contamination=contamination,
                                                max_samples=max_samples,
+                                               n_jobs=-1,
                                                **kwargs)
             isolation_forest.fit(g[1])
             is_inlier = isolation_forest.predict(g[1])
