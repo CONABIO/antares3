@@ -1645,7 +1645,21 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 
 
 
-2. Before scaling down cluster make sure you have exported bash variables needed for the following actions (see point 3 in Cluster creation) and delete deployments:
+2. To scale down cluster export next bash variables:
+
+
+.. code-block:: bash
+
+	export DOMAIN_NAME="antares3.conabio-route53.net"
+	export CLUSTER_ALIAS="k8s-deployment"
+	export CLUSTER_FULL_NAME="${CLUSTER_ALIAS}.${DOMAIN_NAME}"
+	export KOPS_STATE_STORE="s3://${CLUSTER_FULL_NAME}-state"
+	export KUBERNETES_VERSION="1.9.0"
+	export EDITOR=nano
+	REGION=$(curl -s http://instance-data/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}')
+	export AWS_DEFAULT_REGION=$REGION
+   
+delete deployments:
    
 .. code-block:: bash
 
