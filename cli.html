@@ -25,19 +25,26 @@
   
 
   
+  
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Downloading data" href="download.html" />
-    <link rel="prev" title="Amazon Web Services" href="deployment/aws_cloud.html" /> 
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="antares3 0.3.0 documentation" href="index.html"/>
+        <link rel="next" title="Downloading data" href="download.html"/>
+        <link rel="prev" title="Amazon Web Services" href="deployment/aws_cloud.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
@@ -111,7 +118,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">antares3</a>
@@ -119,10 +126,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -167,9 +173,7 @@
   <div class="section" id="command-line-interface">
 <h1>Command line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
 <p>All command line interface start with the prefix <code class="docutils literal notranslate"><span class="pre">antares</span></code>. Simply running <code class="docutils literal notranslate"><span class="pre">antares</span></code> in a terminal will give a list of all available commands. Detailed help of each command line can be accessed by running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">command_line</span> <span class="pre">--help</span></code>. For instance running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_fit</span> <span class="pre">--help</span></code> returns:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
-  &quot;&quot;&quot;)
-usage: antares model_fit [-h] [--version] [-v {0,1,2,3}] [--settings SETTINGS]
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>usage: antares model_fit [-h] [--version] [-v {0,1,2,3}] [--settings SETTINGS]
                          [--pythonpath PYTHONPATH] [--traceback] [--no-color]
                          [-model MODEL] -p PRODUCT -t TRAINING [-lat LAT LAT]
                          [-long LONG LONG] [-region REGION] [-sample SAMPLE]
@@ -249,7 +253,9 @@ optional arguments:
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -271,7 +277,7 @@ optional arguments:
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -290,7 +296,6 @@ optional arguments:
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
             VERSION:'0.3.0',
-            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -308,13 +313,14 @@ optional arguments:
     <script type="text/javascript" src="_static/js/theme.js"></script>
   
 
+  
+  
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.StickyNav.enable();
       });
-  </script> 
+  </script>
+   
 
 </body>
 </html>

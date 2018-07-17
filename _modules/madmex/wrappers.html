@@ -25,17 +25,25 @@
   
 
   
+  
     <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="antares3 0.3.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
@@ -109,7 +117,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">antares3</a>
@@ -117,10 +125,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -149,6 +156,8 @@
     
     
       <li class="wy-breadcrumbs-aside">
+        
+            
         
       </li>
     
@@ -250,8 +259,8 @@
         <span class="c1"># Register to database</span>
         <span class="k">return</span> <span class="n">filename</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="kc">None</span>
 
 
 <div class="viewcode-block" id="extract_tile_db"><a class="viewcode-back" href="../../generated/madmex.wrappers.extract_tile_db.html#madmex.wrappers.extract_tile_db">[docs]</a><span class="k">def</span> <span class="nf">extract_tile_db</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">sp</span><span class="p">,</span> <span class="n">training_set</span><span class="p">,</span> <span class="n">sample</span><span class="p">):</span>
@@ -285,8 +294,8 @@
         <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
         <span class="c1"># Return the extracted array (or a list of two arrays?)</span>
         <span class="k">return</span> <span class="n">extract</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></div>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="gwf_query"><a class="viewcode-back" href="../../generated/madmex.wrappers.gwf_query.html#madmex.wrappers.gwf_query">[docs]</a><span class="k">def</span> <span class="nf">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">long</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -353,8 +362,8 @@
     <span class="n">tile_dict</span> <span class="o">=</span> <span class="n">gwf</span><span class="o">.</span><span class="n">list_cells</span><span class="p">(</span><span class="o">**</span><span class="n">query_params</span><span class="p">)</span>
     <span class="c1"># Iterable (dictionary view (analog to list of tuples))</span>
     <span class="k">if</span> <span class="n">view</span><span class="p">:</span>
-        <span class="n">tile_dict</span> <span class="o">=</span> <span class="n">tile_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">tile_dict</span></div>
+        <span class="n">tile_dict</span> <span class="o">=</span> <span class="n">tile_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">tile_dict</span>
 
 <div class="viewcode-block" id="segment"><a class="viewcode-back" href="../../generated/madmex.wrappers.segment.html#madmex.wrappers.segment">[docs]</a><span class="k">def</span> <span class="nf">segment</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">segmentation_meta</span><span class="p">,</span>
             <span class="n">band_list</span><span class="p">,</span> <span class="n">extra_args</span><span class="p">):</span>
@@ -392,8 +401,8 @@
         <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="predict_object"><a class="viewcode-back" href="../../generated/madmex.wrappers.predict_object.html#madmex.wrappers.predict_object">[docs]</a><span class="k">def</span> <span class="nf">predict_object</span><span class="p">(</span><span class="n">tile</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">segmentation_name</span><span class="p">,</span>
                    <span class="n">categorical_variables</span><span class="p">,</span> <span class="n">aggregation</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -452,8 +461,8 @@
         <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Prediction failed because: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Prediction failed because: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="kc">False</span>
 
 
 <span class="k">def</span> <span class="nf">detect_and_classify_change</span><span class="p">(</span><span class="n">tiles</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">change_meta</span><span class="p">,</span> <span class="n">band_list</span><span class="p">,</span> <span class="n">mmu</span><span class="p">,</span>
@@ -531,7 +540,9 @@
 </pre></div>
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -544,7 +555,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -563,7 +574,6 @@
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
             VERSION:'0.3.0',
-            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -581,13 +591,14 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
   
 
+  
+  
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.StickyNav.enable();
       });
-  </script> 
+  </script>
+   
 
 </body>
 </html>

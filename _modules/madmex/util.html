@@ -25,17 +25,25 @@
   
 
   
+  
     <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="antares3 0.3.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
@@ -109,7 +117,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">antares3</a>
@@ -117,10 +125,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -150,6 +157,8 @@
     
       <li class="wy-breadcrumbs-aside">
         
+            
+        
       </li>
     
   </ul>
@@ -172,8 +181,8 @@
 
 <div class="viewcode-block" id="randomword"><a class="viewcode-back" href="../../generated/madmex.util.randomword.html#madmex.util.randomword">[docs]</a><span class="k">def</span> <span class="nf">randomword</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generate a random string of desired length</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">))</span></div>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="yaml_to_dict"><a class="viewcode-back" href="../../generated/madmex.util.yaml_to_dict.html#madmex.util.yaml_to_dict">[docs]</a><span class="k">def</span> <span class="nf">yaml_to_dict</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
@@ -186,8 +195,8 @@
 <span class="sd">        dict: Python dictionary</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">out</span></div>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">src</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">out</span>
 
 
 <div class="viewcode-block" id="mid_date"><a class="viewcode-back" href="../../generated/madmex.util.mid_date.html#madmex.util.mid_date">[docs]</a><span class="k">def</span> <span class="nf">mid_date</span><span class="p">(</span><span class="n">date0</span><span class="p">,</span> <span class="n">date1</span><span class="p">):</span>
@@ -200,8 +209,8 @@
 <span class="sd">    Return:</span>
 <span class="sd">        datetime.datetime: The mid date</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">date0</span> <span class="o">-</span> <span class="n">date1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
-    <span class="k">return</span> <span class="n">date0</span> <span class="o">+</span> <span class="n">delta</span></div>
+    <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">date0</span> <span class="o">-</span> <span class="n">date1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span></div>
+    <span class="k">return</span> <span class="n">date0</span> <span class="o">+</span> <span class="n">delta</span>
 
 <div class="viewcode-block" id="parser_extra_args"><a class="viewcode-back" href="../../generated/madmex.util.parser_extra_args.html#madmex.util.parser_extra_args">[docs]</a><span class="k">def</span> <span class="nf">parser_extra_args</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Helper to parse extra args passed to argparse</span>
@@ -247,8 +256,8 @@
         <span class="k">return</span> <span class="n">s</span>
 
     <span class="n">d0</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">x</span><span class="p">)</span>
-    <span class="n">d1</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">change_type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d0</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-    <span class="k">return</span> <span class="n">d1</span></div>
+    <span class="n">d1</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">change_type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d0</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+    <span class="k">return</span> <span class="n">d1</span>
 
 
 <div class="viewcode-block" id="chunk"><a class="viewcode-back" href="../../generated/madmex.util.chunk.html#madmex.util.chunk">[docs]</a><span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
@@ -262,8 +271,8 @@
 <span class="sd">        A chunks generator</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">first</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="n">chain</span><span class="p">([</span><span class="n">first</span><span class="p">],</span> <span class="n">islice</span><span class="p">(</span><span class="n">iterator</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span></div>
+    <span class="k">for</span> <span class="n">first</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span></div>
+        <span class="k">yield</span> <span class="n">chain</span><span class="p">([</span><span class="n">first</span><span class="p">],</span> <span class="n">islice</span><span class="p">(</span><span class="n">iterator</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="pprint_args"><a class="viewcode-back" href="../../generated/madmex.util.pprint_args.html#madmex.util.pprint_args">[docs]</a><span class="k">def</span> <span class="nf">pprint_args</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -299,8 +308,8 @@
     <span class="n">row_format</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:&gt;25}</span><span class="s1"> | </span><span class="si">{:&lt;25}</span><span class="s1">&#39;</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">row_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Argument&#39;</span><span class="p">,</span> <span class="s1">&#39;Default value&#39;</span><span class="p">))</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">row_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;==================&#39;</span><span class="p">,</span> <span class="s1">&#39;==============&#39;</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">table</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">row_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">row</span><span class="p">))</span></div>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">table</span><span class="p">:</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="n">row_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">row</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="fill_and_copy"><a class="viewcode-back" href="../../generated/madmex.util.fill_and_copy.html#madmex.util.fill_and_copy">[docs]</a><span class="k">def</span> <span class="nf">fill_and_copy</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -321,8 +330,8 @@
     <span class="c1"># Fill template</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="c1"># Write to file</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
-        <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span></div>
+        <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="join_dicts"><a class="viewcode-back" href="../../generated/madmex.util.join_dicts.html#madmex.util.join_dicts">[docs]</a><span class="k">def</span> <span class="nf">join_dicts</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">join</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">):</span>
@@ -351,12 +360,14 @@
         <span class="n">key_iter</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">j</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">i</span><span class="p">])</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:[</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key_iter</span><span class="p">}</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown join type&#39;</span><span class="p">)</span></div>
+    <span class="k">else</span><span class="p">:</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown join type&#39;</span><span class="p">)</span>
 </pre></div>
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -369,7 +380,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -388,7 +399,6 @@
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
             VERSION:'0.3.0',
-            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -406,13 +416,14 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
   
 
+  
+  
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.StickyNav.enable();
       });
-  </script> 
+  </script>
+   
 
 </body>
 </html>
