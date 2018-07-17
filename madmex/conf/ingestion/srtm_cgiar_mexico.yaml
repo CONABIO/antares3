@@ -37,8 +37,8 @@ storage:
     x: 977160 
     y: 2426720
   chunking:
-      x: 200
-      y: 200
+      x: 1112
+      y: 1112
       time: 200
   dimension_order: ['time', 'y', 'x']
 
