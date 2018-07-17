@@ -37,7 +37,9 @@ def list_folders(bucket, path, pattern=None):
     page_iterator = paginator.paginate(**params)
     out_list = []
     for page in page_iterator:
-        out_list += [x.get('Prefix') for x in page.get('CommonPrefixes')]
+        common_prefixes = page.get('CommonPrefixes')
+        if common_prefixes is not None:
+            out_list += [x.get('Prefix') for x in common_prefixes]
     if pattern is not None:
         pattern = re.compile(pattern)
         out_list = [x for x in out_list if pattern.search(x)]
