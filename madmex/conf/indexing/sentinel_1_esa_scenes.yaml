@@ -1,0 +1,23 @@
+name: s1_esa_scene
+description: Sentinel-1 SAR data (polarization VH and VV) preprocessed with snappy
+metadata_type: eo
+
+metadata:
+  platform:
+    code: sentinel1
+  instrument:
+    name: sensor operational mode IW
+  product_type: GRD
+  format:
+    name: GeoTiff
+measurements:
+  - name: 'vh'
+    aliases: [polarization_vh]
+    dtype: float32
+    nodata: 0.0
+    units: 'decibels'
+  - name: 'vv'
+    aliases: [polarization_vh]
+    dtype: float32
+    nodata: 0.0
+    units: 'decibels'
