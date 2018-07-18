@@ -1,23 +1,23 @@
-source_type: 
-output_type: 
-description: 
+source_type: s1_snappy_vh_vv_scene
+output_type: s1_snappy_vh_vv_mexico
+description: Preprocessed with snappy
 location: '{{ ingestion_path }}'
-file_path_template: ''
-global_attributes:
-  title: 
-  summary: 
-  source: 
-  institution: 
-  instrument: 
-  cdm_data_type: 
-  keywords: 
-  keywords_vocabulary: 
-  platform: 
-  processing_level: 
-  product_version: ''
-  product_suite: 
-  project: 
-  coverage_content_type: 
+file_path_template: 's1_esa_snappy/mexico/s1_{tile_index[0]}_{tile_index[1]}_{start_time}{% if netcdf %}.nc{% endif %}'
+global_attributes: 
+  title: CONABIO Data Cube Sentinel-1 SAR VH and VV
+  summary: Sentinel 1 GRD data product type with polarisation VH and VV preprocessed with snappy
+  source: ESA
+  institution: CONABIO 
+  instrument: IW
+  cdm_data_type: Grid
+  keywords: CONABIO,SENTINEL,POLARISATION,SNAPPY 
+  keywords_vocabulary: S1
+  platform: SENTINEL_1
+  processing_level: Level 1 GRD data preprocessed with snappy
+  product_version: '0.0.1'
+  product_suite: Sentinel1 GRD
+  project: MADMEX
+  coverage_content_type: physicalMeasurement 
 
 storage:
   driver: {{ driver }}
@@ -28,8 +28,8 @@ storage:
           x: 100080
           y: 100080
   resolution:
-          x: 90
-          y: -90
+          x: 10
+          y: -10
   origin:
     # -118.21, 33.02
     x: 977160
@@ -41,21 +41,21 @@ storage:
   dimension_order: ['time', 'y', 'x']
 
 measurements:
-    - name: ''
+    - name: 'polarization_VH'
       dtype: float32
       nodata: 0.0
       resampling_method: nearest
       zlib: True
-      src_varname: ''
+      src_varname: 'polarization_VH'
       attrs:
-         long_name: ""
-         alias: ""
-    - name: ''
+         long_name: "GRD data polarisation VH"
+         alias: "s1_VH"
+    - name: 'polarization_VV'
       dtype: float32
       nodata: 0.0
       resampling_method: nearest
       zlib: True
-      src_varname: ''
+      src_varname: 'polarization_VV'
       attrs:
-          long_name: ""
-          alias: ""
+          long_name: "GRD data polarisation VV"
+          alias: "s1_VV"
