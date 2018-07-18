@@ -41,21 +41,21 @@ storage:
   dimension_order: ['time', 'y', 'x']
 
 measurements:
-    - name: 'polarization_VH'
+    - name: 'polarisation_VH'
       dtype: float32
       nodata: 0.0
       resampling_method: nearest
       zlib: True
-      src_varname: 'polarization_VH'
+      src_varname: 'polarisation_VH'
       attrs:
          long_name: "GRD data polarisation VH"
          alias: "s1_VH"
-    - name: 'polarization_VV'
+    - name: 'polarisation_VV'
       dtype: float32
       nodata: 0.0
       resampling_method: nearest
       zlib: True
-      src_varname: 'polarization_VV'
+      src_varname: 'polarisation_VV'
       attrs:
           long_name: "GRD data polarisation VV"
           alias: "s1_VV"
