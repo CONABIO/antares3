@@ -268,7 +268,7 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         query_set = PredictClassification.objects.filter(predict_object__the_geom__contained=poly,
                                                          name=name).prefetch_related('predict_object', 'tag')
         def to_feature(x, crs):
-            geometry = json.loads(x.the_geom.geojson)
+            geometry = json.loads(x.predict_object.the_geom.geojson)
             feature = (geometry_transform(geometry, crs), x.tag)
             return feature
         return [to_feature(x, self.crs) for x in query_set]
