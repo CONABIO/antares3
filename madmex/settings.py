@@ -14,6 +14,7 @@ import logging
 import os
 from os.path import join, dirname, expanduser
 import sys
+import warnings
 
 from dotenv.main import load_dotenv
 
@@ -25,8 +26,7 @@ dotenv_path = join(expanduser('~'), '.antares')
 if os.path.isfile(dotenv_path):
     load_dotenv(dotenv_path)
 else:
-    logger.error('Configuration file %s missing.' % dotenv_path)
-    sys.exit(0)
+    warnings.warn('No configuration file found in %s, some functionalities won\'t be available' % dotenv_path)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,7 +36,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'nokey')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', False)
