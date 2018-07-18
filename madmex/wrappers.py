@@ -341,15 +341,15 @@ def detect_and_classify_change(tiles, algorithm, change_meta, band_list, mmu,
         if mmu is not None:
             BiChange_pre.filter_mmu(mmu)
         # Load pre and post land cover map as feature collections
-        fc_pre = BiChange.read_land_cover(lc_pre)
-        fc_post = BiChange.read_land_cover(lc_post)
+        fc_pre = BiChange_pre.read_land_cover(lc_pre)
+        fc_post = BiChange_post.read_land_cover(lc_post)
         # Generate feature collection of labelled change objects
         fc_change = BiChange_pre.label_change(fc_pre, fc_post)
         # Optionally filter objects with same pre and post label
         if filter_labels:
             fc_change = BiChange.filter_no_change(fc_change)
         # Write that feature collection to the database
-        BiChange.to_db(fc=fc_change, meta=change_meta, pre_name=lc_pre,
+        BiChange_pre.to_db(fc=fc_change, meta=change_meta, pre_name=lc_pre,
                        post_name=lc_post)
         # Deallocate large objects and run gc.collect
         geoarray_pre = None
