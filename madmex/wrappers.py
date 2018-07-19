@@ -340,9 +340,12 @@ def detect_and_classify_change(tiles, algorithm, change_meta, band_list, mmu,
         # Apply mmu filter
         if mmu is not None:
             BiChange_pre.filter_mmu(mmu)
+        # Exit function if there are no changes left
+        if BiChange_pre.change_array.sum() == 0:
+            return True
         # Load pre and post land cover map as feature collections
         fc_pre = BiChange_pre.read_land_cover(lc_pre)
-        fc_post = BiChange_post.read_land_cover(lc_post)
+        fc_post = BiChange_pre.read_land_cover(lc_post)
         # Generate feature collection of labelled change objects
         fc_change = BiChange_pre.label_change(fc_pre, fc_post)
         # Optionally filter objects with same pre and post label

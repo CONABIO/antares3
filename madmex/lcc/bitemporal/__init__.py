@@ -18,6 +18,7 @@ from madmex.lcc.transform.elliptic import Transform as Elliptic
 from madmex.lcc.transform.kapur import Transform as Kapur
 from madmex.models import PredictClassification, ChangeObject, ChangeClassification
 from madmex.util.spatial import geometry_transform
+from madmex.util import randomword
 import numpy as np
 
 
@@ -263,29 +264,40 @@ class BaseBiChange(metaclass=abc.ABCMeta):
             list: A list of (geometry, tag_id) tupples in the crs of the instance.
             The list can be passed directly to the label_change method
         """
-        fc_proj = features.shapes(self.change_array,
-                                  mask=self.change_array,
-                                  transform=self.affine)
-        geom_list_ll = [geometry_transform(x[0], crs_out='+proj=longlat',
-                                          crs_in=self.crs) for x in fc_proj]
-        # Build a single multipolygon of all features to query only intersection classification polygons
-        multi_polygon = geometry.MultiPolygon([geometry.shape(x) for x in geom_list_ll])
-        query = """
+        t_name = randomword(7)
+        # Vectorize change array
+        fc = features.shapes(self.change_array,
+                             mask=self.change_array,
+                             transform=self.affine)
+        # reproject to longlat
+        geom_list = [geometry_transform(feature[0], crs_in=self.crs,
+                                        crs_out='+proj=longlat')
+                     for feature in fc]
+        # Build insert string
+        insert_str = ', '.join(["(st_geomfromtext('%s', 4326))" % geometry.shape(x).wkt
+                                for x in geom_list])
+        query0 = """ CREATE TEMP TABLE %s(the_geom geometry(Geometry, 4326)); """ % t_name
+        query1 = """ INSERT INTO %s (the_geom) VALUES %s; """ % (t_name, insert_str)
+        query2 = """
 SELECT
-	st_asgeojson(st_transform(obj.the_geom, %s), 6),
+	st_asgeojson(st_transform(obj.the_geom, %%s), 6),
 	public.madmex_predictclassification.tag_id
 FROM
 	public.madmex_predictobject as obj
 INNER JOIN
 	public.madmex_predictclassification ON public.madmex_predictclassification.predict_object_id = obj.id
 	AND
-	public.madmex_predictclassification.name = %s
-WHERE
-	st_intersects(obj.the_geom, st_makevalid(st_geomfromtext(%s, 4326)));
-"""
+	public.madmex_predictclassification.name = %%s
+INNER JOIN
+    %s ON st_intersects(obj.the_geom, %s.the_geom);
+        """ % (t_name, t_name)
         with connection.cursor() as c:
-            c.execute(query, [self.crs, name, multi_polygon.wkt])
+            c.execute(query0)
+            c.execute(query1)
+            c.execute(query2, [self.crs, name])
             fc = c.fetchall()
+        # Deserialize geojson geometries
+        fc = [(json.loads(x[0]), x[1]) for x in fc]
         return fc
 
 
