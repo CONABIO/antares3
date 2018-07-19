@@ -3,7 +3,6 @@
 import abc
 import json
 import logging
-import sys
 
 from affine import Affine
 from datacube.utils.geometry import CRS, GeoBox
@@ -129,8 +128,7 @@ class BaseBiChange(metaclass=abc.ABCMeta):
             model_spec = Elliptic(**kwargs)
             change_mask = model_spec.fit_transform(diff_image)
         else:
-            logger.error("Invalid threshold method.")
-            sys.exit(0)
+            raise ValueError("Invalid thresholding method")
 
         return change_mask
 
