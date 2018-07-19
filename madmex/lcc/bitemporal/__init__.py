@@ -237,7 +237,7 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         def change_obj_builder(geom, meta, crs_in):
             geom_ll = geometry_transform(geom, '+proj=longlat', crs_in)
             the_geom = GEOSGeometry(json.dumps(geom_ll)).buffer(0)
-            return ChangeObject(the_geom, meta)
+            return ChangeObject(the_geom=the_geom, meta=meta)
         # Build list of ChangeObjects
         obj_list = [change_obj_builder(x[0], meta, self.crs) for x in fc]
         # Write ChangeObjects with bulk_create
@@ -269,7 +269,7 @@ class BaseBiChange(metaclass=abc.ABCMeta):
                                                          name=name).prefetch_related('predict_object', 'tag')
         def to_feature(x, crs):
             geometry = json.loads(x.predict_object.the_geom.geojson)
-            feature = (geometry_transform(geometry, crs), x.tag)
+            feature = (geometry_transform(geometry, crs), x.tag.id)
             return feature
         return [to_feature(x, self.crs) for x in query_set]
 
