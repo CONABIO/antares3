@@ -11,6 +11,7 @@ from django.contrib.gis.geos.geometry import GEOSGeometry
 from rasterio import features
 from rasterio.crs import CRS as rasterioCRS
 from shapely import geometry
+from django.db import connection
 
 from madmex.io.vector_db import from_geobox
 from madmex.lcc.transform.elliptic import Transform as Elliptic
@@ -262,14 +263,30 @@ class BaseBiChange(metaclass=abc.ABCMeta):
             list: A list of (geometry, tag_id) tupples in the crs of the instance.
             The list can be passed directly to the label_change method
         """
-        poly = Polygon.from_geobox(self.geobox)
-        query_set = PredictClassification.objects.filter(predict_object__the_geom__contained=poly,
-                                                         name=name).prefetch_related('predict_object', 'tag')
-        def to_feature(x, crs):
-            geometry = json.loads(x.predict_object.the_geom.geojson)
-            feature = (geometry_transform(geometry, crs), x.tag.id)
-            return feature
-        return [to_feature(x, self.crs) for x in query_set]
+        fc_proj = features.shapes(self.change_array,
+                                  mask=self.change_array,
+                                  transform=self.affine)
+        geom_list_ll = [geometry_transform(x[0], crs_out='+proj=longlat',
+                                          crs_in=self.crs) for x in fc_proj]
+        # Build a single multipolygon of all features to query only intersection classification polygons
+        multi_polygon = geometry.MultiPolygon([geometry.shape(x) for x in geom_list_ll])
+        query = """
+SELECT
+	st_asgeojson(st_transform(obj.the_geom, %s), 6),
+	public.madmex_predictclassification.tag_id
+FROM
+	public.madmex_predictobject as obj
+INNER JOIN
+	public.madmex_predictclassification ON public.madmex_predictclassification.predict_object_id = obj.id
+	AND
+	public.madmex_predictclassification.name = %s
+WHERE
+	st_intersects(obj.the_geom, st_makevalid(st_geomfromtext(%s, 4326)));
+"""
+        with connection.cursor() as c:
+            c.execute(query, [self.crs, name, multi_polygon.wkt])
+            fc = c.fetchall()
+        return fc
 
 
     def __eq__(self, other):
