@@ -83,6 +83,17 @@ Base class
    lcc.bitemporal.BaseBiChange.read_land_cover
 
 
+Implemented algorithms
+----------------------
+
+.. autosummary::
+   :toctree: generated
+
+   lcc.bitemporal.distance.BiChange
+   lcc.bitemporal.imadmaf.BiChange
+
+
+
 Transform module
 ----------------
 
@@ -113,16 +124,6 @@ Implemented transformation method
    lcc.transform.mad.Transform
    lcc.transform.maf.Transform
 
-
-
-Implemented algorithms
-----------------------
-
-.. autosummary::
-   :toctree: generated
-
-   lcc.bitemporal.distance.BiChange
-   lcc.bitemporal.imadmaf.BiChange
 
 
 Modeling
