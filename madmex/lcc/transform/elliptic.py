@@ -17,12 +17,13 @@ class Transform(TransformBase):
     classes partition
     '''
 
-    def __init__(self, bands_subset=[0,1], outliers_fraction=0.05,
+    def __init__(self, X, bands_subset=[0,1], outliers_fraction=0.05,
                  assume_centered=True, support_fraction=None, auto_optimize=True,
                  no_data=None):
         '''
         Constructor
         '''
+        super().__init__(X)
         self.bands_subset = np.array(bands_subset)
         self.outliers_fraction = outliers_fraction
         self.assume_centered = assume_centered
@@ -30,42 +31,34 @@ class Transform(TransformBase):
         self.auto_optimize = auto_optimize
         self.no_data = no_data
 
+
     def transform(self, X):
         n_used_bands = len(self.bands_subset)
         image_bands_flattened = np.zeros((self.cols * self.rows,n_used_bands))
 
         for k in range(n_used_bands):
-
-            image_bands_flattened[:, k] = np.ravel(self.X[\
-                                         self.bands_subset[k].astype(int), :, :])
+            image_bands_flattened[:, k] = np.ravel(self.X[self.bands_subset[k].astype(int), :, :])
 
         if self.no_data is not None:
-
             data_mask = image_bands_flattened[0, :] != self.no_data
             self.image_bands_flattened = image_bands_flattened[:, data_mask]
 
         # specify and fit model
-        model_specification = EllipticEnvelope(
-            contamination=self.outliers_fraction,
-            assume_centered=self.assume_centered,
-            support_fraction=self.support_fraction)
-
+        model_specification = EllipticEnvelope(contamination=self.outliers_fraction,
+                                               assume_centered=self.assume_centered,
+                                               support_fraction=self.support_fraction)
         model_specification.fit(image_bands_flattened)
-
         # tag outliers
-        change_classification = model_specification.predict(\
-                                                 image_bands_flattened)*1
+        change_classification = model_specification.predict(image_bands_flattened)*1
 
         if self.no_data is not None:
-
             change_classification_full = np.zeros((self.cols * self.rows))
             change_classification = change_classification_full[data_mask]
             change_classification[change_classification==0]=self.no_data
 
         # resize to original image shape
         change_classification = np.resize(change_classification,
-                                                   (self.rows, self.cols))
-
+                                          (self.rows, self.cols))
         # set correct change labels
         change_classification[change_classification==1]=0
         change_classification[change_classification==-1]=1

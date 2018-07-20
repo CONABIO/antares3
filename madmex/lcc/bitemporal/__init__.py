@@ -123,15 +123,14 @@ class BaseBiChange(metaclass=abc.ABCMeta):
             change_mask (ndarray): a 2D numpy array
             consisting of change (=1) /no-change image masks (=0)
         """
-        if method=="kapur":
-            model_spec = Kapur(**kwargs)
-            change_mask = model_spec.fit_transform(diff_image)
-        elif method=="elliptic":
-            model_spec = Elliptic(**kwargs)
-            change_mask = model_spec.fit_transform(diff_image)
+        if method == "kapur":
+            model_spec = Kapur(diff_image, **kwargs)
+            change_mask = model_spec.transform()
+        elif method == "elliptic":
+            model_spec = Elliptic(diff_image, **kwargs)
+            change_mask = model_spec.transform()
         else:
             raise ValueError("Invalid thresholding method")
-
         return change_mask
 
 

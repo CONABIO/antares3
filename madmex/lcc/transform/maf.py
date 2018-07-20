@@ -22,21 +22,24 @@ def spatial_covariance(X, h):
     C = numpy.matmul(X_centered, X_shifted_centered.T) / (pixels - 1)
     return C
 
+
 class Transform(TransformBase):
     '''
     This transform maximizes the autocorrelation for the image. The bands are
     order by autocorrelation with the first band having the maximum autocorrelation
     and subjected to be uncorrelated with the other bands.
     '''
-
-    def __init__(self, shift=(1, 1)):
+    def __init__(self, X, shift=(1, 1)):
         '''
         Constructor
         '''
+        super().__init__(X)
         self.h = numpy.array(shift)
-    def transform(self, X):
+
+
+    def transform(self):
         sigma = spatial_covariance(self.X, numpy.array((0,0)))
-        gamma = 2 * sigma - spatial_covariance(self.X, self.h) - spatial_covariance(self.X, -self.h)       
+        gamma = 2 * sigma - spatial_covariance(self.X, self.h) - spatial_covariance(self.X, -self.h)
         lower = numpy.linalg.cholesky(sigma)
         lower_inverse = numpy.linalg.inv(lower)
         eig_problem = numpy.matmul(numpy.matmul(lower_inverse, gamma), lower_inverse.T)
