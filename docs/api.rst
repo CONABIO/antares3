@@ -82,6 +82,39 @@ Base class
    lcc.bitemporal.BaseBiChange.to_db
    lcc.bitemporal.BaseBiChange.read_land_cover
 
+
+Transform module
+----------------
+
+A standardized interface to perform transformation of single arrays or between two arrays
+
+
+Base classes
+ˆˆˆˆˆˆˆˆˆˆˆˆ
+
+.. autosummary::
+   :toctree: generated
+
+   lcc.transform.TransformBase
+   lcc.transform.TransformBase.transform
+   lcc.transform.BitransformBase
+   lcc.transform.BitransformBase.transform
+
+
+Implemented transformation method
+ˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆ
+
+.. autosummary::
+   :toctree: generated
+
+   lcc.transform.elliptic.Transform
+   lcc.transform.irmad.Transform
+   lcc.transform.kapur.Transform
+   lcc.transform.mad.Transform
+   lcc.transform.maf.Transform
+
+
+
 Implemented algorithms
 ----------------------
 

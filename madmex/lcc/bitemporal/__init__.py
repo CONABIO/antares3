@@ -118,6 +118,11 @@ class BaseBiChange(metaclass=abc.ABCMeta):
         Args:
             diff_image (ndarray): a 2D or 3D numpy array consisting
             of difference image bands.
+            method (str): Automatic thresholding method to use. One of kapur or
+                elliptic.
+            **kwargs: Additional arguments passed to one of the implemented method
+                See ``madmex.lcc.transform.kapur.Transform`` and
+                ``madmex.lcc.transform.elliptic.Transform``
 
         Returns:
             change_mask (ndarray): a 2D numpy array

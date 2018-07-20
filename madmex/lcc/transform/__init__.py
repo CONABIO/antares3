@@ -30,9 +30,14 @@ class TransformBase(metaclass=abc.ABCMeta):
 
 
     @abc.abstractmethod
-    def transform(self, X):
-        '''Depending on the implementation, this method will transform the input into an array of
+    def transform(self):
+        '''Run transformation defined by children instance
+
+        Depending on the implementation, this method will transform the input into an array of
         interest.
+
+        Return:
+            np.ndarray: Transformed array (2D)
         '''
         pass
 
@@ -65,5 +70,13 @@ class BitransformBase(metaclass=abc.ABCMeta):
 
 
     @abc.abstractmethod
-    def transform(self, X, Y):
+    def transform(self):
+        '''Run transformation defined by children instance
+
+        Depending on the implementation, this method will transform the input into an array of
+        interest.
+
+        Return:
+            np.ndarray: Transformed array
+        '''
         pass

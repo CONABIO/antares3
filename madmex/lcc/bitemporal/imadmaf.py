@@ -28,9 +28,9 @@ class BiChange(BaseBiChange):
 
         Args:
             max_iterations (int): Max number of iteration of the irmad process
-            min_delta (float): irmad threshold #TODO: THis needs more explanation
-            lmbda (float): #TODO: Add doc
-            shift (tuple): Tuple of two integers. Used in the MAF process #TODO: Need more explanation
+            min_delta (float): TODO
+            lmbda (float): TODO
+            shift (tuple): TODO
             threshold (str): One of the automatic thresholding method exposed in
                 ``madmex.lcc.bitemporal.BaseBiChange.threshold_change``
             **kwargs: Additional arguments to pass to the thresolding method

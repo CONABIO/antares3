@@ -11,7 +11,8 @@ from sklearn.covariance import EllipticEnvelope
 from madmex.lcc.transform import TransformBase
 
 class Transform(TransformBase):
-    '''
+    '''Antares implementation of elliptic envelop thresholding transformation
+
     This class implements the elliptic envelope method to threshold a difference
     image (like that prodced by the iMAD-MAF transform) to produce a change/no-change
     classes partition
@@ -20,8 +21,15 @@ class Transform(TransformBase):
     def __init__(self, X, bands_subset=[0,1], outliers_fraction=0.05,
                  assume_centered=True, support_fraction=None, auto_optimize=True,
                  no_data=None):
-        '''
-        Constructor
+        '''Instantiate class
+
+        Args:
+            bands_subset (list): TODO
+            outlier_fraction (float): TODO
+            assume_centered (bool): TODO
+            support_fraction (float?): TODO
+            auto_optimize (bool): TODO
+            no_data (?): TODO
         '''
         super().__init__(X)
         self.bands_subset = np.array(bands_subset)
@@ -32,7 +40,7 @@ class Transform(TransformBase):
         self.no_data = no_data
 
 
-    def transform(self, X):
+    def transform(self):
         n_used_bands = len(self.bands_subset)
         image_bands_flattened = np.zeros((self.cols * self.rows,n_used_bands))
 

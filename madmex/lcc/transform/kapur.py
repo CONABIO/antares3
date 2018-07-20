@@ -13,11 +13,18 @@ import numpy as np
 
 def optimal_bins(data_vector, method="shimazaki-shinomoto", bins=1000):
 
-    '''
-    Computes optimal number of bins to produce a histogram
+    '''Computes optimal number of bins to produce a histogram
 
-    Methods: sturges, scott, freedman-diaconis, shimazaki-shinomoto, custom n bins
+    Args:
+        data_vector (np.ndarray): 1D array over which to compute number of bins
+        method (str): Method to use to determine optimal bins. One of sturges,
+            scott, freedman-diaconis, shimazaki-shinomoto. Set to None, or random
+            string to manually set the number of bins
+        bins (int): User defined number of bins for when none of the available
+            method is selected
 
+    Return:
+        int: The optimal bin number
     '''
 
     if method == "sturges":
@@ -71,8 +78,9 @@ def optimal_bins(data_vector, method="shimazaki-shinomoto", bins=1000):
     return number_of_bins
 
 
-def clip_histogram_tails(X, clip_hist_tails=3):
-    '''
+def _clip_histogram_tails(X, clip_hist_tails=3):
+    '''Clip tails of a distribution
+
     destroys observations in an array that are a certain amount
     of standard deviations away from the mean
 
@@ -82,7 +90,7 @@ def clip_histogram_tails(X, clip_hist_tails=3):
     return(X)
 
 
-def maximum_entropy_cut(histo, bin_edges, argmax=True):
+def _maximum_entropy_cut(histo, bin_edges, argmax=True):
     '''
     given a histogram and its corresponding bin edges, calculates the bin
     at which a cut produces maximum entropy
@@ -125,19 +133,31 @@ def maximum_entropy_cut(histo, bin_edges, argmax=True):
 
 
 class Transform(TransformBase):
+    '''Antares implementation of Kapur, Sahoo and Wong entropy based array thresholding
     '''
-    This class implements the Kapur, Sahoo, & Wong method of entropy based
-    thresholding of difference images (like those prodced by the iMAD-MAF transform).
-    '''
-    def __init__(self, X, band=0, histogram=1000, symmetrical=True,
+    def __init__(self, X, band=0, histogram=None, n_bins=1000, symmetrical=True,
                  argmax=True, clip_hist_tails=3, no_data=None):
-        '''
-        Constructor
+        '''Instantiate Kapur transform class
+
+        Args:
+            band (int): TODO
+            histogram (str or int): Either one of the automatic methods to determine
+                optimal number of bins of a distribution (one of sturges, scott,
+                freedman-diaconis, shimazaki-shinomoto), or None
+            n_bins (int): Ignored if histogram is not ``None``. Number of bins
+            symetrical (bool): Is the distribution symetrical. Assumes there must
+                be a lower and a higher threshold. ``False`` should be used for
+                array of absolute values, in which case there should only be one
+                higher threshold
+            argmax (bool): TODO
+            clip_hist_tails (int): TODO
+            no_data (?): TODO
         '''
         super().__init__(X)
         self.band=band
         self.argmax = argmax
         self.histogram = histogram
+        self.n_bins = n_bins
         self.symmetrical = symmetrical
         self.clip_hist_tails = clip_hist_tails
         self.no_data = no_data
@@ -156,20 +176,20 @@ class Transform(TransformBase):
         # sorted image
         X = np.sort(X)
         if self.clip_hist_tails is not None:
-            X = clip_histogram_tails(X,self.clip_hist_tails)
+            X = _clip_histogram_tails(X, self.clip_hist_tails)
         # decide on optimal number of bins for histogram
-        bins = optimal_bins(X,method=self.histogram)
+        bins = optimal_bins(X, method=self.histogram, bins=self.n_bins)
         # generate histogram based on this number of bins
         histo, bin_edges = np.histogram(X,bins)
         ### positive side
-        positive_threshold = maximum_entropy_cut(histo,bin_edges,
+        positive_threshold = _maximum_entropy_cut(histo,bin_edges,
                                                  argmax=self.argmax)
         if self.symmetrical:
             ### negative side
             # flip vectors
             histo = histo[::-1]
             bin_edges = bin_edges[::-1]
-            negative_threshold = maximum_entropy_cut(histo,bin_edges,
+            negative_threshold = _maximum_entropy_cut(histo, bin_edges,
                                                      argmax=self.argmax)
             if self.no_data is not None:
                 idx_keep_neg = idx_keep and (X_copy<negative_threshold)
@@ -178,8 +198,8 @@ class Transform(TransformBase):
                 change_classification[X_copy<negative_threshold] = 1
         if self.no_data is not None:
             idx_keep_neg = idx_keep and (X_copy>positive_threshold)
-            change_classification[idx_keep_neg]=1
-            change_classification[np.invert(idx_keep)]=self.no_data
+            change_classification[idx_keep_neg] = 1
+            change_classification[np.invert(idx_keep)] = self.no_data
         else:
             change_classification[X_copy>positive_threshold] = 1
         # resize to original image shape

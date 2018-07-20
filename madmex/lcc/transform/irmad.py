@@ -15,13 +15,18 @@ from madmex.lcc.transform.mad import Transform as MAD
 logger = logging.getLogger(__name__)
 
 class Transform(BitransformBase):
-    '''
-    This class implements The iteratively Multivariate Alteration Detection (MAD)
-    transformation of two images.
+    '''Antares implementation of the MAD transformation
+
+    MAD corresponds to Multivariate Alteration Detection (MAD), it is applied over
+    two matching arrays
     '''
     def __init__(self, X, Y, max_iterations=50, min_delta=0.001, lmbda=0.0):
-        '''
-        Constructor
+        '''Instantiate class to run MAD transformation on two arrays
+
+        Args:
+            max_iterations (int): TODO
+            min_delta (float): TODO
+            lmbda (float): TODO
         '''
         super().__init__(X, Y)
         self.max_iterations = max_iterations

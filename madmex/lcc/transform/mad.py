@@ -9,14 +9,22 @@ from madmex.lcc.transform import BitransformBase
 
 
 class Transform(BitransformBase):
-    '''
+    '''Antares implementation of the MAD transformation of two array
+
     This class computes the MAD components. These are useful in the study of phenomena
     changes between raster images taken in different times.
+    Taking the difference between the canonical variates from a canonical correlation
+    analysis we obtain the MAD components. The canonical correlated variates are ordered
+    by similarity instead of wavelength. This difference will capture the changes
+    between the images. The bands of the MAD components capture different nature of
+    changes.
     '''
-
     def __init__(self, X, Y, lmbda=0.0, weights=None):
-        '''
-        Constructor
+        '''Instantiate MAD transformation class
+
+        Args:
+            lmbda (float): TODO
+            weights (?): TODO
         '''
         super().__init__(X, Y)
         self.lmbda = lmbda
@@ -24,13 +32,6 @@ class Transform(BitransformBase):
 
 
     def transform(self):
-        '''
-        Taking the difference between the canonical variates from a canonical correlation
-        analysis we obtain the MAD components. The canonical correlated variates are ordered
-        by similarity instead of wavelength. This difference will capture the changes
-        between the images. The bands of the MAD components capture different nature of
-        changes.
-        '''
         weights = self.weights
         if weights is None:
             weights = numpy.ones((self.rows, self.cols))
