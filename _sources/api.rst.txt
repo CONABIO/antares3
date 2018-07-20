@@ -90,7 +90,7 @@ A standardized interface to perform transformation of single arrays or between t
 
 
 Base classes
-ˆˆˆˆˆˆˆˆˆˆˆˆ
+^^^^^^^^^^^^
 
 .. autosummary::
    :toctree: generated
@@ -102,7 +102,7 @@ Base classes
 
 
 Implemented transformation method
-ˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆ
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autosummary::
    :toctree: generated
