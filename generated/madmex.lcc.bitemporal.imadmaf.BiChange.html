@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.lcc.bitemporal.distance.BiChange &mdash; antares3 0.3.0 documentation</title>
+  <title>madmex.lcc.bitemporal.imadmaf.BiChange &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -29,8 +29,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="madmex.lcc.bitemporal.imadmaf.BiChange" href="madmex.lcc.bitemporal.imadmaf.BiChange.html" />
-    <link rel="prev" title="madmex.lcc.transform.maf.Transform" href="madmex.lcc.transform.maf.Transform.html" /> 
+    <link rel="next" title="madmex.modeling.BaseModel" href="madmex.modeling.BaseModel.html" />
+    <link rel="prev" title="madmex.lcc.bitemporal.distance.BiChange" href="madmex.lcc.bitemporal.distance.BiChange.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -103,8 +103,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../api.html#base-class">Base class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api.html#transform-module">Transform module</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../api.html#implemented-algorithms">Implemented algorithms</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">madmex.lcc.bitemporal.distance.BiChange</a></li>
-<li class="toctree-l4"><a class="reference internal" href="madmex.lcc.bitemporal.imadmaf.BiChange.html">madmex.lcc.bitemporal.imadmaf.BiChange</a></li>
+<li class="toctree-l4"><a class="reference internal" href="madmex.lcc.bitemporal.distance.BiChange.html">madmex.lcc.bitemporal.distance.BiChange</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">madmex.lcc.bitemporal.imadmaf.BiChange</a></li>
 </ul>
 </li>
 </ul>
@@ -169,13 +169,13 @@
         
           <li><a href="../api.html">API reference</a> &raquo;</li>
         
-      <li>madmex.lcc.bitemporal.distance.BiChange</li>
+      <li>madmex.lcc.bitemporal.imadmaf.BiChange</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/madmex.lcc.bitemporal.distance.BiChange.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/madmex.lcc.bitemporal.imadmaf.BiChange.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -188,29 +188,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="madmex-lcc-bitemporal-distance-bichange">
-<h1>madmex.lcc.bitemporal.distance.BiChange<a class="headerlink" href="#madmex-lcc-bitemporal-distance-bichange" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="madmex-lcc-bitemporal-imadmaf-bichange">
+<h1>madmex.lcc.bitemporal.imadmaf.BiChange<a class="headerlink" href="#madmex-lcc-bitemporal-imadmaf-bichange" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="madmex.lcc.bitemporal.distance.BiChange">
-<em class="property">class </em><code class="descclassname">madmex.lcc.bitemporal.distance.</code><code class="descname">BiChange</code><span class="sig-paren">(</span><em>array</em>, <em>affine</em>, <em>crs</em>, <em>norm='hist'</em>, <em>threshold='kapur'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/lcc/bitemporal/distance.html#BiChange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.lcc.bitemporal.distance.BiChange" title="Permalink to this definition">¶</a></dt>
-<dd><p>Antares implementation of a simple distance based bi-temporal change detection algorithm</p>
+<dt id="madmex.lcc.bitemporal.imadmaf.BiChange">
+<em class="property">class </em><code class="descclassname">madmex.lcc.bitemporal.imadmaf.</code><code class="descname">BiChange</code><span class="sig-paren">(</span><em>array</em>, <em>affine</em>, <em>crs</em>, <em>max_iterations=25</em>, <em>min_delta=0.01</em>, <em>lmbda=0.0</em>, <em>shift=(1</em>, <em>1)</em>, <em>threshold='kapur'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/lcc/bitemporal/imadmaf.html#BiChange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.lcc.bitemporal.imadmaf.BiChange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Antares implementation of iMAD-MAF change detection algorithm</p>
 <dl class="method">
-<dt id="madmex.lcc.bitemporal.distance.BiChange.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>array</em>, <em>affine</em>, <em>crs</em>, <em>norm='hist'</em>, <em>threshold='kapur'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/lcc/bitemporal/distance.html#BiChange.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.lcc.bitemporal.distance.BiChange.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Euclidean distance based change detection</p>
-<p>Optionally performs histogram matching to normalize input arrays, compute
-euclidean distance and determines change using the distance threshold</p>
+<dt id="madmex.lcc.bitemporal.imadmaf.BiChange.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>array</em>, <em>affine</em>, <em>crs</em>, <em>max_iterations=25</em>, <em>min_delta=0.01</em>, <em>lmbda=0.0</em>, <em>shift=(1</em>, <em>1)</em>, <em>threshold='kapur'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/lcc/bitemporal/imadmaf.html#BiChange.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.lcc.bitemporal.imadmaf.BiChange.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>iMAD-MAF based bitemporal change detection</p>
+<p>Process to detect land cover change using the iteratively reweighted
+Multivariate Alteration Detection algorithm and then postprocesing
+the output using the Maximum Autocorrelation Factor.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>norm</strong> (<em>str</em>) – Normalization method to use in order to match source and
-destination arrays (one of <code class="docutils literal notranslate"><span class="pre">'hist'</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>)</li>
-<li><strong>threshold</strong> (<em>float</em><em> or </em><em>str</em>) – If numeric, distance value above which a
-change is considered a change. If str, one of the automatic thresholding
-method exposed in <code class="docutils literal notranslate"><span class="pre">madmex.lcc.bitemporal.BaseBiChange.threshold_change</span></code>
-static method</li>
+<li><strong>max_iterations</strong> (<em>int</em>) – Max number of iteration of the irmad process</li>
+<li><strong>min_delta</strong> (<em>float</em>) – TODO</li>
+<li><strong>lmbda</strong> (<em>float</em>) – TODO</li>
+<li><strong>shift</strong> (<em>tuple</em>) – TODO</li>
+<li><strong>threshold</strong> (<em>str</em>) – One of the automatic thresholding method exposed in
+<code class="docutils literal notranslate"><span class="pre">madmex.lcc.bitemporal.BaseBiChange.threshold_change</span></code></li>
 <li><strong>**kwargs</strong> – Additional arguments to pass to the thresolding method</li>
 </ul>
 </td>
@@ -218,7 +219,7 @@ static method</li>
 </tbody>
 </table>
 <p class="rubric">Example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.lcc.bitemporal.distance</span> <span class="k">import</span> <span class="n">BiChange</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.lcc.bitemporal.imadmaf</span> <span class="k">import</span> <span class="n">BiChange</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -231,7 +232,7 @@ static method</li>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Instantiate classes</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Change_0</span> <span class="o">=</span> <span class="n">BiChange</span><span class="p">(</span><span class="n">arr0</span><span class="p">,</span> <span class="n">Affine</span><span class="o">.</span><span class="n">identity</span><span class="p">(),</span> <span class="s1">&#39;+proj=longlat&#39;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Change_0</span> <span class="o">=</span> <span class="n">BiChange</span><span class="p">(</span><span class="n">arr0</span><span class="p">,</span> <span class="n">Affine</span><span class="o">.</span><span class="n">identity</span><span class="p">(),</span> <span class="s1">&#39;+proj=longlat&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Change_1</span> <span class="o">=</span> <span class="n">BiChange</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">Affine</span><span class="o">.</span><span class="n">identity</span><span class="p">(),</span> <span class="s1">&#39;+proj=longlat&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -254,8 +255,8 @@ static method</li>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#madmex.lcc.bitemporal.distance.BiChange.__init__" title="madmex.lcc.bitemporal.distance.BiChange.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(array,&nbsp;affine,&nbsp;crs[,&nbsp;norm,&nbsp;threshold])</td>
-<td>Euclidean distance based change detection</td>
+<tr class="row-odd"><td><a class="reference internal" href="#madmex.lcc.bitemporal.imadmaf.BiChange.__init__" title="madmex.lcc.bitemporal.imadmaf.BiChange.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(array,&nbsp;affine,&nbsp;crs[,&nbsp;…])</td>
+<td>iMAD-MAF based bitemporal change detection</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_mmu</span></code>(min_area)</td>
 <td>Filter clumps of pixels smaller than min_area</td>
@@ -307,10 +308,10 @@ static method</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="madmex.lcc.bitemporal.imadmaf.BiChange.html" class="btn btn-neutral float-right" title="madmex.lcc.bitemporal.imadmaf.BiChange" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="madmex.modeling.BaseModel.html" class="btn btn-neutral float-right" title="madmex.modeling.BaseModel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.lcc.transform.maf.Transform.html" class="btn btn-neutral" title="madmex.lcc.transform.maf.Transform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.lcc.bitemporal.distance.BiChange.html" class="btn btn-neutral" title="madmex.lcc.bitemporal.distance.BiChange" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

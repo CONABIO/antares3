@@ -1,0 +1,36 @@
+madmex.lcc.bitemporal.imadmaf.BiChange
+======================================
+
+.. currentmodule:: madmex.lcc.bitemporal.imadmaf
+
+.. autoclass:: BiChange
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BiChange.__init__
+      ~BiChange.filter_mmu
+      ~BiChange.filter_no_change
+      ~BiChange.from_geoarray
+      ~BiChange.label_change
+      ~BiChange.read_land_cover
+      ~BiChange.run
+      ~BiChange.threshold_change
+      ~BiChange.to_db
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BiChange.geobox
+   
+   

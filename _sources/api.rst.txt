@@ -122,7 +122,7 @@ Implemented algorithms
    :toctree: generated
 
    lcc.bitemporal.distance.BiChange
-   lcc.bitemporal.imadmaf
+   lcc.bitemporal.imadmaf.BiChange
 
 
 Modeling
