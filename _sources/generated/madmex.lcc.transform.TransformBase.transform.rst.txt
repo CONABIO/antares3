@@ -1,0 +1,6 @@
+madmex.lcc.transform.TransformBase.transform
+============================================
+
+.. currentmodule:: madmex.lcc.transform
+
+.. automethod:: TransformBase.transform

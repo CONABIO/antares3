@@ -25,26 +25,19 @@
   
 
   
-  
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="antares3 0.3.0 documentation" href="index.html"/>
-        <link rel="next" title="madmex.api.remote.UsgsApi" href="generated/madmex.api.remote.UsgsApi.html"/>
-        <link rel="prev" title="Extending the system" href="extend.html"/> 
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="madmex.api.remote.UsgsApi" href="generated/madmex.api.remote.UsgsApi.html" />
+    <link rel="prev" title="Extending the system" href="extend.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -141,6 +134,18 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.filter_no_change.html">madmex.lcc.bitemporal.BaseBiChange.filter_no_change</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.to_db.html">madmex.lcc.bitemporal.BaseBiChange.to_db</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.read_land_cover.html">madmex.lcc.bitemporal.BaseBiChange.read_land_cover</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#transform-module">Transform module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.transform.TransformBase.html">madmex.lcc.transform.TransformBase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.transform.TransformBase.transform.html">madmex.lcc.transform.TransformBase.transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.transform.BitransformBase.html">madmex.lcc.transform.BitransformBase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.transform.BitransformBase.transform.html">madmex.lcc.transform.BitransformBase.transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.transform.elliptic.Transform.html">madmex.lcc.transform.elliptic.Transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.transform.irmad.Transform.html">madmex.lcc.transform.irmad.Transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.transform.kapur.Transform.html">madmex.lcc.transform.kapur.Transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.transform.mad.Transform.html">madmex.lcc.transform.mad.Transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/madmex.lcc.transform.maf.Transform.html">madmex.lcc.transform.maf.Transform</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#implemented-algorithms">Implemented algorithms</a><ul>
@@ -259,7 +264,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">antares3</a>
@@ -267,9 +272,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -427,7 +433,7 @@
 <td>Parent class implementing generic methods related to change detection results handling.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.from_geoarray.html#madmex.lcc.bitemporal.BaseBiChange.from_geoarray" title="madmex.lcc.bitemporal.BaseBiChange.from_geoarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.BaseBiChange.from_geoarray</span></code></a>(…)</td>
-<td>Instantiate class from a geoarray (xarray read with datacube.</td>
+<td>Instantiate class from a geoarray (xarray read with datacube.load)</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.run.html#madmex.lcc.bitemporal.BaseBiChange.run" title="madmex.lcc.bitemporal.BaseBiChange.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.BaseBiChange.run</span></code></a>(other)</td>
 <td>Run change detection using algorithm defined in _run</td>
@@ -446,6 +452,57 @@
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.lcc.bitemporal.BaseBiChange.read_land_cover.html#madmex.lcc.bitemporal.BaseBiChange.read_land_cover" title="madmex.lcc.bitemporal.BaseBiChange.read_land_cover"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.bitemporal.BaseBiChange.read_land_cover</span></code></a>(name)</td>
 <td>Read the specified land cover map covering the extent of the instance array</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="transform-module">
+<h3>Transform module<a class="headerlink" href="#transform-module" title="Permalink to this headline">¶</a></h3>
+<p>A standardized interface to perform transformation of single arrays or between two arrays</p>
+<p>Base classes
+ˆˆˆˆˆˆˆˆˆˆˆˆ</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.lcc.transform.TransformBase.html#madmex.lcc.transform.TransformBase" title="madmex.lcc.transform.TransformBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.transform.TransformBase</span></code></a>(X)</td>
+<td>Metaclass to support single array transform</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.lcc.transform.TransformBase.transform.html#madmex.lcc.transform.TransformBase.transform" title="madmex.lcc.transform.TransformBase.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.transform.TransformBase.transform</span></code></a>()</td>
+<td>Run transformation defined by children instance</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.lcc.transform.BitransformBase.html#madmex.lcc.transform.BitransformBase" title="madmex.lcc.transform.BitransformBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.transform.BitransformBase</span></code></a>(X,&nbsp;Y)</td>
+<td>Metaclasss to support two array transform</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.lcc.transform.BitransformBase.transform.html#madmex.lcc.transform.BitransformBase.transform" title="madmex.lcc.transform.BitransformBase.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.transform.BitransformBase.transform</span></code></a>()</td>
+<td>Run transformation defined by children instance</td>
+</tr>
+</tbody>
+</table>
+<p>Implemented transformation method
+ˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆ</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.lcc.transform.elliptic.Transform.html#madmex.lcc.transform.elliptic.Transform" title="madmex.lcc.transform.elliptic.Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.transform.elliptic.Transform</span></code></a>(X[,&nbsp;…])</td>
+<td>Antares implementation of elliptic envelop thresholding transformation</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.lcc.transform.irmad.Transform.html#madmex.lcc.transform.irmad.Transform" title="madmex.lcc.transform.irmad.Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.transform.irmad.Transform</span></code></a>(X,&nbsp;Y[,&nbsp;…])</td>
+<td>Antares implementation of the MAD transformation</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.lcc.transform.kapur.Transform.html#madmex.lcc.transform.kapur.Transform" title="madmex.lcc.transform.kapur.Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.transform.kapur.Transform</span></code></a>(X[,&nbsp;band,&nbsp;…])</td>
+<td>Antares implementation of Kapur, Sahoo and Wong entropy based array thresholding</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.lcc.transform.mad.Transform.html#madmex.lcc.transform.mad.Transform" title="madmex.lcc.transform.mad.Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.transform.mad.Transform</span></code></a>(X,&nbsp;Y[,&nbsp;lmbda,&nbsp;…])</td>
+<td>Antares implementation of the MAD transformation of two array</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.lcc.transform.maf.Transform.html#madmex.lcc.transform.maf.Transform" title="madmex.lcc.transform.maf.Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcc.transform.maf.Transform</span></code></a>(X[,&nbsp;shift])</td>
+<td>Antares implementation of MAF transformation</td>
 </tr>
 </tbody>
 </table>
@@ -575,7 +632,7 @@
 <td>Parent class implementing generic methods related to running spatial segmentation algorithms on raster data, converting input and output data and interacting with the database.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.from_geoarray.html#madmex.segmentation.BaseSegmentation.from_geoarray" title="madmex.segmentation.BaseSegmentation.from_geoarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.BaseSegmentation.from_geoarray</span></code></a>(…)</td>
-<td>Instantiate class from a geoarray (xarray read with datacube.</td>
+<td>Instantiate class from a geoarray (xarray read with datacube.load)</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="generated/madmex.segmentation.BaseSegmentation.segment.html#madmex.segmentation.BaseSegmentation.segment" title="madmex.segmentation.BaseSegmentation.segment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">segmentation.BaseSegmentation.segment</span></code></a>()</td>
 <td>Run segmentation</td>
@@ -626,7 +683,7 @@
 <td>Query intersecting records from the validation and the predictClassification database table</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.validation.pprint_val_dict.html#madmex.validation.pprint_val_dict" title="madmex.validation.pprint_val_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validation.pprint_val_dict</span></code></a>(d)</td>
-<td>Prints the dictionary returned by madmex.</td>
+<td>Prints the dictionary returned by madmex.validation.validate as a nicely formated table</td>
 </tr>
 </tbody>
 </table>
@@ -755,9 +812,7 @@
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -779,7 +834,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -798,6 +853,7 @@
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
             VERSION:'0.3.0',
+            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -815,14 +871,13 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

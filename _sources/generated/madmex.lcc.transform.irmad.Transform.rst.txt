@@ -1,0 +1,23 @@
+madmex.lcc.transform.irmad.Transform
+====================================
+
+.. currentmodule:: madmex.lcc.transform.irmad
+
+.. autoclass:: Transform
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Transform.__init__
+      ~Transform.transform
+   
+   
+
+   
+   
+   

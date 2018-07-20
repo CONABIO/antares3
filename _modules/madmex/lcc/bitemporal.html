@@ -25,25 +25,17 @@
   
 
   
-  
     <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../../genindex.html"/>
-        <link rel="search" title="Search" href="../../../search.html"/>
-    <link rel="top" title="antares3 0.3.0 documentation" href="../../../index.html"/>
-        <link rel="up" title="Module code" href="../../index.html"/> 
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 
   
   <script src="../../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -117,7 +109,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">antares3</a>
@@ -125,9 +117,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -157,8 +150,6 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
-        
       </li>
     
   </ul>
@@ -175,7 +166,6 @@
 <span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">affine</span> <span class="k">import</span> <span class="n">Affine</span>
 <span class="kn">from</span> <span class="nn">datacube.utils.geometry</span> <span class="k">import</span> <span class="n">CRS</span><span class="p">,</span> <span class="n">GeoBox</span>
@@ -184,12 +174,14 @@
 <span class="kn">from</span> <span class="nn">rasterio</span> <span class="k">import</span> <span class="n">features</span>
 <span class="kn">from</span> <span class="nn">rasterio.crs</span> <span class="k">import</span> <span class="n">CRS</span> <span class="k">as</span> <span class="n">rasterioCRS</span>
 <span class="kn">from</span> <span class="nn">shapely</span> <span class="k">import</span> <span class="n">geometry</span>
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">connection</span>
 
 <span class="kn">from</span> <span class="nn">madmex.io.vector_db</span> <span class="k">import</span> <span class="n">from_geobox</span>
 <span class="kn">from</span> <span class="nn">madmex.lcc.transform.elliptic</span> <span class="k">import</span> <span class="n">Transform</span> <span class="k">as</span> <span class="n">Elliptic</span>
 <span class="kn">from</span> <span class="nn">madmex.lcc.transform.kapur</span> <span class="k">import</span> <span class="n">Transform</span> <span class="k">as</span> <span class="n">Kapur</span>
 <span class="kn">from</span> <span class="nn">madmex.models</span> <span class="k">import</span> <span class="n">PredictClassification</span><span class="p">,</span> <span class="n">ChangeObject</span><span class="p">,</span> <span class="n">ChangeClassification</span>
 <span class="kn">from</span> <span class="nn">madmex.util.spatial</span> <span class="k">import</span> <span class="n">geometry_transform</span>
+<span class="kn">from</span> <span class="nn">madmex.util</span> <span class="k">import</span> <span class="n">randomword</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
@@ -214,8 +206,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">array</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">affine</span> <span class="o">=</span> <span class="n">affine</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="n">crs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">change_array</span> <span class="o">=</span> <span class="kc">None</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_array</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="BaseBiChange.from_geoarray"><a class="viewcode-back" href="../../../generated/madmex.lcc.bitemporal.BaseBiChange.from_geoarray.html#madmex.lcc.bitemporal.BaseBiChange.from_geoarray">[docs]</a>    <span class="nd">@classmethod</span>
@@ -230,8 +222,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">array</span> <span class="o">=</span> <span class="n">geoarray</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">to_array</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
         <span class="n">affine</span> <span class="o">=</span> <span class="n">Affine</span><span class="p">(</span><span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">geoarray</span><span class="o">.</span><span class="n">affine</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">])</span>
-        <span class="n">crs</span> <span class="o">=</span> <span class="n">geoarray</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">_crs</span><span class="o">.</span><span class="n">ExportToProj4</span><span class="p">()</span></div>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="n">array</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="n">affine</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">crs</span> <span class="o">=</span> <span class="n">geoarray</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">_crs</span><span class="o">.</span><span class="n">ExportToProj4</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="n">array</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="n">affine</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
@@ -275,8 +267,8 @@
         <span class="k">if</span> <span class="n">change_array</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Children _run method must return an array of uint8 datatype&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">change_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Children _run method must return a 2D np.array&#39;</span><span class="p">)</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">change_array</span> <span class="o">=</span> <span class="n">change_array</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Children _run method must return a 2D np.array&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_array</span> <span class="o">=</span> <span class="n">change_array</span></div>
 
 
     <span class="nd">@staticmethod</span>
@@ -289,21 +281,24 @@
 <span class="sd">        Args:</span>
 <span class="sd">            diff_image (ndarray): a 2D or 3D numpy array consisting</span>
 <span class="sd">            of difference image bands.</span>
+<span class="sd">            method (str): Automatic thresholding method to use. One of kapur or</span>
+<span class="sd">                elliptic.</span>
+<span class="sd">            **kwargs: Additional arguments passed to one of the implemented method</span>
+<span class="sd">                See ``madmex.lcc.transform.kapur.Transform`` and</span>
+<span class="sd">                ``madmex.lcc.transform.elliptic.Transform``</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            change_mask (ndarray): a 2D numpy array</span>
 <span class="sd">            consisting of change (=1) /no-change image masks (=0)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">method</span><span class="o">==</span><span class="s2">&quot;kapur&quot;</span><span class="p">:</span>
-            <span class="n">model_spec</span> <span class="o">=</span> <span class="n">Kapur</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">change_mask</span> <span class="o">=</span> <span class="n">model_spec</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">diff_image</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">method</span><span class="o">==</span><span class="s2">&quot;elliptic&quot;</span><span class="p">:</span>
-            <span class="n">model_spec</span> <span class="o">=</span> <span class="n">Elliptic</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">change_mask</span> <span class="o">=</span> <span class="n">model_spec</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">diff_image</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;kapur&quot;</span><span class="p">:</span>
+            <span class="n">model_spec</span> <span class="o">=</span> <span class="n">Kapur</span><span class="p">(</span><span class="n">diff_image</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">change_mask</span> <span class="o">=</span> <span class="n">model_spec</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;elliptic&quot;</span><span class="p">:</span>
+            <span class="n">model_spec</span> <span class="o">=</span> <span class="n">Elliptic</span><span class="p">(</span><span class="n">diff_image</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">change_mask</span> <span class="o">=</span> <span class="n">model_spec</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Invalid threshold method.&quot;</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid thresholding method&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">change_mask</span>
 
 
@@ -326,8 +321,8 @@
                                      <span class="n">fill</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                                      <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span>
                                      <span class="n">default_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                                     <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">change_array</span> <span class="o">=</span> <span class="n">out_arr</span>
+                                     <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_array</span> <span class="o">=</span> <span class="n">out_arr</span></div>
 
 
 <div class="viewcode-block" id="BaseBiChange.label_change"><a class="viewcode-back" href="../../../generated/madmex.lcc.bitemporal.BaseBiChange.label_change.html#madmex.lcc.bitemporal.BaseBiChange.label_change">[docs]</a>    <span class="k">def</span> <span class="nf">label_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fc_0</span><span class="p">,</span> <span class="n">fc_1</span><span class="p">):</span>
@@ -363,8 +358,8 @@
                                     <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
         <span class="c1"># Generate feature collection with before and after label</span>
         <span class="c1"># (generates a list of tuples (feature, label0, label1))</span>
-        <span class="n">fc_label</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">256</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fc_change</span><span class="p">]</span></div>
-        <span class="k">return</span> <span class="n">fc_label</span>
+        <span class="n">fc_label</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">256</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fc_change</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">fc_label</span></div>
 
 
 <div class="viewcode-block" id="BaseBiChange.filter_no_change"><a class="viewcode-back" href="../../../generated/madmex.lcc.bitemporal.BaseBiChange.filter_no_change.html#madmex.lcc.bitemporal.BaseBiChange.filter_no_change">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -382,8 +377,8 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            list: A list of change geometries with before and after label in the</span>
 <span class="sd">            form of a tuple (geometry, label_0, label_1)</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
-        <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fc</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fc</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span></div>
 
 
 <div class="viewcode-block" id="BaseBiChange.to_db"><a class="viewcode-back" href="../../../generated/madmex.lcc.bitemporal.BaseBiChange.to_db.html#madmex.lcc.bitemporal.BaseBiChange.to_db">[docs]</a>    <span class="k">def</span> <span class="nf">to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">pre_name</span><span class="p">,</span> <span class="n">post_name</span><span class="p">):</span>
@@ -409,7 +404,7 @@
         <span class="k">def</span> <span class="nf">change_obj_builder</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">crs_in</span><span class="p">):</span>
             <span class="n">geom_ll</span> <span class="o">=</span> <span class="n">geometry_transform</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="s1">&#39;+proj=longlat&#39;</span><span class="p">,</span> <span class="n">crs_in</span><span class="p">)</span>
             <span class="n">the_geom</span> <span class="o">=</span> <span class="n">GEOSGeometry</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">geom_ll</span><span class="p">))</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">ChangeObject</span><span class="p">(</span><span class="n">the_geom</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ChangeObject</span><span class="p">(</span><span class="n">the_geom</span><span class="o">=</span><span class="n">the_geom</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
         <span class="c1"># Build list of ChangeObjects</span>
         <span class="n">obj_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">change_obj_builder</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">meta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fc</span><span class="p">]</span>
         <span class="c1"># Write ChangeObjects with bulk_create</span>
@@ -421,8 +416,8 @@
                                            <span class="n">pre_tag_id</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
                                            <span class="n">post_tag_id</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
                       <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">obj_list</span><span class="p">,</span> <span class="n">fc</span><span class="p">)]</span>
-        <span class="c1"># Write it with bulk_create</span></div>
-        <span class="n">ChangeClassification</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">bulk_create</span><span class="p">(</span><span class="n">class_list</span><span class="p">)</span>
+        <span class="c1"># Write it with bulk_create</span>
+        <span class="n">ChangeClassification</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">bulk_create</span><span class="p">(</span><span class="n">class_list</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BaseBiChange.read_land_cover"><a class="viewcode-back" href="../../../generated/madmex.lcc.bitemporal.BaseBiChange.read_land_cover.html#madmex.lcc.bitemporal.BaseBiChange.read_land_cover">[docs]</a>    <span class="k">def</span> <span class="nf">read_land_cover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -436,14 +431,41 @@
 <span class="sd">            list: A list of (geometry, tag_id) tupples in the crs of the instance.</span>
 <span class="sd">            The list can be passed directly to the label_change method</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">poly</span> <span class="o">=</span> <span class="n">Polygon</span><span class="o">.</span><span class="n">from_geobox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geobox</span><span class="p">)</span>
-        <span class="n">query_set</span> <span class="o">=</span> <span class="n">PredictClassification</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">predict_object__the_geom__contained</span><span class="o">=</span><span class="n">poly</span><span class="p">,</span>
-                                                         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span><span class="s1">&#39;predict_object&#39;</span><span class="p">,</span> <span class="s1">&#39;tag&#39;</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">to_feature</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">crs</span><span class="p">):</span>
-            <span class="n">geometry</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">the_geom</span><span class="o">.</span><span class="n">geojson</span><span class="p">)</span>
-            <span class="n">feature</span> <span class="o">=</span> <span class="p">(</span><span class="n">geometry_transform</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">crs</span><span class="p">),</span> <span class="n">x</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">feature</span></div>
-        <span class="k">return</span> <span class="p">[</span><span class="n">to_feature</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">query_set</span><span class="p">]</span>
+        <span class="n">t_name</span> <span class="o">=</span> <span class="n">randomword</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+        <span class="c1"># Vectorize change array</span>
+        <span class="n">fc</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">shapes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_array</span><span class="p">,</span>
+                             <span class="n">mask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">change_array</span><span class="p">,</span>
+                             <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+        <span class="c1"># reproject to longlat</span>
+        <span class="n">geom_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">geometry_transform</span><span class="p">(</span><span class="n">feature</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">crs_in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+                                        <span class="n">crs_out</span><span class="o">=</span><span class="s1">&#39;+proj=longlat&#39;</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">fc</span><span class="p">]</span>
+        <span class="c1"># Build insert string</span>
+        <span class="n">insert_str</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;(st_geomfromtext(&#39;</span><span class="si">%s</span><span class="s2">&#39;, 4326))&quot;</span> <span class="o">%</span> <span class="n">geometry</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">wkt</span>
+                                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">geom_list</span><span class="p">])</span>
+        <span class="n">query0</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot; CREATE TEMP TABLE </span><span class="si">%s</span><span class="s2">(the_geom geometry(Geometry, 4326)); &quot;&quot;&quot;</span> <span class="o">%</span> <span class="n">t_name</span>
+        <span class="n">query1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot; INSERT INTO </span><span class="si">%s</span><span class="s2"> (the_geom) VALUES </span><span class="si">%s</span><span class="s2">; &quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="n">insert_str</span><span class="p">)</span>
+        <span class="n">query2</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">SELECT</span>
+<span class="s2">	st_asgeojson(st_transform(obj.the_geom, </span><span class="si">%%</span><span class="s2">s), 6),</span>
+<span class="s2">	public.madmex_predictclassification.tag_id</span>
+<span class="s2">FROM</span>
+<span class="s2">	public.madmex_predictobject as obj</span>
+<span class="s2">INNER JOIN</span>
+<span class="s2">	public.madmex_predictclassification ON public.madmex_predictclassification.predict_object_id = obj.id</span>
+<span class="s2">	AND</span>
+<span class="s2">	public.madmex_predictclassification.name = </span><span class="si">%%</span><span class="s2">s</span>
+<span class="s2">INNER JOIN</span>
+<span class="s2">    </span><span class="si">%s</span><span class="s2"> ON st_intersects(obj.the_geom, </span><span class="si">%s</span><span class="s2">.the_geom);</span>
+<span class="s2">        &quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="n">t_name</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">c</span><span class="p">:</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query0</span><span class="p">)</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query1</span><span class="p">)</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query2</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span> <span class="n">name</span><span class="p">])</span>
+            <span class="n">fc</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="c1"># Deserialize geojson geometries</span>
+        <span class="n">fc</span> <span class="o">=</span> <span class="p">[(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fc</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">fc</span></div>
 
 
     <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -452,15 +474,13 @@
         <span class="n">crs_0</span> <span class="o">=</span> <span class="n">rasterioCRS</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
         <span class="n">crs_1</span> <span class="o">=</span> <span class="n">rasterioCRS</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="o">.</span><span class="n">almost_equals</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="n">crs_0</span> <span class="o">==</span> <span class="n">crs_1</span></div>
-                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">crs_0</span> <span class="o">==</span> <span class="n">crs_1</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span></div>
 
 </pre></div>
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -473,7 +493,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -492,6 +512,7 @@
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
             VERSION:'0.3.0',
+            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -509,14 +530,13 @@
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

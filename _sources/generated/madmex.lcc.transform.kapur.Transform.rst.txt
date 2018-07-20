@@ -1,0 +1,23 @@
+madmex.lcc.transform.kapur.Transform
+====================================
+
+.. currentmodule:: madmex.lcc.transform.kapur
+
+.. autoclass:: Transform
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Transform.__init__
+      ~Transform.transform
+   
+   
+
+   
+   
+   

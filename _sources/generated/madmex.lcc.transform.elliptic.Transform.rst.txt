@@ -1,0 +1,23 @@
+madmex.lcc.transform.elliptic.Transform
+=======================================
+
+.. currentmodule:: madmex.lcc.transform.elliptic
+
+.. autoclass:: Transform
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Transform.__init__
+      ~Transform.transform
+   
+   
+
+   
+   
+   

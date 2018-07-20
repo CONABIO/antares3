@@ -25,27 +25,19 @@
   
 
   
-  
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="antares3 0.3.0 documentation" href="../index.html"/>
-        <link rel="up" title="API reference" href="../api.html"/>
-        <link rel="next" title="madmex.lcc.bitemporal.imadmaf" href="madmex.lcc.bitemporal.imadmaf.html"/>
-        <link rel="prev" title="madmex.lcc.bitemporal.BaseBiChange.read_land_cover" href="madmex.lcc.bitemporal.BaseBiChange.read_land_cover.html"/> 
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="madmex.lcc.bitemporal.imadmaf" href="madmex.lcc.bitemporal.imadmaf.html" />
+    <link rel="prev" title="madmex.lcc.transform.maf.Transform" href="madmex.lcc.transform.maf.Transform.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -109,6 +101,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api.html#i-o">I/O</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../api.html#land-cover-change-lcc">Land cover change (lcc)</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../api.html#base-class">Base class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api.html#transform-module">Transform module</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../api.html#implemented-algorithms">Implemented algorithms</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">madmex.lcc.bitemporal.distance.BiChange</a></li>
 <li class="toctree-l4"><a class="reference internal" href="madmex.lcc.bitemporal.imadmaf.html">madmex.lcc.bitemporal.imadmaf</a></li>
@@ -140,7 +133,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">antares3</a>
@@ -148,9 +141,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -270,7 +264,7 @@ static method</li>
 <td>Filter labeled change polygons that have the same before and after label</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_geoarray</span></code>(geoarray,&nbsp;**kwargs)</td>
-<td>Instantiate class from a geoarray (xarray read with datacube.</td>
+<td>Instantiate class from a geoarray (xarray read with datacube.load)</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">label_change</span></code>(fc_0,&nbsp;fc_1)</td>
 <td>Label change array</td>
@@ -307,9 +301,7 @@ static method</li>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -318,7 +310,7 @@ static method</li>
         <a href="madmex.lcc.bitemporal.imadmaf.html" class="btn btn-neutral float-right" title="madmex.lcc.bitemporal.imadmaf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.lcc.bitemporal.BaseBiChange.read_land_cover.html" class="btn btn-neutral" title="madmex.lcc.bitemporal.BaseBiChange.read_land_cover" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.lcc.transform.maf.Transform.html" class="btn btn-neutral" title="madmex.lcc.transform.maf.Transform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -331,7 +323,7 @@ static method</li>
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -350,6 +342,7 @@ static method</li>
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
             VERSION:'0.3.0',
+            LANGUAGE:'en',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -367,14 +360,13 @@ static method</li>
     <script type="text/javascript" src="../_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
