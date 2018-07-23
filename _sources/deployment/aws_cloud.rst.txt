@@ -901,7 +901,9 @@ Generate certificate for the <location> of last command (make sure to save direc
 
 	To renew certificate execute:
 	
-	``$certbot renew --dns-route53 --logs-dir letsencrypt/log/ --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ --non-interactive``
+	``$certbot renew --dns-route53 --logs-dir letsencrypt/log/ \
+	 --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ \
+	 --non-interactive``
 
 
 Create directory ``certs`` and copy cert and private key:
@@ -983,11 +985,9 @@ Documentation of `Creating sample user`_ can be used to access via token generat
 
 .. image:: ../imgs/k8s-dashboard-1.png
 	:width: 400
-	:align: center
 
 .. image:: ../imgs/k8s-dashboard-2.png
 	:width: 400
-	:align: center
 
 
 Deployment for Elastic File System
@@ -1545,7 +1545,6 @@ Execute:
 
 .. image:: ../imgs/bokeh_1_sphinx_docu.png
     :width: 400
-    :align: center
 
 
 Deployment for dask worker
