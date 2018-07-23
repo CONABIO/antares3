@@ -855,12 +855,12 @@ Using the key-pem already created for the kops user and execute:
 	Make sure this <key>.pem has 400 permissions: ``$chmod 400 <key>.pem``.
 
 
-You can also deploy Kubernetes dashboard for your cluster.
+You can also deploy kubernetes dashboard for your cluster.
 
 Kubernetes dashboard
 --------------------
 
-According to `Kubernetes Dashboard`_ Kubernetes Dashboard is a general purpose, web-based UI for Kubernetes clusters. It allows users to manage applications running in the cluster and troubleshoot them, as well as manage the cluster itself.
+According to `Kubernetes Dashboard`_ kubernetes dashboard is a general purpose, web-based UI for kubernetes clusters. It allows users to manage applications running in the cluster and troubleshoot them, as well as manage the cluster itself.
 
 Next steps are based on: `Certificate management`_, `Installation`_, `Accessing Dashboard 1.7.X and above`_ and `Creating sample user`_ from kubernetes official documentation and installation of `Certbot for Ubuntu (16.04) xenial`_ and `certbot-dns-route53`_ to generate certificates and access kubernetes dashboard via https.
 
@@ -987,6 +987,16 @@ Open port retrieved by last command in masters security group of kubernetes clus
 
 
 Documentation of `Creating sample user`_ can be used to access via token generation.
+
+
+.. image:: imgs/k8s-dashboard-1.png
+
+	:width: 400
+
+.. image:: imgs/k8s-dashboard-2.png
+
+	:width: 400
+
 
 
 Deployment for Elastic File System
