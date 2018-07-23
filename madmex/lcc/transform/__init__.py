@@ -9,15 +9,15 @@ logger = logging.getLogger(__name__)
 
 
 class TransformBase(metaclass=abc.ABCMeta):
-    """Metaclass to support single array transform
-    """
+    '''Metaclass to support single array transform.
+    '''
     def __init__(self, X):
-        """Instantiate class to perform of a single 2D or 3D array
+        '''Instantiate class to perform of a single 2D or 3D array.
 
         Args:
             X (numpy.ndarray): A 2 or 3 dimensional numpy array. Dimension order should
                 be (bands, y, x)
-        """
+        '''
         if X.ndim == 2:
             self.bands = 1
             self.rows, self.cols = X.shape
@@ -39,21 +39,23 @@ class TransformBase(metaclass=abc.ABCMeta):
         Return:
             np.ndarray: Transformed array (2D)
         '''
-        pass
+        raise NotImplementedError(
+            'Subclasses of TransformBase must provide a preprocessing() method.'
+            )
 
 
 class BitransformBase(metaclass=abc.ABCMeta):
-    """Metaclasss to support two array transform
-    """
+    '''Metaclasss to support two array transform
+    '''
     def __init__(self, X, Y):
-        """Instantiate class to perform array transformation against one another
+        '''Instantiate class to perform array transformation against one another
 
         Args:
             X (numpy.ndarray): A 2 or 3 dimensional numpy array. Dimension order should
                 be (bands, y, x)
             Y (numpy.ndarray): A 3 dimensional numpy array. Dimension order should
                 be (bands, y, x)
-        """
+        '''
         if X.shape != Y.shape:
             raise ValueError('Input arrays must have the same shape')
         if X.ndim == 2:
@@ -79,4 +81,6 @@ class BitransformBase(metaclass=abc.ABCMeta):
         Return:
             np.ndarray: Transformed array
         '''
-        pass
+        raise NotImplementedError(
+            'Subclasses of TransformBase must provide a transform() method.'
+            )

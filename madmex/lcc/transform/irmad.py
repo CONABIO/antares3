@@ -24,9 +24,15 @@ class Transform(BitransformBase):
         '''Instantiate class to run MAD transformation on two arrays
 
         Args:
-            max_iterations (int): TODO
-            min_delta (float): TODO
-            lmbda (float): TODO
+            max_iterations (int): The maximum number of times that the process will
+                run the MAD transform. 
+            min_delta (float): After each successive iteration of the MAD transform,
+                the distance between the eigenvalues is measured. Min_delta is used
+                to stop the iterations when the value of the difference is lower than
+                this threshold.
+            lmbda (float): Value used by the MAD transform to perform regularization
+                when the condition number of the matrix in the generalized eigenvalue
+                problem is too big.
         '''
         super().__init__(X, Y)
         self.max_iterations = max_iterations
@@ -35,6 +41,16 @@ class Transform(BitransformBase):
 
 
     def transform(self):
+        return self._transform()
+    
+    def _transform(self):
+        '''It implements the method of performing several MAD transformations and re-weighting
+        the importance of the pixels at each consecutive run. Given that we expect the pixels
+        in the MAD transform to behave like a normal distribution, we can detect anomalies using
+        a chi-distribution with n degrees of freedom, with n equal to the number of classes. We
+        use the likelihood of seeing a change value to re-weight each pixel and then run the
+        MAD transform again until any end criteria is met.
+        '''
         i = 0
         delta = 1.0
         old_rho = numpy.ones((self.X.shape[0]))

@@ -34,13 +34,21 @@ class Transform(TransformBase):
         '''Instantiate MAF transform class
 
         Args:
-            shift (tuple): TODO
+            shift (tuple): A vector that represents the amount that the image will be
+                shifted before calculating the correlation with itself.
         '''
         super().__init__(X)
         self.h = numpy.array(shift)
 
 
     def transform(self):
+        return self._transform()
+    
+    def _transform(self):
+        '''This method computes the linear combination of the bands in the image that
+        maximizes its spatial autocorrelation. This process is useful in the sense that
+        it improves the spatial coherence of the IR-MAD transform.
+        '''
         sigma = _spatial_covariance(self.X, numpy.array((0,0)))
         gamma = 2 * sigma - _spatial_covariance(self.X, self.h) - _spatial_covariance(self.X, -self.h)
         lower = numpy.linalg.cholesky(sigma)
