@@ -893,13 +893,11 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>To renew certificate execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+<div class="last highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$certbot</span> renew --dns-route53 --logs-dir letsencrypt/log/ <span class="se">\</span>
+ --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ <span class="se">\</span>
+ --non-interactive
 </pre></div>
 </div>
-<dl class="last docutils">
-<dt>$certbot renew –dns-route53 –logs-dir letsencrypt/log/ </dt>
-<dd>–config-dir letsencrypt/config/ –work-dir letsencrypt/work/ –non-interactive</dd>
-</dl>
 </div>
 <p>Create directory <code class="docutils literal notranslate"><span class="pre">certs</span></code> and copy cert and private key:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$mkdir</span> certs
