@@ -279,7 +279,8 @@ Once created an AMI of AWS from previous step, use the following bash script to 
 
 **Example using** `RunCommand`_ **service of AWS with Tag Name and Tag Value**
 
-.. image:: https://dl.dropboxusercontent.com/s/kubf3ibnuv5axx4/aws_runcommand_sphix_docu.png?dl=0
+.. .. image:: https://dl.dropboxusercontent.com/s/kubf3ibnuv5axx4/aws_runcommand_sphix_docu.png?dl=0
+.. image:: imgs/aws_runcommand_sphix_docu.png
     :width: 600
 
 3. Init Cluster
@@ -390,19 +391,22 @@ You can view the web SGE on the page:
 
 **<public DNS of master>/qstat/qstat.cgi**
 
-.. image:: https://dl.dropboxusercontent.com/s/vr2hj5m26q90std/sge_1_sphinx_docu.png?dl=0
+.. .. image:: https://dl.dropboxusercontent.com/s/vr2hj5m26q90std/sge_1_sphinx_docu.png?dl=0
+.. image:: imgs/sge_1_sphinx_docu.png
     :width: 400
 
 
 **<public DNS of master>/qstat/queue.cgi**
 
 
-.. image:: https://dl.dropboxusercontent.com/s/4wfmbodapxx62ql/sge_2_sphinx_docu.png?dl=0
+.. .. image:: https://dl.dropboxusercontent.com/s/4wfmbodapxx62ql/sge_2_sphinx_docu.png?dl=0
+.. image:: imgs/sge_2_sphinx_docu.png
     :width: 400
 
 **<public DNS of master>/qstat/qstat.cgi**
 
-.. image:: https://dl.dropboxusercontent.com/s/l45t46e1lg9lolt/sge_3_sphinx_docu.png?dl=0
+.. .. image:: https://dl.dropboxusercontent.com/s/l45t46e1lg9lolt/sge_3_sphinx_docu.png?dl=0
+.. image:: imgs/sge_3_sphinx_docu.png
     :width: 600
 
 and the state of your cluster with `bokeh`_  at:
@@ -410,19 +414,22 @@ and the state of your cluster with `bokeh`_  at:
 
 **<public DNS of master>:8787**
 
-.. image:: https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0
+.. .. image:: https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0
+.. image:: imgs/bokeh_1_sphinx_docu.png
     :width: 400
 
 **<public DNS of master>:8787/workers**
 
-.. image:: https://dl.dropboxusercontent.com/s/1q6z4z10o5tv27f/bokeh_1_workers_sphinx_docu.png?dl=0
+.. .. image:: https://dl.dropboxusercontent.com/s/1q6z4z10o5tv27f/bokeh_1_workers_sphinx_docu.png?dl=0
+.. image:: imgs/bokeh_1_workers_sphinx_docu.png
     :width: 600
 
 or
 
 **<public DNS of worker>:8789** 
 
-.. image:: https://dl.dropboxusercontent.com/s/rnapd51c565huij/bokeh_2_sphinx_docu.png?dl=0
+.. .. image:: https://dl.dropboxusercontent.com/s/rnapd51c565huij/bokeh_2_sphinx_docu.png?dl=0
+.. image:: imgs/bokeh_2_sphinx_docu.png
     :width: 400
 
 Run an example
@@ -456,7 +463,8 @@ On master or node execute:
 
 from **<public DNS of master>:8787/graph** we have:
 
-.. image:: https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0
+.. .. image:: https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0
+.. image:: imgs/bokeh_3_graph_sphinx_docu.png
     :width: 600
 
 
@@ -847,26 +855,26 @@ Using the key-pem already created for the kops user and execute:
 	Make sure this <key>.pem has 400 permissions: ``$chmod 400 <key>.pem``.
 
 
-You can also deploy Kubernetes dashboard for your cluster.
+You can also deploy kubernetes dashboard for your cluster.
 
 Kubernetes dashboard
 --------------------
 
-According to `Kubernetes Dashboard`_ Kubernetes Dashboard is a general purpose, web-based UI for Kubernetes clusters. It allows users to manage applications running in the cluster and troubleshoot them, as well as manage the cluster itself.
+According to `Kubernetes Dashboard`_ kubernetes dashboard is a general purpose, web-based UI for kubernetes clusters. It allows users to manage applications running in the cluster and troubleshoot them, as well as manage the cluster itself.
 
 Next steps are based on: `Certificate management`_, `Installation`_, `Accessing Dashboard 1.7.X and above`_ and `Creating sample user`_ from kubernetes official documentation and installation of `Certbot for Ubuntu (16.04) xenial`_ and `certbot-dns-route53`_ to generate certificates and access kubernetes dashboard via https.
 
 Install certbot and Route53 plugin for Let's Encrypt client:
 
 .. code-block:: bash
-	
+
 	#Install certbot for ubuntu (16.04) xenial
-    $ sudo apt-get update
+	$ sudo apt-get update
 	$ sudo apt-get install software-properties-common
 	$ sudo add-apt-repository ppa:certbot/certbot
 	$ sudo apt-get update
-	$ sudo apt-get install certbot 
-    #check version of certbot and install route53 plugin:
+	$ sudo apt-get install certbot
+	#check version of certbot and install route53 plugin:
 	certbot_v=$(certbot --version|cut -d' ' -f2)
 	$sudo pip3 install certbot_dns_route53==$certbot_v
 
@@ -901,7 +909,7 @@ Generate certificate for the <location> of last command (make sure to save direc
 
 	To renew certificate execute:
 	
-	``$certbot renew --dns-route53 --logs-dir letsencrypt/log/ --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ --non-interactive`
+	``$certbot renew --dns-route53 --logs-dir letsencrypt/log/ --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ --non-interactive``
 
 
 Create directory ``certs`` and copy cert and private key:
@@ -930,9 +938,9 @@ To compute resource usage analysis and monitoring of container clusters `heapste
 
     $git clone https://github.com/kubernetes/heapster.git
     #We are using some hardcoded version from which we know there will be sucessfull deployment of dashboard
-	$sed -ni 's/heapster-grafana-amd64:v5.0.4/heapster-grafana-amd64:v4.4.3/;p' heapster/deploy/kube-config/influxdb/grafana.yaml
-	$sed -ni 's/heapster-influxdb-amd64:v1.5.2/heapster-influxdb-amd64:v1.3.3/;p' heapster/deploy/kube-config/influxdb/influxdb.yaml
-	$sed -ni 's/heapster-amd64:v1.5.3/heapster-amd64:v1.3.0/;p' heapster/deploy/kube-config/influxdb/heapster.yaml
+    $sed -ni 's/heapster-grafana-amd64:v5.0.4/heapster-grafana-amd64:v4.4.3/;p' heapster/deploy/kube-config/influxdb/grafana.yaml
+    $sed -ni 's/heapster-influxdb-amd64:v1.5.2/heapster-influxdb-amd64:v1.3.3/;p' heapster/deploy/kube-config/influxdb/influxdb.yaml
+    $sed -ni 's/heapster-amd64:v1.5.3/heapster-amd64:v1.3.0/;p' heapster/deploy/kube-config/influxdb/heapster.yaml
 
 
 Next steps are based on: `Run Heapster in a Kubernetes cluster with an InfluxDB backend and a Grafana UI`_ 
@@ -948,9 +956,9 @@ Establish certs that will be used by kubernetes dashboard:
 .. code-block:: bash
 
     $curl -O https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
-	$sed -ni 's/- --auto-generate-certificates/#- --auto-generate-certificates/;p' kubernetes-dashboard.yaml
-	$sed -n 's/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p' kubernetes-dashboard.yaml
-	$sed -ni 's/- --tls-key-file=/- --tls-key-file=privkey1.pem/;p' kubernetes-dashboard.yaml
+    $sed -ni 's/- --auto-generate-certificates/#- --auto-generate-certificates/;p' kubernetes-dashboard.yaml
+    $sed -n 's/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p' kubernetes-dashboard.yaml
+    $sed -ni 's/- --tls-key-file=/- --tls-key-file=privkey1.pem/;p' kubernetes-dashboard.yaml
 
 Create ``kubernetes-dashboard.yaml`` :
 
@@ -979,6 +987,14 @@ Open port retrieved by last command in masters security group of kubernetes clus
 
 
 Documentation of `Creating sample user`_ can be used to access via token generation.
+
+
+.. image:: ../imgs/k8s-dashboard-1.png
+	:width: 400
+
+.. image:: ../imgs/k8s-dashboard-2.png
+	:width: 400
+
 
 
 Deployment for Elastic File System
@@ -1534,8 +1550,10 @@ Execute:
 
 **<public DNS of master or node (depends where dask-scheduler container is running)>:30000**
 
-.. image:: https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0
+.. .. image:: https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0
+.. image:: imgs/bokeh_1_sphinx_docu.png
     :width: 400
+    :align: center
 
 
 Deployment for dask worker
@@ -1680,7 +1698,8 @@ from
 
 we have:
 
-.. image:: https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0
+.. .. image:: https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0
+.. image:: imgs/bokeh_3_graph_sphinx_docu.png
     :width: 600
 
 
@@ -1981,11 +2000,11 @@ To delete mount targets of EFS (assuming there's three subnets):
 
 .. _certbot-dns-route53: https://certbot-dns-route53.readthedocs.io/en/latest/#
 
-.. _Certbot for Ubuntu xenial: https://certbot.eff.org/lets-encrypt/ubuntuxenial-other
+.. _Certbot for Ubuntu (16.04) xenial: https://certbot.eff.org/lets-encrypt/ubuntuxenial-other
 
 .. _Creating sample user: https://github.com/kubernetes/dashboard/wiki/Creating-sample-user
 
-.. _Accessing Dashboard 1.7.X and above: https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above#nodeport
+.. _Accessing Dashboard 1.7.X and above: https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above
 
 .. _Installation: https://github.com/kubernetes/dashboard/wiki/Installation
 
