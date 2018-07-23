@@ -210,8 +210,13 @@ changes.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>lmbda</strong> (<em>float</em>) – TODO</li>
-<li><strong>weights</strong> – TODO</li>
+<li><strong>lmbda</strong> (<em>float</em>) – A value to perform regularization during the transform, this
+is helpful when the condition number of the matrix involved in the
+eigenvalue problem is too large.</li>
+<li><strong>weights</strong> (<em>np.ndarray</em>) – An array with same dimensions as X and Y, represents
+the importance of each pixel. This argument is useful when we calculate
+the iterative re-weighted MAD transform, in any other case, this value
+should be a matrix filled with ones.</li>
 </ul>
 </td>
 </tr>

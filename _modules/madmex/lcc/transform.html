@@ -172,15 +172,15 @@
 
 
 <div class="viewcode-block" id="TransformBase"><a class="viewcode-back" href="../../../generated/madmex.lcc.transform.TransformBase.html#madmex.lcc.transform.TransformBase">[docs]</a><span class="k">class</span> <span class="nc">TransformBase</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Metaclass to support single array transform</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&#39;&#39;&#39;Metaclass to support single array transform.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 <div class="viewcode-block" id="TransformBase.__init__"><a class="viewcode-back" href="../../../generated/madmex.lcc.transform.TransformBase.html#madmex.lcc.transform.TransformBase.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Instantiate class to perform of a single 2D or 3D array</span>
+        <span class="sd">&#39;&#39;&#39;Instantiate class to perform of a single 2D or 3D array.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            X (numpy.ndarray): A 2 or 3 dimensional numpy array. Dimension order should</span>
 <span class="sd">                be (bands, y, x)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
@@ -202,21 +202,23 @@
 <span class="sd">        Return:</span>
 <span class="sd">            np.ndarray: Transformed array (2D)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">pass</span></div></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s1">&#39;Subclasses of TransformBase must provide a preprocessing() method.&#39;</span>
+            <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="BitransformBase"><a class="viewcode-back" href="../../../generated/madmex.lcc.transform.BitransformBase.html#madmex.lcc.transform.BitransformBase">[docs]</a><span class="k">class</span> <span class="nc">BitransformBase</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Metaclasss to support two array transform</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&#39;&#39;&#39;Metaclasss to support two array transform</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 <div class="viewcode-block" id="BitransformBase.__init__"><a class="viewcode-back" href="../../../generated/madmex.lcc.transform.BitransformBase.html#madmex.lcc.transform.BitransformBase.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Instantiate class to perform array transformation against one another</span>
+        <span class="sd">&#39;&#39;&#39;Instantiate class to perform array transformation against one another</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            X (numpy.ndarray): A 2 or 3 dimensional numpy array. Dimension order should</span>
 <span class="sd">                be (bands, y, x)</span>
 <span class="sd">            Y (numpy.ndarray): A 3 dimensional numpy array. Dimension order should</span>
 <span class="sd">                be (bands, y, x)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Input arrays must have the same shape&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -242,7 +244,9 @@
 <span class="sd">        Return:</span>
 <span class="sd">            np.ndarray: Transformed array</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">pass</span></div></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s1">&#39;Subclasses of TransformBase must provide a transform() method.&#39;</span>
+            <span class="p">)</span></div></div>
 </pre></div>
 
            </div>

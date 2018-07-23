@@ -205,9 +205,15 @@ two matching arrays</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>max_iterations</strong> (<em>int</em>) – TODO</li>
-<li><strong>min_delta</strong> (<em>float</em>) – TODO</li>
-<li><strong>lmbda</strong> (<em>float</em>) – TODO</li>
+<li><strong>max_iterations</strong> (<em>int</em>) – The maximum number of times that the process will
+run the MAD transform.</li>
+<li><strong>min_delta</strong> (<em>float</em>) – After each successive iteration of the MAD transform,
+the distance between the eigenvalues is measured. Min_delta is used
+to stop the iterations when the value of the difference is lower than
+this threshold.</li>
+<li><strong>lmbda</strong> (<em>float</em>) – Value used by the MAD transform to perform regularization
+when the condition number of the matrix in the generalized eigenvalue
+problem is too big.</li>
 </ul>
 </td>
 </tr>
