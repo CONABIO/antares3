@@ -102,7 +102,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#cluster-creation">Cluster creation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#kubernetes-dashboard">Kubernetes dashboard</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#deployment-for-elastic-file-system">Deployment for Elastic File System</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">Create RDS instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Create RDS instance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dockerfile-for-containers-of-antares3-and-opendatacube">Dockerfile for containers of Antares3 and OpenDataCube</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#copy-configuration-files-for-antares-and-open-datacube-to-efs-volume">Copy configuration files for antares and open datacube to efs volume</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#deployments-for-dask-scheduler-and-worker">Deployments for dask scheduler and worker</a></li>
@@ -858,17 +858,17 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 <div class="section" id="kubernetes-dashboard">
 <h3>Kubernetes dashboard<a class="headerlink" href="#kubernetes-dashboard" title="Permalink to this headline">¶</a></h3>
 <p>According to <a class="reference external" href="https://github.com/kubernetes/dashboard">Kubernetes Dashboard</a> kubernetes dashboard is a general purpose, web-based UI for kubernetes clusters. It allows users to manage applications running in the cluster and troubleshoot them, as well as manage the cluster itself.</p>
-<p>Next steps are based on: <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Certificate-management">Certificate management</a>, <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Installation">Installation</a>, <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above#nodeport">Accessing Dashboard 1.7.X and above</a> and <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user">Creating sample user</a> from kubernetes official documentation and installation of <a class="reference external" href="https://certbot.eff.org/lets-encrypt/ubuntuxenial-other">Certbot for Ubuntu (16.04) xenial</a> and <a class="reference external" href="https://certbot-dns-route53.readthedocs.io/en/latest/#">certbot-dns-route53</a> to generate certificates and access kubernetes dashboard via https.</p>
+<p>Next steps are based on: <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Certificate-management">Certificate management</a>, <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Installation">Installation</a>, <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above">Accessing Dashboard 1.7.X and above</a> and <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user">Creating sample user</a> from kubernetes official documentation and installation of <a class="reference external" href="https://certbot.eff.org/lets-encrypt/ubuntuxenial-other">Certbot for Ubuntu (16.04) xenial</a> and <a class="reference external" href="https://certbot-dns-route53.readthedocs.io/en/latest/#">certbot-dns-route53</a> to generate certificates and access kubernetes dashboard via https.</p>
 <p>Install certbot and Route53 plugin for Let’s Encrypt client:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="c1">#Install certbot for ubuntu (16.04) xenial</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Install certbot for ubuntu (16.04) xenial</span>
 $ sudo apt-get update
-    $ sudo apt-get install software-properties-common
-    $ sudo add-apt-repository ppa:certbot/certbot
-    $ sudo apt-get update
-    $ sudo apt-get install certbot
+$ sudo apt-get install software-properties-common
+$ sudo add-apt-repository ppa:certbot/certbot
+$ sudo apt-get update
+$ sudo apt-get install certbot
 <span class="c1">#check version of certbot and install route53 plugin:</span>
-    <span class="nv">certbot_v</span><span class="o">=</span><span class="k">$(</span>certbot --version<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f2<span class="k">)</span>
-    <span class="nv">$sudo</span> pip3 install <span class="nv">certbot_dns_route53</span><span class="o">==</span><span class="nv">$certbot_v</span>
+<span class="nv">certbot_v</span><span class="o">=</span><span class="k">$(</span>certbot --version<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f2<span class="k">)</span>
+<span class="nv">$sudo</span> pip3 install <span class="nv">certbot_dns_route53</span><span class="o">==</span><span class="nv">$certbot_v</span>
 </pre></div>
 </div>
 <p>Create some useful directories:</p>
@@ -893,7 +893,7 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>To renew certificate execute:</p>
-<p class="last"><a href="#id1"><span class="problematic" id="id2">``</span></a>$certbot renew –dns-route53 –logs-dir letsencrypt/log/ –config-dir letsencrypt/config/ –work-dir letsencrypt/work/ –non-interactive`</p>
+<p class="last"><code class="docutils literal notranslate"><span class="pre">$certbot</span> <span class="pre">renew</span> <span class="pre">--dns-route53</span> <span class="pre">--logs-dir</span> <span class="pre">letsencrypt/log/</span> <span class="pre">--config-dir</span> <span class="pre">letsencrypt/config/</span> <span class="pre">--work-dir</span> <span class="pre">letsencrypt/work/</span> <span class="pre">--non-interactive</span></code></p>
 </div>
 <p>Create directory <code class="docutils literal notranslate"><span class="pre">certs</span></code> and copy cert and private key:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$mkdir</span> certs
@@ -912,9 +912,9 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 <p>To compute resource usage analysis and monitoring of container clusters <a class="reference external" href="https://github.com/kubernetes/heapster/">heapster</a> is used (although by this time july 2018 is recommended to migrate to <a class="reference external" href="https://github.com/kubernetes-incubator/metrics-server">metrics-server</a> and a third party metrics pipeline to gather Prometheus-format metrics instead.)</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$git</span> clone https://github.com/kubernetes/heapster.git
 <span class="c1">#We are using some hardcoded version from which we know there will be sucessfull deployment of dashboard</span>
-    <span class="nv">$sed</span> -ni <span class="s1">&#39;s/heapster-grafana-amd64:v5.0.4/heapster-grafana-amd64:v4.4.3/;p&#39;</span> heapster/deploy/kube-config/influxdb/grafana.yaml
-    <span class="nv">$sed</span> -ni <span class="s1">&#39;s/heapster-influxdb-amd64:v1.5.2/heapster-influxdb-amd64:v1.3.3/;p&#39;</span> heapster/deploy/kube-config/influxdb/influxdb.yaml
-    <span class="nv">$sed</span> -ni <span class="s1">&#39;s/heapster-amd64:v1.5.3/heapster-amd64:v1.3.0/;p&#39;</span> heapster/deploy/kube-config/influxdb/heapster.yaml
+<span class="nv">$sed</span> -ni <span class="s1">&#39;s/heapster-grafana-amd64:v5.0.4/heapster-grafana-amd64:v4.4.3/;p&#39;</span> heapster/deploy/kube-config/influxdb/grafana.yaml
+<span class="nv">$sed</span> -ni <span class="s1">&#39;s/heapster-influxdb-amd64:v1.5.2/heapster-influxdb-amd64:v1.3.3/;p&#39;</span> heapster/deploy/kube-config/influxdb/influxdb.yaml
+<span class="nv">$sed</span> -ni <span class="s1">&#39;s/heapster-amd64:v1.5.3/heapster-amd64:v1.3.0/;p&#39;</span> heapster/deploy/kube-config/influxdb/heapster.yaml
 </pre></div>
 </div>
 <p>Next steps are based on: <a class="reference external" href="https://github.com/kubernetes/heapster/blob/master/docs/influxdb.md">Run Heapster in a Kubernetes cluster with an InfluxDB backend and a Grafana UI</a></p>
@@ -924,16 +924,16 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 </div>
 <p>Establish certs that will be used by kubernetes dashboard:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$curl</span> -O https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
-    <span class="nv">$sed</span> -ni <span class="s1">&#39;s/- --auto-generate-certificates/#- --auto-generate-certificates/;p&#39;</span> kubernetes-dashboard.yaml
-    <span class="nv">$sed</span> -n <span class="s1">&#39;s/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p&#39;</span> kubernetes-dashboard.yaml
-    <span class="nv">$sed</span> -ni <span class="s1">&#39;s/- --tls-key-file=/- --tls-key-file=privkey1.pem/;p&#39;</span> kubernetes-dashboard.yaml
+<span class="nv">$sed</span> -ni <span class="s1">&#39;s/- --auto-generate-certificates/#- --auto-generate-certificates/;p&#39;</span> kubernetes-dashboard.yaml
+<span class="nv">$sed</span> -n <span class="s1">&#39;s/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p&#39;</span> kubernetes-dashboard.yaml
+<span class="nv">$sed</span> -ni <span class="s1">&#39;s/- --tls-key-file=/- --tls-key-file=privkey1.pem/;p&#39;</span> kubernetes-dashboard.yaml
 </pre></div>
 </div>
 <p>Create <code class="docutils literal notranslate"><span class="pre">kubernetes-dashboard.yaml</span></code> :</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl create -f kubernetes-dashboard.yaml
 </pre></div>
 </div>
-<p>To visualize kubernetes-dashboard one possibility is to change type <code class="docutils literal notranslate"><span class="pre">ClusterIP</span></code> to <code class="docutils literal notranslate"><span class="pre">NodePort</span></code> (see <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above#nodeport">Accessing Dashboard 1.7.X and above</a>) when executing next command:</p>
+<p>To visualize kubernetes-dashboard one possibility is to change type <code class="docutils literal notranslate"><span class="pre">ClusterIP</span></code> to <code class="docutils literal notranslate"><span class="pre">NodePort</span></code> (see <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above">Accessing Dashboard 1.7.X and above</a>) when executing next command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> edit service kubernetes-dashboard -n kube-system
 </pre></div>
 </div>
@@ -1137,8 +1137,8 @@ spec:
 </div>
 </div>
 </div>
-<div class="section" id="id3">
-<h3>Create RDS instance<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h3>Create RDS instance<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Prerequisites at the top of this page to setup a RDS-instance with subnet and security groups created by <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">create</span> <span class="pre">cluster</span></code> command. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of Kubernetes cluster, install <code class="docutils literal notranslate"><span class="pre">postgresql-client</span></code> and execute a <code class="docutils literal notranslate"><span class="pre">createdb</span></code> command (to ssh to an instance of Kubernetes cluster see end of <strong>Cluster Creation</strong> section).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -1523,8 +1523,8 @@ spec:
 <p class="last">Make sure this &lt;key&gt;.pem has 400 permissions: <code class="docutils literal notranslate"><span class="pre">$chmod</span> <span class="pre">400</span> <span class="pre">&lt;key&gt;.pem</span></code>.</p>
 </div>
 </div>
-<div class="section" id="id4">
-<h4>Run an example<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id2">
+<h4>Run an example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <p>In dask-scheduler container execute in a python environment:</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dask.distributed</span> <span class="k">import</span> <span class="n">Client</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -1556,8 +1556,8 @@ spec:
 <div class="section" id="init-open-datacube">
 <h3>Init Open DataCube<a class="headerlink" href="#init-open-datacube" title="Permalink to this headline">¶</a></h3>
 <p>Log in where dask-scheduler container is running.</p>
-<div class="section" id="id5">
-<h4>Open DataCube<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id3">
+<h4>Open DataCube<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
 <p class="last">Open Datacube supports NETCDF CF and S3 drivers for storage (see <a class="reference external" href="https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config">Open DataCube Ingestion Config</a>). Different software dependencies are required for different drivers and different <code class="docutils literal notranslate"><span class="pre">datacube</span> <span class="pre">system</span> <span class="pre">init</span></code> command.</p>
