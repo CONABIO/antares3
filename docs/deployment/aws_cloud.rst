@@ -990,11 +990,9 @@ Documentation of `Creating sample user`_ can be used to access via token generat
 
 
 .. image:: imgs/k8s-dashboard-1.png
-
 	:width: 400
 
 .. image:: imgs/k8s-dashboard-2.png
-
 	:width: 400
 
 
@@ -1555,7 +1553,7 @@ Execute:
 .. .. image:: https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0
 .. image:: imgs/bokeh_1_sphinx_docu.png
     :width: 400
-    :align:
+    :align: center
 
 
 Deployment for dask worker
