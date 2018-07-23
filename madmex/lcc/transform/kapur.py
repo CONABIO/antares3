@@ -3,7 +3,6 @@
 @author: jequihua
 '''
 import logging
-import  math
 
 from scipy import stats
 
@@ -79,15 +78,17 @@ def optimal_bins(data_vector, method="shimazaki-shinomoto", bins=1000):
 
 
 def _clip_histogram_tails(X, clip_hist_tails=3):
-    '''Clip tails of a distribution
+    """Clip tails of a distribution.
 
-    destroys observations in an array that are a certain amount
-    of standard deviations away from the mean
-
-    '''
-    X = X[(X>(np.mean(X)-clip_hist_tails*np.std(X))) & \
-                        (X<(np.mean(X)+clip_hist_tails*np.std(X)))]
-    return(X)
+    Destroys observations in an array that are a certain amount
+    of standard deviations away from the mean.
+    
+    Return:
+        np.ndarray: A copy of the array without the tails.
+    """
+    X = X[(X > (np.mean(X) - clip_hist_tails * np.std(X))) & \
+                        (X < (np.mean(X) + clip_hist_tails * np.std(X)))]
+    return X 
 
 
 def _maximum_entropy_cut(histo, bin_edges, argmax=True):
@@ -100,32 +101,32 @@ def _maximum_entropy_cut(histo, bin_edges, argmax=True):
         maxindex = np.argmax(histo)
         # take only positive parts
         histo = histo[maxindex:]
-        bin_edges = bin_edges[(maxindex+1):]
+        bin_edges = bin_edges[(maxindex + 1):]
     else:
         # take only parts after median (middle)
         middle = int(np.floor(np.median(range(len(histo)))))
         histo = histo[middle:]
-        bin_edges = bin_edges[(middle+1):]
+        bin_edges = bin_edges[(middle + 1):]
     # drop any zero bins
     keep = histo != 0
     histo = histo[keep]
     bin_edges = bin_edges[keep]
     # check for corner cases
     if np.product(histo)==1:
-        return 2**histo[0]
+        return 2 ** histo[0]
     # Standarize histogram to obtain probabilities
-    probabilities = histo.astype(np.float)/np.float(np.sum(histo))
+    probabilities = histo.astype(np.float) / np.float(np.sum(histo))
     # initialize vector to fill with calculated entropies
     entropies = np.zeros(len(probabilities))
-    for i in range(len(probabilities)-2):
-        white_class = probabilities[0:(i+1)]
+    for i in range(len(probabilities) - 2):
+        white_class = probabilities[0:(i + 1)]
         white_class_sum = np.sum(white_class)
-        white_class = -1*np.sum(np.multiply(white_class/white_class_sum,
-                                            np.log(white_class/white_class_sum)))
-        black_class = probabilities[(i+2):len(probabilities)]
+        white_class = -1 * np.sum(np.multiply(white_class / white_class_sum,
+                                            np.log(white_class / white_class_sum)))
+        black_class = probabilities[(i + 2):len(probabilities)]
         black_class_sum = np.sum(black_class)
-        black_class = -1*np.sum(np.multiply(black_class/black_class_sum,
-                                            np.log(black_class/black_class_sum)))
+        black_class = -1 * np.sum(np.multiply(black_class / black_class_sum,
+                                            np.log(black_class / black_class_sum)))
         entropies[i] = white_class + black_class
     idx_maximum_entropy = np.argmax(entropies)
     threshold = bin_edges[np.int(idx_maximum_entropy)]
@@ -140,7 +141,7 @@ class Transform(TransformBase):
         '''Instantiate Kapur transform class
 
         Args:
-            band (int): TODO
+            band (int): Band to which the algorithm is applied.
             histogram (str or int): Either one of the automatic methods to determine
                 optimal number of bins of a distribution (one of sturges, scott,
                 freedman-diaconis, shimazaki-shinomoto), or None
@@ -163,11 +164,11 @@ class Transform(TransformBase):
         self.no_data = no_data
 
 
-    def transform(self):
+    def _transform(self):
         change_classification = np.zeros((self.cols * self.rows), dtype=np.uint8)
         positive_threshold = None
         negative_threshold = None
-        X = np.ravel(self.X[int(self.band),:,:])
+        X = np.ravel(self.X[int(self.band), :, :])
         X_copy = X
         if self.no_data is not None:
             # handle no data values
@@ -180,28 +181,30 @@ class Transform(TransformBase):
         # decide on optimal number of bins for histogram
         bins = optimal_bins(X, method=self.histogram, bins=self.n_bins)
         # generate histogram based on this number of bins
-        histo, bin_edges = np.histogram(X,bins)
+        histo, bin_edges = np.histogram(X, bins)
         ### positive side
-        positive_threshold = _maximum_entropy_cut(histo,bin_edges,
-                                                 argmax=self.argmax)
+        positive_threshold = _maximum_entropy_cut(histo,
+                                                  bin_edges,
+                                                  argmax=self.argmax)
         if self.symmetrical:
             ### negative side
             # flip vectors
             histo = histo[::-1]
             bin_edges = bin_edges[::-1]
-            negative_threshold = _maximum_entropy_cut(histo, bin_edges,
-                                                     argmax=self.argmax)
+            negative_threshold = _maximum_entropy_cut(histo,
+                                                      bin_edges,
+                                                      argmax=self.argmax)
             if self.no_data is not None:
-                idx_keep_neg = idx_keep and (X_copy<negative_threshold)
+                idx_keep_neg = idx_keep and (X_copy < negative_threshold)
                 change_classification[idx_keep_neg] = 1
             else:
-                change_classification[X_copy<negative_threshold] = 1
+                change_classification[X_copy < negative_threshold] = 1
         if self.no_data is not None:
-            idx_keep_neg = idx_keep and (X_copy>positive_threshold)
+            idx_keep_neg = idx_keep and (X_copy > positive_threshold)
             change_classification[idx_keep_neg] = 1
             change_classification[np.invert(idx_keep)] = self.no_data
         else:
-            change_classification[X_copy>positive_threshold] = 1
+            change_classification[X_copy > positive_threshold] = 1
         # resize to original image shape
         change_classification = np.resize(change_classification, (self.rows, self.cols))
         return change_classification
