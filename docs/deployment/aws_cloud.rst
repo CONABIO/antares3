@@ -867,14 +867,14 @@ Next steps are based on: `Certificate management`_, `Installation`_, `Accessing 
 Install certbot and Route53 plugin for Let's Encrypt client:
 
 .. code-block:: bash
-	
+
 	#Install certbot for ubuntu (16.04) xenial
-    $ sudo apt-get update
+	$ sudo apt-get update
 	$ sudo apt-get install software-properties-common
 	$ sudo add-apt-repository ppa:certbot/certbot
 	$ sudo apt-get update
-	$ sudo apt-get install certbot 
-    #check version of certbot and install route53 plugin:
+	$ sudo apt-get install certbot
+	#check version of certbot and install route53 plugin:
 	certbot_v=$(certbot --version|cut -d' ' -f2)
 	$sudo pip3 install certbot_dns_route53==$certbot_v
 
@@ -909,7 +909,7 @@ Generate certificate for the <location> of last command (make sure to save direc
 
 	To renew certificate execute:
 	
-	``$certbot renew --dns-route53 --logs-dir letsencrypt/log/ --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ --non-interactive`
+	``$certbot renew --dns-route53 --logs-dir letsencrypt/log/ --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ --non-interactive``
 
 
 Create directory ``certs`` and copy cert and private key:
@@ -938,9 +938,9 @@ To compute resource usage analysis and monitoring of container clusters `heapste
 
     $git clone https://github.com/kubernetes/heapster.git
     #We are using some hardcoded version from which we know there will be sucessfull deployment of dashboard
-	$sed -ni 's/heapster-grafana-amd64:v5.0.4/heapster-grafana-amd64:v4.4.3/;p' heapster/deploy/kube-config/influxdb/grafana.yaml
-	$sed -ni 's/heapster-influxdb-amd64:v1.5.2/heapster-influxdb-amd64:v1.3.3/;p' heapster/deploy/kube-config/influxdb/influxdb.yaml
-	$sed -ni 's/heapster-amd64:v1.5.3/heapster-amd64:v1.3.0/;p' heapster/deploy/kube-config/influxdb/heapster.yaml
+    $sed -ni 's/heapster-grafana-amd64:v5.0.4/heapster-grafana-amd64:v4.4.3/;p' heapster/deploy/kube-config/influxdb/grafana.yaml
+    $sed -ni 's/heapster-influxdb-amd64:v1.5.2/heapster-influxdb-amd64:v1.3.3/;p' heapster/deploy/kube-config/influxdb/influxdb.yaml
+    $sed -ni 's/heapster-amd64:v1.5.3/heapster-amd64:v1.3.0/;p' heapster/deploy/kube-config/influxdb/heapster.yaml
 
 
 Next steps are based on: `Run Heapster in a Kubernetes cluster with an InfluxDB backend and a Grafana UI`_ 
@@ -956,9 +956,9 @@ Establish certs that will be used by kubernetes dashboard:
 .. code-block:: bash
 
     $curl -O https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
-	$sed -ni 's/- --auto-generate-certificates/#- --auto-generate-certificates/;p' kubernetes-dashboard.yaml
-	$sed -n 's/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p' kubernetes-dashboard.yaml
-	$sed -ni 's/- --tls-key-file=/- --tls-key-file=privkey1.pem/;p' kubernetes-dashboard.yaml
+    $sed -ni 's/- --auto-generate-certificates/#- --auto-generate-certificates/;p' kubernetes-dashboard.yaml
+    $sed -n 's/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p' kubernetes-dashboard.yaml
+    $sed -ni 's/- --tls-key-file=/- --tls-key-file=privkey1.pem/;p' kubernetes-dashboard.yaml
 
 Create ``kubernetes-dashboard.yaml`` :
 
@@ -2004,7 +2004,7 @@ To delete mount targets of EFS (assuming there's three subnets):
 
 .. _Creating sample user: https://github.com/kubernetes/dashboard/wiki/Creating-sample-user
 
-.. _Accessing Dashboard 1.7.X and above: https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above#nodeport
+.. _Accessing Dashboard 1.7.X and above: https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above
 
 .. _Installation: https://github.com/kubernetes/dashboard/wiki/Installation
 
