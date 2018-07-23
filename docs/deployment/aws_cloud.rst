@@ -847,6 +847,140 @@ Using the key-pem already created for the kops user and execute:
 	Make sure this <key>.pem has 400 permissions: ``$chmod 400 <key>.pem``.
 
 
+You can also deploy Kubernetes dashboard for your cluster.
+
+Kubernetes dashboard
+--------------------
+
+According to `Kubernetes Dashboard`_ Kubernetes Dashboard is a general purpose, web-based UI for Kubernetes clusters. It allows users to manage applications running in the cluster and troubleshoot them, as well as manage the cluster itself.
+
+Next steps are based on: `Certificate management`_, `Installation`_, `Accessing Dashboard 1.7.X and above`_ and `Creating sample user`_ from kubernetes official documentation and installation of `Certbot for Ubuntu (16.04) xenial`_ and `certbot-dns-route53`_ to generate certificates and access kubernetes dashboard via https.
+
+Install certbot and Route53 plugin for Let's Encrypt client:
+
+.. code-block:: bash
+	
+	#Install certbot for ubuntu (16.04) xenial
+    $ sudo apt-get update
+	$ sudo apt-get install software-properties-common
+	$ sudo add-apt-repository ppa:certbot/certbot
+	$ sudo apt-get update
+	$ sudo apt-get install certbot 
+    #check version of certbot and install route53 plugin:
+	certbot_v=$(certbot --version|cut -d' ' -f2)
+	$sudo pip3 install certbot_dns_route53==$certbot_v
+
+Create some useful directories:
+
+.. code-block:: bash
+
+	$mkdir -p ~/letsencrypt/log/	
+	$mkdir -p ~/letsencrypt/config/
+	$mkdir -p ~/letsencrypt/work/
+
+
+Open ports 80 and 443 of instance via AWS console.
+
+Using ``kubectl`` retrieve where is kubernetes master running:
+
+.. code-block:: bash
+
+	$ kubectl cluster-info
+	Kubernetes master is running at <location>
+	KubeDNS is running at <location>/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+	
+	To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
+Generate certificate for the <location> of last command (make sure to save directory letsencrypt in a safe place):
+
+.. code-block:: bash
+
+	$certbot certonly -d <location> --dns-route53 --logs-dir letsencrypt/log/ --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ -m myemail@myinstitution --agree-tos --non-interactive --dns-route53-propagation-seconds 20
+
+.. note::
+
+	To renew certificate execute:
+	
+	``$certbot renew --dns-route53 --logs-dir letsencrypt/log/ --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ --non-interactive`
+
+
+Create directory ``certs`` and copy cert and private key:
+
+.. code-block:: bash
+
+	$mkdir certs
+	$cp letsencrypt/config/archive/<location>/fullchain1.pem certs/
+	$cp letsencrypt/config/archive/<location>/privkey1.pem certs/
+
+
+.. note::
+
+	When renewing your certificate the latest ones will be symlinks located: ``letsencrypt/config/live/<location>/``. See `Where are my certificates?`_ 
+	
+
+Create kubernetes secret:
+
+.. code-block:: bash
+
+	$kubectl create secret generic kubernetes-dashboard-certs --from-file=certs -n kube-system
+
+To compute resource usage analysis and monitoring of container clusters `heapster`_ is used (although by this time july 2018 is recommended to migrate to `metrics-server`_ and a third party metrics pipeline to gather Prometheus-format metrics instead.)
+
+.. code-block:: bash
+
+    $git clone https://github.com/kubernetes/heapster.git
+    #We are using some hardcoded version from which we know there will be sucessfull deployment of dashboard
+	$sed -ni 's/heapster-grafana-amd64:v5.0.4/heapster-grafana-amd64:v4.4.3/;p' heapster/deploy/kube-config/influxdb/grafana.yaml
+	$sed -ni 's/heapster-influxdb-amd64:v1.5.2/heapster-influxdb-amd64:v1.3.3/;p' heapster/deploy/kube-config/influxdb/influxdb.yaml
+	$sed -ni 's/heapster-amd64:v1.5.3/heapster-amd64:v1.3.0/;p' heapster/deploy/kube-config/influxdb/heapster.yaml
+
+
+Next steps are based on: `Run Heapster in a Kubernetes cluster with an InfluxDB backend and a Grafana UI`_ 
+
+.. code-block:: bash
+
+	$kubectl create -f heapster/deploy/kube-config/influxdb/
+	$kubectl create -f heapster/deploy/kube-config/rbac/heapster-rbac.yaml
+
+
+Establish certs that will be used by kubernetes dashboard:
+
+.. code-block:: bash
+
+    $curl -O https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+	$sed -ni 's/- --auto-generate-certificates/#- --auto-generate-certificates/;p' kubernetes-dashboard.yaml
+	$sed -n 's/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p' kubernetes-dashboard.yaml
+	$sed -ni 's/- --tls-key-file=/- --tls-key-file=privkey1.pem/;p' kubernetes-dashboard.yaml
+
+Create ``kubernetes-dashboard.yaml`` :
+
+.. code-block:: bash
+
+	kubectl create -f kubernetes-dashboard.yaml
+
+
+To visualize kubernetes-dashboard one possibility is to change type ``ClusterIP`` to ``NodePort`` (see `Accessing Dashboard 1.7.X and above`_) when executing next command:
+
+
+.. code-block:: bash
+
+	$kubectl edit service kubernetes-dashboard -n kube-system
+
+and get port with:
+
+.. code-block:: bash
+
+	$kubectl get service kubernetes-dashboard -n kube-system
+
+Open port retrieved by last command in masters security group of kubernetes cluster. In your browser type:
+
+
+``https://<location>:<port>``
+
+
+Documentation of `Creating sample user`_ can be used to access via token generation.
+
+
 Deployment for Elastic File System
 ----------------------------------
 
@@ -1047,7 +1181,6 @@ Execute next commands to create deployment:
 
 	PersistentVolumes can have various reclaim policies, including “Retain”, “Recycle”, and “Delete”.For dynamically provisioned 	PersistentVolumes, the default reclaim policy is “Delete”. This means that a dynamically provisioned volume is automatically deleted when a user deletes the corresponding PersistentVolumeClaim. This automatic behavior might be inappropriate if the volume contains precious data. In that case, it is more appropriate to use the “Retain” policy. With the “Retain” policy, if a user deletes a PersistentVolumeClaim, the 	corresponding PersistentVolume is not be deleted. Instead, it is moved to the Released phase, where all of its data can be manually recovered. See: `Why change reclaim policy of a PersistentVolume`_ 
 	
-	.. _Why change reclaim policy of a PersistentVolume: https://kubernetes.io/docs/tasks/administer-cluster/change-pv-reclaim-policy/
 
 
 To change reclaim policy, retrieve persistent volume and execute ``kubectl patch`` command:
@@ -1838,6 +1971,29 @@ To delete mount targets of EFS (assuming there's three subnets):
 
 .. Kubernetes references:
 
+.. _Run Heapster in a Kubernetes cluster with an InfluxDB backend and a Grafana UI: https://github.com/kubernetes/heapster/blob/master/docs/influxdb.md
+
+.. _metrics-server: https://github.com/kubernetes-incubator/metrics-server
+
+.. _heapster: https://github.com/kubernetes/heapster/
+
+.. _Where are my certificates?: https://certbot.eff.org/docs/using.html#where-are-my-certificates
+
+.. _certbot-dns-route53: https://certbot-dns-route53.readthedocs.io/en/latest/#
+
+.. _Certbot for Ubuntu xenial: https://certbot.eff.org/lets-encrypt/ubuntuxenial-other
+
+.. _Creating sample user: https://github.com/kubernetes/dashboard/wiki/Creating-sample-user
+
+.. _Accessing Dashboard 1.7.X and above: https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above#nodeport
+
+.. _Installation: https://github.com/kubernetes/dashboard/wiki/Installation
+
+.. _Certificate management: https://github.com/kubernetes/dashboard/wiki/Certificate-management 
+
+.. _Kubernetes Dashboard: https://github.com/kubernetes/dashboard
+
+
 .. _Assign Memory Resources to Containers and Pods: https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/#specify-a-memory-request-and-a-memory-limit
 
 .. _Assign CPU Resources to Containers and Pods: https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/
@@ -1866,6 +2022,8 @@ To delete mount targets of EFS (assuming there's three subnets):
 .. _issue: https://github.com/kubernetes/kops/issues/2858  
 
 .. _Step Zero Kubernetes on AWS: https://zero-to-jupyterhub.readthedocs.io/en/latest/amazon/step-zero-aws.html
+
+.. _Why change reclaim policy of a PersistentVolume: https://kubernetes.io/docs/tasks/administer-cluster/change-pv-reclaim-policy/
 
 
 .. Dependencies references:
