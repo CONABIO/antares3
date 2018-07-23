@@ -36,9 +36,7 @@ class Transform(BitransformBase):
         self.weights = weights
 
 
-    def transform(self):
-        return self._transform()
-    
+
     def _transform(self):
         '''This method optimizes the proces of computing the MAD components. Instead of
         stacking the two matrices together and performing a matrix multiplication of the
