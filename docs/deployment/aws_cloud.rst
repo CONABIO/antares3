@@ -1534,8 +1534,9 @@ Execute:
 
 **<public DNS of master or node (depends where dask-scheduler container is running)>:30000**
 
-.. image:: https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0
+.. image:: imgs/bokeh_1_sphinx_docu.png
     :width: 400
+    :align: center
 
 
 Deployment for dask worker
