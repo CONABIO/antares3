@@ -279,8 +279,7 @@ Once created an AMI of AWS from previous step, use the following bash script to 
 
 **Example using** `RunCommand`_ **service of AWS with Tag Name and Tag Value**
 
-.. .. image:: https://dl.dropboxusercontent.com/s/kubf3ibnuv5axx4/aws_runcommand_sphix_docu.png?dl=0
-.. image:: imgs/aws_runcommand_sphix_docu.png
+.. image:: ../imgs/aws_runcommand_sphix_docu.png
     :width: 600
 
 3. Init Cluster
@@ -391,22 +390,19 @@ You can view the web SGE on the page:
 
 **<public DNS of master>/qstat/qstat.cgi**
 
-.. .. image:: https://dl.dropboxusercontent.com/s/vr2hj5m26q90std/sge_1_sphinx_docu.png?dl=0
-.. image:: imgs/sge_1_sphinx_docu.png
+.. image:: ../imgs/sge_1_sphinx_docu.png
     :width: 400
 
 
 **<public DNS of master>/qstat/queue.cgi**
 
 
-.. .. image:: https://dl.dropboxusercontent.com/s/4wfmbodapxx62ql/sge_2_sphinx_docu.png?dl=0
-.. image:: imgs/sge_2_sphinx_docu.png
+.. image:: ../imgs/sge_2_sphinx_docu.png
     :width: 400
 
 **<public DNS of master>/qstat/qstat.cgi**
 
-.. .. image:: https://dl.dropboxusercontent.com/s/l45t46e1lg9lolt/sge_3_sphinx_docu.png?dl=0
-.. image:: imgs/sge_3_sphinx_docu.png
+.. image:: ../imgs/sge_3_sphinx_docu.png
     :width: 600
 
 and the state of your cluster with `bokeh`_  at:
@@ -414,22 +410,19 @@ and the state of your cluster with `bokeh`_  at:
 
 **<public DNS of master>:8787**
 
-.. .. image:: https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0
-.. image:: imgs/bokeh_1_sphinx_docu.png
+.. image:: ../imgs/bokeh_1_sphinx_docu.png
     :width: 400
 
 **<public DNS of master>:8787/workers**
 
-.. .. image:: https://dl.dropboxusercontent.com/s/1q6z4z10o5tv27f/bokeh_1_workers_sphinx_docu.png?dl=0
-.. image:: imgs/bokeh_1_workers_sphinx_docu.png
+.. image:: ../imgs/bokeh_1_workers_sphinx_docu.png
     :width: 600
 
 or
 
 **<public DNS of worker>:8789** 
 
-.. .. image:: https://dl.dropboxusercontent.com/s/rnapd51c565huij/bokeh_2_sphinx_docu.png?dl=0
-.. image:: imgs/bokeh_2_sphinx_docu.png
+.. image:: ../imgs/bokeh_2_sphinx_docu.png
     :width: 400
 
 Run an example
@@ -463,8 +456,7 @@ On master or node execute:
 
 from **<public DNS of master>:8787/graph** we have:
 
-.. .. image:: https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0
-.. image:: imgs/bokeh_3_graph_sphinx_docu.png
+.. image:: ../imgs/bokeh_3_graph_sphinx_docu.png
     :width: 600
 
 
@@ -991,10 +983,11 @@ Documentation of `Creating sample user`_ can be used to access via token generat
 
 .. image:: ../imgs/k8s-dashboard-1.png
 	:width: 400
+	:align: center
 
 .. image:: ../imgs/k8s-dashboard-2.png
 	:width: 400
-
+	:align: center
 
 
 Deployment for Elastic File System
@@ -1550,8 +1543,7 @@ Execute:
 
 **<public DNS of master or node (depends where dask-scheduler container is running)>:30000**
 
-.. .. image:: https://dl.dropboxusercontent.com/s/ujmxapvn1m3t8lf/bokeh_1_sphinx_docu.png?dl=0
-.. image:: imgs/bokeh_1_sphinx_docu.png
+.. image:: ../imgs/bokeh_1_sphinx_docu.png
     :width: 400
     :align: center
 
@@ -1698,8 +1690,7 @@ from
 
 we have:
 
-.. .. image:: https://dl.dropboxusercontent.com/s/kcge4zzk48m1xr3/bokeh_3_graph_sphinx_docu.png?dl=0
-.. image:: imgs/bokeh_3_graph_sphinx_docu.png
+.. image:: ../imgs/bokeh_3_graph_sphinx_docu.png
     :width: 600
 
 
