@@ -36,13 +36,16 @@ class Transform(BitransformBase):
         self.weights = weights
 
 
-
     def _transform(self):
-        '''This method optimizes the proces of computing the MAD components. Instead of
-        stacking the two matrices together and performing a matrix multiplication of the
+        '''This method optimizes the proces of computing the MAD components. 
+        
+        Instead of stacking the two matrices together and performing a matrix multiplication of the
         stack, we take advantage of the nature of the problem and just compute the parts of
         the matrix that we need. This process is described in the book: Image Analysis  Classification
         and Change Detection in Remote Sensing.
+        
+        Return:
+            np.ndarray: Transformed array
         '''
         weights = self.weights
         if weights is None:

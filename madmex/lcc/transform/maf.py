@@ -41,13 +41,15 @@ class Transform(TransformBase):
         self.h = numpy.array(shift)
 
 
-    def transform(self):
-        return self._transform()
-    
     def _transform(self):
-        '''This method computes the linear combination of the bands in the image that
+        '''Computes the Maximum Autocorrelation Factor (MAF) transform.
+
+        This method computes the linear combination of the bands in the image that
         maximizes its spatial autocorrelation. This process is useful in the sense that
         it improves the spatial coherence of the IR-MAD transform.
+        
+        Return:
+            np.ndarray: Transformed array
         '''
         sigma = _spatial_covariance(self.X, numpy.array((0,0)))
         gamma = 2 * sigma - _spatial_covariance(self.X, self.h) - _spatial_covariance(self.X, -self.h)
