@@ -929,7 +929,7 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 <p>Establish certs that will be used by kubernetes dashboard:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$curl</span> -O https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
 <span class="nv">$sed</span> -ni <span class="s1">&#39;s/- --auto-generate-certificates/#- --auto-generate-certificates/;p&#39;</span> kubernetes-dashboard.yaml
-<span class="nv">$sed</span> -n <span class="s1">&#39;s/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p&#39;</span> kubernetes-dashboard.yaml
+<span class="nv">$sed</span> -ni <span class="s1">&#39;s/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p&#39;</span> kubernetes-dashboard.yaml
 <span class="nv">$sed</span> -ni <span class="s1">&#39;s/- --tls-key-file=/- --tls-key-file=privkey1.pem/;p&#39;</span> kubernetes-dashboard.yaml
 </pre></div>
 </div>

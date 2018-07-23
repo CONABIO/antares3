@@ -953,7 +953,7 @@ Establish certs that will be used by kubernetes dashboard:
 
     $curl -O https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
     $sed -ni 's/- --auto-generate-certificates/#- --auto-generate-certificates/;p' kubernetes-dashboard.yaml
-    $sed -n 's/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p' kubernetes-dashboard.yaml
+    $sed -ni 's/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p' kubernetes-dashboard.yaml
     $sed -ni 's/- --tls-key-file=/- --tls-key-file=privkey1.pem/;p' kubernetes-dashboard.yaml
 
 Create ``kubernetes-dashboard.yaml`` :
