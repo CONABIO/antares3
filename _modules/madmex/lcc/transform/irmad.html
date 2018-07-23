@@ -179,11 +179,12 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Transform"><a class="viewcode-back" href="../../../../generated/madmex.lcc.transform.irmad.Transform.html#madmex.lcc.transform.irmad.Transform">[docs]</a><span class="k">class</span> <span class="nc">Transform</span><span class="p">(</span><span class="n">BitransformBase</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Antares implementation of the MAD transformation</span>
 
-<span class="sd">    MAD corresponds to Multivariate Alteration Detection (MAD), it is applied over</span>
-<span class="sd">    two matching arrays</span>
+<div class="viewcode-block" id="Transform"><a class="viewcode-back" href="../../../../generated/madmex.lcc.transform.irmad.Transform.html#madmex.lcc.transform.irmad.Transform">[docs]</a><span class="k">class</span> <span class="nc">Transform</span><span class="p">(</span><span class="n">BitransformBase</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Antares implementation of the IR-MAD transformation</span>
+
+<span class="sd">    IR-MAD corresponds to Iterative Reweighted Multivariate Alteration Detection (MAD), </span>
+<span class="sd">    it is applied over two matching arrays</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 <div class="viewcode-block" id="Transform.__init__"><a class="viewcode-back" href="../../../../generated/madmex.lcc.transform.irmad.Transform.html#madmex.lcc.transform.irmad.Transform.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">max_iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">min_delta</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">lmbda</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Instantiate class to run MAD transformation on two arrays</span>
@@ -205,17 +206,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lmbda</span> <span class="o">=</span> <span class="n">lmbda</span></div>
 
 
-    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">()</span>
-    
     <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;It implements the method of performing several MAD transformations and re-weighting</span>
+        <span class="sd">&quot;&quot;&quot;Implements iterative Multivariate Alteration Detection.</span>
+<span class="sd">        </span>
+<span class="sd">        It implements the method of performing several MAD transformations and re-weighting</span>
 <span class="sd">        the importance of the pixels at each consecutive run. Given that we expect the pixels</span>
 <span class="sd">        in the MAD transform to behave like a normal distribution, we can detect anomalies using</span>
 <span class="sd">        a chi-distribution with n degrees of freedom, with n equal to the number of classes. We</span>
 <span class="sd">        use the likelihood of seeing a change value to re-weight each pixel and then run the</span>
 <span class="sd">        MAD transform again until any end criteria is met.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">                </span>
+<span class="sd">        Return:</span>
+<span class="sd">            np.ndarray: Transformed array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">delta</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="n">old_rho</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>

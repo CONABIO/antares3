@@ -168,7 +168,6 @@
 <span class="sd">@author: jequihua</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span>  <span class="nn">math</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -184,30 +183,37 @@
 <span class="sd">    &#39;&#39;&#39;</span>
 
 <div class="viewcode-block" id="Transform.__init__"><a class="viewcode-back" href="../../../../generated/madmex.lcc.transform.elliptic.Transform.html#madmex.lcc.transform.elliptic.Transform.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">bands_subset</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">outliers_fraction</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
-                 <span class="n">assume_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">support_fraction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auto_optimize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">no_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                 <span class="n">assume_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">support_fraction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Instantiate class</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            bands_subset (list): TODO</span>
-<span class="sd">            outlier_fraction (float): TODO</span>
-<span class="sd">            assume_centered (bool): TODO</span>
-<span class="sd">            support_fraction (float?): TODO</span>
-<span class="sd">            auto_optimize (bool): TODO</span>
-<span class="sd">            no_data (?): TODO</span>
+<span class="sd">            bands_subset (list): Which bands to consider.</span>
+<span class="sd">            outlier_fraction (float): The proportion of outliers in the data set.</span>
+<span class="sd">            assume_centered (bool): If True it will not center the data.</span>
+<span class="sd">            support_fraction (float?): The proportion of points to be included in</span>
+<span class="sd">                the support of the raw MCD estimate.</span>
+<span class="sd">            no_data (int): Value to be used as no data. </span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bands_subset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bands_subset</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outliers_fraction</span> <span class="o">=</span> <span class="n">outliers_fraction</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assume_centered</span> <span class="o">=</span> <span class="n">assume_centered</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">support_fraction</span> <span class="o">=</span> <span class="n">support_fraction</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">auto_optimize</span> <span class="o">=</span> <span class="n">auto_optimize</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">no_data</span> <span class="o">=</span> <span class="n">no_data</span></div>
 
 
-    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Filters outliers from a Gaussian distributed dataset.</span>
+<span class="sd">        </span>
+<span class="sd">        Using an elliptic envelope, this method will detect point in the dataset</span>
+<span class="sd">        that do not behave as expected under a Gaussian distribution.</span>
+<span class="sd">        </span>
+<span class="sd">        Return:</span>
+<span class="sd">            np.ndarray: 2 dimensional matrix with ones in the pixels that are outliers,</span>
+<span class="sd">                and zeros othewise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n_used_bands</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bands_subset</span><span class="p">)</span>
-        <span class="n">image_bands_flattened</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span><span class="n">n_used_bands</span><span class="p">))</span>
+        <span class="n">image_bands_flattened</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">n_used_bands</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_used_bands</span><span class="p">):</span>
             <span class="n">image_bands_flattened</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bands_subset</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="p">:,</span> <span class="p">:])</span>
@@ -222,19 +228,19 @@
                                                <span class="n">support_fraction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">support_fraction</span><span class="p">)</span>
         <span class="n">model_specification</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">image_bands_flattened</span><span class="p">)</span>
         <span class="c1"># tag outliers</span>
-        <span class="n">change_classification</span> <span class="o">=</span> <span class="n">model_specification</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">image_bands_flattened</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span>
+        <span class="n">change_classification</span> <span class="o">=</span> <span class="n">model_specification</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">image_bands_flattened</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">change_classification_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">))</span>
             <span class="n">change_classification</span> <span class="o">=</span> <span class="n">change_classification_full</span><span class="p">[</span><span class="n">data_mask</span><span class="p">]</span>
-            <span class="n">change_classification</span><span class="p">[</span><span class="n">change_classification</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">no_data</span>
+            <span class="n">change_classification</span><span class="p">[</span><span class="n">change_classification</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data</span>
 
         <span class="c1"># resize to original image shape</span>
         <span class="n">change_classification</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">change_classification</span><span class="p">,</span>
                                           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">))</span>
         <span class="c1"># set correct change labels</span>
-        <span class="n">change_classification</span><span class="p">[</span><span class="n">change_classification</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
-        <span class="n">change_classification</span><span class="p">[</span><span class="n">change_classification</span><span class="o">==-</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+        <span class="n">change_classification</span><span class="p">[</span><span class="n">change_classification</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">change_classification</span><span class="p">[</span><span class="n">change_classification</span><span class="o">==-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
         <span class="k">return</span> <span class="n">change_classification</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span></div>
 </pre></div>

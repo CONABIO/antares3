@@ -168,7 +168,6 @@
 <span class="sd">@author: jequihua</span>
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span>  <span class="nn">math</span>
 
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">stats</span>
 
@@ -244,15 +243,17 @@
 
 
 <span class="k">def</span> <span class="nf">_clip_histogram_tails</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">clip_hist_tails</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Clip tails of a distribution</span>
+    <span class="sd">&quot;&quot;&quot;Clip tails of a distribution.</span>
 
-<span class="sd">    destroys observations in an array that are a certain amount</span>
-<span class="sd">    of standard deviations away from the mean</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[(</span><span class="n">X</span><span class="o">&gt;</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">-</span><span class="n">clip_hist_tails</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">X</span><span class="p">)))</span> <span class="o">&amp;</span> \
-                        <span class="p">(</span><span class="n">X</span><span class="o">&lt;</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">+</span><span class="n">clip_hist_tails</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">X</span><span class="p">)))]</span>
-    <span class="k">return</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="sd">    Destroys observations in an array that are a certain amount</span>
+<span class="sd">    of standard deviations away from the mean.</span>
+<span class="sd">    </span>
+<span class="sd">    Return:</span>
+<span class="sd">        np.ndarray: A copy of the array without the tails.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[(</span><span class="n">X</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">-</span> <span class="n">clip_hist_tails</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">X</span><span class="p">)))</span> <span class="o">&amp;</span> \
+                        <span class="p">(</span><span class="n">X</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">clip_hist_tails</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">X</span><span class="p">)))]</span>
+    <span class="k">return</span> <span class="n">X</span> 
 
 
 <span class="k">def</span> <span class="nf">_maximum_entropy_cut</span><span class="p">(</span><span class="n">histo</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">,</span> <span class="n">argmax</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -265,32 +266,32 @@
         <span class="n">maxindex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">histo</span><span class="p">)</span>
         <span class="c1"># take only positive parts</span>
         <span class="n">histo</span> <span class="o">=</span> <span class="n">histo</span><span class="p">[</span><span class="n">maxindex</span><span class="p">:]</span>
-        <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">bin_edges</span><span class="p">[(</span><span class="n">maxindex</span><span class="o">+</span><span class="mi">1</span><span class="p">):]</span>
+        <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">bin_edges</span><span class="p">[(</span><span class="n">maxindex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># take only parts after median (middle)</span>
         <span class="n">middle</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">histo</span><span class="p">)))))</span>
         <span class="n">histo</span> <span class="o">=</span> <span class="n">histo</span><span class="p">[</span><span class="n">middle</span><span class="p">:]</span>
-        <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">bin_edges</span><span class="p">[(</span><span class="n">middle</span><span class="o">+</span><span class="mi">1</span><span class="p">):]</span>
+        <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">bin_edges</span><span class="p">[(</span><span class="n">middle</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):]</span>
     <span class="c1"># drop any zero bins</span>
     <span class="n">keep</span> <span class="o">=</span> <span class="n">histo</span> <span class="o">!=</span> <span class="mi">0</span>
     <span class="n">histo</span> <span class="o">=</span> <span class="n">histo</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
     <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">bin_edges</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
     <span class="c1"># check for corner cases</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">histo</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">2</span><span class="o">**</span><span class="n">histo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">histo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="c1"># Standarize histogram to obtain probabilities</span>
-    <span class="n">probabilities</span> <span class="o">=</span> <span class="n">histo</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">histo</span><span class="p">))</span>
+    <span class="n">probabilities</span> <span class="o">=</span> <span class="n">histo</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">histo</span><span class="p">))</span>
     <span class="c1"># initialize vector to fill with calculated entropies</span>
     <span class="n">entropies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">probabilities</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">probabilities</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
-        <span class="n">white_class</span> <span class="o">=</span> <span class="n">probabilities</span><span class="p">[</span><span class="mi">0</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">probabilities</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">white_class</span> <span class="o">=</span> <span class="n">probabilities</span><span class="p">[</span><span class="mi">0</span><span class="p">:(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
         <span class="n">white_class_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">white_class</span><span class="p">)</span>
-        <span class="n">white_class</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">white_class</span><span class="o">/</span><span class="n">white_class_sum</span><span class="p">,</span>
-                                            <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">white_class</span><span class="o">/</span><span class="n">white_class_sum</span><span class="p">)))</span>
-        <span class="n">black_class</span> <span class="o">=</span> <span class="n">probabilities</span><span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">):</span><span class="nb">len</span><span class="p">(</span><span class="n">probabilities</span><span class="p">)]</span>
+        <span class="n">white_class</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">white_class</span> <span class="o">/</span> <span class="n">white_class_sum</span><span class="p">,</span>
+                                            <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">white_class</span> <span class="o">/</span> <span class="n">white_class_sum</span><span class="p">)))</span>
+        <span class="n">black_class</span> <span class="o">=</span> <span class="n">probabilities</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">):</span><span class="nb">len</span><span class="p">(</span><span class="n">probabilities</span><span class="p">)]</span>
         <span class="n">black_class_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">black_class</span><span class="p">)</span>
-        <span class="n">black_class</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">black_class</span><span class="o">/</span><span class="n">black_class_sum</span><span class="p">,</span>
-                                            <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">black_class</span><span class="o">/</span><span class="n">black_class_sum</span><span class="p">)))</span>
+        <span class="n">black_class</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">black_class</span> <span class="o">/</span> <span class="n">black_class_sum</span><span class="p">,</span>
+                                            <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">black_class</span> <span class="o">/</span> <span class="n">black_class_sum</span><span class="p">)))</span>
         <span class="n">entropies</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">white_class</span> <span class="o">+</span> <span class="n">black_class</span>
     <span class="n">idx_maximum_entropy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">entropies</span><span class="p">)</span>
     <span class="n">threshold</span> <span class="o">=</span> <span class="n">bin_edges</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="n">idx_maximum_entropy</span><span class="p">)]</span>
@@ -305,7 +306,7 @@
         <span class="sd">&#39;&#39;&#39;Instantiate Kapur transform class</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            band (int): TODO</span>
+<span class="sd">            band (int): Band to which the algorithm is applied.</span>
 <span class="sd">            histogram (str or int): Either one of the automatic methods to determine</span>
 <span class="sd">                optimal number of bins of a distribution (one of sturges, scott,</span>
 <span class="sd">                freedman-diaconis, shimazaki-shinomoto), or None</span>
@@ -328,11 +329,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">no_data</span> <span class="o">=</span> <span class="n">no_data</span></div>
 
 
-    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">change_classification</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
         <span class="n">positive_threshold</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">negative_threshold</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">band</span><span class="p">),:,:])</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">band</span><span class="p">),</span> <span class="p">:,</span> <span class="p">:])</span>
         <span class="n">X_copy</span> <span class="o">=</span> <span class="n">X</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># handle no data values</span>
@@ -345,28 +346,30 @@
         <span class="c1"># decide on optimal number of bins for histogram</span>
         <span class="n">bins</span> <span class="o">=</span> <span class="n">optimal_bins</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">histogram</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="p">)</span>
         <span class="c1"># generate histogram based on this number of bins</span>
-        <span class="n">histo</span><span class="p">,</span> <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">bins</span><span class="p">)</span>
+        <span class="n">histo</span><span class="p">,</span> <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
         <span class="c1">### positive side</span>
-        <span class="n">positive_threshold</span> <span class="o">=</span> <span class="n">_maximum_entropy_cut</span><span class="p">(</span><span class="n">histo</span><span class="p">,</span><span class="n">bin_edges</span><span class="p">,</span>
-                                                 <span class="n">argmax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">argmax</span><span class="p">)</span>
+        <span class="n">positive_threshold</span> <span class="o">=</span> <span class="n">_maximum_entropy_cut</span><span class="p">(</span><span class="n">histo</span><span class="p">,</span>
+                                                  <span class="n">bin_edges</span><span class="p">,</span>
+                                                  <span class="n">argmax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">argmax</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">symmetrical</span><span class="p">:</span>
             <span class="c1">### negative side</span>
             <span class="c1"># flip vectors</span>
             <span class="n">histo</span> <span class="o">=</span> <span class="n">histo</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">bin_edges</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">negative_threshold</span> <span class="o">=</span> <span class="n">_maximum_entropy_cut</span><span class="p">(</span><span class="n">histo</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">,</span>
-                                                     <span class="n">argmax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">argmax</span><span class="p">)</span>
+            <span class="n">negative_threshold</span> <span class="o">=</span> <span class="n">_maximum_entropy_cut</span><span class="p">(</span><span class="n">histo</span><span class="p">,</span>
+                                                      <span class="n">bin_edges</span><span class="p">,</span>
+                                                      <span class="n">argmax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">argmax</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">idx_keep_neg</span> <span class="o">=</span> <span class="n">idx_keep</span> <span class="ow">and</span> <span class="p">(</span><span class="n">X_copy</span><span class="o">&lt;</span><span class="n">negative_threshold</span><span class="p">)</span>
+                <span class="n">idx_keep_neg</span> <span class="o">=</span> <span class="n">idx_keep</span> <span class="ow">and</span> <span class="p">(</span><span class="n">X_copy</span> <span class="o">&lt;</span> <span class="n">negative_threshold</span><span class="p">)</span>
                 <span class="n">change_classification</span><span class="p">[</span><span class="n">idx_keep_neg</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">change_classification</span><span class="p">[</span><span class="n">X_copy</span><span class="o">&lt;</span><span class="n">negative_threshold</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">change_classification</span><span class="p">[</span><span class="n">X_copy</span> <span class="o">&lt;</span> <span class="n">negative_threshold</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">idx_keep_neg</span> <span class="o">=</span> <span class="n">idx_keep</span> <span class="ow">and</span> <span class="p">(</span><span class="n">X_copy</span><span class="o">&gt;</span><span class="n">positive_threshold</span><span class="p">)</span>
+            <span class="n">idx_keep_neg</span> <span class="o">=</span> <span class="n">idx_keep</span> <span class="ow">and</span> <span class="p">(</span><span class="n">X_copy</span> <span class="o">&gt;</span> <span class="n">positive_threshold</span><span class="p">)</span>
             <span class="n">change_classification</span><span class="p">[</span><span class="n">idx_keep_neg</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">change_classification</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">idx_keep</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_data</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">change_classification</span><span class="p">[</span><span class="n">X_copy</span><span class="o">&gt;</span><span class="n">positive_threshold</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">change_classification</span><span class="p">[</span><span class="n">X_copy</span> <span class="o">&gt;</span> <span class="n">positive_threshold</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="c1"># resize to original image shape</span>
         <span class="n">change_classification</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">change_classification</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">change_classification</span></div>
