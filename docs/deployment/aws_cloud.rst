@@ -2000,7 +2000,7 @@ To delete mount targets of EFS (assuming there's three subnets):
 
 .. _certbot-dns-route53: https://certbot-dns-route53.readthedocs.io/en/latest/#
 
-.. _Certbot for Ubuntu xenial: https://certbot.eff.org/lets-encrypt/ubuntuxenial-other
+.. _Certbot for Ubuntu (16.04) xenial: https://certbot.eff.org/lets-encrypt/ubuntuxenial-other
 
 .. _Creating sample user: https://github.com/kubernetes/dashboard/wiki/Creating-sample-user
 
