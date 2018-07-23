@@ -416,7 +416,7 @@ aws ec2 create-tags --resources <span class="nv">$INSTANCE_ID</span> --tag <span
 </pre></div>
 </div>
 <p><strong>Example using</strong> <a class="reference external" href="https://docs.aws.amazon.com/systems-manager/latest/userguide/execute-remote-commands.html">RunCommand</a> <strong>service of AWS with Tag Name and Tag Value</strong></p>
-<a class="reference internal image-reference" href="deployment/imgs/aws_runcommand_sphix_docu.png"><img alt="deployment/imgs/aws_runcommand_sphix_docu.png" src="deployment/imgs/aws_runcommand_sphix_docu.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="../_images/aws_runcommand_sphix_docu.png"><img alt="../_images/aws_runcommand_sphix_docu.png" src="../_images/aws_runcommand_sphix_docu.png" style="width: 600px;" /></a>
 </div>
 <div class="section" id="init-cluster">
 <h3>3. Init Cluster<a class="headerlink" href="#init-cluster" title="Permalink to this headline">¶</a></h3>
@@ -501,19 +501,19 @@ ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/<span class="nv
 </div>
 <p>You can view the web SGE on the page:</p>
 <p><strong>&lt;public DNS of master&gt;/qstat/qstat.cgi</strong></p>
-<a class="reference internal image-reference" href="deployment/imgs/sge_1_sphinx_docu.png"><img alt="deployment/imgs/sge_1_sphinx_docu.png" src="deployment/imgs/sge_1_sphinx_docu.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/sge_1_sphinx_docu.png"><img alt="../_images/sge_1_sphinx_docu.png" src="../_images/sge_1_sphinx_docu.png" style="width: 400px;" /></a>
 <p><strong>&lt;public DNS of master&gt;/qstat/queue.cgi</strong></p>
-<a class="reference internal image-reference" href="deployment/imgs/sge_2_sphinx_docu.png"><img alt="deployment/imgs/sge_2_sphinx_docu.png" src="deployment/imgs/sge_2_sphinx_docu.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/sge_2_sphinx_docu.png"><img alt="../_images/sge_2_sphinx_docu.png" src="../_images/sge_2_sphinx_docu.png" style="width: 400px;" /></a>
 <p><strong>&lt;public DNS of master&gt;/qstat/qstat.cgi</strong></p>
-<a class="reference internal image-reference" href="deployment/imgs/sge_3_sphinx_docu.png"><img alt="deployment/imgs/sge_3_sphinx_docu.png" src="deployment/imgs/sge_3_sphinx_docu.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="../_images/sge_3_sphinx_docu.png"><img alt="../_images/sge_3_sphinx_docu.png" src="../_images/sge_3_sphinx_docu.png" style="width: 600px;" /></a>
 <p>and the state of your cluster with <a class="reference external" href="https://bokeh.pydata.org/en/latest/">bokeh</a>  at:</p>
 <p><strong>&lt;public DNS of master&gt;:8787</strong></p>
-<a class="reference internal image-reference" href="deployment/imgs/bokeh_1_sphinx_docu.png"><img alt="deployment/imgs/bokeh_1_sphinx_docu.png" src="deployment/imgs/bokeh_1_sphinx_docu.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/bokeh_1_sphinx_docu.png"><img alt="../_images/bokeh_1_sphinx_docu.png" src="../_images/bokeh_1_sphinx_docu.png" style="width: 400px;" /></a>
 <p><strong>&lt;public DNS of master&gt;:8787/workers</strong></p>
-<a class="reference internal image-reference" href="deployment/imgs/bokeh_1_workers_sphinx_docu.png"><img alt="deployment/imgs/bokeh_1_workers_sphinx_docu.png" src="deployment/imgs/bokeh_1_workers_sphinx_docu.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="../_images/bokeh_1_workers_sphinx_docu.png"><img alt="../_images/bokeh_1_workers_sphinx_docu.png" src="../_images/bokeh_1_workers_sphinx_docu.png" style="width: 600px;" /></a>
 <p>or</p>
 <p><strong>&lt;public DNS of worker&gt;:8789</strong></p>
-<a class="reference internal image-reference" href="deployment/imgs/bokeh_2_sphinx_docu.png"><img alt="deployment/imgs/bokeh_2_sphinx_docu.png" src="deployment/imgs/bokeh_2_sphinx_docu.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/bokeh_2_sphinx_docu.png"><img alt="../_images/bokeh_2_sphinx_docu.png" src="../_images/bokeh_2_sphinx_docu.png" style="width: 400px;" /></a>
 </div>
 <div class="section" id="run-an-example">
 <h4>Run an example<a class="headerlink" href="#run-an-example" title="Permalink to this headline">¶</a></h4>
@@ -540,7 +540,7 @@ ln -sf <span class="nv">$mount_point</span>/.datacube.conf /home/<span class="nv
 </pre></div>
 </div>
 <p>from <strong>&lt;public DNS of master&gt;:8787/graph</strong> we have:</p>
-<a class="reference internal image-reference" href="deployment/imgs/bokeh_3_graph_sphinx_docu.png"><img alt="deployment/imgs/bokeh_3_graph_sphinx_docu.png" src="deployment/imgs/bokeh_3_graph_sphinx_docu.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="../_images/bokeh_3_graph_sphinx_docu.png"><img alt="../_images/bokeh_3_graph_sphinx_docu.png" src="../_images/bokeh_3_graph_sphinx_docu.png" style="width: 600px;" /></a>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>To stop cluster on master or node execute:</p>
@@ -944,8 +944,8 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 <p>Open port retrieved by last command in masters security group of kubernetes cluster. In your browser type:</p>
 <p><code class="docutils literal notranslate"><span class="pre">https://&lt;location&gt;:&lt;port&gt;</span></code></p>
 <p>Documentation of <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user">Creating sample user</a> can be used to access via token generation.</p>
-<a class="reference internal image-reference" href="../_images/k8s-dashboard-1.png"><img alt="../_images/k8s-dashboard-1.png" src="../_images/k8s-dashboard-1.png" style="width: 400px;" /></a>
-<a class="reference internal image-reference" href="../_images/k8s-dashboard-2.png"><img alt="../_images/k8s-dashboard-2.png" src="../_images/k8s-dashboard-2.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/k8s-dashboard-1.png"><img alt="../_images/k8s-dashboard-1.png" class="align-center" src="../_images/k8s-dashboard-1.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/k8s-dashboard-2.png"><img alt="../_images/k8s-dashboard-2.png" class="align-center" src="../_images/k8s-dashboard-2.png" style="width: 400px;" /></a>
 </div>
 <div class="section" id="deployment-for-elastic-file-system">
 <h3>Deployment for Elastic File System<a class="headerlink" href="#deployment-for-elastic-file-system" title="Permalink to this headline">¶</a></h3>
@@ -1436,7 +1436,7 @@ spec:
 </div>
 <p><strong>State of cluster</strong></p>
 <p><strong>&lt;public DNS of master or node (depends where dask-scheduler container is running)&gt;:30000</strong></p>
-<a class="reference internal image-reference" href="deployment/imgs/bokeh_1_sphinx_docu.png"><img alt="deployment/imgs/bokeh_1_sphinx_docu.png" class="align-center" src="deployment/imgs/bokeh_1_sphinx_docu.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/bokeh_1_sphinx_docu.png"><img alt="../_images/bokeh_1_sphinx_docu.png" class="align-center" src="../_images/bokeh_1_sphinx_docu.png" style="width: 400px;" /></a>
 </div>
 <div class="section" id="deployment-for-dask-worker">
 <h4>Deployment for dask worker<a class="headerlink" href="#deployment-for-dask-worker" title="Permalink to this headline">¶</a></h4>
@@ -1550,7 +1550,7 @@ spec:
 <p>from</p>
 <p><strong>&lt;public DNS of master or node (depends where dask-scheduler container is running)&gt;:30000/graph</strong></p>
 <p>we have:</p>
-<a class="reference internal image-reference" href="deployment/imgs/bokeh_3_graph_sphinx_docu.png"><img alt="deployment/imgs/bokeh_3_graph_sphinx_docu.png" src="deployment/imgs/bokeh_3_graph_sphinx_docu.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="../_images/bokeh_3_graph_sphinx_docu.png"><img alt="../_images/bokeh_3_graph_sphinx_docu.png" src="../_images/bokeh_3_graph_sphinx_docu.png" style="width: 600px;" /></a>
 </div>
 </div>
 <div class="section" id="init-open-datacube">
