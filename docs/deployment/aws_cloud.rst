@@ -903,9 +903,9 @@ Generate certificate for the <location> of last command (make sure to save direc
 	
 	.. code-block:: bash
 	
-	$certbot renew --dns-route53 --logs-dir letsencrypt/log/ \
-	 --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ \
-	 --non-interactive
+		$certbot renew --dns-route53 --logs-dir letsencrypt/log/ \
+		 --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ \
+		 --non-interactive	
 
 
 Create directory ``certs`` and copy cert and private key:
