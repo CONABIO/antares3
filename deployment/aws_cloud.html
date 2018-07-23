@@ -102,7 +102,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#cluster-creation">Cluster creation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#kubernetes-dashboard">Kubernetes dashboard</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#deployment-for-elastic-file-system">Deployment for Elastic File System</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">Create RDS instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Create RDS instance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dockerfile-for-containers-of-antares3-and-opendatacube">Dockerfile for containers of Antares3 and OpenDataCube</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#copy-configuration-files-for-antares-and-open-datacube-to-efs-volume">Copy configuration files for antares and open datacube to efs volume</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#deployments-for-dask-scheduler-and-worker">Deployments for dask scheduler and worker</a></li>
@@ -893,10 +893,9 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>To renew certificate execute:</p>
-<dl class="last docutils">
-<dt><a href="#id1"><span class="problematic" id="id2">``</span></a>$certbot renew –dns-route53 –logs-dir letsencrypt/log/ </dt>
-<dd>–config-dir letsencrypt/config/ –work-dir letsencrypt/work/ –non-interactive``</dd>
-</dl>
+<p class="last"><code class="docutils literal notranslate"><span class="pre">$certbot</span> <span class="pre">renew</span> <span class="pre">--dns-route53</span> <span class="pre">--logs-dir</span> <span class="pre">letsencrypt/log/</span> <span class="pre">\</span></code>
+`` –config-dir letsencrypt/config/ –work-dir letsencrypt/work/ ``
+`` –non-interactive``</p>
 </div>
 <p>Create directory <code class="docutils literal notranslate"><span class="pre">certs</span></code> and copy cert and private key:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$mkdir</span> certs
@@ -1140,8 +1139,8 @@ spec:
 </div>
 </div>
 </div>
-<div class="section" id="id3">
-<h3>Create RDS instance<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h3>Create RDS instance<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Prerequisites at the top of this page to setup a RDS-instance with subnet and security groups created by <code class="docutils literal notranslate"><span class="pre">kops</span> <span class="pre">create</span> <span class="pre">cluster</span></code> command. Then create a database that will be used for Antares3 and ODC. You can create the database by ssh to an instance of Kubernetes cluster, install <code class="docutils literal notranslate"><span class="pre">postgresql-client</span></code> and execute a <code class="docutils literal notranslate"><span class="pre">createdb</span></code> command (to ssh to an instance of Kubernetes cluster see end of <strong>Cluster Creation</strong> section).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -1526,8 +1525,8 @@ spec:
 <p class="last">Make sure this &lt;key&gt;.pem has 400 permissions: <code class="docutils literal notranslate"><span class="pre">$chmod</span> <span class="pre">400</span> <span class="pre">&lt;key&gt;.pem</span></code>.</p>
 </div>
 </div>
-<div class="section" id="id4">
-<h4>Run an example<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id2">
+<h4>Run an example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <p>In dask-scheduler container execute in a python environment:</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dask.distributed</span> <span class="k">import</span> <span class="n">Client</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -1559,8 +1558,8 @@ spec:
 <div class="section" id="init-open-datacube">
 <h3>Init Open DataCube<a class="headerlink" href="#init-open-datacube" title="Permalink to this headline">¶</a></h3>
 <p>Log in where dask-scheduler container is running.</p>
-<div class="section" id="id5">
-<h4>Open DataCube<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id3">
+<h4>Open DataCube<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <div class="admonition attention">
 <p class="first admonition-title">Attention</p>
 <p class="last">Open Datacube supports NETCDF CF and S3 drivers for storage (see <a class="reference external" href="https://datacube-core.readthedocs.io/en/latest/ops/ingest.html#ingestion-config">Open DataCube Ingestion Config</a>). Different software dependencies are required for different drivers and different <code class="docutils literal notranslate"><span class="pre">datacube</span> <span class="pre">system</span> <span class="pre">init</span></code> command.</p>
