@@ -989,10 +989,10 @@ Open port retrieved by last command in masters security group of kubernetes clus
 Documentation of `Creating sample user`_ can be used to access via token generation.
 
 
-.. image:: imgs/k8s-dashboard-1.png
+.. image:: ../imgs/k8s-dashboard-1.png
 	:width: 400
 
-.. image:: imgs/k8s-dashboard-2.png
+.. image:: ../imgs/k8s-dashboard-2.png
 	:width: 400
 
 
