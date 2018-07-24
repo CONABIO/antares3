@@ -45,6 +45,13 @@ before_script:
 script:
   - python setup.py test
 
+after_success:
+  - if [[ $TRAVIS_BRANCH == 'develop' ]]; then
+        pip install travis-sphinx;
+        pip install -r docs/requirements.txt; 
+        travis-sphinx build --source=docs;
+    fi
+
 warnings_are_errors: true
 
 notifications:
