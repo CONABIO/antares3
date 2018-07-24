@@ -1260,6 +1260,16 @@ In order to be able to scale up/down cluster without deleting deployment of efs 
     $kubectl scale deployments/efs-provisioner --replicas=0 #use replicas=1 when scaling up cluster after a scale down was performed.
 
 
+or if you already have created it you can scale this deployment by using kubernetes dashboard:
+
+.. image:: ../imgs/k8s-dashboard-deployments.png
+    :width: 400
+
+.. image:: ../imgs/k8s-dashboard-deployments-2.png
+    :width: 400
+    
+    
+
 Create RDS instance
 -------------------
 
@@ -1416,7 +1426,9 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 
 	$ssh -i <key>.pem admin@$efs_prov_ip_publ
 
-	$sudo docker exec -it <container-id-efs> /bin/sh #to retrieve container id of efs do a docker ps
+	id_container_efs=$(sudo docker ps|grep efs-provisioner|grep quay|cut -d' ' -f1)
+
+	$sudo docker exec -it $id_container_efs /bin/sh
 
 .. note:: 
 
@@ -1503,7 +1515,7 @@ Deployments for dask scheduler and worker
 Deployment for dask scheduler
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler:
+Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler (example for a ``t2.medium`` instance):
 
 .. code-block:: bash
 
@@ -1535,10 +1547,10 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 	           value: C.UTF-8
 	        resources:
 	         requests:
-	          cpu: "1"
+	          cpu: ".5"   ##### This value depends of type of AWS instance chosen
 	          memory: 1Gi ##### This value depends of type of AWS instance chosen
 	         limits:
-	          cpu: "1"
+	          cpu: "1"    ##### This value depends of type of AWS instance chosen
 	          memory: 2Gi ##### This value depends of type of AWS instance chosen
 	        volumeMounts:
 	         - name: efs-pvc
@@ -1559,6 +1571,15 @@ Create deployment of antares3-scheduler with:
 .. code-block:: bash
 
     $kubectl create -f antares3-scheduler.yaml
+
+or if you already have created it you can scale this deployment by using kubernetes dashboard:
+
+.. image:: ../imgs/k8s-dashboard-deployments.png
+    :width: 400
+
+.. image:: ../imgs/k8s-dashboard-deployments-2.png
+    :width: 400
+    
 
 To visualize bokeh create Kubernetes service with next ``service.yaml`` (modify port according to your preference):
 
@@ -1638,10 +1659,10 @@ Example for ``t2.large`` instances which have 2 cores. Two instances were starte
 	            value: "/shared_volume"
 	        resources:
 	         requests:
-	          cpu: ".5"
+	          cpu: ".5"     ##### This value depends of type of AWS instance chosen
 	          memory: 3.5Gi ##### This value depends of type of AWS instance chosen
 	         limits:
-	          cpu: "1"
+	          cpu: "1"    ##### This value depends of type of AWS instance chosen
 	          memory: 4Gi ##### This value depends of type of AWS instance chosen
 	        volumeMounts:
 	         - name: efs-pvc
@@ -1671,6 +1692,16 @@ Create deployment of antares3-worker with:
 	Use ``kubectl scale deployments/antares3-worker --replicas=2`` to have two dask-worker containers.
 
 
+or if you already have created it you can scale this deployment by using kubernetes dashboard:
+
+.. image:: ../imgs/k8s-dashboard-deployments.png
+    :width: 400
+
+.. image:: ../imgs/k8s-dashboard-deployments-2.png
+    :width: 400
+    
+
+
 **For log in to dask-scheduler:**
 
 
@@ -1696,12 +1727,13 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 
     $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
 
-    $sudo docker exec -it <container-id-dask-scheduler> bash #to retrieve container id of dask scheduler do a docker ps
+    id_container_scheduler=$(sudo docker ps|grep antares3-scheduler|grep madmex|cut -d' ' -f1)
+
+    $sudo docker exec -it id_container_scheduler bash
 
 .. note:: 
 
 	Make sure this <key>.pem has 400 permissions: ``$chmod 400 <key>.pem``.
-
 
 
 
@@ -1831,7 +1863,9 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 
     $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
 
-    $sudo docker exec -it <container-id-dask-scheduler> bash #to retrieve container id of dask scheduler do a docker ps
+    id_container_scheduler=$(sudo docker ps|grep antares3-scheduler|grep madmex|cut -d' ' -f1)
+
+    $sudo docker exec -it id_container_scheduler bash
 
 .. note:: 
 
@@ -1852,8 +1886,18 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 	export EDITOR=nano
 	REGION=$(curl -s http://instance-data/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}')
 	export AWS_DEFAULT_REGION=$REGION
-   
-delete deployments:
+
+Scale down components of kubernetes dashboard:
+
+.. code-block:: bash
+
+	$kubectl -n kube-system scale deployments/kubernetes-dashboard --replicas=0
+	$kubectl -n kube-system scale deployments/monitoring-grafana --replicas=0
+	$kubectl -n kube-system scale deployments/heapster --replicas=0
+	$kubectl -n kube-system scale deployments/monitoring-influxdb --replicas=0
+
+
+delete deployments of antares3:
    
 .. code-block:: bash
 
@@ -1866,6 +1910,15 @@ and scale down efs-provisioner deployment:
 .. code-block:: bash
 
     $kubectl scale deployments/efs-provisioner --replicas=0
+
+
+or use kubernetes dashboard:
+
+.. image:: ../imgs/k8s-dashboard-deployments.png
+    :width: 400
+
+.. image:: ../imgs/k8s-dashboard-deployments-2.png
+    :width: 400
 
 Proceed to scale down nodes and master:
 
@@ -1931,6 +1984,16 @@ and execute:
 	$kops update cluster $CLUSTER_FULL_NAME --yes
 
 
+Scale up components of kubernetes dashboard:
+
+.. code-block:: bash
+
+	$kubectl -n kube-system scale deployments/monitoring-grafana --replicas=1
+	$kubectl -n kube-system scale deployments/heapster --replicas=1
+	$kubectl -n kube-system scale deployments/monitoring-influxdb --replicas=1
+	$kubectl -n kube-system scale deployments/kubernetes-dashboard --replicas=1
+
+
 And scale up efs-provisioner deployment :
 
 .. code-block:: bash
@@ -1939,13 +2002,44 @@ And scale up efs-provisioner deployment :
    
 and create deployments for dask-scheduler and dask-worker (see **Deployments for dask scheduler and worker** section).
 
+or use kubernetes dashboard:
 
-4. Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:
+.. image:: ../imgs/k8s-dashboard-deployments.png
+    :width: 400
+
+.. image:: ../imgs/k8s-dashboard-deployments-2.png
+    :width: 400
+
+
+
+4. Before deleting cluster delete deployment of kubernetes dashboard with it's components, EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:
    
-For example, to delete deployment of EFS and service (bokeh visualization):
+For example, to delete deployment of components of kubernetes dashboard, EFS and service (bokeh visualization):
+
 
 .. code-block:: bash
 
+	#delete admin-user created:
+	
+	$kubectl -n kube-system delete serviceaccount admin-user
+	$kubectl -n kube-system delete ClusterRoleBinding admin-user
+	
+	#delete dashboard components:
+	$kubectl -n kube-system delete deploy/kubernetes-dashboard 
+	$kubectl -n kube-system delete svc/kubernetes-dashboard
+	$kubectl -n kube-system delete rolebinding kubernetes-dashboard-minimal
+	$kubectl -n kube-system delete role kubernetes-dashboard-minimal
+	$kubectl -n kube-system delete serviceaccount kubernetes-dashboard
+	$kubectl -n kube-system delete secret kubernetes-dashboard-certs kubernetes-dashboard-key-holder
+	
+	#delete heapster components:
+	$kubectl -n kube-system delete deploy/heapster
+	$kubectl -n kube-system delete deploy/monitoring-grafana deploy/monitoring-influxdb
+	$kubectl -n kube-system delete svc/heapster svc/monitoring-grafana svc/monitoring-influxdb
+	$kubectl -n kube-system delete serviceaccount heapster
+	$kubectl -n kube-system delete clusterrolebinding heapster
+
+	#delete deployment of efs
     $kubectl delete deployment efs-provisioner
 
     $kubectl delete service antares3-scheduler-bokeh
