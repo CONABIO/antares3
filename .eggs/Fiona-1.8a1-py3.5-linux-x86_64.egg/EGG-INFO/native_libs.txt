@@ -1,7 +1,0 @@
-fiona/_crs.cpython-35m-x86_64-linux-gnu.so
-fiona/_err.cpython-35m-x86_64-linux-gnu.so
-fiona/_geometry.cpython-35m-x86_64-linux-gnu.so
-fiona/_drivers.cpython-35m-x86_64-linux-gnu.so
-fiona/_transform.cpython-35m-x86_64-linux-gnu.so
-fiona/ogrext.cpython-35m-x86_64-linux-gnu.so
-fiona/_shim.cpython-35m-x86_64-linux-gnu.so

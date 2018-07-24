@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -234,7 +233,7 @@ be (bands, y, x)</li>
 <tr class="row-even"><td><a class="reference internal" href="madmex.lcc.bitemporal.BaseBiChange.filter_mmu.html#madmex.lcc.bitemporal.BaseBiChange.filter_mmu" title="madmex.lcc.bitemporal.BaseBiChange.filter_mmu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_mmu</span></code></a>(min_area)</td>
 <td>Filter clumps of pixels smaller than min_area</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="madmex.lcc.bitemporal.BaseBiChange.filter_no_change.html#madmex.lcc.bitemporal.BaseBiChange.filter_no_change" title="madmex.lcc.bitemporal.BaseBiChange.filter_no_change"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_no_change</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="madmex.lcc.bitemporal.BaseBiChange.filter_no_change.html#madmex.lcc.bitemporal.BaseBiChange.filter_no_change" title="madmex.lcc.bitemporal.BaseBiChange.filter_no_change"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_no_change</span></code></a>(fc)</td>
 <td>Filter labeled change polygons that have the same before and after label</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="madmex.lcc.bitemporal.BaseBiChange.from_geoarray.html#madmex.lcc.bitemporal.BaseBiChange.from_geoarray" title="madmex.lcc.bitemporal.BaseBiChange.from_geoarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_geoarray</span></code></a>(geoarray,&nbsp;**kwargs)</td>
@@ -249,7 +248,7 @@ be (bands, y, x)</li>
 <tr class="row-odd"><td><a class="reference internal" href="madmex.lcc.bitemporal.BaseBiChange.run.html#madmex.lcc.bitemporal.BaseBiChange.run" title="madmex.lcc.bitemporal.BaseBiChange.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>(other)</td>
 <td>Run change detection using algorithm defined in _run</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">threshold_change</span></code>(method,&nbsp;**kwargs)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">threshold_change</span></code>(diff_image,&nbsp;method,&nbsp;**kwargs)</td>
 <td>Applies a thresholding method to a continuous difference image</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="madmex.lcc.bitemporal.BaseBiChange.to_db.html#madmex.lcc.bitemporal.BaseBiChange.to_db" title="madmex.lcc.bitemporal.BaseBiChange.to_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_db</span></code></a>(fc,&nbsp;meta,&nbsp;pre_name,&nbsp;post_name)</td>
@@ -329,16 +328,11 @@ be (bands, y, x)</li>
 
   
 
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

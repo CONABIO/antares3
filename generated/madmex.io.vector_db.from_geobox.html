@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -198,8 +197,11 @@ To declare a class method, use this idiom:</p>
 <blockquote>
 <div><dl class="docutils">
 <dt>class C:</dt>
-<dd>def f(cls, arg1, arg2, …): …
-f = classmethod(f)</dd>
+<dd><p class="first">&#64;classmethod
+def f(cls, arg1, arg2, …):</p>
+<blockquote class="last">
+<div>…</div></blockquote>
+</dd>
 </dl>
 </div></blockquote>
 <p>It can be called either on the class (e.g. C.f()) or on an instance
@@ -268,16 +270,11 @@ If you want those, see the staticmethod builtin.</p>
 
   
 
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

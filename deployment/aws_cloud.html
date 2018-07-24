@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -861,11 +860,11 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 <p>Next steps are based on: <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Certificate-management">Certificate management</a>, <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Installation">Installation</a>, <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above">Accessing Dashboard 1.7.X and above</a> and <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user">Creating sample user</a> from kubernetes official documentation and installation of <a class="reference external" href="https://certbot.eff.org/lets-encrypt/ubuntuxenial-other">Certbot for Ubuntu (16.04) xenial</a> and <a class="reference external" href="https://certbot-dns-route53.readthedocs.io/en/latest/#">certbot-dns-route53</a> to generate certificates and access kubernetes dashboard via https.</p>
 <p>Install certbot and Route53 plugin for Let’s Encrypt client:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#Install certbot for ubuntu (16.04) xenial</span>
-$ sudo apt-get update
-$ sudo apt-get install software-properties-common
-$ sudo add-apt-repository ppa:certbot/certbot
-$ sudo apt-get update
-$ sudo apt-get install certbot
+<span class="nv">$sudo</span> apt-get update
+<span class="nv">$sudo</span> apt-get install -y software-properties-common
+<span class="nv">$sudo</span> add-apt-repository ppa:certbot/certbot
+<span class="nv">$sudo</span> apt-get update
+<span class="nv">$sudo</span> apt-get install -y certbot
 <span class="c1">#check version of certbot and install route53 plugin:</span>
 <span class="nv">certbot_v</span><span class="o">=</span><span class="k">$(</span>certbot --version<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f2<span class="k">)</span>
 <span class="nv">$sudo</span> pip3 install <span class="nv">certbot_dns_route53</span><span class="o">==</span><span class="nv">$certbot_v</span>
@@ -877,7 +876,6 @@ $ sudo apt-get install certbot
 <span class="nv">$mkdir</span> -p ~/letsencrypt/work/
 </pre></div>
 </div>
-<p>Open ports 80 and 443 of instance via AWS console.</p>
 <p>Using <code class="docutils literal notranslate"><span class="pre">kubectl</span></code> retrieve where is kubernetes master running:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ kubectl cluster-info
 Kubernetes master is running at &lt;location&gt;
@@ -892,7 +890,7 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>To renew certificate execute:</p>
+<p>Make sure you save the date that will expire your certificate. To renew certificate execute:</p>
 <div class="last highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$certbot</span> renew --dns-route53 --logs-dir letsencrypt/log/ <span class="se">\</span>
  --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ <span class="se">\</span>
  --non-interactive
@@ -909,16 +907,12 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 <p class="first admonition-title">Note</p>
 <p class="last">When renewing your certificate the latest ones will be symlinks located: <code class="docutils literal notranslate"><span class="pre">letsencrypt/config/live/&lt;location&gt;/</span></code>. See <a class="reference external" href="https://certbot.eff.org/docs/using.html#where-are-my-certificates">Where are my certificates?</a></p>
 </div>
-<p>Create kubernetes secret:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> create secret generic kubernetes-dashboard-certs --from-file<span class="o">=</span>certs -n kube-system
-</pre></div>
-</div>
 <p>To compute resource usage analysis and monitoring of container clusters <a class="reference external" href="https://github.com/kubernetes/heapster/">heapster</a> is used (although by this time july 2018 is recommended to migrate to <a class="reference external" href="https://github.com/kubernetes-incubator/metrics-server">metrics-server</a> and a third party metrics pipeline to gather Prometheus-format metrics instead.)</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$git</span> clone https://github.com/kubernetes/heapster.git
 <span class="c1">#We are using some hardcoded version from which we know there will be sucessfull deployment of dashboard</span>
-<span class="nv">$sed</span> -ni <span class="s1">&#39;s/heapster-grafana-amd64:v5.0.4/heapster-grafana-amd64:v4.4.3/;p&#39;</span> heapster/deploy/kube-config/influxdb/grafana.yaml
-<span class="nv">$sed</span> -ni <span class="s1">&#39;s/heapster-influxdb-amd64:v1.5.2/heapster-influxdb-amd64:v1.3.3/;p&#39;</span> heapster/deploy/kube-config/influxdb/influxdb.yaml
-<span class="nv">$sed</span> -ni <span class="s1">&#39;s/heapster-amd64:v1.5.3/heapster-amd64:v1.3.0/;p&#39;</span> heapster/deploy/kube-config/influxdb/heapster.yaml
+<span class="nv">$sed</span> -ni <span class="s1">&#39;s/heapster-grafana-.*/heapster-grafana-amd64:v4.4.3/;p&#39;</span> heapster/deploy/kube-config/influxdb/grafana.yaml
+<span class="nv">$sed</span> -ni <span class="s1">&#39;s/heapster-influxdb-.*/heapster-influxdb-amd64:v1.3.3/;p&#39;</span> heapster/deploy/kube-config/influxdb/influxdb.yaml
+<span class="nv">$sed</span> -ni <span class="s1">&#39;s/heapster-.*/heapster-amd64:v1.3.0/;p&#39;</span> heapster/deploy/kube-config/influxdb/heapster.yaml
 </pre></div>
 </div>
 <p>Next steps are based on: <a class="reference external" href="https://github.com/kubernetes/heapster/blob/master/docs/influxdb.md">Run Heapster in a Kubernetes cluster with an InfluxDB backend and a Grafana UI</a></p>
@@ -926,15 +920,23 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 <span class="nv">$kubectl</span> create -f heapster/deploy/kube-config/rbac/heapster-rbac.yaml
 </pre></div>
 </div>
-<p>Establish certs that will be used by kubernetes dashboard:</p>
+<p>Establish certs that will be used by kubernetes dashboard in <code class="docutils literal notranslate"><span class="pre">kubernetes-dashboard.yaml</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$curl</span> -O https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
 <span class="nv">$sed</span> -ni <span class="s1">&#39;s/- --auto-generate-certificates/#- --auto-generate-certificates/;p&#39;</span> kubernetes-dashboard.yaml
-<span class="nv">$sed</span> -ni <span class="s1">&#39;s/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p&#39;</span> kubernetes-dashboard.yaml
-<span class="nv">$sed</span> -ni <span class="s1">&#39;s/- --tls-key-file=/- --tls-key-file=privkey1.pem/;p&#39;</span> kubernetes-dashboard.yaml
+    <span class="nv">$sed</span> -i <span class="s1">&#39;/args:/a \ \ \ \ \ \ \ \ \ \ - --tls-cert-file=fullchain1.pem&#39;</span> kubernetes-dashboard.yaml
+    <span class="nv">$sed</span> -i <span class="s1">&#39;/args:/a \ \ \ \ \ \ \ \ \ \ - --tls-key-file=privkey1.pem&#39;</span> kubernetes-dashboard.yaml
 </pre></div>
 </div>
-<p>Create <code class="docutils literal notranslate"><span class="pre">kubernetes-dashboard.yaml</span></code> :</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl create -f kubernetes-dashboard.yaml
+<p>Create kubernetes secret:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> create secret generic kubernetes-dashboard-certs --from-file<span class="o">=</span>certs -n kube-system
+</pre></div>
+</div>
+<p>Apply changes <code class="docutils literal notranslate"><span class="pre">kubernetes-dashboard.yaml</span></code> :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> apply -f kubernetes-dashboard.yaml
+</pre></div>
+</div>
+<p>You can check that containers are running by executing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> -n kube-system get pods
 </pre></div>
 </div>
 <p>To visualize kubernetes-dashboard one possibility is to change type <code class="docutils literal notranslate"><span class="pre">ClusterIP</span></code> to <code class="docutils literal notranslate"><span class="pre">NodePort</span></code> (see <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above">Accessing Dashboard 1.7.X and above</a>) when executing next command:</p>
@@ -950,6 +952,42 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 <p>Documentation of <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user">Creating sample user</a> can be used to access via token generation.</p>
 <a class="reference internal image-reference" href="../_images/k8s-dashboard-1.png"><img alt="../_images/k8s-dashboard-1.png" src="../_images/k8s-dashboard-1.png" style="width: 400px;" /></a>
 <a class="reference internal image-reference" href="../_images/k8s-dashboard-2.png"><img alt="../_images/k8s-dashboard-2.png" src="../_images/k8s-dashboard-2.png" style="width: 400px;" /></a>
+<p>To scale down components of kubernetes dashboard:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> -n kube-system scale deployments/kubernetes-dashboard --replicas<span class="o">=</span><span class="m">0</span>
+<span class="nv">$kubectl</span> -n kube-system scale deployments/monitoring-grafana --replicas<span class="o">=</span><span class="m">0</span>
+<span class="nv">$kubectl</span> -n kube-system scale deployments/heapster --replicas<span class="o">=</span><span class="m">0</span>
+<span class="nv">$kubectl</span> -n kube-system scale deployments/monitoring-influxdb --replicas<span class="o">=</span><span class="m">0</span>
+</pre></div>
+</div>
+<p>To scale up components of kubernetes dashboard:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> -n kube-system scale deployments/monitoring-grafana --replicas<span class="o">=</span><span class="m">1</span>
+<span class="nv">$kubectl</span> -n kube-system scale deployments/heapster --replicas<span class="o">=</span><span class="m">1</span>
+<span class="nv">$kubectl</span> -n kube-system scale deployments/monitoring-influxdb --replicas<span class="o">=</span><span class="m">1</span>
+<span class="nv">$kubectl</span> -n kube-system scale deployments/kubernetes-dashboard --replicas<span class="o">=</span><span class="m">1</span>
+</pre></div>
+</div>
+<p>To delete components of kubernetes dashboard:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#delete admin-user created:</span>
+
+<span class="nv">$kubectl</span> -n kube-system delete serviceaccount admin-user
+<span class="nv">$kubectl</span> -n kube-system delete ClusterRoleBinding admin-user
+
+<span class="c1">#delete dashboard components:</span>
+<span class="nv">$kubectl</span> -n kube-system delete deploy/kubernetes-dashboard
+<span class="nv">$kubectl</span> -n kube-system delete svc/kubernetes-dashboard
+<span class="nv">$kubectl</span> -n kube-system delete rolebinding kubernetes-dashboard-minimal
+<span class="nv">$kubectl</span> -n kube-system delete role kubernetes-dashboard-minimal
+<span class="nv">$kubectl</span> -n kube-system delete serviceaccount kubernetes-dashboard
+<span class="nv">$kubectl</span> -n kube-system delete secret kubernetes-dashboard-certs kubernetes-dashboard-key-holder
+
+<span class="c1">#delete heapster components:</span>
+<span class="nv">$kubectl</span> -n kube-system delete deploy/heapster
+<span class="nv">$kubectl</span> -n kube-system delete deploy/monitoring-grafana deploy/monitoring-influxdb
+<span class="nv">$kubectl</span> -n kube-system delete svc/heapster svc/monitoring-grafana svc/monitoring-influxdb
+<span class="nv">$kubectl</span> -n kube-system delete serviceaccount heapster
+<span class="nv">$kubectl</span> -n kube-system delete clusterrolebinding heapster
+</pre></div>
+</div>
 </div>
 <div class="section" id="deployment-for-elastic-file-system">
 <h3>Deployment for Elastic File System<a class="headerlink" href="#deployment-for-elastic-file-system" title="Permalink to this headline">¶</a></h3>
@@ -1139,6 +1177,9 @@ spec:
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span> <span class="c1">#use replicas=1 when scaling up cluster after a scale down was performed.</span>
 </pre></div>
 </div>
+<p>or if you already have created it you can scale this deployment by using kubernetes dashboard:</p>
+<a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments.png"><img alt="../_images/k8s-dashboard-deployments.png" src="../_images/k8s-dashboard-deployments.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments-2.png"><img alt="../_images/k8s-dashboard-deployments-2.png" src="../_images/k8s-dashboard-deployments-2.png" style="width: 400px;" /></a>
 </div>
 </div>
 <div class="section" id="id1">
@@ -1282,7 +1323,9 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 </ol>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$ssh</span> -i &lt;key&gt;.pem admin@<span class="nv">$efs_prov_ip_publ</span>
 
-<span class="nv">$sudo</span> docker <span class="nb">exec</span> -it &lt;container-id-efs&gt; /bin/sh <span class="c1">#to retrieve container id of efs do a docker ps</span>
+<span class="nv">id_container_efs</span><span class="o">=</span><span class="k">$(</span>sudo docker ps<span class="p">|</span>grep efs-provisioner<span class="p">|</span>grep quay<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
+
+<span class="nv">$sudo</span> docker <span class="nb">exec</span> -it <span class="nv">$id_container_efs</span> /bin/sh
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1362,7 +1405,7 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 <h3>Deployments for dask scheduler and worker<a class="headerlink" href="#deployments-for-dask-scheduler-and-worker" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="deployment-for-dask-scheduler">
 <h4>Deployment for dask scheduler<a class="headerlink" href="#deployment-for-dask-scheduler" title="Permalink to this headline">¶</a></h4>
-<p>Use next <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code> file to create container for dask scheduler:</p>
+<p>Use next <code class="docutils literal notranslate"><span class="pre">antares3-scheduler.yaml</span></code> file to create container for dask scheduler (example for a <code class="docutils literal notranslate"><span class="pre">t2.medium</span></code> instance):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
@@ -1391,10 +1434,10 @@ spec:
            value: C.UTF-8
         resources:
          requests:
-          cpu: <span class="s2">&quot;1&quot;</span>
+          cpu: <span class="s2">&quot;.5&quot;</span>   <span class="c1">##### This value depends of type of AWS instance chosen</span>
           memory: 1Gi <span class="c1">##### This value depends of type of AWS instance chosen</span>
          limits:
-          cpu: <span class="s2">&quot;1&quot;</span>
+          cpu: <span class="s2">&quot;1&quot;</span>    <span class="c1">##### This value depends of type of AWS instance chosen</span>
           memory: 2Gi <span class="c1">##### This value depends of type of AWS instance chosen</span>
         volumeMounts:
          - name: efs-pvc
@@ -1414,6 +1457,9 @@ spec:
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> create -f antares3-scheduler.yaml
 </pre></div>
 </div>
+<p>or if you already have created it you can scale this deployment by using kubernetes dashboard:</p>
+<a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments.png"><img alt="../_images/k8s-dashboard-deployments.png" src="../_images/k8s-dashboard-deployments.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments-2.png"><img alt="../_images/k8s-dashboard-deployments-2.png" src="../_images/k8s-dashboard-deployments-2.png" style="width: 400px;" /></a>
 <p>To visualize bokeh create Kubernetes service with next <code class="docutils literal notranslate"><span class="pre">service.yaml</span></code> (modify port according to your preference):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kind: Service
 apiVersion: v1
@@ -1475,10 +1521,10 @@ spec:
             value: <span class="s2">&quot;/shared_volume&quot;</span>
         resources:
          requests:
-          cpu: <span class="s2">&quot;.5&quot;</span>
+          cpu: <span class="s2">&quot;.5&quot;</span>     <span class="c1">##### This value depends of type of AWS instance chosen</span>
           memory: <span class="m">3</span>.5Gi <span class="c1">##### This value depends of type of AWS instance chosen</span>
          limits:
-          cpu: <span class="s2">&quot;1&quot;</span>
+          cpu: <span class="s2">&quot;1&quot;</span>    <span class="c1">##### This value depends of type of AWS instance chosen</span>
           memory: 4Gi <span class="c1">##### This value depends of type of AWS instance chosen</span>
         volumeMounts:
          - name: efs-pvc
@@ -1503,6 +1549,9 @@ spec:
 <p class="first admonition-title">Note</p>
 <p class="last">Use <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">scale</span> <span class="pre">deployments/antares3-worker</span> <span class="pre">--replicas=2</span></code> to have two dask-worker containers.</p>
 </div>
+<p>or if you already have created it you can scale this deployment by using kubernetes dashboard:</p>
+<a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments.png"><img alt="../_images/k8s-dashboard-deployments.png" src="../_images/k8s-dashboard-deployments.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments-2.png"><img alt="../_images/k8s-dashboard-deployments-2.png" src="../_images/k8s-dashboard-deployments-2.png" style="width: 400px;" /></a>
 <p><strong>For log in to dask-scheduler:</strong></p>
 <p>Locate where is running the scheduler:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">REGION</span><span class="o">=</span><span class="k">$(</span>curl -s http://instance-data/latest/dynamic/instance-identity/document<span class="p">|</span>grep region<span class="p">|</span>awk -F<span class="se">\&quot;</span> <span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
@@ -1519,7 +1568,9 @@ spec:
 <p>Using &lt;key&gt;.pem of user kops do a ssh and enter to docker container of dask-scheduler with <code class="docutils literal notranslate"><span class="pre">exec</span></code> command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$ssh</span> -i &lt;key&gt;.pem admin@<span class="nv">$dask_scheduler_ip_publ</span>
 
-<span class="nv">$sudo</span> docker <span class="nb">exec</span> -it &lt;container-id-dask-scheduler&gt; bash <span class="c1">#to retrieve container id of dask scheduler do a docker ps</span>
+<span class="nv">id_container_scheduler</span><span class="o">=</span><span class="k">$(</span>sudo docker ps<span class="p">|</span>grep antares3-scheduler<span class="p">|</span>grep madmex<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
+
+<span class="nv">$sudo</span> docker <span class="nb">exec</span> -it id_container_scheduler bash
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1620,7 +1671,9 @@ spec:
 <p>Using &lt;key&gt;.pem of user kops do a ssh and enter to docker container of dask-scheduler with <code class="docutils literal notranslate"><span class="pre">exec</span></code> command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$ssh</span> -i &lt;key&gt;.pem admin@<span class="nv">$dask_scheduler_ip_publ</span>
 
-<span class="nv">$sudo</span> docker <span class="nb">exec</span> -it &lt;container-id-dask-scheduler&gt; bash <span class="c1">#to retrieve container id of dask scheduler do a docker ps</span>
+<span class="nv">id_container_scheduler</span><span class="o">=</span><span class="k">$(</span>sudo docker ps<span class="p">|</span>grep antares3-scheduler<span class="p">|</span>grep madmex<span class="p">|</span>cut -d<span class="s1">&#39; &#39;</span> -f1<span class="k">)</span>
+
+<span class="nv">$sudo</span> docker <span class="nb">exec</span> -it id_container_scheduler bash
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1640,7 +1693,14 @@ spec:
 <span class="nb">export</span> <span class="nv">AWS_DEFAULT_REGION</span><span class="o">=</span><span class="nv">$REGION</span>
 </pre></div>
 </div>
-<p>delete deployments:</p>
+<p>Scale down components of kubernetes dashboard:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> -n kube-system scale deployments/kubernetes-dashboard --replicas<span class="o">=</span><span class="m">0</span>
+<span class="nv">$kubectl</span> -n kube-system scale deployments/monitoring-grafana --replicas<span class="o">=</span><span class="m">0</span>
+<span class="nv">$kubectl</span> -n kube-system scale deployments/heapster --replicas<span class="o">=</span><span class="m">0</span>
+<span class="nv">$kubectl</span> -n kube-system scale deployments/monitoring-influxdb --replicas<span class="o">=</span><span class="m">0</span>
+</pre></div>
+</div>
+<p>delete deployments of antares3:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> delete deployment antares3-worker
 
 <span class="nv">$kubectl</span> delete deployment antares3-scheduler
@@ -1650,6 +1710,9 @@ spec:
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span>
 </pre></div>
 </div>
+<p>or use kubernetes dashboard:</p>
+<a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments.png"><img alt="../_images/k8s-dashboard-deployments.png" src="../_images/k8s-dashboard-deployments.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments-2.png"><img alt="../_images/k8s-dashboard-deployments-2.png" src="../_images/k8s-dashboard-deployments-2.png" style="width: 400px;" /></a>
 <p>Proceed to scale down nodes and master:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#set minSize and maxSize to 0 for nodes</span>
 <span class="nv">$kops</span> edit ig nodes --name <span class="nv">$CLUSTER_FULL_NAME</span>
@@ -1707,16 +1770,47 @@ spec:
 <span class="nv">$kops</span> update cluster <span class="nv">$CLUSTER_FULL_NAME</span> --yes
 </pre></div>
 </div>
+<p>Scale up components of kubernetes dashboard:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> -n kube-system scale deployments/monitoring-grafana --replicas<span class="o">=</span><span class="m">1</span>
+<span class="nv">$kubectl</span> -n kube-system scale deployments/heapster --replicas<span class="o">=</span><span class="m">1</span>
+<span class="nv">$kubectl</span> -n kube-system scale deployments/monitoring-influxdb --replicas<span class="o">=</span><span class="m">1</span>
+<span class="nv">$kubectl</span> -n kube-system scale deployments/kubernetes-dashboard --replicas<span class="o">=</span><span class="m">1</span>
+</pre></div>
+</div>
 <p>And scale up efs-provisioner deployment :</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">1</span>
 </pre></div>
 </div>
 <p>and create deployments for dask-scheduler and dask-worker (see <strong>Deployments for dask scheduler and worker</strong> section).</p>
+<p>or use kubernetes dashboard:</p>
+<a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments.png"><img alt="../_images/k8s-dashboard-deployments.png" src="../_images/k8s-dashboard-deployments.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments-2.png"><img alt="../_images/k8s-dashboard-deployments-2.png" src="../_images/k8s-dashboard-deployments-2.png" style="width: 400px;" /></a>
 <ol class="arabic simple" start="4">
-<li>Before deleting cluster delete deployment of EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:</li>
+<li>Before deleting cluster delete deployment of kubernetes dashboard with it’s components, EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:</li>
 </ol>
-<p>For example, to delete deployment of EFS and service (bokeh visualization):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> delete deployment efs-provisioner
+<p>For example, to delete deployment of components of kubernetes dashboard, EFS and service (bokeh visualization):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="c1">#delete admin-user created:</span>
+
+    <span class="nv">$kubectl</span> -n kube-system delete serviceaccount admin-user
+    <span class="nv">$kubectl</span> -n kube-system delete ClusterRoleBinding admin-user
+
+    <span class="c1">#delete dashboard components:</span>
+    <span class="nv">$kubectl</span> -n kube-system delete deploy/kubernetes-dashboard
+    <span class="nv">$kubectl</span> -n kube-system delete svc/kubernetes-dashboard
+    <span class="nv">$kubectl</span> -n kube-system delete rolebinding kubernetes-dashboard-minimal
+    <span class="nv">$kubectl</span> -n kube-system delete role kubernetes-dashboard-minimal
+    <span class="nv">$kubectl</span> -n kube-system delete serviceaccount kubernetes-dashboard
+    <span class="nv">$kubectl</span> -n kube-system delete secret kubernetes-dashboard-certs kubernetes-dashboard-key-holder
+
+    <span class="c1">#delete heapster components:</span>
+    <span class="nv">$kubectl</span> -n kube-system delete deploy/heapster
+    <span class="nv">$kubectl</span> -n kube-system delete deploy/monitoring-grafana deploy/monitoring-influxdb
+    <span class="nv">$kubectl</span> -n kube-system delete svc/heapster svc/monitoring-grafana svc/monitoring-influxdb
+    <span class="nv">$kubectl</span> -n kube-system delete serviceaccount heapster
+    <span class="nv">$kubectl</span> -n kube-system delete clusterrolebinding heapster
+
+    <span class="c1">#delete deployment of efs</span>
+<span class="nv">$kubectl</span> delete deployment efs-provisioner
 
 <span class="nv">$kubectl</span> delete service antares3-scheduler-bokeh
 </pre></div>
@@ -1851,16 +1945,11 @@ spec:
 
   
 
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

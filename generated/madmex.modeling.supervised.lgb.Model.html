@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -216,7 +215,8 @@
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#madmex.modeling.supervised.lgb.Model.__init__" title="madmex.modeling.supervised.lgb.Model.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([categorical_features,&nbsp;…])</td>
-<td></td>
+<td><p class="rubric">Example</p>
+</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(X,&nbsp;y)</td>
 <td>This method will train the classifier with given data.</td>
@@ -230,7 +230,7 @@
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hot_encode_training</span></code>(X)</td>
 <td>Apply one hot encoding to one or several predictors determined by the list of indices of the hot_encode attribute</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>()</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>(filepath)</td>
 <td>Read object from file</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(X)</td>
@@ -239,7 +239,7 @@
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_confidence</span></code>(X)</td>
 <td>Get confidence of every prediction</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_outliers</span></code>(y[,&nbsp;contamination,&nbsp;max_samples])</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_outliers</span></code>(X,&nbsp;y[,&nbsp;contamination,&nbsp;…])</td>
 <td>Performs outliers detection and removal using Isolation Forest anomaly score</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(filepath)</td>
@@ -310,16 +310,11 @@
 
   
 
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

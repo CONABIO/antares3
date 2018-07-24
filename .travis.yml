@@ -10,7 +10,6 @@ addons:
 sudo: required
 
 python:
-  - "2.7"
   - "3.6"
 
 before_install:
@@ -29,11 +28,14 @@ before_install:
   - pip install -U pip
   - pip install numpy
   - pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
+  - pip install xgboost
   - ./travis_setup.py
 
+env:
+  - SECRET_KEY=key
 
 install:
-  - pip install -e .
+  - pip install .
 
 before_script:
   - psql -U postgres -c "create extension postgis"
@@ -42,6 +44,27 @@ before_script:
 
 script:
   - python setup.py test
+
+after_success:
+  - pip install -r docs/requirements.txt 
+  - git checkout -b gh-pages origin/gh-pages
+  - find . -type f -not -path '*/\.*' -print0 | xargs -0 rm --
+  - rm -R -- */
+  - git checkout develop docs madmex
+  - git reset HEAD
+  - cd docs
+  - make html
+  - cd ..
+  - mv -f docs/_build/html/* .
+  - rm -rf madmex docs
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GH_TOKEN
+  keep-history: true
+  on:
+    branch: develop
 
 warnings_are_errors: true
 

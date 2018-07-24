@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -193,9 +192,11 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            max_iterations (int): Max number of iteration of the irmad process</span>
-<span class="sd">            min_delta (float): TODO</span>
-<span class="sd">            lmbda (float): TODO</span>
-<span class="sd">            shift (tuple): TODO</span>
+<span class="sd">            min_delta (float): Threshold to stop the iteration process</span>
+<span class="sd">            lmbda (float): Value to perform regularization on the eigenvalue</span>
+<span class="sd">                problem when the condition number is too high</span>
+<span class="sd">            shift (tuple): Quantity to shift the matrix to calculate the</span>
+<span class="sd">                spatial autocorrelation</span>
 <span class="sd">            threshold (str): One of the automatic thresholding method exposed in</span>
 <span class="sd">                ``madmex.lcc.bitemporal.BaseBiChange.threshold_change``</span>
 <span class="sd">            **kwargs: Additional arguments to pass to the thresolding method</span>
@@ -286,16 +287,11 @@
 
   
 
-  
-  
-    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

@@ -1,6 +1,0 @@
-madmex.indexing.wkt\_to\_proj4
-==============================
-
-.. currentmodule:: madmex.indexing
-
-.. autofunction:: wkt_to_proj4

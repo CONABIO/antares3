@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -207,9 +206,11 @@ the output using the Maximum Autocorrelation Factor.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>max_iterations</strong> (<em>int</em>) – Max number of iteration of the irmad process</li>
-<li><strong>min_delta</strong> (<em>float</em>) – TODO</li>
-<li><strong>lmbda</strong> (<em>float</em>) – TODO</li>
-<li><strong>shift</strong> (<em>tuple</em>) – TODO</li>
+<li><strong>min_delta</strong> (<em>float</em>) – Threshold to stop the iteration process</li>
+<li><strong>lmbda</strong> (<em>float</em>) – Value to perform regularization on the eigenvalue
+problem when the condition number is too high</li>
+<li><strong>shift</strong> (<em>tuple</em>) – Quantity to shift the matrix to calculate the
+spatial autocorrelation</li>
 <li><strong>threshold</strong> (<em>str</em>) – One of the automatic thresholding method exposed in
 <code class="docutils literal notranslate"><span class="pre">madmex.lcc.bitemporal.BaseBiChange.threshold_change</span></code></li>
 <li><strong>**kwargs</strong> – Additional arguments to pass to the thresolding method</li>
@@ -261,7 +262,7 @@ the output using the Maximum Autocorrelation Factor.</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_mmu</span></code>(min_area)</td>
 <td>Filter clumps of pixels smaller than min_area</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_no_change</span></code>()</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_no_change</span></code>(fc)</td>
 <td>Filter labeled change polygons that have the same before and after label</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_geoarray</span></code>(geoarray,&nbsp;**kwargs)</td>
@@ -276,7 +277,7 @@ the output using the Maximum Autocorrelation Factor.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code>(other)</td>
 <td>Run change detection using algorithm defined in _run</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">threshold_change</span></code>(method,&nbsp;**kwargs)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">threshold_change</span></code>(diff_image,&nbsp;method,&nbsp;**kwargs)</td>
 <td>Applies a thresholding method to a continuous difference image</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_db</span></code>(fc,&nbsp;meta,&nbsp;pre_name,&nbsp;post_name)</td>
@@ -356,16 +357,11 @@ the output using the Maximum Autocorrelation Factor.</p>
 
   
 
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

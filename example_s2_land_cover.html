@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -265,21 +264,21 @@ datacube ingest -c ~/.config/madmex/ingestion/s2_l2a_20m_mexico.yaml --executor 
 <h2>Run spatial segmentation<a class="headerlink" href="#run-spatial-segmentation" title="Permalink to this headline">¶</a></h2>
 <p>The final map is composed of spatial objects, also called segments. A spatial segmentation step is therefore required.
 <code class="docutils literal notranslate"><span class="pre">antares</span></code> implements various segmentation algorithms that can all be operated from the <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">segment</span></code> command line. To get a list of implemented algorithms, run the <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">segment_params</span></code> command line.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;pythonpath&#39;: None, &#39;traceback&#39;: False, &#39;settings&#39;: None, &#39;segmentation&#39;: None, &#39;no_color&#39;: False, &#39;verbosity&#39;: 1}
-Command execution is done in 1.045219898223877 seconds.
 Algorithm description                                                                
 --------  ---------------                                                            
+Cannot import module
+ERROR: /home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/bin/bis/cregionmerge.so: undefined symbol: PyFPE_jbuf
 bis       Antares implementation of Berkeley Image segmentation algorithm            
 slic      Antares implementation of scikit-image&#39;s SLIC segmentation algorithm
 </pre></div>
 </div>
 <p>We will use the Berkeley Image Segmentation (bis) for the present example. Each algorithm has different parameters, that can be inspected using the <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">segment_params</span> <span class="pre">'algorithm'</span></code> command line.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;segmentation&#39;: &#39;bis&#39;, &#39;settings&#39;: None, &#39;no_color&#39;: False, &#39;traceback&#39;: False, &#39;pythonpath&#39;: None, &#39;verbosity&#39;: 1}
-Command execution is done in 0.9749593734741211 seconds.
+Cannot import module
+ERROR: /home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/bin/bis/cregionmerge.so: undefined symbol: PyFPE_jbuf
                  Argument | Default value            
        ================== | ==============           
                         t | 12                       
@@ -314,10 +313,8 @@ Command execution is done in 0.9749593734741211 seconds.
 <h2>Train the a model<a class="headerlink" href="#train-the-a-model" title="Permalink to this headline">¶</a></h2>
 <p>Training a model consists in defining the signature of each land cover class so that it can be recognized and the class be assigned properly in the prediction step. For that, training polygons ingested at the beginning of this example are overlayed with the intermediary product and overlapping areas are extracted, spatially averaged, prepared to be used as training samples and fed to a model (training samples are combined across tiles, so that a single model is trained for the entire area). Once the model has been trained, it is saved on disk and indexed in the <code class="docutils literal notranslate"><span class="pre">antares</span></code> database.</p>
 <p>Similarly to segmentation algorithms, <code class="docutils literal notranslate"><span class="pre">antares</span></code> offers an interface to various prediction models. To get a list of the models implemented, one can run <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_params</span></code>.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;no_color&#39;: False, &#39;model&#39;: None, &#39;verbosity&#39;: 1, &#39;traceback&#39;: False, &#39;settings&#39;: None, &#39;pythonpath&#39;: None}
-Command execution is done in 0.8236854076385498 seconds.
 Model     description                                                                
 --------  ---------------                                                            
 lgb       Antares implementation of Microsoft&#39;s Light Boost classifier               
@@ -326,10 +323,8 @@ xgb       Antares implementation of Gradient Boost classifier
 </pre></div>
 </div>
 <p>The following example uses the random forest decision tree model, which parameters can be consulted using <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_params</span> <span class="pre">rf</span></code>.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/madmex_user/.virtualenvs/antares-doc/lib/python3.5/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
-Command line arguments: {&#39;verbosity&#39;: 1, &#39;model&#39;: &#39;rf&#39;, &#39;settings&#39;: None, &#39;traceback&#39;: False, &#39;pythonpath&#39;: None, &#39;no_color&#39;: False}
-Command execution is done in 0.7479209899902344 seconds.
                  Argument | Default value            
        ================== | ==============           
              n_estimators | 50                       
@@ -416,16 +411,11 @@ Command execution is done in 0.7479209899902344 seconds.
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 
