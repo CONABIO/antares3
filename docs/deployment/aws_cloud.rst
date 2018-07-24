@@ -1260,6 +1260,16 @@ In order to be able to scale up/down cluster without deleting deployment of efs 
     $kubectl scale deployments/efs-provisioner --replicas=0 #use replicas=1 when scaling up cluster after a scale down was performed.
 
 
+or if you already have created it you can scale this deployment by using kubernetes dashboard:
+
+.. image:: ../imgs/k8s-dashboard-deployments.png
+    :width: 400
+
+.. image:: ../imgs/k8s-dashboard-deployments-2.png
+    :width: 400
+    
+    
+
 Create RDS instance
 -------------------
 
@@ -1416,7 +1426,9 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 
 	$ssh -i <key>.pem admin@$efs_prov_ip_publ
 
-	$sudo docker exec -it <container-id-efs> /bin/sh #to retrieve container id of efs do a docker ps
+	id_container_efs=$(sudo docker ps|grep efs-provisioner|grep quay|cut -d' ' -f1)
+
+	$sudo docker exec -it $id_container_efs /bin/sh
 
 .. note:: 
 
@@ -1560,6 +1572,15 @@ Create deployment of antares3-scheduler with:
 
     $kubectl create -f antares3-scheduler.yaml
 
+or if you already have created it you can scale this deployment by using kubernetes dashboard:
+
+.. image:: ../imgs/k8s-dashboard-deployments.png
+    :width: 400
+
+.. image:: ../imgs/k8s-dashboard-deployments-2.png
+    :width: 400
+    
+
 To visualize bokeh create Kubernetes service with next ``service.yaml`` (modify port according to your preference):
 
 
@@ -1671,6 +1692,16 @@ Create deployment of antares3-worker with:
 	Use ``kubectl scale deployments/antares3-worker --replicas=2`` to have two dask-worker containers.
 
 
+or if you already have created it you can scale this deployment by using kubernetes dashboard:
+
+.. image:: ../imgs/k8s-dashboard-deployments.png
+    :width: 400
+
+.. image:: ../imgs/k8s-dashboard-deployments-2.png
+    :width: 400
+    
+
+
 **For log in to dask-scheduler:**
 
 
@@ -1696,7 +1727,9 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 
     $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
 
-    $sudo docker exec -it <container-id-dask-scheduler> bash #to retrieve container id of dask scheduler do a docker ps
+    id_container_scheduler=$(sudo docker ps|grep antares3-scheduler|grep madmex|cut -d' ' -f1)
+
+    $sudo docker exec -it id_container_scheduler bash
 
 .. note:: 
 
@@ -1830,7 +1863,9 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 
     $ssh -i <key>.pem admin@$dask_scheduler_ip_publ
 
-    $sudo docker exec -it <container-id-dask-scheduler> bash #to retrieve container id of dask scheduler do a docker ps
+    id_container_scheduler=$(sudo docker ps|grep antares3-scheduler|grep madmex|cut -d' ' -f1)
+
+    $sudo docker exec -it id_container_scheduler bash
 
 .. note:: 
 
@@ -1875,6 +1910,15 @@ and scale down efs-provisioner deployment:
 .. code-block:: bash
 
     $kubectl scale deployments/efs-provisioner --replicas=0
+
+
+or use kubernetes dashboard:
+
+.. image:: ../imgs/k8s-dashboard-deployments.png
+    :width: 400
+
+.. image:: ../imgs/k8s-dashboard-deployments-2.png
+    :width: 400
 
 Proceed to scale down nodes and master:
 
@@ -1957,6 +2001,15 @@ And scale up efs-provisioner deployment :
 	$kubectl scale deployments/efs-provisioner --replicas=1
    
 and create deployments for dask-scheduler and dask-worker (see **Deployments for dask scheduler and worker** section).
+
+or use kubernetes dashboard:
+
+.. image:: ../imgs/k8s-dashboard-deployments.png
+    :width: 400
+
+.. image:: ../imgs/k8s-dashboard-deployments-2.png
+    :width: 400
+
 
 
 4. Before deleting cluster delete deployment of kubernetes dashboard with it's components, EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:
