@@ -48,14 +48,14 @@ script:
 after_success:
   - pip install -r docs/requirements.txt 
   - git checkout -b gh-pages origin/gh-pages
-  - find . -type f -not -path '*/\.*' -print0 | xargs -0 rm --
-  - rm -R -- */
+  - rm -rf *
   - git checkout develop docs madmex
   - git reset HEAD
   - cd docs
   - make html
   - cd ..
   - mv -f docs/_build/html/* .
+  - touch .nojekyll
   - rm -rf madmex docs
 
 deploy:
