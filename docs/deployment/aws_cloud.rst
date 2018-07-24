@@ -861,11 +861,11 @@ Install certbot and Route53 plugin for Let's Encrypt client:
 .. code-block:: bash
 
 	#Install certbot for ubuntu (16.04) xenial
-	$ sudo apt-get update
-	$ sudo apt-get install software-properties-common
-	$ sudo add-apt-repository ppa:certbot/certbot
-	$ sudo apt-get update
-	$ sudo apt-get install certbot
+	$sudo apt-get update
+	$sudo apt-get install -y software-properties-common
+	$sudo add-apt-repository ppa:certbot/certbot
+	$sudo apt-get update
+	$sudo apt-get install -y certbot
 	#check version of certbot and install route53 plugin:
 	certbot_v=$(certbot --version|cut -d' ' -f2)
 	$sudo pip3 install certbot_dns_route53==$certbot_v
@@ -878,8 +878,6 @@ Create some useful directories:
 	$mkdir -p ~/letsencrypt/config/
 	$mkdir -p ~/letsencrypt/work/
 
-
-Open ports 80 and 443 of instance via AWS console.
 
 Using ``kubectl`` retrieve where is kubernetes master running:
 
@@ -899,7 +897,7 @@ Generate certificate for the <location> of last command (make sure to save direc
 
 .. note::
 
-	To renew certificate execute:
+	Make sure you save the date that will expire your certificate. To renew certificate execute:
 	
 	.. code-block:: bash
 	
@@ -922,11 +920,6 @@ Create directory ``certs`` and copy cert and private key:
 	When renewing your certificate the latest ones will be symlinks located: ``letsencrypt/config/live/<location>/``. See `Where are my certificates?`_ 
 	
 
-Create kubernetes secret:
-
-.. code-block:: bash
-
-	$kubectl create secret generic kubernetes-dashboard-certs --from-file=certs -n kube-system
 
 To compute resource usage analysis and monitoring of container clusters `heapster`_ is used (although by this time july 2018 is recommended to migrate to `metrics-server`_ and a third party metrics pipeline to gather Prometheus-format metrics instead.)
 
@@ -934,9 +927,9 @@ To compute resource usage analysis and monitoring of container clusters `heapste
 
     $git clone https://github.com/kubernetes/heapster.git
     #We are using some hardcoded version from which we know there will be sucessfull deployment of dashboard
-    $sed -ni 's/heapster-grafana-amd64:v5.0.4/heapster-grafana-amd64:v4.4.3/;p' heapster/deploy/kube-config/influxdb/grafana.yaml
-    $sed -ni 's/heapster-influxdb-amd64:v1.5.2/heapster-influxdb-amd64:v1.3.3/;p' heapster/deploy/kube-config/influxdb/influxdb.yaml
-    $sed -ni 's/heapster-amd64:v1.5.3/heapster-amd64:v1.3.0/;p' heapster/deploy/kube-config/influxdb/heapster.yaml
+    $sed -ni 's/heapster-grafana-.*/heapster-grafana-amd64:v4.4.3/;p' heapster/deploy/kube-config/influxdb/grafana.yaml
+    $sed -ni 's/heapster-influxdb-.*/heapster-influxdb-amd64:v1.3.3/;p' heapster/deploy/kube-config/influxdb/influxdb.yaml
+    $sed -ni 's/heapster-.*/heapster-amd64:v1.3.0/;p' heapster/deploy/kube-config/influxdb/heapster.yaml
 
 
 Next steps are based on: `Run Heapster in a Kubernetes cluster with an InfluxDB backend and a Grafana UI`_ 
@@ -946,21 +939,33 @@ Next steps are based on: `Run Heapster in a Kubernetes cluster with an InfluxDB 
 	$kubectl create -f heapster/deploy/kube-config/influxdb/
 	$kubectl create -f heapster/deploy/kube-config/rbac/heapster-rbac.yaml
 
-
-Establish certs that will be used by kubernetes dashboard:
+Establish certs that will be used by kubernetes dashboard in ``kubernetes-dashboard.yaml``:
 
 .. code-block:: bash
 
     $curl -O https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
     $sed -ni 's/- --auto-generate-certificates/#- --auto-generate-certificates/;p' kubernetes-dashboard.yaml
-    $sed -ni 's/- --tls-cert-file=/- --tls-cert-file=fullchain1.pem/;p' kubernetes-dashboard.yaml
-    $sed -ni 's/- --tls-key-file=/- --tls-key-file=privkey1.pem/;p' kubernetes-dashboard.yaml
+	$sed -i '/args:/a \ \ \ \ \ \ \ \ \ \ - --tls-cert-file=fullchain1.pem' kubernetes-dashboard.yaml
+	$sed -i '/args:/a \ \ \ \ \ \ \ \ \ \ - --tls-key-file=privkey1.pem' kubernetes-dashboard.yaml
 
-Create ``kubernetes-dashboard.yaml`` :
+Create kubernetes secret:
 
 .. code-block:: bash
 
-	kubectl create -f kubernetes-dashboard.yaml
+	$kubectl create secret generic kubernetes-dashboard-certs --from-file=certs -n kube-system  
+  
+
+Apply changes ``kubernetes-dashboard.yaml`` :
+
+.. code-block:: bash
+
+	$kubectl apply -f kubernetes-dashboard.yaml
+
+You can check that containers are running by executing:
+
+.. code-block:: bash
+
+    $kubectl -n kube-system get pods
 
 
 To visualize kubernetes-dashboard one possibility is to change type ``ClusterIP`` to ``NodePort`` (see `Accessing Dashboard 1.7.X and above`_) when executing next command:
@@ -990,6 +995,51 @@ Documentation of `Creating sample user`_ can be used to access via token generat
 
 .. image:: ../imgs/k8s-dashboard-2.png
 	:width: 400
+
+
+To scale down components of kubernetes dashboard:
+
+.. code-block:: bash
+
+	$kubectl -n kube-system scale deployments/kubernetes-dashboard --replicas=0
+	$kubectl -n kube-system scale deployments/monitoring-grafana --replicas=0
+	$kubectl -n kube-system scale deployments/heapster --replicas=0
+	$kubectl -n kube-system scale deployments/monitoring-influxdb --replicas=0
+
+To scale up components of kubernetes dashboard:
+
+.. code-block:: bash
+
+	$kubectl -n kube-system scale deployments/monitoring-grafana --replicas=1
+	$kubectl -n kube-system scale deployments/heapster --replicas=1
+	$kubectl -n kube-system scale deployments/monitoring-influxdb --replicas=1
+	$kubectl -n kube-system scale deployments/kubernetes-dashboard --replicas=1
+
+
+To delete components of kubernetes dashboard:
+
+.. code-block:: bash
+
+	#delete admin-user created:
+	
+	$kubectl -n kube-system delete serviceaccount admin-user
+	$kubectl -n kube-system delete ClusterRoleBinding admin-user
+	
+	#delete dashboard components:
+	$kubectl -n kube-system delete deploy/kubernetes-dashboard 
+	$kubectl -n kube-system delete svc/kubernetes-dashboard
+	$kubectl -n kube-system delete rolebinding kubernetes-dashboard-minimal
+	$kubectl -n kube-system delete role kubernetes-dashboard-minimal
+	$kubectl -n kube-system delete serviceaccount kubernetes-dashboard
+	$kubectl -n kube-system delete secret kubernetes-dashboard-certs kubernetes-dashboard-key-holder
+	
+	#delete heapster components:
+	$kubectl -n kube-system delete deploy/heapster
+	$kubectl -n kube-system delete deploy/monitoring-grafana deploy/monitoring-influxdb
+	$kubectl -n kube-system delete svc/heapster svc/monitoring-grafana svc/monitoring-influxdb
+	$kubectl -n kube-system delete serviceaccount heapster
+	$kubectl -n kube-system delete clusterrolebinding heapster
+
 
 
 Deployment for Elastic File System
