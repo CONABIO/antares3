@@ -50,6 +50,7 @@ after_success:
         pip install travis-sphinx;
         pip install -r docs/requirements.txt; 
         travis-sphinx build --source=docs;
+        travis-sphinx deploy;
     fi
 
 warnings_are_errors: true
