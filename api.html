@@ -233,6 +233,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.s3.list_files.html">madmex.util.s3.list_files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.s3.build_rasterio_path.html">madmex.util.s3.build_rasterio_path</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.s3.read_file.html">madmex.util.s3.read_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.s3.write_raster.html">madmex.util.s3.write_raster</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.db.classification_to_cmap.html">madmex.util.db.classification_to_cmap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.db.get_label_encoding.html">madmex.util.db.get_label_encoding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.db.get_validation_scheme_name.html">madmex.util.db.get_validation_scheme_name</a></li>
@@ -377,7 +378,7 @@
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.ingestion.landsat_espa.metadata_convert.html#madmex.ingestion.landsat_espa.metadata_convert" title="madmex.ingestion.landsat_espa.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.landsat_espa.metadata_convert</span></code></a>(path)</td>
 <td>Prepare metatdata prior to datacube indexing</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.ingestion.srtm_cgiar.metadata_convert.html#madmex.ingestion.srtm_cgiar.metadata_convert" title="madmex.ingestion.srtm_cgiar.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.srtm_cgiar.metadata_convert</span></code></a>(path,&nbsp;…)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.ingestion.srtm_cgiar.metadata_convert.html#madmex.ingestion.srtm_cgiar.metadata_convert" title="madmex.ingestion.srtm_cgiar.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.srtm_cgiar.metadata_convert</span></code></a>(path)</td>
 <td>Prepare metadata prior to datacube indexing</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.ingestion.s2_l2a_20m.metadata_convert.html#madmex.ingestion.s2_l2a_20m.metadata_convert" title="madmex.ingestion.s2_l2a_20m.metadata_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ingestion.s2_l2a_20m.metadata_convert</span></code></a>(path)</td>
@@ -790,13 +791,16 @@
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.s3.read_file.html#madmex.util.s3.read_file" title="madmex.util.s3.read_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.read_file</span></code></a>(bucket,&nbsp;path)</td>
 <td>Read a text file as string</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.db.classification_to_cmap.html#madmex.util.db.classification_to_cmap" title="madmex.util.db.classification_to_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.classification_to_cmap</span></code></a>(x)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.s3.write_raster.html#madmex.util.s3.write_raster" title="madmex.util.s3.write_raster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.write_raster</span></code></a>(bucket,&nbsp;path,&nbsp;arr,&nbsp;**kwargs)</td>
+<td>Write a numpy array as a geospatial raster to a s3 bucket</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.classification_to_cmap.html#madmex.util.db.classification_to_cmap" title="madmex.util.db.classification_to_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.classification_to_cmap</span></code></a>(x)</td>
 <td>Generate a colormap (cmap) object for a given classification</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.get_label_encoding.html#madmex.util.db.get_label_encoding" title="madmex.util.db.get_label_encoding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_label_encoding</span></code></a>(scheme[,&nbsp;inverse])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.db.get_label_encoding.html#madmex.util.db.get_label_encoding" title="madmex.util.db.get_label_encoding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_label_encoding</span></code></a>(scheme[,&nbsp;inverse])</td>
 <td>Get label –&gt; Numeric code correspondance for a given classification scheme as a dictionary</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.db.get_validation_scheme_name.html#madmex.util.db.get_validation_scheme_name" title="madmex.util.db.get_validation_scheme_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_validation_scheme_name</span></code></a>(name)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.get_validation_scheme_name.html#madmex.util.db.get_validation_scheme_name" title="madmex.util.db.get_validation_scheme_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_validation_scheme_name</span></code></a>(name)</td>
 <td>Given the name/identifier of an ingested validation dataset, returns its scheme name</td>
 </tr>
 </tbody>

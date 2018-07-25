@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.util.randomword &mdash; antares3 0.3.0 documentation</title>
+  <title>madmex.util.s3.write_raster &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -28,8 +28,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="madmex.util.yaml_to_dict" href="madmex.util.yaml_to_dict.html" />
-    <link rel="prev" title="madmex.wrappers.predict_object" href="madmex.wrappers.predict_object.html" /> 
+    <link rel="next" title="madmex.util.db.classification_to_cmap" href="madmex.util.db.classification_to_cmap.html" />
+    <link rel="prev" title="madmex.util.s3.read_file" href="madmex.util.s3.read_file.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -105,7 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api.html#validation">Validation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#wrappers">Wrappers</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../api.html#utils">Utils</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.util.randomword</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.randomword.html">madmex.util.randomword</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.yaml_to_dict.html">madmex.util.yaml_to_dict</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.mid_date.html">madmex.util.mid_date</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.parser_extra_args.html">madmex.util.parser_extra_args</a></li>
@@ -129,7 +129,7 @@
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.list_files.html">madmex.util.s3.list_files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.build_rasterio_path.html">madmex.util.s3.build_rasterio_path</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.read_file.html">madmex.util.s3.read_file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.write_raster.html">madmex.util.s3.write_raster</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.util.s3.write_raster</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.db.classification_to_cmap.html">madmex.util.db.classification_to_cmap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.db.get_label_encoding.html">madmex.util.db.get_label_encoding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.db.get_validation_scheme_name.html">madmex.util.db.get_validation_scheme_name</a></li>
@@ -189,13 +189,13 @@
         
           <li><a href="../api.html">API reference</a> &raquo;</li>
         
-      <li>madmex.util.randomword</li>
+      <li>madmex.util.s3.write_raster</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/madmex.util.randomword.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/madmex.util.s3.write_raster.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -208,12 +208,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="madmex-util-randomword">
-<h1>madmex.util.randomword<a class="headerlink" href="#madmex-util-randomword" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="madmex-util-s3-write-raster">
+<h1>madmex.util.s3.write_raster<a class="headerlink" href="#madmex-util-s3-write-raster" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="madmex.util.randomword">
-<code class="descclassname">madmex.util.</code><code class="descname">randomword</code><span class="sig-paren">(</span><em>length</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/util.html#randomword"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.util.randomword" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a random string of desired length</p>
+<dt id="madmex.util.s3.write_raster">
+<code class="descclassname">madmex.util.s3.</code><code class="descname">write_raster</code><span class="sig-paren">(</span><em>bucket</em>, <em>path</em>, <em>arr</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/util/s3.html#write_raster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.util.s3.write_raster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a numpy array as a geospatial raster to a s3 bucket</p>
+<p>This function uses rasterio to write the array to an in-memory file object
+that is later copied to the desired s3 location</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bucket</strong> (<em>str</em>) – Name of an existing s3 bucket</li>
+<li><strong>path</strong> (<em>str</em>) – Full path of the object to create with the s3 bucket</li>
+<li><strong>arr</strong> (<em>np.ndarray</em>) – The numpy array to write to a raster file</li>
+<li><strong>**kwargs</strong> – Additional arguments to pass to <code class="docutils literal notranslate"><span class="pre">rasterio.open</span></code>, typically
+the raster dataset meta characteristics (<code class="docutils literal notranslate"><span class="pre">crs</span></code>, <code class="docutils literal notranslate"><span class="pre">height</span></code>, …)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.util</span> <span class="k">import</span> <span class="n">s3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;dtype&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="go">            &#39;driver&#39;=&#39;GTiff&#39;, &#39;crs&#39;: &#39;+proj=longlat&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s3</span><span class="o">.</span><span class="n">write_raster</span><span class="p">(</span><span class="s1">&#39;conabio-s3-oregon&#39;</span><span class="p">,</span> <span class="s1">&#39;rasterio/test_raster.tif&#39;</span><span class="p">,</span>
+<span class="go">                    **meta)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s3</span><span class="o">.</span><span class="n">list_files</span><span class="p">(</span><span class="s1">&#39;conabio-s3-oregon&#39;</span><span class="p">,</span> <span class="s1">&#39;rasterio&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -226,10 +254,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="madmex.util.yaml_to_dict.html" class="btn btn-neutral float-right" title="madmex.util.yaml_to_dict" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="madmex.util.db.classification_to_cmap.html" class="btn btn-neutral float-right" title="madmex.util.db.classification_to_cmap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.wrappers.predict_object.html" class="btn btn-neutral" title="madmex.wrappers.predict_object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.util.s3.read_file.html" class="btn btn-neutral" title="madmex.util.s3.read_file" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -164,6 +164,7 @@
   <h1>Source code for madmex.util.s3</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">rasterio.io</span> <span class="k">import</span> <span class="n">MemoryFile</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">boto3</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
@@ -275,6 +276,38 @@
     <span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s1">&#39;s3&#39;</span><span class="p">)</span>
     <span class="n">obj</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">Object</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">()[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="write_raster"><a class="viewcode-back" href="../../../generated/madmex.util.s3.write_raster.html#madmex.util.s3.write_raster">[docs]</a><span class="k">def</span> <span class="nf">write_raster</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write a numpy array as a geospatial raster to a s3 bucket</span>
+
+<span class="sd">    This function uses rasterio to write the array to an in-memory file object</span>
+<span class="sd">    that is later copied to the desired s3 location</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bucket (str): Name of an existing s3 bucket</span>
+<span class="sd">        path (str): Full path of the object to create with the s3 bucket</span>
+<span class="sd">        arr (np.ndarray): The numpy array to write to a raster file</span>
+<span class="sd">        **kwargs: Additional arguments to pass to ``rasterio.open``, typically</span>
+<span class="sd">            the raster dataset meta characteristics (``crs``, ``height``, ...)</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from madmex.util import s3</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; arr = np.arange(100).reshape((10, 10)).astype(np.uint8)</span>
+<span class="sd">        &gt;&gt;&gt; meta = {&#39;height&#39;: 10, &#39;width&#39;: 10, &#39;dtype&#39;: np.uint8, &#39;count&#39;: 1,</span>
+<span class="sd">                    &#39;driver&#39;=&#39;GTiff&#39;, &#39;crs&#39;: &#39;+proj=longlat&#39;}</span>
+<span class="sd">        &gt;&gt;&gt; s3.write_raster(&#39;conabio-s3-oregon&#39;, &#39;rasterio/test_raster.tif&#39;,</span>
+<span class="sd">                            **meta)</span>
+<span class="sd">        &gt;&gt;&gt; print(s3.list_files(&#39;conabio-s3-oregon&#39;, &#39;rasterio&#39;))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_has_boto3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;boto3 is required for working with s3 buckets&#39;</span><span class="p">)</span>
+    <span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;s3&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">MemoryFile</span><span class="p">()</span> <span class="k">as</span> <span class="n">memfile</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">memfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
+            <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+        <span class="n">s3</span><span class="o">.</span><span class="n">upload_fileobj</span><span class="p">(</span><span class="n">memfile</span><span class="p">,</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
 </pre></div>
 
