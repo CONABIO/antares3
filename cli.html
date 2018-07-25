@@ -169,13 +169,6 @@
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
 Traceback (most recent call last):
-  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/dask/distributed.py&quot;, line 5, in &lt;module&gt;
-    from distributed import *
-ModuleNotFoundError: No module named &#39;distributed&#39;
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
   File &quot;/home/travis/virtualenv/python3.6.3/bin/antares&quot;, line 11, in &lt;module&gt;
     sys.exit(main())
   File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/entry.py&quot;, line 15, in main
@@ -196,16 +189,11 @@ Traceback (most recent call last):
   File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 665, in _load_unlocked
   File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 678, in exec_module
   File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 219, in _call_with_frames_removed
-  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/management/commands/model_fit.py&quot;, line 14, in &lt;module&gt;
-    from dask.distributed import Client, LocalCluster
-  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/dask/distributed.py&quot;, line 11, in &lt;module&gt;
-    raise ImportError(msg)
-ImportError: Dask&#39;s distributed scheduler is not installed.
-
-Please either conda or pip install dask distributed:
-
-  conda install dask distributed          # either conda install
-  pip install dask distributed --upgrade  # or pip install
+  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/management/commands/model_fit.py&quot;, line 19, in &lt;module&gt;
+    from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_netcdf
+  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/indexing.py&quot;, line 7, in &lt;module&gt;
+    from datacube.index._products import ProductResource
+ModuleNotFoundError: No module named &#39;datacube.index._products&#39;
 </pre></div>
 </div>
 </div>
