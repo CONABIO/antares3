@@ -1,6 +1,7 @@
 import os
 import re
 from rasterio.io import MemoryFile
+import numpy as np
 try:
     import boto3
 except ImportError:
@@ -123,7 +124,9 @@ def write_raster(bucket, path, arr, **kwargs):
     Args:
         bucket (str): Name of an existing s3 bucket
         path (str): Full path of the object to create with the s3 bucket
-        arr (np.ndarray): The numpy array to write to a raster file
+        arr (np.ndarray): The numpy array to write to a raster file. Can be 2D
+            or 3D. If 3D (multiband raster), bands must correspond to the first
+            array dimension
         **kwargs: Additional arguments to pass to ``rasterio.open``, typically
             the raster dataset meta characteristics (``crs``, ``height``, ...)
 
@@ -132,16 +135,20 @@ def write_raster(bucket, path, arr, **kwargs):
         >>> import numpy as np
         >>> arr = np.arange(100).reshape((10, 10)).astype(np.uint8)
         >>> meta = {'height': 10, 'width': 10, 'dtype': np.uint8, 'count': 1,
-                    'driver'='GTiff', 'crs': '+proj=longlat'}
+                    'driver': 'GTiff', 'crs': '+proj=longlat'}
         >>> s3.write_raster('conabio-s3-oregon', 'rasterio/test_raster.tif',
-                            **meta)
+                            arr, **meta)
         >>> print(s3.list_files('conabio-s3-oregon', 'rasterio'))
     """
     if not _has_boto3:
         raise ImportError('boto3 is required for working with s3 buckets')
     s3 = boto3.client('s3')
+    path = path.strip('/')
+    if arr.ndim == 2:
+        arr = np.expand_dims(arr, 0)
     with MemoryFile() as memfile:
         with memfile.open(**kwargs) as dst:
-            dst.write(arr)
+            for band_id, band in enumerate(arr, start=1):
+                dst.write(band, band_id)
         s3.upload_fileobj(memfile, bucket, path)
 
