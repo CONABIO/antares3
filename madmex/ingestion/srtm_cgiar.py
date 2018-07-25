@@ -8,7 +8,7 @@ from jinja2 import Environment, PackageLoader
 
 from madmex.util import s3
 
-def metadata_convert(path, bucket):
+def metadata_convert(path, bucket=None):
     """Prepare metadata prior to datacube indexing
 
     Given a directory containing srtm derived terrain metrics (elevation, aspect, slope)
