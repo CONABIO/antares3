@@ -223,7 +223,9 @@ that is later copied to the desired s3 location</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>bucket</strong> (<em>str</em>) – Name of an existing s3 bucket</li>
 <li><strong>path</strong> (<em>str</em>) – Full path of the object to create with the s3 bucket</li>
-<li><strong>arr</strong> (<em>np.ndarray</em>) – The numpy array to write to a raster file</li>
+<li><strong>arr</strong> (<em>np.ndarray</em>) – The numpy array to write to a raster file. Can be 2D
+or 3D. If 3D (multiband raster), bands must correspond to the first
+array dimension</li>
 <li><strong>**kwargs</strong> – Additional arguments to pass to <code class="docutils literal notranslate"><span class="pre">rasterio.open</span></code>, typically
 the raster dataset meta characteristics (<code class="docutils literal notranslate"><span class="pre">crs</span></code>, <code class="docutils literal notranslate"><span class="pre">height</span></code>, …)</li>
 </ul>
@@ -236,9 +238,9 @@ the raster dataset meta characteristics (<code class="docutils literal notransla
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">meta</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;dtype&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-<span class="go">            &#39;driver&#39;=&#39;GTiff&#39;, &#39;crs&#39;: &#39;+proj=longlat&#39;}</span>
+<span class="go">            &#39;driver&#39;: &#39;GTiff&#39;, &#39;crs&#39;: &#39;+proj=longlat&#39;}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s3</span><span class="o">.</span><span class="n">write_raster</span><span class="p">(</span><span class="s1">&#39;conabio-s3-oregon&#39;</span><span class="p">,</span> <span class="s1">&#39;rasterio/test_raster.tif&#39;</span><span class="p">,</span>
-<span class="go">                    **meta)</span>
+<span class="go">                    arr, **meta)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s3</span><span class="o">.</span><span class="n">list_files</span><span class="p">(</span><span class="s1">&#39;conabio-s3-oregon&#39;</span><span class="p">,</span> <span class="s1">&#39;rasterio&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
