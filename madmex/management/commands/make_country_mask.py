@@ -68,6 +68,9 @@ Example usage:
 --------------
 # Generate a land mask for mexico, 50m resolution with 5000*5000 pixels tiles
 antares make_country_mask --country mex -res 100 -tile 5000 --path /LUSTRE/MADMEX/tasks/2018_tasks/sandbox/
+
+# Same but writing the output directly to an s3 bucket
+antares make_country_mask --country mex -res 100 -tile 5000 --path sandbox --bucket conabio-s3-oregon
 """
     def add_arguments(self, parser):
         parser.add_argument('-country', '--country',
@@ -95,14 +98,12 @@ antares make_country_mask --country mex -res 100 -tile 5000 --path /LUSTRE/MADME
 
     def handle(self, *args, **options):
         country = options['country']
-        resolution = options['resolution']
+        resolution = options['resolution'] / 110000
         tile_size = options['tile_size']
         bucket = options['bucket']
         path = options['path']
 
-        if bucket is not None:
-            path = s3.build_rasterio_path(bucket, path)
-
+        # Retrieve data from database (country extent and POLYGON)
         query_0 = 'SELECT st_extent(the_geom) FROM public.madmex_country WHERE name = %s;'
         query_1 = 'SELECT st_asgeojson(the_geom, 6) FROM public.madmex_country WHERE name = %s;'
         with connection.cursor() as c:
@@ -110,10 +111,10 @@ antares make_country_mask --country mex -res 100 -tile 5000 --path /LUSTRE/MADME
             bbox = c.fetchone()
             c.execute(query_1, [country.upper()])
             geom = c.fetchone()
-
         extent = postgis_box_parser(bbox[0])
         geom = json.loads(geom[0])
-        resolution = resolution / 110000
+
+        # Generate the binary rasters (1 for inside country, 0 for outside)
         grid_generator = grid_gen(extent, resolution, tile_size)
         for shape, aff, filename in grid_generator:
             arr = features.rasterize([(geom, 1)], out_shape=shape, transform=aff,
@@ -125,8 +126,10 @@ antares make_country_mask --country mex -res 100 -tile 5000 --path /LUSTRE/MADME
                     'transform': aff,
                     'dtype': rasterio.uint8,
                     'crs': '+proj=longlat',
-                    'mode': 'w',
-                    'compress': 'lzw',
-                    'fp': os.path.join(path, filename)}
-            with rasterio.open(**meta) as dst:
-                dst.write(arr, 1)
+                    'compress': 'lzw'}
+            fp = os.path.join(path, filename)
+            if bucket is not None:
+                s3.write_raster(bucket, fp, arr, **meta)
+            else:
+                with rasterio.open(fp, 'w', **meta) as dst:
+                    dst.write(arr, 1)
