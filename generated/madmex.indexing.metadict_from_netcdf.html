@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.ingestion.bioclimatics.metadata_convert &mdash; antares3 0.3.0 documentation</title>
+  <title>madmex.indexing.metadict_from_netcdf &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -28,8 +28,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="madmex.ingestion.landsat_espa.metadata_convert" href="madmex.ingestion.landsat_espa.metadata_convert.html" />
-    <link rel="prev" title="madmex.indexing.metadict_from_netcdf" href="madmex.indexing.metadict_from_netcdf.html" /> 
+    <link rel="next" title="madmex.ingestion.bioclimatics.metadata_convert" href="madmex.ingestion.bioclimatics.metadata_convert.html" />
+    <link rel="prev" title="madmex.indexing.wkt_to_proj4" href="madmex.indexing.wkt_to_proj4.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -95,14 +95,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../extend.html">Extending the system</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../api.html#api">Api</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#indexing">Indexing</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api.html#ingestion">Ingestion</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.ingestion.bioclimatics.metadata_convert</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.ingestion.landsat_espa.metadata_convert.html">madmex.ingestion.landsat_espa.metadata_convert</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.ingestion.srtm_cgiar.metadata_convert.html">madmex.ingestion.srtm_cgiar.metadata_convert</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.ingestion.s2_l2a_20m.metadata_convert.html">madmex.ingestion.s2_l2a_20m.metadata_convert</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#indexing">Indexing</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="madmex.indexing.add_product.html">madmex.indexing.add_product</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.indexing.add_product_from_yaml.html">madmex.indexing.add_product_from_yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.indexing.add_product_from_recipe.html">madmex.indexing.add_product_from_recipe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.indexing.add_dataset.html">madmex.indexing.add_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.indexing.wkt_to_proj4.html">madmex.indexing.wkt_to_proj4</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.indexing.metadict_from_netcdf</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#ingestion">Ingestion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#i-o">I/O</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#land-cover-change-lcc">Land cover change (lcc)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#modeling">Modeling</a></li>
@@ -165,13 +167,13 @@
         
           <li><a href="../api.html">API reference</a> &raquo;</li>
         
-      <li>madmex.ingestion.bioclimatics.metadata_convert</li>
+      <li>madmex.indexing.metadict_from_netcdf</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/madmex.ingestion.bioclimatics.metadata_convert.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/madmex.indexing.metadict_from_netcdf.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -184,48 +186,52 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="madmex-ingestion-bioclimatics-metadata-convert">
-<h1>madmex.ingestion.bioclimatics.metadata_convert<a class="headerlink" href="#madmex-ingestion-bioclimatics-metadata-convert" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="madmex-indexing-metadict-from-netcdf">
+<h1>madmex.indexing.metadict_from_netcdf<a class="headerlink" href="#madmex-indexing-metadict-from-netcdf" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="madmex.ingestion.bioclimatics.metadata_convert">
-<code class="descclassname">madmex.ingestion.bioclimatics.</code><code class="descname">metadata_convert</code><span class="sig-paren">(</span><em>path</em>, <em>bucket=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/ingestion/bioclimatics.html#metadata_convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.ingestion.bioclimatics.metadata_convert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prepare metadata prior to datacube indexing</p>
-<p>Given a directory containing bioclimatics raster information prepares
-a metadata string with the appropriate formating for indexing in the datacube</p>
+<dt id="madmex.indexing.metadict_from_netcdf">
+<code class="descclassname">madmex.indexing.</code><code class="descname">metadict_from_netcdf</code><span class="sig-paren">(</span><em>file</em>, <em>description</em>, <em>center_dt</em>, <em>from_dt=None</em>, <em>to_dt=None</em>, <em>algorithm=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/indexing.html#metadict_from_netcdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.indexing.metadict_from_netcdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get metadata dictionary for netcdf dataset written using <code class="docutils literal notranslate"><span class="pre">write_dataset_to_netcdf</span></code></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>path</strong> (<em>str</em>) – Path of the directory containing temperature and
-precipitation measurements.</li>
-<li><strong>bucket</strong> (<em>str</em><em> or </em><em>None</em>) – Name of the s3 bucket containing the data. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
-(default), data are considered to be on a mounted filesystem</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file</strong> (<em>str</em>) – Netcdf file previously written using the <code class="docutils literal notranslate"><span class="pre">write_dataset_to_netcdf</span></code>
+function.</li>
+<li><strong>description</strong> (<em>dict</em>) – corresponding product description</li>
+<li><strong>center_dt</strong> (<em>datetime.datetime</em>) – Central date of the dataset</li>
+<li><strong>from_dt</strong> (<em>datetime.datetime</em>) – Optional begin date of the dataset</li>
+<li><strong>to_dt</strong> (<em>datetime.datetime</em>) – Optional end date of the dataset</li>
+<li><strong>algorithm</strong> (<em>str</em>) – Option description/identifier of the algorithm/recipe used to
+produce that dataset</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dictionary containing dataset metadata</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
 </td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.ingestion.bioclimatics</span> <span class="k">import</span> <span class="n">metadata_convert</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/path/to/bioclim/dir&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">yaml_str</span> <span class="o">=</span> <span class="n">metadata_convert</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.indexing</span> <span class="k">import</span> <span class="n">metadict_from_netcdf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">yaml</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/path/to/metadata_out.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nc_file</span> <span class="o">=</span> <span class="s1">&#39;/path/to/nc_file.nc&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;~/.config/madmex/indexing/corresponding_config_file.yaml&#39;</span><span class="p">)</span> <span class="n">src</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">description</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The content of the metadata for later writing to file.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
-</tr>
-</tbody>
-</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">metadict</span> <span class="o">=</span> <span class="n">metadict_from_netcdf</span><span class="p">(</span><span class="n">nc_file</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">center_dt</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">metadict</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -238,10 +244,10 @@ precipitation measurements.</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="madmex.ingestion.landsat_espa.metadata_convert.html" class="btn btn-neutral float-right" title="madmex.ingestion.landsat_espa.metadata_convert" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="madmex.ingestion.bioclimatics.metadata_convert.html" class="btn btn-neutral float-right" title="madmex.ingestion.bioclimatics.metadata_convert" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.indexing.metadict_from_netcdf.html" class="btn btn-neutral" title="madmex.indexing.metadict_from_netcdf" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.indexing.wkt_to_proj4.html" class="btn btn-neutral" title="madmex.indexing.wkt_to_proj4" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
