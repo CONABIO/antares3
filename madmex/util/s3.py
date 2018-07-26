@@ -135,9 +135,9 @@ def write_raster(bucket, path, arr, **kwargs):
         >>> import numpy as np
         >>> arr = np.arange(100).reshape((10, 10)).astype(np.uint8)
         >>> meta = {'height': 10, 'width': 10, 'dtype': np.uint8, 'count': 1,
-                    'driver': 'GTiff', 'crs': '+proj=longlat'}
+        ...         'driver': 'GTiff', 'crs': '+proj=longlat'}
         >>> s3.write_raster('conabio-s3-oregon', 'rasterio/test_raster.tif',
-                            arr, **meta)
+        ...                 arr, **meta)
         >>> print(s3.list_files('conabio-s3-oregon', 'rasterio'))
     """
     if not _has_boto3:

@@ -43,6 +43,9 @@ Datasets details:
 
         Note that the target directory (--path) must not contain subdirectories
 
+    - country_mask is a dataset to identify pixels inside vs outside of a country. See the antares make_country_mask for
+        more informations about how to generate this dataset
+
 --------------
 Example usage:
 --------------
@@ -55,8 +58,11 @@ antares prepare_metadata --path /path/to/dir/containing/srtm_terrain_metrics --d
 # Sentinel2 L2A 20m
 antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name s2_l2a_20m --outfile metadata_sentinel.yaml
 
+# Country mask
+antares prepare_metadata --path /path/to/dir/with/tiles --dataset_name country_mask --outfile metadata_country_mask.yaml
+
 # Generate metadata for a single Landsat path row of landsat 8 data stored on s3
-antares prepare_metadata --path linea_base/L8 --bucket conabio-s3-oregon --dataset_name landsat_espa --outfile /home/madmex_user/sandbox/metadata_landsat_bucket.yaml --pattern .*LC08039037.* --multi 20
+antares prepare_metadata --path dir/inside/bucket --bucket conabio-s3-oregon --dataset_name landsat_espa --outfile metadata_landsat_bucket.yaml --pattern .*LC08039037.* --multi 20
 """
     def add_arguments(self, parser):
         parser.add_argument('-p', '--path',

@@ -1,0 +1,30 @@
+
+id: {{ id }}
+extent:
+  center_dt: '2000-01-01'
+  coord:
+    ll: {lat: {{ ll_lat }}, lon: {{  ll_lon }} }
+    lr: {lat: {{ lr_lat }}, lon: {{  lr_lon }} }
+    ul: {lat: {{ ul_lat }}, lon: {{  ul_lon }} }
+    ur: {lat: {{ ur_lat }}, lon: {{  ur_lon }} }
+  from_dt: '1970-01-01'
+  to_dt: '2050-12-31'
+format: {name: GeoTiff}
+grid_spatial:
+  projection:
+    geo_ref_points:
+      ll: {x: {{ ll_lon }}, y: {{ ll_lat }} }
+      lr: {x: {{ lr_lon }}, y: {{ lr_lat }} }
+      ul: {x: {{ ul_lon }}, y: {{ ul_lat }} }
+      ur: {x: {{ ur_lon }}, y: {{ ur_lat }} }
+    spatial_reference: {{ crs }}
+image:
+  bands:
+    mask: {layer: 1, path: "{{ band }}" }
+instrument: {name: GADM}
+lineage:
+  source_datasets: {}
+platform: {code: GADM} 
+processing_level: no_processing
+product_type: mask
+
