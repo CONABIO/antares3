@@ -2016,7 +2016,6 @@ or use kubernetes dashboard:
    
 For example, to delete deployment of components of kubernetes dashboard, EFS and service (bokeh visualization):
 
-
 .. code-block:: bash
 
 	#delete admin-user created:
