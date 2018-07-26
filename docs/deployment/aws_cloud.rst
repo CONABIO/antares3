@@ -2020,10 +2020,9 @@ For example, to delete deployment of components of kubernetes dashboard, EFS and
 .. code-block:: bash
 
 	#delete admin-user created:
-	
 	$kubectl -n kube-system delete serviceaccount admin-user
 	$kubectl -n kube-system delete ClusterRoleBinding admin-user
-	
+
 	#delete dashboard components:
 	$kubectl -n kube-system delete deploy/kubernetes-dashboard 
 	$kubectl -n kube-system delete svc/kubernetes-dashboard
@@ -2031,7 +2030,7 @@ For example, to delete deployment of components of kubernetes dashboard, EFS and
 	$kubectl -n kube-system delete role kubernetes-dashboard-minimal
 	$kubectl -n kube-system delete serviceaccount kubernetes-dashboard
 	$kubectl -n kube-system delete secret kubernetes-dashboard-certs kubernetes-dashboard-key-holder
-	
+
 	#delete heapster components:
 	$kubectl -n kube-system delete deploy/heapster
 	$kubectl -n kube-system delete deploy/monitoring-grafana deploy/monitoring-influxdb
@@ -2040,9 +2039,8 @@ For example, to delete deployment of components of kubernetes dashboard, EFS and
 	$kubectl -n kube-system delete clusterrolebinding heapster
 
 	#delete deployment of efs
-    $kubectl delete deployment efs-provisioner
-
-    $kubectl delete service antares3-scheduler-bokeh
+	$kubectl delete deployment efs-provisioner
+	$kubectl delete service antares3-scheduler-bokeh
 
 
 To delete mount targets of EFS (assuming there's three subnets):
