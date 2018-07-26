@@ -1,4 +1,4 @@
-source_type: s1_snappy_vh_vv_scene
+source_type: s1_esa_scene
 output_type: s1_snappy_vh_vv_mexico
 description: Preprocessed with snappy
 location: '{{ ingestion_path }}'
@@ -23,10 +23,10 @@ storage:
   driver: {{ driver }}
   bucket: '{{ bucket }}'
   # http://spatialreference.org/ref/sr-org/mexico-inegi-lambert-conformal-conic/
-  crs: PROJCS["unnamed",GEOGCS["WGS 84",DATUM["unknown",SPHEROID["WGS84",6378137,6556752.3141]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",17.5],PARAMETER["standard_parallel_2",29.5],PARAMETER["latitude_of_origin",12],            PARAMETER["central_meridian",-102],PARAMETER["false_easting",2500000],PARAMETER["false_northing",0]]
+  crs: PROJCS["unnamed",GEOGCS["WGS 84",DATUM["unknown",SPHEROID["WGS84",6378137,6556752.3141]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",17.5],PARAMETER["standard_parallel_2",29.5],PARAMETER["latitude_of_origin",12],PARAMETER["central_meridian",-102],PARAMETER["false_easting",2500000],PARAMETER["false_northing",0]]
   tile_size:
-          x: 100080
-          y: 100080
+          x: 100020
+          y: 100020
   resolution:
           x: 10
           y: -10
@@ -35,8 +35,8 @@ storage:
     x: 977160
     y: 2426720
   chunking:
-      x: 1112
-      y: 1112
+      x: 5001
+      y: 5001
       time: 200
   dimension_order: ['time', 'y', 'x']
 
