@@ -1789,29 +1789,27 @@ spec:
 <li>Before deleting cluster delete deployment of kubernetes dashboard with it’s components, EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:</li>
 </ol>
 <p>For example, to delete deployment of components of kubernetes dashboard, EFS and service (bokeh visualization):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="c1">#delete admin-user created:</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#delete admin-user created:</span>
+<span class="nv">$kubectl</span> -n kube-system delete serviceaccount admin-user
+<span class="nv">$kubectl</span> -n kube-system delete ClusterRoleBinding admin-user
 
-    <span class="nv">$kubectl</span> -n kube-system delete serviceaccount admin-user
-    <span class="nv">$kubectl</span> -n kube-system delete ClusterRoleBinding admin-user
+<span class="c1">#delete dashboard components:</span>
+<span class="nv">$kubectl</span> -n kube-system delete deploy/kubernetes-dashboard
+<span class="nv">$kubectl</span> -n kube-system delete svc/kubernetes-dashboard
+<span class="nv">$kubectl</span> -n kube-system delete rolebinding kubernetes-dashboard-minimal
+<span class="nv">$kubectl</span> -n kube-system delete role kubernetes-dashboard-minimal
+<span class="nv">$kubectl</span> -n kube-system delete serviceaccount kubernetes-dashboard
+<span class="nv">$kubectl</span> -n kube-system delete secret kubernetes-dashboard-certs kubernetes-dashboard-key-holder
 
-    <span class="c1">#delete dashboard components:</span>
-    <span class="nv">$kubectl</span> -n kube-system delete deploy/kubernetes-dashboard
-    <span class="nv">$kubectl</span> -n kube-system delete svc/kubernetes-dashboard
-    <span class="nv">$kubectl</span> -n kube-system delete rolebinding kubernetes-dashboard-minimal
-    <span class="nv">$kubectl</span> -n kube-system delete role kubernetes-dashboard-minimal
-    <span class="nv">$kubectl</span> -n kube-system delete serviceaccount kubernetes-dashboard
-    <span class="nv">$kubectl</span> -n kube-system delete secret kubernetes-dashboard-certs kubernetes-dashboard-key-holder
+<span class="c1">#delete heapster components:</span>
+<span class="nv">$kubectl</span> -n kube-system delete deploy/heapster
+<span class="nv">$kubectl</span> -n kube-system delete deploy/monitoring-grafana deploy/monitoring-influxdb
+<span class="nv">$kubectl</span> -n kube-system delete svc/heapster svc/monitoring-grafana svc/monitoring-influxdb
+<span class="nv">$kubectl</span> -n kube-system delete serviceaccount heapster
+<span class="nv">$kubectl</span> -n kube-system delete clusterrolebinding heapster
 
-    <span class="c1">#delete heapster components:</span>
-    <span class="nv">$kubectl</span> -n kube-system delete deploy/heapster
-    <span class="nv">$kubectl</span> -n kube-system delete deploy/monitoring-grafana deploy/monitoring-influxdb
-    <span class="nv">$kubectl</span> -n kube-system delete svc/heapster svc/monitoring-grafana svc/monitoring-influxdb
-    <span class="nv">$kubectl</span> -n kube-system delete serviceaccount heapster
-    <span class="nv">$kubectl</span> -n kube-system delete clusterrolebinding heapster
-
-    <span class="c1">#delete deployment of efs</span>
+<span class="c1">#delete deployment of efs</span>
 <span class="nv">$kubectl</span> delete deployment efs-provisioner
-
 <span class="nv">$kubectl</span> delete service antares3-scheduler-bokeh
 </pre></div>
 </div>
