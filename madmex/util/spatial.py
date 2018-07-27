@@ -1,8 +1,14 @@
 import functools
+from math import ceil, floor
+import itertools
+import re
 
 from pyproj import Proj, transform
 from shapely import ops
 from shapely.geometry import shape, mapping
+from affine import Affine
+import dask.array as da
+import numpy as np
 
 
 def geometry_transform(geometry, crs_out,
@@ -74,11 +80,32 @@ def get_geom_bbox(geometry):
     return (min(x), min(y), max(x), max(y))
 
 
+def grid_gen(extent, res, size, prefix):
+    """Tile generator
 
+    Takes extent, tile size and resolution and returns a generator of
+    (shape, transform, filename) tuples
 
+    Args:
+        extent (list): List or tuple of extent coordinates in the form
+            (xmin, ymin, xmax, ymax)
+        res (float): Resolution of the grid to chunk
+        size (int): Tile size in number of pixels (nrows == ncols)
+        prefix (str): Common prefix to all filenames generated
 
-
-
+    yields:
+        tuple: Tuple of (shape, affine, filename)
+    """
+    nrow_full = ceil((extent[3] - extent[1]) / res)
+    ncol_full = ceil((extent[2] - extent[0]) / res)
+    ul_lat_iter = np.arange(extent[3], extent[1], -(res * size))
+    ul_lon_iter = np.arange(extent[0], extent[2], (res * size))
+    nrow_iter, ncol_iter = da.zeros((nrow_full, ncol_full), chunks=(size, size)).chunks
+    for i, (row_tup, col_tup) in enumerate(itertools.product(zip(ul_lat_iter, nrow_iter),
+                                                             zip(ul_lon_iter, ncol_iter))):
+        aff = Affine(res, 0, col_tup[0], 0, -res, row_tup[0])
+        size = (row_tup[1], col_tup[1])
+        yield (size, aff, '%s_%d.tif' % (prefix, i))
 
 
 

@@ -11,6 +11,7 @@ from madmex.management.base import AntaresBaseCommand
 from madmex.models import Country, Region, PredictClassification
 from madmex.util.spatial import geometry_transform, get_geom_bbox
 from madmex.util import chunk
+from madmex.util import parsers
 from madmex.util.db import classification_to_cmap
 from django.db import connection
 
@@ -119,11 +120,6 @@ SELECT st_asgeojson(geom_proj, 5), tag FROM predict_proj;
             geometry = json.loads(x[0])
             return (geometry, x[1])
 
-        def postgis_box_parser(box):
-            pattern = re.compile(r'BOX\((\d+\.*\d*) (\d+\.*\d*),(\d+\.*\d*) (\d+\.*\d*)\)')
-            m = pattern.search(box)
-            return [float(x) for x in m.groups()]
-
         # Query country or region contour
         try:
             region = Country.objects.get(name=region).the_geom
@@ -142,7 +138,7 @@ SELECT st_asgeojson(geom_proj, 5), tag FROM predict_proj;
             c.execute(q_2)
             qs = c.fetchall()
 
-        xmin, ymin, xmax, ymax = postgis_box_parser(bbox[0])
+        xmin, ymin, xmax, ymax = parsers.postgis_box_parser(bbox[0])
 
         # Define output raster shape
         nrows = int(((ymax - ymin) // resolution) + 1)

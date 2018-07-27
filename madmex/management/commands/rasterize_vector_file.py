@@ -6,55 +6,20 @@ Date: 2018-07-26
 Purpose: Rasterizes a vector file
 """
 import json
-from math import ceil, floor
-import itertools
-import re
 import os
 
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import Country
-from madmex.util.spatial import get_geom_bbox, feature_transform
+from madmex.util.spatial import get_geom_bbox, feature_transform, grid_gen
+from madmex.util import parsers
 from django.db import connection
 import rasterio
 from rasterio import features
 from affine import Affine
 import numpy as np
-import dask.array as da
 from madmex.util import s3
 import fiona
 from fiona.crs import to_string
-
-def postgis_box_parser(box):
-    pattern = re.compile(r'BOX\((-?\d+\.*\d*) (-?\d+\.*\d*),(-?\d+\.*\d*) (-?\d+\.*\d*)\)')
-    m = pattern.search(box)
-    return [float(x) for x in m.groups()]
-
-
-def grid_gen(extent, res, size, prefix):
-    """Tile generator
-
-    Takes extent, tile size and resolution and returns a generator of
-    (shape, transform, filename) tuples
-
-    Args:
-        extent (list): List or tuple of extent coordinates in the form
-            (xmin, ymin, xmax, ymax)
-        res (float): Resolution of the grid to chunk
-        size (int): Tile size in number of pixels (nrows == ncols)
-
-    yields:
-        tuple: Tuple of (shape, affine, filename)
-    """
-    nrow_full = ceil((extent[3] - extent[1]) / res)
-    ncol_full = ceil((extent[2] - extent[0]) / res)
-    ul_lat_iter = np.arange(extent[3], extent[1], -(res * size))
-    ul_lon_iter = np.arange(extent[0], extent[2], (res * size))
-    nrow_iter, ncol_iter = da.zeros((nrow_full, ncol_full), chunks=(size, size)).chunks
-    for i, (row_tup, col_tup) in enumerate(itertools.product(zip(ul_lat_iter, nrow_iter),
-                                                             zip(ul_lon_iter, ncol_iter))):
-        aff = Affine(res, 0, col_tup[0], 0, -res, row_tup[0])
-        size = (row_tup[1], col_tup[1])
-        yield (size, aff, '%s_%d.tif' % (prefix, i))
 
 
 class Command(AntaresBaseCommand):
@@ -161,7 +126,7 @@ antares rasterize_vector_file MEX_adm1.shp -res 1000 -tile 2000 --path /LUSTRE/M
             with connection.cursor() as c:
                 c.execute(query, [crs, country.upper()])
                 bbox = c.fetchone()
-            extent = postgis_box_parser(bbox[0])
+            extent = parsers.postgis_box_parser(bbox[0])
 
         # Generate the tiles and write them either to filesystem or to s3 bucket
         grid_generator = grid_gen(extent, resolution, tile_size, prefix)

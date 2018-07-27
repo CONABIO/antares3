@@ -8,7 +8,6 @@ Purpose: Generates a raster mask for a given country
 import json
 from math import ceil, floor
 import itertools
-import re
 import os
 
 from madmex.management.base import AntaresBaseCommand
@@ -19,40 +18,8 @@ from rasterio import features
 from affine import Affine
 import numpy as np
 import dask.array as da
-from madmex.util import s3
-
-
-def postgis_box_parser(box):
-    pattern = re.compile(r'BOX\((-?\d+\.*\d*) (-?\d+\.*\d*),(-?\d+\.*\d*) (-?\d+\.*\d*)\)')
-    m = pattern.search(box)
-    return [float(x) for x in m.groups()]
-
-
-def grid_gen(extent, res, size):
-    """Tile generator
-
-    Takes extent, tile size and resolution and returns a generator of
-    (shape, transform, filename) tuples
-
-    Args:
-        extent (list): List or tuple of extent coordinates in the form
-            (xmin, ymin, xmax, ymax)
-        res (float): Resolution of the grid to chunk
-        size (int): Tile size in number of pixels (nrows == ncols)
-
-    yields:
-        tuple: Tuple of (shape, affine, filename)
-    """
-    nrow_full = ceil((extent[3] - extent[1]) / res)
-    ncol_full = ceil((extent[2] - extent[0]) / res)
-    ul_lat_iter = np.arange(extent[3], extent[1], -(res * size))
-    ul_lon_iter = np.arange(extent[0], extent[2], (res * size))
-    nrow_iter, ncol_iter = da.zeros((nrow_full, ncol_full), chunks=(size, size)).chunks
-    for i, (row_tup, col_tup) in enumerate(itertools.product(zip(ul_lat_iter, nrow_iter),
-                                                             zip(ul_lon_iter, ncol_iter))):
-        aff = Affine(res, 0, col_tup[0], 0, -res, row_tup[0])
-        size = (row_tup[1], col_tup[1])
-        yield (size, aff, 'land_mask_tile_%d.tif' % i)
+from madmex.util import s3, parsers
+from madmex.util.spatial import grid_gen
 
 
 class Command(AntaresBaseCommand):
@@ -111,11 +78,12 @@ antares make_country_mask --country mex -res 100 -tile 5000 --path sandbox --buc
             bbox = c.fetchone()
             c.execute(query_1, [country.upper()])
             geom = c.fetchone()
-        extent = postgis_box_parser(bbox[0])
+        extent = parsers.postgis_box_parser(bbox[0])
         geom = json.loads(geom[0])
 
         # Generate the binary rasters (1 for inside country, 0 for outside)
-        grid_generator = grid_gen(extent, resolution, tile_size)
+        grid_generator = grid_gen(extent, resolution, tile_size,
+                                  prefix='land_mask_tile')
         for shape, aff, filename in grid_generator:
             arr = features.rasterize([(geom, 1)], out_shape=shape, transform=aff,
                                      dtype=np.uint8)
