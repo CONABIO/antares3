@@ -77,7 +77,7 @@ antares rasterize_vector_file MEX_adm1.shp -res 1000 -tile 2000 --path /LUSTRE/M
 
 
 # Using the ingested geometry of mexico as rasterizing extent
-
+antares rasterize_vector_file MEX_adm1.shp -res 1000 -tile 2000 --path /LUSTRE/MADMEX/tasks/2018_tasks/sandbox/ --prefix mex_states_raster_laea_mex_extent --field ID_1 --proj '+proj=laea +lat_0=20 +lon_0=-100' --country mex
 """
     def add_arguments(self, parser):
         parser.add_argument('input_file',
