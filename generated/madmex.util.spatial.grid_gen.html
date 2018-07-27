@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.util.s3.build_rasterio_path &mdash; antares3 0.3.0 documentation</title>
+  <title>madmex.util.spatial.grid_gen &mdash; antares3 0.3.0 documentation</title>
   
 
   
@@ -28,8 +28,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="madmex.util.s3.read_file" href="madmex.util.s3.read_file.html" />
-    <link rel="prev" title="madmex.util.s3.list_files" href="madmex.util.s3.list_files.html" /> 
+    <link rel="next" title="madmex.util.s3.list_folders" href="madmex.util.s3.list_folders.html" />
+    <link rel="prev" title="madmex.util.spatial.get_geom_bbox" href="madmex.util.spatial.get_geom_bbox.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -125,10 +125,10 @@
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.feature_transform.html">madmex.util.spatial.feature_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.geometry_transform.html">madmex.util.spatial.geometry_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.get_geom_bbox.html">madmex.util.spatial.get_geom_bbox</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.grid_gen.html">madmex.util.spatial.grid_gen</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.util.spatial.grid_gen</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.list_folders.html">madmex.util.s3.list_folders</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.list_files.html">madmex.util.s3.list_files</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.util.s3.build_rasterio_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.build_rasterio_path.html">madmex.util.s3.build_rasterio_path</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.read_file.html">madmex.util.s3.read_file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.write_raster.html">madmex.util.s3.write_raster</a></li>
 <li class="toctree-l3"><a class="reference internal" href="madmex.util.db.classification_to_cmap.html">madmex.util.db.classification_to_cmap</a></li>
@@ -191,13 +191,13 @@
         
           <li><a href="../api.html">API reference</a> &raquo;</li>
         
-      <li>madmex.util.s3.build_rasterio_path</li>
+      <li>madmex.util.spatial.grid_gen</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/madmex.util.s3.build_rasterio_path.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/madmex.util.spatial.grid_gen.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -210,27 +210,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="madmex-util-s3-build-rasterio-path">
-<h1>madmex.util.s3.build_rasterio_path<a class="headerlink" href="#madmex-util-s3-build-rasterio-path" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="madmex-util-spatial-grid-gen">
+<h1>madmex.util.spatial.grid_gen<a class="headerlink" href="#madmex-util-spatial-grid-gen" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="madmex.util.s3.build_rasterio_path">
-<code class="descclassname">madmex.util.s3.</code><code class="descname">build_rasterio_path</code><span class="sig-paren">(</span><em>bucket</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/util/s3.html#build_rasterio_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.util.s3.build_rasterio_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build rasterio compliant s3 path to object</p>
+<dt id="madmex.util.spatial.grid_gen">
+<code class="descclassname">madmex.util.spatial.</code><code class="descname">grid_gen</code><span class="sig-paren">(</span><em>extent</em>, <em>res</em>, <em>size</em>, <em>prefix</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/util/spatial.html#grid_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.util.spatial.grid_gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tile generator</p>
+<p>Takes extent, tile size and resolution and returns a generator of
+(shape, transform, filename) tuples</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>bucket</strong> (<em>str</em>) – Name of bucket containing the data</li>
-<li><strong>path</strong> (<em>str</em>) – Path to append to bucket name (often to a geospatial raster
-object, but not always)</li>
+<li><strong>extent</strong> (<em>list</em>) – List or tuple of extent coordinates in the form
+(xmin, ymin, xmax, ymax)</li>
+<li><strong>res</strong> (<em>float</em>) – Resolution of the grid to chunk</li>
+<li><strong>size</strong> (<em>int</em>) – Tile size in number of pixels (nrows == ncols)</li>
+<li><strong>prefix</strong> (<em>str</em>) – Common prefix to all filenames generated</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Rasterio compliant s3 object path</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><p class="first last"><em>tuple</em> – Tuple of (shape, affine, filename)</p>
 </td>
 </tr>
 </tbody>
@@ -247,10 +248,10 @@ object, but not always)</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="madmex.util.s3.read_file.html" class="btn btn-neutral float-right" title="madmex.util.s3.read_file" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="madmex.util.s3.list_folders.html" class="btn btn-neutral float-right" title="madmex.util.s3.list_folders" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.util.s3.list_files.html" class="btn btn-neutral" title="madmex.util.s3.list_files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.util.spatial.get_geom_bbox.html" class="btn btn-neutral" title="madmex.util.spatial.get_geom_bbox" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

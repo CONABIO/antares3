@@ -163,10 +163,16 @@
             
   <h1>Source code for madmex.util.spatial</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">floor</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">pyproj</span> <span class="k">import</span> <span class="n">Proj</span><span class="p">,</span> <span class="n">transform</span>
 <span class="kn">from</span> <span class="nn">shapely</span> <span class="k">import</span> <span class="n">ops</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="k">import</span> <span class="n">shape</span><span class="p">,</span> <span class="n">mapping</span>
+<span class="kn">from</span> <span class="nn">affine</span> <span class="k">import</span> <span class="n">Affine</span>
+<span class="kn">import</span> <span class="nn">dask.array</span> <span class="k">as</span> <span class="nn">da</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
 <div class="viewcode-block" id="geometry_transform"><a class="viewcode-back" href="../../../generated/madmex.util.spatial.geometry_transform.html#madmex.util.spatial.geometry_transform">[docs]</a><span class="k">def</span> <span class="nf">geometry_transform</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">crs_out</span><span class="p">,</span>
@@ -238,11 +244,32 @@
     <span class="k">return</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">))</span></div>
 
 
+<div class="viewcode-block" id="grid_gen"><a class="viewcode-back" href="../../../generated/madmex.util.spatial.grid_gen.html#madmex.util.spatial.grid_gen">[docs]</a><span class="k">def</span> <span class="nf">grid_gen</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tile generator</span>
 
+<span class="sd">    Takes extent, tile size and resolution and returns a generator of</span>
+<span class="sd">    (shape, transform, filename) tuples</span>
 
+<span class="sd">    Args:</span>
+<span class="sd">        extent (list): List or tuple of extent coordinates in the form</span>
+<span class="sd">            (xmin, ymin, xmax, ymax)</span>
+<span class="sd">        res (float): Resolution of the grid to chunk</span>
+<span class="sd">        size (int): Tile size in number of pixels (nrows == ncols)</span>
+<span class="sd">        prefix (str): Common prefix to all filenames generated</span>
 
-
-
+<span class="sd">    yields:</span>
+<span class="sd">        tuple: Tuple of (shape, affine, filename)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nrow_full</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">((</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">res</span><span class="p">)</span>
+    <span class="n">ncol_full</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">((</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">res</span><span class="p">)</span>
+    <span class="n">ul_lat_iter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="p">(</span><span class="n">res</span> <span class="o">*</span> <span class="n">size</span><span class="p">))</span>
+    <span class="n">ul_lon_iter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">(</span><span class="n">res</span> <span class="o">*</span> <span class="n">size</span><span class="p">))</span>
+    <span class="n">nrow_iter</span><span class="p">,</span> <span class="n">ncol_iter</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nrow_full</span><span class="p">,</span> <span class="n">ncol_full</span><span class="p">),</span> <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span><span class="o">.</span><span class="n">chunks</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">row_tup</span><span class="p">,</span> <span class="n">col_tup</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ul_lat_iter</span><span class="p">,</span> <span class="n">nrow_iter</span><span class="p">),</span>
+                                                             <span class="nb">zip</span><span class="p">(</span><span class="n">ul_lon_iter</span><span class="p">,</span> <span class="n">ncol_iter</span><span class="p">))):</span>
+        <span class="n">aff</span> <span class="o">=</span> <span class="n">Affine</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">col_tup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">res</span><span class="p">,</span> <span class="n">row_tup</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">row_tup</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">col_tup</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">aff</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%d</span><span class="s1">.tif&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span></div>
 
 
 

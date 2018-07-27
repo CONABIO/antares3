@@ -1,0 +1,6 @@
+madmex.util.spatial.grid\_gen
+=============================
+
+.. currentmodule:: madmex.util.spatial
+
+.. autofunction:: grid_gen

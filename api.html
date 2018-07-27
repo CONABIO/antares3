@@ -229,6 +229,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.spatial.feature_transform.html">madmex.util.spatial.feature_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.spatial.geometry_transform.html">madmex.util.spatial.geometry_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.spatial.get_geom_bbox.html">madmex.util.spatial.get_geom_bbox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.spatial.grid_gen.html">madmex.util.spatial.grid_gen</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.s3.list_folders.html">madmex.util.s3.list_folders</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.s3.list_files.html">madmex.util.s3.list_files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.s3.build_rasterio_path.html">madmex.util.s3.build_rasterio_path</a></li>
@@ -237,6 +238,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.db.classification_to_cmap.html">madmex.util.db.classification_to_cmap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.db.get_label_encoding.html">madmex.util.db.get_label_encoding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.db.get_validation_scheme_name.html">madmex.util.db.get_validation_scheme_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/madmex.util.parsers.postgis_box_parser.html">madmex.util.parsers.postgis_box_parser</a></li>
 </ul>
 </li>
 </ul>
@@ -779,29 +781,35 @@
 <tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.spatial.get_geom_bbox.html#madmex.util.spatial.get_geom_bbox" title="madmex.util.spatial.get_geom_bbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.get_geom_bbox</span></code></a>(geometry)</td>
 <td>Given a geojson like geometry, returns its bounding box as a tuple of coordinates</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.s3.list_folders.html#madmex.util.s3.list_folders" title="madmex.util.s3.list_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.list_folders</span></code></a>(bucket,&nbsp;path[,&nbsp;pattern])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.spatial.grid_gen.html#madmex.util.spatial.grid_gen" title="madmex.util.spatial.grid_gen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.spatial.grid_gen</span></code></a>(extent,&nbsp;res,&nbsp;size,&nbsp;prefix)</td>
+<td>Tile generator</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.s3.list_folders.html#madmex.util.s3.list_folders" title="madmex.util.s3.list_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.list_folders</span></code></a>(bucket,&nbsp;path[,&nbsp;pattern])</td>
 <td>List ‘sub-folders’ of a s3 bucket ‘folder’</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.s3.list_files.html#madmex.util.s3.list_files" title="madmex.util.s3.list_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.list_files</span></code></a>(bucket,&nbsp;path[,&nbsp;pattern])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.s3.list_files.html#madmex.util.s3.list_files" title="madmex.util.s3.list_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.list_files</span></code></a>(bucket,&nbsp;path[,&nbsp;pattern])</td>
 <td>List objects within a ‘path’ in an s3 bucket</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.s3.build_rasterio_path.html#madmex.util.s3.build_rasterio_path" title="madmex.util.s3.build_rasterio_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.build_rasterio_path</span></code></a>(bucket,&nbsp;path)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.s3.build_rasterio_path.html#madmex.util.s3.build_rasterio_path" title="madmex.util.s3.build_rasterio_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.build_rasterio_path</span></code></a>(bucket,&nbsp;path)</td>
 <td>Build rasterio compliant s3 path to object</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.s3.read_file.html#madmex.util.s3.read_file" title="madmex.util.s3.read_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.read_file</span></code></a>(bucket,&nbsp;path)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.s3.read_file.html#madmex.util.s3.read_file" title="madmex.util.s3.read_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.read_file</span></code></a>(bucket,&nbsp;path)</td>
 <td>Read a text file as string</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.s3.write_raster.html#madmex.util.s3.write_raster" title="madmex.util.s3.write_raster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.write_raster</span></code></a>(bucket,&nbsp;path,&nbsp;arr,&nbsp;**kwargs)</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.s3.write_raster.html#madmex.util.s3.write_raster" title="madmex.util.s3.write_raster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.s3.write_raster</span></code></a>(bucket,&nbsp;path,&nbsp;arr,&nbsp;**kwargs)</td>
 <td>Write a numpy array as a geospatial raster to a s3 bucket</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.classification_to_cmap.html#madmex.util.db.classification_to_cmap" title="madmex.util.db.classification_to_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.classification_to_cmap</span></code></a>(x)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.db.classification_to_cmap.html#madmex.util.db.classification_to_cmap" title="madmex.util.db.classification_to_cmap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.classification_to_cmap</span></code></a>(x)</td>
 <td>Generate a colormap (cmap) object for a given classification</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.db.get_label_encoding.html#madmex.util.db.get_label_encoding" title="madmex.util.db.get_label_encoding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_label_encoding</span></code></a>(scheme[,&nbsp;inverse])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.get_label_encoding.html#madmex.util.db.get_label_encoding" title="madmex.util.db.get_label_encoding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_label_encoding</span></code></a>(scheme[,&nbsp;inverse])</td>
 <td>Get label –&gt; Numeric code correspondance for a given classification scheme as a dictionary</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.db.get_validation_scheme_name.html#madmex.util.db.get_validation_scheme_name" title="madmex.util.db.get_validation_scheme_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_validation_scheme_name</span></code></a>(name)</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.util.db.get_validation_scheme_name.html#madmex.util.db.get_validation_scheme_name" title="madmex.util.db.get_validation_scheme_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.db.get_validation_scheme_name</span></code></a>(name)</td>
 <td>Given the name/identifier of an ingested validation dataset, returns its scheme name</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/madmex.util.parsers.postgis_box_parser.html#madmex.util.parsers.postgis_box_parser" title="madmex.util.parsers.postgis_box_parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util.parsers.postgis_box_parser</span></code></a>(box)</td>
+<td>Parses the output of st_bbox into an in-memory bounding box</td>
 </tr>
 </tbody>
 </table>
