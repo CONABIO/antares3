@@ -217,12 +217,14 @@
 <tr class="row-even"><td>antares rasterize_vector_file</td>
 <td>Generate a tiled raster product from any vector file</td>
 </tr>
+<tr class="row-odd"><td>antares make_country_mask</td>
+<td>Generate a tiled raster binary mask for any country</td>
+</tr>
+<tr class="row-even"><td>antares prepare_metadata</td>
+<td>Generate metadata for a given dataset prior to datacube indexing</td>
+</tr>
 </tbody>
 </table>
-<p>antares make_country_mask        Generate a tiled raster binary mask for any country
-==============================   ===================================================================
-antares prepare_metadata         Generate metadata for a given dataset prior to datacube indexing
-==============================   ===================================================================</p>
 </div>
 <div class="section" id="data-download">
 <h3>Data download<a class="headerlink" href="#data-download" title="Permalink to this headline">¶</a></h3>
@@ -240,10 +242,11 @@ antares prepare_metadata         Generate metadata for a given dataset prior to 
 <tr class="row-even"><td>antares create_order</td>
 <td>Place a Landsat surface reflectance pre-processing order to espa</td>
 </tr>
+<tr class="row-odd"><td>antares download_order</td>
+<td>Download a previously placed espa processing order</td>
+</tr>
 </tbody>
 </table>
-<p>antares download_order    Download a previously placed espa processing order
-=======================   ===================================================================</p>
 </div>
 <div class="section" id="ingestion">
 <h3>Ingestion<a class="headerlink" href="#ingestion" title="Permalink to this headline">¶</a></h3>
@@ -261,14 +264,17 @@ antares prepare_metadata         Generate metadata for a given dataset prior to 
 <tr class="row-even"><td>antares ingest_catalog</td>
 <td>Ingest Landsat data catalog into the database</td>
 </tr>
+<tr class="row-odd"><td>antares ingest_footprints</td>
+<td>Ingest shapefile of Landsat scenes footprints into the database</td>
+</tr>
+<tr class="row-even"><td>antares ingest_training</td>
+<td>Ingest training data into the database</td>
+</tr>
+<tr class="row-odd"><td>antares ingest_validation</td>
+<td>Ingest validation data into the database</td>
+</tr>
 </tbody>
 </table>
-<p>antares ingest_footprints        Ingest shapefile of Landsat scenes footprints into the database
-==============================   ===================================================================
-antares ingest_training          Ingest training data into the database
-==============================   ===================================================================
-antares ingest_validation        Ingest validation data into the database
-==============================   ===================================================================</p>
 </div>
 <div class="section" id="export">
 <h3>Export<a class="headerlink" href="#export" title="Permalink to this headline">¶</a></h3>
@@ -286,12 +292,14 @@ antares ingest_validation        Ingest validation data into the database
 <tr class="row-even"><td>antares db_to_vector</td>
 <td>Export the result of a classification to a vector file</td>
 </tr>
+<tr class="row-odd"><td>antares db_to_raster</td>
+<td>Export the result of a classification to a raster file</td>
+</tr>
+<tr class="row-even"><td>antares generate_style</td>
+<td>Export the information of a given scheme to a QGIS style file</td>
+</tr>
 </tbody>
 </table>
-<p>antares db_to_raster             Export the result of a classification to a raster file
-==============================   ===================================================================
-antares generate_style           Export the information of a given scheme to a QGIS style file
-==============================   ===================================================================</p>
 </div>
 <div class="section" id="processing">
 <h3>Processing<a class="headerlink" href="#processing" title="Permalink to this headline">¶</a></h3>
@@ -309,18 +317,23 @@ antares generate_style           Export the information of a given scheme to a Q
 <tr class="row-even"><td>antares apply_recipe</td>
 <td>Generate a new datacube product from a defined recipe</td>
 </tr>
+<tr class="row-odd"><td>antares segment</td>
+<td>Run segmentation and write the output to the database</td>
+</tr>
+<tr class="row-even"><td>antares model_fit</td>
+<td>Train a model given a training set and a datacube product</td>
+</tr>
+<tr class="row-odd"><td>antares model_predict</td>
+<td>Predict land cover pixel based given a trained model</td>
+</tr>
+<tr class="row-even"><td>antares model_predict_object</td>
+<td>Predict land cover for a set of segmentation polygons</td>
+</tr>
+<tr class="row-odd"><td>antares detect_change</td>
+<td>Run change detection and classification between two products</td>
+</tr>
 </tbody>
 </table>
-<p>antares segment                  Run segmentation and write the output to the database
-==============================   ===================================================================
-antares model_fit                Train a model given a training set and a datacube product
-==============================   ===================================================================
-antares model_predict            Predict land cover pixel based given a trained model
-==============================   ===================================================================
-antares model_predict_object     Predict land cover for a set of segmentation polygons
-==============================   ===================================================================
-antares detect_change            Run change detection and classification between two products
-==============================   ===================================================================</p>
 </div>
 <div class="section" id="validation">
 <h3>Validation<a class="headerlink" href="#validation" title="Permalink to this headline">¶</a></h3>
@@ -357,14 +370,17 @@ antares detect_change            Run change detection and classification between
 <tr class="row-even"><td>antares list</td>
 <td>List models, training sets, classifications, segmentation, … present in the database</td>
 </tr>
+<tr class="row-odd"><td>antares bi_change_params</td>
+<td>Retrieve list of change detection algorithm implemented and their parameters</td>
+</tr>
+<tr class="row-even"><td>antares model_params</td>
+<td>Retrieve list of models implemented and their parameters</td>
+</tr>
+<tr class="row-odd"><td>antares segment_params</td>
+<td>Retrieve list of segmentation agorithms implemented and their parameters</td>
+</tr>
 </tbody>
 </table>
-<p>antares bi_change_params         Retrieve list of change detection algorithm implemented and their parameters
-==============================   ===========================================================================================
-antares model_params             Retrieve list of models implemented and their parameters
-==============================   ===========================================================================================
-antares segment_params           Retrieve list of segmentation agorithms implemented and their parameters
-==============================   ===========================================================================================</p>
 </div>
 </div>
 <div class="section" id="help-page-example">
