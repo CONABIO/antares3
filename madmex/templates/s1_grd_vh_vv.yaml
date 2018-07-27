@@ -1,14 +1,14 @@
 id: {{ id }}
 extent:
-  center_dt: '2015-07-02'
+  center_dt: '{{ dt }}'
   coord:
     ll: {lat: {{ ll_lat }}, lon: {{  ll_lon }} }
     lr: {lat: {{ lr_lat }}, lon: {{  lr_lon }} }
     ul: {lat: {{ ul_lat }}, lon: {{  ul_lon }} }
     ur: {lat: {{ ur_lat }}, lon: {{  ur_lon }} }
-  from_dt: '2015-01-01'
-  to_dt: '2015-12-31'
-format: {name: GEOTIFF}
+  from_dt: '{{ dt }}'
+  to_dt: '{{ dt }}'
+format: {name: GeoTiff}
 grid_spatial:
   projection:
     geo_ref_points:
@@ -19,9 +19,9 @@ grid_spatial:
     spatial_reference: {{ crs }}
 image:
   bands:
-    polarisation_VH: {layer: 1, path: "{{ polarisation_VH }}" }
-    polarisation_VV: {layer: 1, path: "{{ polarisation_VV }}" }
-instrument: {name: IR}
+    polarisation_VH: {layer: 1, path: "{{ pol_vh }}" }
+    polarisation_VV: {layer: 1, path: "{{ pol_vv }}" }
+instrument: {name: IW}
 lineage:
   source_datasets: {}
 platform: {code: sentinel1}

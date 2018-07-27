@@ -49,7 +49,7 @@ measurements:
       src_varname: 'polarisation_VH'
       attrs:
          long_name: "GRD data polarisation VH"
-         alias: "s1_VH"
+         alias: "polarisation_VH"
     - name: 'polarisation_VV'
       dtype: float32
       nodata: 0.0
@@ -58,4 +58,4 @@ measurements:
       src_varname: 'polarisation_VV'
       attrs:
           long_name: "GRD data polarisation VV"
-          alias: "s1_VV"
+          alias: "polarisation_VV"
