@@ -86,7 +86,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Command line interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command line interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#command-list">Command list</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#system-administration">System administration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-preparation">Data preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-download">Data download</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ingestion">Ingestion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#export">Export</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#processing">Processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#validation">Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inventory-parameters-retrieval">Inventory, parameters retrieval</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#help-page-example">Help page example</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="download.html">Downloading data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ingest.html">Ingesting data</a></li>
 </ul>
@@ -165,7 +179,197 @@
             
   <div class="section" id="command-line-interface">
 <h1>Command line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
-<p>All command line interface start with the prefix <code class="docutils literal notranslate"><span class="pre">antares</span></code>. Simply running <code class="docutils literal notranslate"><span class="pre">antares</span></code> in a terminal will give a list of all available commands. Detailed help of each command line can be accessed by running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">command_line</span> <span class="pre">--help</span></code>. For instance running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_fit</span> <span class="pre">--help</span></code> returns:</p>
+<p>All command line interface start with the prefix <code class="docutils literal notranslate"><span class="pre">antares</span></code>. Simply running <code class="docutils literal notranslate"><span class="pre">antares</span></code> in a terminal will give a list of all available commands. Detailed help of each command line can then be accessed by running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">command_line</span> <span class="pre">--help</span></code>. An example of help pages, returned by the <code class="docutils literal notranslate"><span class="pre">--help</span></code> flag is given at the bottom of this page.</p>
+<div class="section" id="command-list">
+<h2>Command list<a class="headerlink" href="#command-list" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="system-administration">
+<h3>System administration<a class="headerlink" href="#system-administration" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Short description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>antares init</td>
+<td>Perform initial system setup (database, configuration files)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="data-preparation">
+<h3>Data preparation<a class="headerlink" href="#data-preparation" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Short description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>antares rasterize_vector_file</td>
+<td>Generate a tiled raster product from any vector file</td>
+</tr>
+</tbody>
+</table>
+<p>antares make_country_mask        Generate a tiled raster binary mask for any country
+==============================   ===================================================================
+antares prepare_metadata         Generate metadata for a given dataset prior to datacube indexing
+==============================   ===================================================================</p>
+</div>
+<div class="section" id="data-download">
+<h3>Data download<a class="headerlink" href="#data-download" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="74%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Short description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>antares create_order</td>
+<td>Place a Landsat surface reflectance pre-processing order to espa</td>
+</tr>
+</tbody>
+</table>
+<p>antares download_order    Download a previously placed espa processing order
+=======================   ===================================================================</p>
+</div>
+<div class="section" id="ingestion">
+<h3>Ingestion<a class="headerlink" href="#ingestion" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Short description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>antares ingest_catalog</td>
+<td>Ingest Landsat data catalog into the database</td>
+</tr>
+</tbody>
+</table>
+<p>antares ingest_footprints        Ingest shapefile of Landsat scenes footprints into the database
+==============================   ===================================================================
+antares ingest_training          Ingest training data into the database
+==============================   ===================================================================
+antares ingest_validation        Ingest validation data into the database
+==============================   ===================================================================</p>
+</div>
+<div class="section" id="export">
+<h3>Export<a class="headerlink" href="#export" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Short description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>antares db_to_vector</td>
+<td>Export the result of a classification to a vector file</td>
+</tr>
+</tbody>
+</table>
+<p>antares db_to_raster             Export the result of a classification to a raster file
+==============================   ===================================================================
+antares generate_style           Export the information of a given scheme to a QGIS style file
+==============================   ===================================================================</p>
+</div>
+<div class="section" id="processing">
+<h3>Processing<a class="headerlink" href="#processing" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Short description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>antares apply_recipe</td>
+<td>Generate a new datacube product from a defined recipe</td>
+</tr>
+</tbody>
+</table>
+<p>antares segment                  Run segmentation and write the output to the database
+==============================   ===================================================================
+antares model_fit                Train a model given a training set and a datacube product
+==============================   ===================================================================
+antares model_predict            Predict land cover pixel based given a trained model
+==============================   ===================================================================
+antares model_predict_object     Predict land cover for a set of segmentation polygons
+==============================   ===================================================================
+antares detect_change            Run change detection and classification between two products
+==============================   ===================================================================</p>
+</div>
+<div class="section" id="validation">
+<h3>Validation<a class="headerlink" href="#validation" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Short description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>antares validate</td>
+<td>Validate a classification using an ingested set of validation data</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="inventory-parameters-retrieval">
+<h3>Inventory, parameters retrieval<a class="headerlink" href="#inventory-parameters-retrieval" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Short description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>antares list</td>
+<td>List models, training sets, classifications, segmentation, … present in the database</td>
+</tr>
+</tbody>
+</table>
+<p>antares bi_change_params         Retrieve list of change detection algorithm implemented and their parameters
+==============================   ===========================================================================================
+antares model_params             Retrieve list of models implemented and their parameters
+==============================   ===========================================================================================
+antares segment_params           Retrieve list of segmentation agorithms implemented and their parameters
+==============================   ===========================================================================================</p>
+</div>
+</div>
+<div class="section" id="help-page-example">
+<h2>Help page example<a class="headerlink" href="#help-page-example" title="Permalink to this headline">¶</a></h2>
+<p>Running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_fit</span> <span class="pre">--help</span></code> returns:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use &quot;pip install psycopg2-binary&quot; instead. For details see: &lt;http://initd.org/psycopg/docs/install.html#binary-install-from-pypi&gt;.
   &quot;&quot;&quot;)
 /home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/dask/context.py:23: UserWarning: The dask.set_options function has been deprecated. Please use dask.config.set instead
@@ -245,6 +449,7 @@ optional arguments:
   -sc SCHEDULER, --scheduler SCHEDULER
                         Path to file with scheduler information (usually called scheduler.json)
 </pre></div>
+</div>
 </div>
 </div>
 
