@@ -28,9 +28,11 @@ class BiChange(BaseBiChange):
 
         Args:
             max_iterations (int): Max number of iteration of the irmad process
-            min_delta (float): TODO
-            lmbda (float): TODO
-            shift (tuple): TODO
+            min_delta (float): Threshold to stop the iteration process
+            lmbda (float): Value to perform regularization on the eigenvalue
+                problem when the condition number is too high
+            shift (tuple): Quantity to shift the matrix to calculate the
+                spatial autocorrelation
             threshold (str): One of the automatic thresholding method exposed in
                 ``madmex.lcc.bitemporal.BaseBiChange.threshold_change``
             **kwargs: Additional arguments to pass to the thresolding method
