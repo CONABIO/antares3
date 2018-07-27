@@ -1,6 +1,30 @@
-from pyproj import Proj, transform
+import functools
 
-import copy
+from pyproj import Proj, transform
+from shapely import ops
+from shapely.geometry import shape, mapping
+
+
+def geometry_transform(geometry, crs_out,
+                       crs_in="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"):
+    """Reproject a geometry
+
+    Args:
+        geometry (dict): The geometry part of a geojson like feature
+        crs_out (str): coordinate reference system to project to. In proj4 string
+            format
+        crs_in (str): proj4 string of the input feature. Can be omited in which case
+            it defaults to 4326
+
+    Return:
+        dict: A geometry
+    """
+    crs_in = Proj(crs_in)
+    crs_out = Proj(crs_out)
+    project = functools.partial(transform, crs_in, crs_out)
+    geom_in_s = shape(geometry)
+    geom_out_s = ops.transform(project, geom_in_s)
+    return mapping(geom_out_s)
 
 
 def feature_transform(feature, crs_out,
@@ -19,40 +43,11 @@ def feature_transform(feature, crs_out,
     Return:
         dict: A feature
     """
-    crs_in = Proj(crs_in)
-    crs_out = Proj(crs_out)
-    feature_out = copy.deepcopy(feature)
-    new_coords = []
-    for ring in feature['geometry']['coordinates']:
-        x2, y2 = transform(crs_in, crs_out, *zip(*ring))
-        new_coords.append(list(zip(x2, y2)))
-    feature_out['geometry']['coordinates'] = new_coords
-    return feature_out
-
-
-def geometry_transform(geometry, crs_out,
-                      crs_in="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"):
-    """Reproject a geometry
-
-    Args:
-        geometry (dict): The geometry part of a geojson like feature
-        crs_out (str): coordinate reference system to project to. In proj4 string
-            format
-        crs_in (str): proj4 string of the input feature. Can be omited in which case
-            it defaults to 4326
-
-    Return:
-        dict: A geometry
-    """
-    crs_in = Proj(crs_in)
-    crs_out = Proj(crs_out)
-    geom_out = copy.deepcopy(geometry)
-    new_coords = []
-    for ring in geometry['coordinates']:
-        x2, y2 = transform(crs_in, crs_out, *zip(*ring))
-        new_coords.append(list(zip(x2, y2)))
-    geom_out['coordinates'] = new_coords
-    return geom_out
+    geom_proj = geometry_transform(feature['geometry'],
+                                   crs_out=crs_out,
+                                   crs_in=crs_in)
+    feature['geometry'] = geom_proj
+    return feature
 
 
 def get_geom_bbox(geometry):
