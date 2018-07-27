@@ -29,7 +29,7 @@ the main tag. If there is no predict tag, value will be left blank.
 --------------
 Example usage:
 --------------
-antares ingest_training --shape /LUSTRE/MADMEX/mapa_referencia_2015/final/aguascalientes/1349025_finalcut.shp 
+antares ingest_training --shape <path-to-file>/1349025_finalcut.shp 
                         --interpret interpreta 
                         --predict predicted 
                         --scheme madmex 
