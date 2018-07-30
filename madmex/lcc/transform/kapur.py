@@ -114,7 +114,7 @@ def _maximum_entropy_cut(histo, bin_edges, argmax=True):
     # check for corner cases
     if np.product(histo)==1:
         return 2 ** histo[0]
-    # Standarize histogram to obtain probabilities
+    # standardize histogram to obtain probabilities
     probabilities = histo.astype(np.float) / np.float(np.sum(histo))
     # initialize vector to fill with calculated entropies
     entropies = np.zeros(len(probabilities))
@@ -150,9 +150,12 @@ class Transform(TransformBase):
                 be a lower and a higher threshold. ``False`` should be used for
                 array of absolute values, in which case there should only be one
                 higher threshold
-            argmax (bool): TODO
-            clip_hist_tails (int): TODO
-            no_data (?): TODO
+            argmax (bool): Determines is the histogram bin with maximum frequency
+                should be ignored.
+            clip_hist_tails (int): Determines if observations further away than
+            a certain amount of standard deviations from the mean should be 
+            ignored.
+            no_data (int): Value to be used as no data. 
         '''
         super().__init__(X)
         self.band=band
@@ -165,6 +168,15 @@ class Transform(TransformBase):
 
 
     def _transform(self):
+        """ 
+            Using the Kapurs method for image binarization, this method will detect
+            points in the dataset that do are considered background and foreground.
+        
+        Return:
+            np.ndarray: 2 dimensional matrix with ones in the pixels that are outliers,
+                and zeros otherwise.
+
+        """
         change_classification = np.zeros((self.cols * self.rows), dtype=np.uint8)
         positive_threshold = None
         negative_threshold = None
