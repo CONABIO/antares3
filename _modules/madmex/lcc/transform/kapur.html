@@ -278,7 +278,7 @@
     <span class="c1"># check for corner cases</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">histo</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">histo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="c1"># Standarize histogram to obtain probabilities</span>
+    <span class="c1"># standardize histogram to obtain probabilities</span>
     <span class="n">probabilities</span> <span class="o">=</span> <span class="n">histo</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">histo</span><span class="p">))</span>
     <span class="c1"># initialize vector to fill with calculated entropies</span>
     <span class="n">entropies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">probabilities</span><span class="p">))</span>
@@ -314,9 +314,12 @@
 <span class="sd">                be a lower and a higher threshold. ``False`` should be used for</span>
 <span class="sd">                array of absolute values, in which case there should only be one</span>
 <span class="sd">                higher threshold</span>
-<span class="sd">            argmax (bool): TODO</span>
-<span class="sd">            clip_hist_tails (int): TODO</span>
-<span class="sd">            no_data (?): TODO</span>
+<span class="sd">            argmax (bool): Determines is the histogram bin with maximum frequency</span>
+<span class="sd">                should be ignored.</span>
+<span class="sd">            clip_hist_tails (int): Determines if observations further away than</span>
+<span class="sd">            a certain amount of standard deviations from the mean should be </span>
+<span class="sd">            ignored.</span>
+<span class="sd">            no_data (int): Value to be used as no data. </span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">band</span><span class="o">=</span><span class="n">band</span>
@@ -329,6 +332,15 @@
 
 
     <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">            Using the Kapurs method for image binarization, this method will detect</span>
+<span class="sd">            points in the dataset that do are considered background and foreground.</span>
+<span class="sd">        </span>
+<span class="sd">        Return:</span>
+<span class="sd">            np.ndarray: 2 dimensional matrix with ones in the pixels that are outliers,</span>
+<span class="sd">                and zeros otherwise.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">change_classification</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">cols</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
         <span class="n">positive_threshold</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">negative_threshold</span> <span class="o">=</span> <span class="kc">None</span>
