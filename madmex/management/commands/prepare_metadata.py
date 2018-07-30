@@ -46,6 +46,14 @@ Datasets details:
     - country_mask is a dataset to identify pixels inside vs outside of a country. See the antares make_country_mask for
         more informations about how to generate this dataset
 
+    - biogeographic_zones is a rasterization of Mexico's biogeographic regions vector product. It can be generated with the
+        following lines:
+            # Download data from conabio geoportal
+            wget http://www.conabio.gob.mx/informacion/gis/maps/geo/rbiog4mgw.zip
+            unzip rbiog4mgw.zip -d biogeo
+            # Generate tiles (about 500m resolution, 2000*2000 pixels), writing them directly to an s3 bucket
+            antares rasterize_vector_file biogeo/rbiog4mgw.shp -res 0.005 -tile 2000 --bucket conabio-s3-oregon --path biogeographic_zones --prefix mex_biogeo --field BIOG5_ID
+
 --------------
 Example usage:
 --------------
@@ -60,6 +68,9 @@ antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name 
 
 # Country mask
 antares prepare_metadata --path /path/to/dir/with/tiles --dataset_name country_mask --outfile metadata_country_mask.yaml
+
+# Biogeographic regions
+antares prepare_metadata --path biogeographic_zones --bucket conabio-s3-oregon --dataset_name biogeographic_zones --outfile metadata_biogeo.yaml
 
 # Generate metadata for a single Landsat path row of landsat 8 data stored on s3
 antares prepare_metadata --path dir/inside/bucket --bucket conabio-s3-oregon --dataset_name landsat_espa --outfile metadata_landsat_bucket.yaml --pattern .*LC08039037.* --multi 20
