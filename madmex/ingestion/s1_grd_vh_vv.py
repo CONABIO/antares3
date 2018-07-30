@@ -14,14 +14,23 @@ from madmex.util import s3
 def metadata_convert(path, bucket=None):
     """Prepare metadata prior to datacube indexing
 
-    Given a directory containing ...
+    Given a directory containing sentinel1 () polarisation VH and VV)
+    data preprocessed with snappy, prepares a metadata string with
+    the appropriate formating. 
 
     Args:
-        path (str): Path of the directory containing ... 
+        path (str): Path of the directory containing sentinel1 data. 
         bucket (str or None): Name of the s3 bucket containing the data. If ``None``
             (default), data are considered to be on a mounted filesystem
 
     Examples:
+        >>> from madmex.ingestion.s1_grd_vh_vv import metadata_convert
+
+        >>> path = '/path/to/s1/dir'                                       
+        >>> yaml_str = metadata_convert(path)                                   
+                                                                        
+        >>> with open('/path/to/metadata_out.yaml', 'w') as dst:                
+        >>>     dst.write(yaml_str) 
 
     Returns:
         str: The content of the metadata for later writing to file.
