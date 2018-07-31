@@ -18,6 +18,11 @@ class Transform(BitransformBase):
     by similarity instead of wavelength. This difference will capture the changes
     between the images. The bands of the MAD components capture different nature of
     changes.
+
+    Instead of stacking the two matrices together and performing a matrix multiplication of the
+    stack, we take advantage of the nature of the problem and just compute the parts of
+    the matrix that we need. This process is described in the book: Image Analysis  Classification
+    and Change Detection in Remote Sensing.
     '''
     def __init__(self, X, Y, lmbda=0.0, weights=None):
         '''Instantiate MAD transformation class
@@ -25,10 +30,10 @@ class Transform(BitransformBase):
         Args:
             lmbda (float): A value to perform regularization during the transform, this
                 is helpful when the condition number of the matrix involved in the
-                eigenvalue problem is too large. 
+                eigenvalue problem is too large.
             weights (np.ndarray): An array with same dimensions as X and Y, represents
-                the importance of each pixel. This argument is useful when we calculate 
-                the iterative re-weighted MAD transform, in any other case, this value 
+                the importance of each pixel. This argument is useful when we calculate
+                the iterative re-weighted MAD transform, in any other case, this value
                 should be a matrix filled with ones.
         '''
         super().__init__(X, Y)
@@ -36,17 +41,7 @@ class Transform(BitransformBase):
         self.weights = weights
 
 
-    def _transform(self):
-        '''This method optimizes the proces of computing the MAD components. 
-        
-        Instead of stacking the two matrices together and performing a matrix multiplication of the
-        stack, we take advantage of the nature of the problem and just compute the parts of
-        the matrix that we need. This process is described in the book: Image Analysis  Classification
-        and Change Detection in Remote Sensing.
-        
-        Return:
-            np.ndarray: Transformed array
-        '''
+    def transform(self):
         weights = self.weights
         if weights is None:
             weights = numpy.ones((self.rows, self.cols))

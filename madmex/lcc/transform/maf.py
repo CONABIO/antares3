@@ -29,6 +29,9 @@ class Transform(TransformBase):
     This transform maximizes the autocorrelation for the image. The bands are
     order by autocorrelation with the first band having the maximum autocorrelation
     and subjected to be uncorrelated with the other bands.
+    This process is useful in the sense that it improves the spatial coherence
+    of the IR-MAD transform.
+
     '''
     def __init__(self, X, shift=(1, 1)):
         '''Instantiate MAF transform class
@@ -41,13 +44,9 @@ class Transform(TransformBase):
         self.h = numpy.array(shift)
 
 
-    def _transform(self):
+    def transform(self):
         '''Computes the Maximum Autocorrelation Factor (MAF) transform.
 
-        This method computes the linear combination of the bands in the image that
-        maximizes its spatial autocorrelation. This process is useful in the sense that
-        it improves the spatial coherence of the IR-MAD transform.
-        
         Return:
             np.ndarray: Transformed array
         '''
