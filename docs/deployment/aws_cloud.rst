@@ -1399,7 +1399,6 @@ Use next **Dockerfile** to build docker image for antares3:
 	sed -i "s/#c.NotebookApp.password = .*/c.NotebookApp.password = u'$jupyter_key'/" ~/.jupyter/jupyter_notebook_config.py && \
 	sed -i 's/#c.NotebookApp.port = .*/c.NotebookApp.port = 9999/' ~/.jupyter/jupyter_notebook_config.py
 	
-	
 	##Set locales for OpenDataCube
 	RUN echo "export LC_ALL=C.UTF-8" >> ~/.profile
 	RUN echo "export LANG=C.UTF-8" >> ~/.profile
