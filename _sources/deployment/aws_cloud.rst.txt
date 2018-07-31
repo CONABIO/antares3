@@ -945,8 +945,8 @@ Establish certs that will be used by kubernetes dashboard in ``kubernetes-dashbo
 
     $curl -O https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
     $sed -ni 's/- --auto-generate-certificates/#- --auto-generate-certificates/;p' kubernetes-dashboard.yaml
-	$sed -i '/args:/a \ \ \ \ \ \ \ \ \ \ - --tls-cert-file=fullchain1.pem' kubernetes-dashboard.yaml
-	$sed -i '/args:/a \ \ \ \ \ \ \ \ \ \ - --tls-key-file=privkey1.pem' kubernetes-dashboard.yaml
+    $sed -i '/args:/a \ \ \ \ \ \ \ \ \ \ - --tls-cert-file=fullchain1.pem' kubernetes-dashboard.yaml
+    $sed -i '/args:/a \ \ \ \ \ \ \ \ \ \ - --tls-key-file=privkey1.pem' kubernetes-dashboard.yaml
 
 Create kubernetes secret:
 
@@ -1319,7 +1319,7 @@ Use next **Dockerfile** to build docker image for antares3:
 	USER root
 	
 	#see: https://github.com/Yelp/dumb-init/ for next line:
-	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/	v$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s 	https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/	dumb-init
+	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/dumb-init
 	
 	#base dependencies
 	RUN apt-get update && apt-get install -y \
@@ -1368,7 +1368,7 @@ Use next **Dockerfile** to build docker image for antares3:
 	RUN pip3 install --upgrade python-dateutil
 	
 	#Dependencies for antares3 & datacube
-	RUN pip3 install numpy && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && 	pip3 install rasterio==1 --no-binary rasterio
+	RUN pip3 install numpy && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1 --no-binary rasterio
 	RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
 	RUN pip3 install --no-cache --no-binary :all: psycopg2
 	RUN pip3 install futures pathlib setuptools==20.4
@@ -1398,7 +1398,6 @@ Use next **Dockerfile** to build docker image for antares3:
 	sed -i "s/#c.NotebookApp.keyfile = .*/c.NotebookApp.keyfile = u'\/shared_volume\/certs\/privkey1.pem'/" ~/.jupyter/jupyter_notebook_config.py && \
 	sed -i "s/#c.NotebookApp.password = .*/c.NotebookApp.password = u'$jupyter_key'/" ~/.jupyter/jupyter_notebook_config.py && \
 	sed -i 's/#c.NotebookApp.port = .*/c.NotebookApp.port = 9999/' ~/.jupyter/jupyter_notebook_config.py
-	
 	
 	##Set locales for OpenDataCube
 	RUN echo "export LC_ALL=C.UTF-8" >> ~/.profile

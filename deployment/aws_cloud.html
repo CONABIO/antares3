@@ -923,8 +923,8 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 <p>Establish certs that will be used by kubernetes dashboard in <code class="docutils literal notranslate"><span class="pre">kubernetes-dashboard.yaml</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$curl</span> -O https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
 <span class="nv">$sed</span> -ni <span class="s1">&#39;s/- --auto-generate-certificates/#- --auto-generate-certificates/;p&#39;</span> kubernetes-dashboard.yaml
-    <span class="nv">$sed</span> -i <span class="s1">&#39;/args:/a \ \ \ \ \ \ \ \ \ \ - --tls-cert-file=fullchain1.pem&#39;</span> kubernetes-dashboard.yaml
-    <span class="nv">$sed</span> -i <span class="s1">&#39;/args:/a \ \ \ \ \ \ \ \ \ \ - --tls-key-file=privkey1.pem&#39;</span> kubernetes-dashboard.yaml
+<span class="nv">$sed</span> -i <span class="s1">&#39;/args:/a \ \ \ \ \ \ \ \ \ \ - --tls-cert-file=fullchain1.pem&#39;</span> kubernetes-dashboard.yaml
+<span class="nv">$sed</span> -i <span class="s1">&#39;/args:/a \ \ \ \ \ \ \ \ \ \ - --tls-key-file=privkey1.pem&#39;</span> kubernetes-dashboard.yaml
 </pre></div>
 </div>
 <p>Create kubernetes secret:</p>
@@ -1219,7 +1219,7 @@ Verify password:
 USER root
 
 <span class="c1">#see: https://github.com/Yelp/dumb-init/ for next line:</span>
-RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y wget curl <span class="o">&amp;&amp;</span> wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/     v<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>/dumb-init_<span class="k">$(</span>curl -s       https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>_amd64 <span class="o">&amp;&amp;</span> chmod +x /usr/local/bin/    dumb-init
+RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y wget curl <span class="o">&amp;&amp;</span> wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>/dumb-init_<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>_amd64 <span class="o">&amp;&amp;</span> chmod +x /usr/local/bin/dumb-init
 
 <span class="c1">#base dependencies</span>
 RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y <span class="se">\</span>
@@ -1268,7 +1268,7 @@ RUN pip3 install dask distributed --upgrade <span class="o">&amp;&amp;</span> pi
 RUN pip3 install --upgrade python-dateutil
 
 <span class="c1">#Dependencies for antares3 &amp; datacube</span>
-RUN pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span>        pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span> --no-binary rasterio
+RUN pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span> --no-binary rasterio
 RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
 RUN pip3 install --no-cache --no-binary :all: psycopg2
 RUN pip3 install futures pathlib <span class="nv">setuptools</span><span class="o">==</span><span class="m">20</span>.4
@@ -1298,7 +1298,6 @@ sed -i <span class="s2">&quot;s/#c.NotebookApp.certfile = .*/c.NotebookApp.certf
 sed -i <span class="s2">&quot;s/#c.NotebookApp.keyfile = .*/c.NotebookApp.keyfile = u&#39;\/shared_volume\/certs\/privkey1.pem&#39;/&quot;</span> ~/.jupyter/jupyter_notebook_config.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
 sed -i <span class="s2">&quot;s/#c.NotebookApp.password = .*/c.NotebookApp.password = u&#39;</span><span class="nv">$jupyter_key</span><span class="s2">&#39;/&quot;</span> ~/.jupyter/jupyter_notebook_config.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
 sed -i <span class="s1">&#39;s/#c.NotebookApp.port = .*/c.NotebookApp.port = 9999/&#39;</span> ~/.jupyter/jupyter_notebook_config.py
-
 
 <span class="c1">##Set locales for OpenDataCube</span>
 RUN <span class="nb">echo</span> <span class="s2">&quot;export LC_ALL=C.UTF-8&quot;</span> &gt;&gt; ~/.profile
