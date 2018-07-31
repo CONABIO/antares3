@@ -1866,7 +1866,7 @@ spec:
 <ol class="arabic simple" start="4">
 <li>Before deleting cluster, delete deployment of kubernetes dashboard with it’s components, EFS, deployment of services: bokeh and jupyterlab, delete mount targets of EFS and delete instance, subnet and security group of RDS:</li>
 </ol>
-<p>For example, to delete deployment of components of kubernetes dashboard, EFS and service (bokeh visualization):</p>
+<p>For example, to delete deployment of components of kubernetes dashboard, EFS and service (bokeh visualization and jupyterlab):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#delete admin-user created:</span>
 <span class="nv">$kubectl</span> -n kube-system delete serviceaccount admin-user
 <span class="nv">$kubectl</span> -n kube-system delete ClusterRoleBinding admin-user

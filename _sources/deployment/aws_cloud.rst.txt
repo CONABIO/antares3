@@ -2118,7 +2118,7 @@ or use kubernetes dashboard once components of kubernetes dashboard are running.
 
 4. Before deleting cluster, delete deployment of kubernetes dashboard with it's components, EFS, deployment of services: bokeh and jupyterlab, delete mount targets of EFS and delete instance, subnet and security group of RDS:
    
-For example, to delete deployment of components of kubernetes dashboard, EFS and service (bokeh visualization):
+For example, to delete deployment of components of kubernetes dashboard, EFS and service (bokeh visualization and jupyterlab):
 
 .. code-block:: bash
 
