@@ -1715,7 +1715,7 @@ Execute:
 Deployment for dask worker
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use next ``antares3-worker.yaml`` file to create containers for dask worker. 
+Use next ``antares3-worker.yaml`` file to create containers for dask workers. 
 
 Example for ``t2.large`` instances which have 2 cores. Two instances were started. See `Managing Compute Resources for Containers`_ , `Assign CPU Resources to Containers and Pods`_ and `Assign Memory Resources to Containers and Pods`_ to learn how to change the requests and limits values for cpu and memory of containers.
 
