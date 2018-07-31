@@ -1284,6 +1284,24 @@ Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Pre
 Dockerfile for containers of Antares3 and OpenDataCube
 ------------------------------------------------------
 
+To have a user interface to work with, we use `JupyterLab`_ and to browse jupyter notebook with https we need to do some configuration, see `Running a notebook server`_. There is one option that will be incorporated soon to have multiple instances of the single-user Jupyter notebook server, see `JupyterHub`_ and `Step Zero Kubernetes on AWS`_.
+
+Create a hashed password:
+
+.. code-block:: bash
+
+    sudo pip3 install jupyterlab
+	
+	#enter python and then:
+
+	from notebook.auth import passwd
+
+	passwd()
+
+	Enter password: #?m4dm3x_us3r#?
+	Verify password:
+	
+	'sha1:1f925h17t3p1:....'
 
 Use next **Dockerfile** to build docker image for antares3:
    
@@ -1292,57 +1310,58 @@ Use next **Dockerfile** to build docker image for antares3:
 
 	FROM ubuntu:xenial
 	USER root
-
+	
 	#see: https://github.com/Yelp/dumb-init/ for next line:
-	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/dumb-init
+	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/	v$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s 	https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/	dumb-init
 	
 	#base dependencies
 	RUN apt-get update && apt-get install -y \
-		openssh-server \
-		openssl \
-		sudo \
-		nano \
-		software-properties-common \
-		python-software-properties \
-		git \
-		vim \
-		vim-gtk \
-		htop \
-		build-essential \
-		libssl-dev \
-		libffi-dev \
-		cmake \
-		python3-dev \
-		python3-pip \
-		python3-setuptools \
-		ca-certificates \
-		postgresql-client \
-	    libudunits2-dev  && pip3 install --upgrade pip==9.0.3
+	        openssh-server \
+	        openssl \
+	        sudo \
+	        nano \
+	        software-properties-common \
+	        python-software-properties \
+	        git \
+	        vim \
+	        vim-gtk \
+	        htop \
+	        build-essential \
+	        libssl-dev \
+	        libffi-dev \
+	        cmake \
+	        python3-dev \
+	        python3-pip \
+	        python3-setuptools \
+	        ca-certificates \
+	        postgresql-client \
+	        libudunits2-dev \
+	        nodejs-legacy && pip3 install --upgrade pip==9.0.3
 	
 	#Install spatial libraries
 	RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable && apt-get -qq update
 	RUN apt-get install -y \
-		netcdf-bin \
-		libnetcdf-dev \
-		ncview \
-		libproj-dev \
-		libgeos-dev \
-		gdal-bin \
-		libgdal-dev
+	        netcdf-bin \
+	        libnetcdf-dev \
+	        ncview \
+	        libproj-dev \
+	        libgeos-dev \
+	        gdal-bin \
+	        libgdal-dev
 	
 	#Create user: madmex_user
 	RUN groupadd madmex_user
 	RUN useradd madmex_user -g madmex_user -m -s /bin/bash
 	RUN echo "madmex_user ALL=(ALL:ALL) NOPASSWD:ALL" | (EDITOR="tee -a" visudo)
 	RUN echo "madmex_user:madmex_user" | chpasswd
-	
+
 	##Install dask distributed
 	RUN pip3 install dask distributed --upgrade && pip3 install bokeh
 	##Install missing package for open datacube:
 	RUN pip3 install --upgrade python-dateutil
 	
 	#Dependencies for antares3 & datacube
-	RUN pip3 install numpy && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1 --no-binary rasterio  
+	RUN pip3 install numpy && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && 	pip3 install rasterio==1 --no-binary rasterio
 	RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
 	RUN pip3 install --no-cache --no-binary :all: psycopg2
 	RUN pip3 install futures pathlib setuptools==20.4
@@ -1357,9 +1376,22 @@ Use next **Dockerfile** to build docker image for antares3:
 	#Upgrade awscli and tools for s3:
 	RUN pip3 install boto3 botocore awscli --upgrade
 	
+	#install jupyter lab and notebook:
+	
+	RUN pip3 install jupyter jupyterlab --upgrade
+	
 	#antares3:
 	USER madmex_user
 	RUN pip3 install --user git+https://github.com/CONABIO/antares3.git@develop
+	
+	#set password for jupyter lab:
+	ARG jupyter_key=$jupyter_key
+	RUN jupyter notebook --generate-config && \
+	sed -i "s/#c.NotebookApp.certfile = .*/c.NotebookApp.certfile = u'\/shared_volume\/certs\/fullchain1.pem'/" ~/.jupyter/	jupyter_notebook_config.py && \
+	sed -i "s/#c.NotebookApp.keyfile = .*/c.NotebookApp.keyfile = u'\/shared_volume\/certs\/privkey1.pem'/" ~/.jupyter/	jupyter_notebook_config.py && \
+	sed -i "s/#c.NotebookApp.password = .*/c.NotebookApp.password = u'$jupyter_key'/" ~/.jupyter/jupyter_notebook_config.py && \
+	sed -i 's/#c.NotebookApp.port = .*/c.NotebookApp.port = 9999/' ~/.jupyter/jupyter_notebook_config.py
+	
 	
 	##Set locales for OpenDataCube
 	RUN echo "export LC_ALL=C.UTF-8" >> ~/.profile
@@ -1371,6 +1403,8 @@ Use next **Dockerfile** to build docker image for antares3:
 	RUN echo "alias python=python3" >> ~/.bash_aliases
 	#Antares3:
 	RUN echo "export PATH=$PATH:/home/madmex_user/.local/bin/" >> ~/.profile
+	
+	
 	#Config files for datacube and antares
 	RUN ln -sf $mount_point/.antares ~/.antares
 	RUN ln -sf $mount_point/.datacube.conf ~/.datacube.conf
@@ -1379,9 +1413,9 @@ Use next **Dockerfile** to build docker image for antares3:
 	WORKDIR /home/madmex_user/
 	VOLUME ["/shared_volume"]
 	ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
+	
 
-   
-Build docker image with (needs a docker hub account):
+Define variable ``jupyter_key`` with the hashed password previously generated and build docker image with next commands (needs a docker hub account):
 
 .. code-block:: bash
 
@@ -1391,7 +1425,7 @@ Build docker image with (needs a docker hub account):
 
 	DOCKER_IMAGE_VERSION=latest
 
-	sudo docker build --build-arg mount_point=$mount_point -t $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION . 
+	sudo docker build --build-arg jupyter_key=$jupyter_key --build-arg mount_point=$mount_point -t $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_VERSION .
 
 	sudo docker login
 
@@ -2122,6 +2156,12 @@ To delete mount targets of EFS (assuming there's three subnets):
 
 
 .. Kubernetes references:
+
+.. _JupyterHub: https://jupyterhub.readthedocs.io/en/stable/
+
+.. _Running a notebook server: https://jupyter-notebook.readthedocs.io/en/stable/public_server.html#running-a-notebook-server
+
+.. _JupyterLab: jupyterlab.readthedocs.io/en/stable/
 
 .. _Run Heapster in a Kubernetes cluster with an InfluxDB backend and a Grafana UI: https://github.com/kubernetes/heapster/blob/master/docs/influxdb.md
 
