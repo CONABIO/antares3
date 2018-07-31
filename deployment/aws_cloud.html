@@ -1564,7 +1564,7 @@ spec:
 </div>
 <div class="section" id="deployment-for-dask-worker">
 <h4>Deployment for dask worker<a class="headerlink" href="#deployment-for-dask-worker" title="Permalink to this headline">¶</a></h4>
-<p>Use next <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> file to create <strong>one</strong> container for dask worker.</p>
+<p>Use next <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> file to create containers for dask worker.</p>
 <p>Example for <code class="docutils literal notranslate"><span class="pre">t2.large</span></code> instances which have 2 cores. Two instances were started. See <a class="reference external" href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/">Managing Compute Resources for Containers</a> , <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/">Assign CPU Resources to Containers and Pods</a> and <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/#specify-a-memory-request-and-a-memory-limit">Assign Memory Resources to Containers and Pods</a> to learn how to change the requests and limits values for cpu and memory of containers.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>apiVersion: extensions/v1beta1
 kind: Deployment
@@ -1583,7 +1583,7 @@ spec:
       - name: antares3-worker
         imagePullPolicy: Always
         image: madmex/antares3-k8s-cluster-dependencies:latest <span class="c1">#Docker image to be used for dask scheduler/worker container</span>
-        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps &amp;&amp; /home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-worker --worker-port 8786 --nthreads      1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
+        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps &amp;&amp; /home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
         ports:
           - containerPort: <span class="m">8786</span>
         env:
@@ -1754,6 +1754,10 @@ spec:
 <p class="first admonition-title">Note</p>
 <p class="last">Make sure this &lt;key&gt;.pem has 400 permissions: <code class="docutils literal notranslate"><span class="pre">$chmod</span> <span class="pre">400</span> <span class="pre">&lt;key&gt;.pem</span></code>.</p>
 </div>
+<p>Or use jupyterlab access:</p>
+<p><strong>&lt;public DNS of master or node (depends where dask-scheduler container is running)&gt;:30001</strong></p>
+<a class="reference internal image-reference" href="../_images/jupyterlab-1.png"><img alt="../_images/jupyterlab-1.png" src="../_images/jupyterlab-1.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/jupyterlab-2.png"><img alt="../_images/jupyterlab-2.png" src="../_images/jupyterlab-2.png" style="width: 400px;" /></a>
 <ol class="arabic simple" start="2">
 <li>To scale down cluster export next bash variables:</li>
 </ol>
@@ -1774,10 +1778,10 @@ spec:
 <span class="nv">$kubectl</span> -n kube-system scale deployments/monitoring-influxdb --replicas<span class="o">=</span><span class="m">0</span>
 </pre></div>
 </div>
-<p>delete deployments of antares3:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> delete deployment antares3-worker
+<p>and those of antares3:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> scale deployments/antares3-worker --replicas<span class="o">=</span><span class="m">0</span>
 
-<span class="nv">$kubectl</span> delete deployment antares3-scheduler
+<span class="nv">$kubectl</span> scale deployments/antares3-scheduler --replicas<span class="o">=</span><span class="m">0</span>
 </pre></div>
 </div>
 <p>and scale down efs-provisioner deployment:</p>
@@ -1856,11 +1860,11 @@ spec:
 </pre></div>
 </div>
 <p>and create deployments for dask-scheduler and dask-worker (see <strong>Deployments for dask scheduler and worker</strong> section).</p>
-<p>or use kubernetes dashboard (first scale efs, then scheduler and finally workers):</p>
+<p>or use kubernetes dashboard once components of kubernetes dashboard are running. First scale efs, then scheduler and finally workers:</p>
 <a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments.png"><img alt="../_images/k8s-dashboard-deployments.png" src="../_images/k8s-dashboard-deployments.png" style="width: 400px;" /></a>
 <a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments-2.png"><img alt="../_images/k8s-dashboard-deployments-2.png" src="../_images/k8s-dashboard-deployments-2.png" style="width: 400px;" /></a>
 <ol class="arabic simple" start="4">
-<li>Before deleting cluster delete deployment of kubernetes dashboard with it’s components, EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:</li>
+<li>Before deleting cluster, delete deployment of kubernetes dashboard with it’s components, EFS, deployment of services: bokeh and jupyterlab, delete mount targets of EFS and delete instance, subnet and security group of RDS:</li>
 </ol>
 <p>For example, to delete deployment of components of kubernetes dashboard, EFS and service (bokeh visualization):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#delete admin-user created:</span>
@@ -1884,7 +1888,9 @@ spec:
 
 <span class="c1">#delete deployment of efs</span>
 <span class="nv">$kubectl</span> delete deployment efs-provisioner
+<span class="c1">#delete deployments of services</span>
 <span class="nv">$kubectl</span> delete service antares3-scheduler-bokeh
+<span class="nv">$kubectl</span> delete service antares3-jupyter-lab
 </pre></div>
 </div>
 <p>To delete mount targets of EFS (assuming there’s three subnets):</p>

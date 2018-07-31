@@ -1716,7 +1716,7 @@ Execute:
 Deployment for dask worker
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use next ``antares3-worker.yaml`` file to create **one** container for dask worker. 
+Use next ``antares3-worker.yaml`` file to create containers for dask worker. 
 
 Example for ``t2.large`` instances which have 2 cores. Two instances were started. See `Managing Compute Resources for Containers`_ , `Assign CPU Resources to Containers and Pods`_ and `Assign Memory Resources to Containers and Pods`_ to learn how to change the requests and limits values for cpu and memory of containers.
 
@@ -1740,7 +1740,7 @@ Example for ``t2.large`` instances which have 2 cores. Two instances were starte
 	      - name: antares3-worker
 	        imagePullPolicy: Always
 	        image: madmex/antares3-k8s-cluster-dependencies:latest #Docker image to be used for dask scheduler/worker container
-	        command: ["/bin/bash", "-c", "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps && /home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 	1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
+	        command: ["/bin/bash", "-c", "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps && /home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
 	        ports:
 	          - containerPort: 8786
 	        env:
@@ -1965,6 +1965,17 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 	Make sure this <key>.pem has 400 permissions: ``$chmod 400 <key>.pem``.
 
 
+Or use jupyterlab access:
+
+**<public DNS of master or node (depends where dask-scheduler container is running)>:30001**
+
+.. image:: ../imgs/jupyterlab-1.png
+    :width: 400
+
+
+.. image:: ../imgs/jupyterlab-2.png
+    :width: 400
+
 
 2. To scale down cluster export next bash variables:
 
@@ -1990,13 +2001,13 @@ Scale down components of kubernetes dashboard:
 	$kubectl -n kube-system scale deployments/monitoring-influxdb --replicas=0
 
 
-delete deployments of antares3:
+and those of antares3:
    
 .. code-block:: bash
 
-    $kubectl delete deployment antares3-worker
+    $kubectl scale deployments/antares3-worker --replicas=0
 
-    $kubectl delete deployment antares3-scheduler
+    $kubectl scale deployments/antares3-scheduler --replicas=0
 
 and scale down efs-provisioner deployment:
 
@@ -2095,7 +2106,7 @@ And scale up efs-provisioner deployment :
    
 and create deployments for dask-scheduler and dask-worker (see **Deployments for dask scheduler and worker** section).
 
-or use kubernetes dashboard (first scale efs, then scheduler and finally workers):
+or use kubernetes dashboard once components of kubernetes dashboard are running. First scale efs, then scheduler and finally workers:
 
 .. image:: ../imgs/k8s-dashboard-deployments.png
     :width: 400
@@ -2105,7 +2116,7 @@ or use kubernetes dashboard (first scale efs, then scheduler and finally workers
 
 
 
-4. Before deleting cluster delete deployment of kubernetes dashboard with it's components, EFS, deployment of service, delete mount targets of EFS and delete instance, subnet and security group of RDS:
+4. Before deleting cluster, delete deployment of kubernetes dashboard with it's components, EFS, deployment of services: bokeh and jupyterlab, delete mount targets of EFS and delete instance, subnet and security group of RDS:
    
 For example, to delete deployment of components of kubernetes dashboard, EFS and service (bokeh visualization):
 
@@ -2132,8 +2143,9 @@ For example, to delete deployment of components of kubernetes dashboard, EFS and
 
 	#delete deployment of efs
 	$kubectl delete deployment efs-provisioner
+	#delete deployments of services
 	$kubectl delete service antares3-scheduler-bokeh
-
+	$kubectl delete service antares3-jupyter-lab
 
 To delete mount targets of EFS (assuming there's three subnets):
 
