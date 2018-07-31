@@ -1563,7 +1563,7 @@ spec:
 </div>
 <div class="section" id="deployment-for-dask-worker">
 <h4>Deployment for dask worker<a class="headerlink" href="#deployment-for-dask-worker" title="Permalink to this headline">¶</a></h4>
-<p>Use next <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> file to create containers for dask worker.</p>
+<p>Use next <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> file to create containers for dask workers.</p>
 <p>Example for <code class="docutils literal notranslate"><span class="pre">t2.large</span></code> instances which have 2 cores. Two instances were started. See <a class="reference external" href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/">Managing Compute Resources for Containers</a> , <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/">Assign CPU Resources to Containers and Pods</a> and <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/#specify-a-memory-request-and-a-memory-limit">Assign Memory Resources to Containers and Pods</a> to learn how to change the requests and limits values for cpu and memory of containers.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>apiVersion: extensions/v1beta1
 kind: Deployment
