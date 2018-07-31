@@ -987,7 +987,13 @@ Open port retrieved by last command in masters security group of kubernetes clus
 ``https://<location>:<port>``
 
 
-Documentation of `Creating sample user`_ can be used to access via token generation.
+Documentation of `Creating sample user`_ can be used to access via token generation. Use: 
+
+.. code-block:: bash
+
+    kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep admin-user | awk '{print $1}')
+
+to retrieve token.
 
 
 .. image:: ../imgs/k8s-dashboard-1.png
@@ -1284,23 +1290,24 @@ Both Antares3 and Open DataCube use PostgreSQL with PostGis extension. Go to Pre
 Dockerfile for containers of Antares3 and OpenDataCube
 ------------------------------------------------------
 
-To have a user interface to work with, we use `JupyterLab`_ and to browse jupyter notebook with https we need to do some configuration, see `Running a notebook server`_. There is one option that will be incorporated soon to have multiple instances of the single-user Jupyter notebook server, see `JupyterHub`_ and `Step Zero Kubernetes on AWS`_.
+To have an user interface to work with we use `JupyterLab`_ which can be used with https to browse jupyter notebook, see `Running a notebook server`_. 
+
+.. note::
+	Soon we will use `JupyterHub`_ to have multiple instances of the single-user Jupyter notebook server, see `Step Zero Kubernetes on AWS`_.
 
 Create a hashed password:
 
 .. code-block:: bash
 
     sudo pip3 install jupyterlab
-	
-	#enter python and then:
 
-	from notebook.auth import passwd
+    #enter python and then:
+    from notebook.auth import passwd
+    passwd()
 
-	passwd()
+    Enter password: 
+    Verify password:
 
-	Enter password: #?m4dm3x_us3r#?
-	Verify password:
-	
 	'sha1:1f925h17t3p1:....'
 
 Use next **Dockerfile** to build docker image for antares3:
@@ -1946,7 +1953,7 @@ and scale down efs-provisioner deployment:
     $kubectl scale deployments/efs-provisioner --replicas=0
 
 
-or use kubernetes dashboard:
+or use kubernetes dashboard: 
 
 .. image:: ../imgs/k8s-dashboard-deployments.png
     :width: 400
@@ -2036,7 +2043,7 @@ And scale up efs-provisioner deployment :
    
 and create deployments for dask-scheduler and dask-worker (see **Deployments for dask scheduler and worker** section).
 
-or use kubernetes dashboard:
+or use kubernetes dashboard (first scale efs, then scheduler and finally workers):
 
 .. image:: ../imgs/k8s-dashboard-deployments.png
     :width: 400
