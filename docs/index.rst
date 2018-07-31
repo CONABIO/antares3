@@ -17,8 +17,7 @@ Antares
    :caption: User guide
 
    dependencies
-   install
-   setup
+   deployment
    cli
    download
    ingest
@@ -38,6 +37,7 @@ Antares
    :caption: Examples
 
    example_s2_land_cover
+   example_api
 
 
 Indices and tables

@@ -98,6 +98,9 @@ antares model_fit -p s2_001_jalisco_2017_0 -t jalisco_bits --region Jalisco --fi
                             nargs='*',
                             default=None,
                             help='List of categorical variables to be encoded using One Hot Encoding before model fit')
+        parser.add_argument('--remove-outliers',
+                            action='store_true',
+                            help='Perform outlier removal via isolation forest anomaly score before model fitting')
         parser.add_argument('-filename', '--filename',
                             type=str,
                             default=None,
@@ -127,6 +130,7 @@ To consult the exposed arguments for each model, use the "model_params" command 
         sample = options['sample']
         filename = options['filename']
         scheduler_file = options['scheduler']
+        remove_outliers = options['remove_outliers']
 
         # Prepare encoding of categorical variables if any specified
         if categorical_variables is not None:
@@ -167,6 +171,10 @@ To consult the exposed arguments for each model, use the "model_params" command 
         # Concatenate the lists
         X = np.concatenate(X_list)
         y = np.concatenate(y_list)
+
+        # Optionally run outliers removal
+        if remove_outliers:
+            X, y = Model.remove_outliers(X, y)
 
         # Optionally write the arrays to pickle file
         if filename is not None:

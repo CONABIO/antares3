@@ -14,6 +14,17 @@ from madmex.models import Footprint, Scene
 logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
+    help = """
+This command ingest metadata from the calalogs found in https://landsat.usgs.gov/download-entire-collection-metadata.
+The metadata can be used to perform availability analysis over the entire landsat collection without the need
+of performing additional queries to the USGS. This command is prepared to process the catalogs for
+Landsat 4-5, Landsat 7 and Landsat 8.
+
+--------------
+Example usage:
+--------------
+antares ingest_catalog --file <path-to-file>/LANDSAT_8_C1.csv
+    """
     
     def add_arguments(self, parser):
         '''
@@ -40,8 +51,8 @@ class Command(AntaresBaseCommand):
                                         scene_id=row[headers.index('sceneID')],
                                         landsat_product_id=row[headers.index('LANDSAT_PRODUCT_ID')],
                                         acquisition_date=row[headers.index('acquisitionDate')],
-                                        image_quality=int(row[headers.index('imageQuality1')]),
                                         cloud_cover=float(row[headers.index('cloudCoverFull')]),
+                                        cloud_cover_land=float(row[headers.index('CLOUD_COVER_LAND')]),
                                         min_lat=float(row[headers.index('lowerRightCornerLatitude')]),
                                         min_lon=float(row[headers.index('upperLeftCornerLongitude')]),
                                         max_lat=float(row[headers.index('upperLeftCornerLatitude')]),

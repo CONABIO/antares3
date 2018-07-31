@@ -19,9 +19,9 @@ grid_spatial:
     spatial_reference: {{ crs }}
 image:
   bands:
-    elevation: {layer: 1, path: {{ elevation }} }
-    slope: {layer: 1, path: {{ slope }} }
-    aspect: {layer: 1, path: {{ aspect }} }
+    elevation: {layer: 1, path: "{{ elevation }}" }
+    slope: {layer: 1, path: "{{ slope }}" }
+    aspect: {layer: 1, path: "{{ aspect }}" }
 instrument: {name: SIR}
 lineage:
   source_datasets: {}

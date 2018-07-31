@@ -2,8 +2,7 @@
 
 *************
 API reference
-*************
-
+************* 
 Api
 ===
 
@@ -57,11 +56,74 @@ Read and write data
 .. autosummary::
    :toctree: generated
 
-   io.helpers.get_label_encoding
    io.vector_db.from_geobox
    io.vector_db.VectorDb
    io.vector_db.VectorDb.load_training_from_dataset
    io.vector_db.load_segmentation_from_dataset
+
+
+Land cover change (lcc)
+=======================
+
+Interface to perform Land cover change detection and classication
+
+Base class
+----------
+
+.. autosummary::
+   :toctree: generated
+
+   lcc.bitemporal.BaseBiChange
+   lcc.bitemporal.BaseBiChange.from_geoarray
+   lcc.bitemporal.BaseBiChange.run
+   lcc.bitemporal.BaseBiChange.filter_mmu
+   lcc.bitemporal.BaseBiChange.label_change
+   lcc.bitemporal.BaseBiChange.filter_no_change
+   lcc.bitemporal.BaseBiChange.to_db
+   lcc.bitemporal.BaseBiChange.read_land_cover
+
+
+Implemented algorithms
+----------------------
+
+.. autosummary::
+   :toctree: generated
+
+   lcc.bitemporal.distance.BiChange
+   lcc.bitemporal.imadmaf.BiChange
+
+
+
+Transform module
+----------------
+
+A standardized interface to perform transformation of single arrays or between two arrays
+
+
+Base classes
+^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+
+   lcc.transform.TransformBase
+   lcc.transform.TransformBase.transform
+   lcc.transform.BitransformBase
+   lcc.transform.BitransformBase.transform
+
+
+Implemented transformation method
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+
+   lcc.transform.elliptic.Transform
+   lcc.transform.irmad.Transform
+   lcc.transform.kapur.Transform
+   lcc.transform.mad.Transform
+   lcc.transform.maf.Transform
+
 
 
 Modeling
@@ -84,8 +146,7 @@ Base class
    modeling.BaseModel.to_db
    modeling.BaseModel.hot_encode_training
    modeling.BaseModel.hot_encode_predict
-   modeling.BaseModel.score
-   modeling.BaseModel.create_report
+   modeling.BaseModel.remove_outliers
 
 Implemented models
 ------------------
@@ -140,6 +201,20 @@ Implemented algorithms
    segmentation.bis.Segmentation
 
 
+Validation
+==========
+
+Utilities to compute validation metrics on existing results
+
+.. autosummary::
+   :toctree: generated
+
+   validation.prepare_validation
+   validation.validate
+   validation.query_validation_intersect
+   validation.pprint_val_dict
+
+
 Wrappers
 ========
 
@@ -171,6 +246,7 @@ Various utils
    util.chunk
    util.pprint_args
    util.fill_and_copy
+   util.join_dicts
    util.datacube.var_to_ind
    util.local.aware_download
    util.local.extract_zip
@@ -179,4 +255,17 @@ Various utils
    util.local.filter_files_from_folder
    util.xarray.to_float
    util.xarray.to_int
+   util.numpy.groupby
    util.spatial.feature_transform
+   util.spatial.geometry_transform
+   util.spatial.get_geom_bbox
+   util.spatial.grid_gen
+   util.s3.list_folders
+   util.s3.list_files
+   util.s3.build_rasterio_path
+   util.s3.read_file
+   util.s3.write_raster
+   util.db.classification_to_cmap
+   util.db.get_label_encoding
+   util.db.get_validation_scheme_name
+   util.parsers.postgis_box_parser

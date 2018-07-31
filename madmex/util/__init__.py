@@ -162,4 +162,31 @@ def fill_and_copy(template, out_dir, **kwargs):
         dst.write(out)
 
 
+def join_dicts(*args, join='inner'):
+    """Join dictionaries by combining elements with similar keys into lists
 
+    Args:
+        *args: The dictionaries to join
+        join (str): Type of join. Either inner (default) or full
+
+    Return:
+        dict: The dictionary with combined keys
+
+    Examples:
+        >>> d1 = {1: 2, 3: 4}
+        >>> d2 = {1: 6, 3: 7, 5: 6}
+        >>> d3 = {1: 4, 3: 1, 9: 12, 5: 3}
+        >>> join_dicts(d1, d2, d3)
+        >>> join_dicts(d1, d2, d3, join='full')
+    """
+    # Get list of lists of keys
+    key_list = [list(d.keys()) for d in args]
+    if join == 'inner':
+        key_iter = set(key_list[0]).intersection(*key_list)
+        return {k:[d[k] for d in args] for k in key_iter}
+    elif join == 'full':
+        key_iter = set([j for i in args for j in i])
+        return {k:[d.get(k) for d in args if d.get(k) is not None]
+                for k in key_iter}
+    else:
+        raise ValueError('Unknown join type')

@@ -1,0 +1,29 @@
+id: {{ id }}
+extent:
+  center_dt: '{{ dt }}'
+  coord:
+    ll: {lat: {{ ll_lat }}, lon: {{  ll_lon }} }
+    lr: {lat: {{ lr_lat }}, lon: {{  lr_lon }} }
+    ul: {lat: {{ ul_lat }}, lon: {{  ul_lon }} }
+    ur: {lat: {{ ur_lat }}, lon: {{  ur_lon }} }
+  from_dt: '{{ dt }}'
+  to_dt: '{{ dt }}'
+format: {name: GeoTiff}
+grid_spatial:
+  projection:
+    geo_ref_points:
+      ll: {x: {{ ll_lon }}, y: {{ ll_lat }} }
+      lr: {x: {{ lr_lon }}, y: {{ lr_lat }} }
+      ul: {x: {{ ul_lon }}, y: {{ ul_lat }} }
+      ur: {x: {{ ur_lon }}, y: {{ ur_lat }} }
+    spatial_reference: {{ crs }}
+image:
+  bands:
+    polarisation_VH: {layer: 1, path: "{{ pol_vh }}" }
+    polarisation_VV: {layer: 1, path: "{{ pol_vv }}" }
+instrument: {name: IW}
+lineage:
+  source_datasets: {}
+platform: {code: sentinel1}
+processing_level: L1
+product_type: GRD

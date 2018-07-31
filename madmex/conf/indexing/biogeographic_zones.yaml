@@ -1,0 +1,45 @@
+name: biogeo_zones_tile
+description: Biogeographic regions of Mexico
+metadata_type: eo
+
+metadata:
+    platform:
+        code: biogeo
+    instrument:
+        name: biogeo
+    product_type: mask
+    format:
+        name: GeoTiff
+
+measurements:
+    - name: 'biogeo_region'
+      aliases: [biogeo, region, zone]
+      units: '1'
+      dtype: uint8
+      nodata: 0
+      flags_definition: 
+        sca:
+            bits: [0,1,2,3,4,5,6,7,8,9,10,12,15,16,111,112,131,132,141,142]
+            description: Biogeographic region names
+            values:
+                0: No Data
+                1: Chihuahuense
+                2: Sierra madre occidental
+                3: Sonorense
+                4: Baja california
+                5: Del cabo
+                6: California
+                7: Eje volcanico
+                8: Depresion de balsas
+                9: Costa del pacifico
+                10: Tamaulipeca
+                12: Golfo de mexico
+                15: Sierra madre del sur
+                16: Oaxaca
+                111: Altiplano sur
+                112: Sierra madre oriental
+                131: Yucatan
+                132: Peten
+                141: Los altos de Chiapas
+                142: Soconusco
+

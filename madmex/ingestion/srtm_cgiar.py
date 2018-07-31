@@ -6,7 +6,9 @@ import rasterio
 from pyproj import Proj
 from jinja2 import Environment, PackageLoader
 
-def metadata_convert(path):
+from madmex.util import s3
+
+def metadata_convert(path, bucket=None):
     """Prepare metadata prior to datacube indexing
 
     Given a directory containing srtm derived terrain metrics (elevation, aspect, slope)
@@ -14,6 +16,8 @@ def metadata_convert(path):
 
     Args:
         path (str): Path of the directory containing the 3 terrain metrics calculated from srtm.
+        bucket (str or None): Name of the s3 bucket containing the data. If ``None``
+            (default), data are considered to be on a mounted filesystem
 
     Examples:
         >>> from madmex.ingestion.srtm_cgiar import metadata_convert
@@ -26,11 +30,20 @@ def metadata_convert(path):
     Returns:
         str: The content of the metadata for later writing to file.
     """
+    if bucket is not None:
+        file_list = s3.list_files(bucket, path,
+                                  r'.*(srtm_mosaic|slope_mosaic|aspect_mosaic)\.tif$')
+        if len(file_list) == 3:
+            check_exist = [True]
+        else:
+            check_exist = [False]
+        path = s3.build_rasterio_path(bucket, path)
     elevation = os.path.join(path, 'srtm_mosaic.tif')
     slope = os.path.join(path, 'slope_mosaic.tif')
     aspect = os.path.join(path, 'aspect_mosaic.tif')
     # Check that these files exist
-    check_exist = [os.path.isfile(x) for x in [elevation, slope, aspect]]
+    if bucket is None:
+        check_exist = [os.path.isfile(x) for x in [elevation, slope, aspect]]
     if not all(check_exist):
         raise ValueError('Target directory must at least contain the 3 following files (srtm_mosaic.tif, slope_mosaic.tif, aspect_mosaic.tif)')
     with rasterio.open(elevation) as src:

@@ -1,0 +1,61 @@
+source_type: s1_esa_scene
+output_type: s1_snappy_vh_vv_mexico
+description: Preprocessed with snappy
+location: '{{ ingestion_path }}'
+file_path_template: 's1_esa_snappy/mexico/s1_{tile_index[0]}_{tile_index[1]}_{start_time}{% if netcdf %}.nc{% endif %}'
+global_attributes: 
+  title: CONABIO Data Cube Sentinel-1 SAR VH and VV
+  summary: Sentinel 1 GRD data product type with polarisation VH and VV preprocessed with snappy
+  source: ESA
+  institution: CONABIO 
+  instrument: IW
+  cdm_data_type: Grid
+  keywords: CONABIO,SENTINEL,POLARISATION,SNAPPY 
+  keywords_vocabulary: S1
+  platform: SENTINEL_1
+  processing_level: Level 1 GRD data preprocessed with snappy
+  product_version: '0.0.1'
+  product_suite: Sentinel1 GRD
+  project: MADMEX
+  coverage_content_type: physicalMeasurement 
+
+storage:
+  driver: {{ driver }}
+  bucket: '{{ bucket }}'
+  # http://spatialreference.org/ref/sr-org/mexico-inegi-lambert-conformal-conic/
+  crs: PROJCS["unnamed",GEOGCS["WGS 84",DATUM["unknown",SPHEROID["WGS84",6378137,6556752.3141]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",17.5],PARAMETER["standard_parallel_2",29.5],PARAMETER["latitude_of_origin",12],PARAMETER["central_meridian",-102],PARAMETER["false_easting",2500000],PARAMETER["false_northing",0]]
+  tile_size:
+          x: 100020
+          y: 100020
+  resolution:
+          x: 10
+          y: -10
+  origin:
+    # -118.21, 33.02
+    x: 977160
+    y: 2426720
+  chunking:
+      x: 5001
+      y: 5001
+      time: 200
+  dimension_order: ['time', 'y', 'x']
+
+measurements:
+    - name: 'polarisation_VH'
+      dtype: float32
+      nodata: 0.0
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'polarisation_VH'
+      attrs:
+         long_name: "GRD data polarisation VH"
+         alias: "polarisation_VH"
+    - name: 'polarisation_VV'
+      dtype: float32
+      nodata: 0.0
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'polarisation_VV'
+      attrs:
+          long_name: "GRD data polarisation VV"
+          alias: "polarisation_VV"

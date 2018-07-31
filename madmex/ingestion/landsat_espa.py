@@ -4,9 +4,11 @@ import re
 import uuid
 import xml.etree.ElementTree as ET
 
-import rasterio
+from rasterio.crs import CRS
 from pyproj import Proj
 from jinja2 import Environment, PackageLoader
+
+from madmex.util import s3
 
 LANDSAT_BANDS = {'TM': {'blue': 'sr_band1',
                         'green': 'sr_band2',
@@ -22,7 +24,7 @@ LANDSAT_BANDS = {'TM': {'blue': 'sr_band1',
                               'swir2': 'sr_band7'}}
 LANDSAT_BANDS['ETM'] = LANDSAT_BANDS['TM']
 
-def metadata_convert(path):
+def metadata_convert(path, bucket=None):
     """Prepare metatdata prior to datacube indexing
 
     Given a directory containing landsat surface reflectance bands and a MLT.txt
@@ -31,6 +33,8 @@ def metadata_convert(path):
     Args:
         path (str): Path of the directory containing the surface reflectance bands
             and the Landsat metadata file.
+        bucket (str or None): Name of the s3 bucket containing the data. If ``None``
+            (default), data are considered to be on a mounted filesystem
 
     Examples:
         >>> from madmex.ingestion.landsat_espa import metadata_convert
@@ -47,28 +51,41 @@ def metadata_convert(path):
     Returns:
         str: The content of the metadata for later writing to file.
     """
-    # Check that path is a dir and contains appropriate files
-    if not os.path.isdir(path):
-        raise ValueError('Argument path= is not a directory')
-    mtl_file_list = glob(os.path.join(path, '*.xml'))
-    # Filter list of xml files with regex (there could be more than one in case
-    # some bands have been opend in qgis for example)
     pattern = re.compile(r'[A-Z0-9]{4}_[A-Z0-9]{4}_\d{6}_\d{8}_\d{8}_01_(T1|T2|RT)\.xml')
-    print(mtl_file_list)
-    mtl_file_list = [x for x in mtl_file_list if pattern.search(x)]
-    print(mtl_file_list)
-    if len(mtl_file_list) != 1:
-        raise ValueError('Could not identify a unique xml metadata file')
-    mtl_file = mtl_file_list[0]
-    # Start parsing xml
-    root = ET.parse(mtl_file).getroot()
+    if bucket is None:
+        # Check that path is a dir and contains appropriate files
+        if not os.path.isdir(path):
+            raise ValueError('Argument path= is not a directory')
+        mtl_file_list = glob(os.path.join(path, '*.xml'))
+        # Filter list of xml files with regex (there could be more than one in case
+        # some bands have been opend in qgis for example)
+        mtl_file_list = [x for x in mtl_file_list if pattern.search(x)]
+        print(mtl_file_list)
+        if len(mtl_file_list) != 1:
+            raise ValueError('Could not identify a unique xml metadata file')
+        mtl_file = mtl_file_list[0]
+        # Start parsing xml
+        root = ET.parse(mtl_file).getroot()
+    else:
+        file_list = s3.list_files(bucket=bucket, path=path)
+        pattern = re.compile(r'.*\.xml$')
+        mtl_file_list = [x for x in file_list if pattern.search(x)]
+        if len(mtl_file_list) != 1:
+            raise ValueError('Could not identify a unique xml metadata file')
+        mtl_file = mtl_file_list[0]
+        # REad xml as string
+        xml_str = s3.read_file(bucket, mtl_file)
+        # generate element tree root
+        root = ET.fromstring(xml_str)
+        path = s3.build_rasterio_path(bucket, path)
+
     ns = 'http://espa.cr.usgs.gov/v2'
     # Build datetime from date and time
     date_str = root.find('ns:global_metadata/ns:acquisition_date',
                          namespaces={'ns': ns}).text
     time_str = root.find('ns:global_metadata/ns:scene_center_time',
                          namespaces={'ns': ns}).text
-    dt = '%sT%s' % (date_str, time_str)
+    dt = '%sT%s' % (date_str, time_str[:8])
     # satellite sensor metadata
     instrument = root.find('ns:global_metadata/ns:instrument',
                            namespaces={'ns': ns}).text
@@ -83,10 +100,10 @@ def metadata_convert(path):
                           namespaces={'ns': ns}).attrib['x'])
     lry = float(root.find('ns:global_metadata/ns:projection_information/ns:corner_point[@location="LR"]',
                           namespaces={'ns': ns}).attrib['y'])
-    # Retrieve crs from first band
-    bands = glob(os.path.join(path, '*_sr_band2.tif'))
-    with rasterio.open(bands[0]) as src:
-        crs = src.crs
+    utm_zone = int(root.find('ns:global_metadata/ns:projection_information/ns:utm_proj_params/ns:zone_code',
+                             namespaces={'ns': ns}).text)
+    crs = CRS({'proj': 'utm',
+               'zone': utm_zone})
     # Get coorner coordinates in long lat by transforming from projected values 
     p = Proj(crs)
     ul_lon, ul_lat = p(ulx, uly, inverse=True)

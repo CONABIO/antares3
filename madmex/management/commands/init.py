@@ -17,7 +17,7 @@ from madmex.settings import TEMP_DIR, BIS_LICENSE
 from madmex.util.local import aware_download, extract_zip, aware_make_dir, \
     filter_files_from_folder
 from madmex.util import fill_and_copy
-from madmex.settings import INGESTION_PATH
+from madmex.settings import INGESTION_PATH, INGESTION_BUCKET, DRIVER
 import pkg_resources as pr
 
 
@@ -112,9 +112,15 @@ antares init -c mex gtm
             for f in glob(os.path.join(indexing_origin_dir, '*.yaml')):
                 shutil.copy2(f, system_index_dir)
             # Template and copy ingestion files
+            netcdf = False
+            if DRIVER == 'NetCDF CF':
+                netcdf = True
             for f in glob(os.path.join(ingestion_origin_dir, '*.yaml')):
                 fill_and_copy(template=f, out_dir=system_ingest_dir,
-                              ingestion_path=INGESTION_PATH)
+                              ingestion_path=INGESTION_PATH,
+                              bucket=INGESTION_BUCKET,
+                              driver=DRIVER,
+                              netcdf=netcdf)
 
         # Setup bis license
         bis_module = pr.resource_filename('madmex', 'bin/bis')

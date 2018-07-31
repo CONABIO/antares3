@@ -21,35 +21,62 @@ from madmex.util.local import basename
 logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
+    help = """
+This command helps in the ingestion process of new training data. The schema
+consideres two classification tags, interpret and predict. Interpret is considered
+the main tag. If there is no predict tag, value will be left blank.
+
+--------------
+Example usage:
+--------------
+antares ingest_training --shape <path-to-file>/1349025_finalcut.shp 
+                        --interpret interpreta 
+                        --predict predicted 
+                        --scheme madmex 
+                        --year 2015 
+                        --dataset aguascalientes_example
+    """
     
     def add_arguments(self, parser):
         '''
         Adds arguments for this command.
         '''
-        parser.add_argument('--shape', nargs=1, help='The name of the shape to ingest.')
-        parser.add_argument('--interpret', nargs='?', default=None, help='The name of the shape to ingest.')
-        parser.add_argument('--predict', nargs=1, help='The name of the shape to ingest.')
-        parser.add_argument('--dataset', nargs=1, help='The name of the shape to ingest.')
-        parser.add_argument('--year', nargs=1, help='The creation year for this objects.')
-        parser.add_argument('--scheme', nargs=1, help='Classification scheme.')
-        parser.add_argument('--filter', 
+        parser.add_argument('--shape',
+                            type=str,
+                            help='The name of the shape to ingest.')
+        parser.add_argument('--interpret',
+                            type=str,
+                            help='The field in the shape used as interpreted tag.')
+        parser.add_argument('--predict',
+                            type=str,
+                            default=None,
+                            help='The field in the shape used as predict tag.')
+        parser.add_argument('--dataset',
+                            type=str,
+                            help='Identifier for the rows ingested through this workflow.')
+        parser.add_argument('--year',
+                            help='The creation year for this objects.')
+        parser.add_argument('--scheme',
+                            type=str,
+                            help='Classification scheme.')
+        parser.add_argument('--filter',
                             type=int,
-                            default=None, 
+                            default=None,
                             help='Number to filter the shapes.')
     
     def handle(self, **options):
         
-        shape_file = options['shape'][0]
+        shape_file = options['shape']
         interpret = options['interpret']
-        predict = options['predict'][0]
-        dataset = options['dataset'][0]
-        year = options['year'][0]
-        scheme = options['scheme'][0]
+        predict = options['predict']
+        dataset = options['dataset']
+        year = options['year']
+        scheme = options['scheme']
         filter = options['filter']
         
         filename = basename(shape_file, False)
         
-        if filter <= 1:
+        if filter is not None and filter <= 1:
             filter = None
 
         with fiona.open(shape_file) as source:
@@ -78,13 +105,14 @@ class Command(AntaresBaseCommand):
             
             value = p[interpret]
             interpret_tag = tag_map.get(value)                
-            if not interpret_tag:
-                try:
-                    interpret_tag = Tag.objects.get(numeric_code=value, scheme=scheme)
-                except Tag.DoesNotExist:
-                    interpret_tag = Tag.objects.get(numeric_code=value, scheme=scheme)
-                    interpret_tag.save()
+            if not interpret_tag:                    
+                interpret_tag, created = Tag.objects.get_or_create(
+                    numeric_code=value,
+                    scheme=scheme
+                )
                 tag_map[value] = interpret_tag
+                if created:
+                    logger.info('New tag created with values: numeric_code=%s, scheme=%s' % (value, scheme))
             
             predict_tag = None
             if predict is not None:
