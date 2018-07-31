@@ -1308,7 +1308,7 @@ Create a hashed password:
     Enter password: 
     Verify password:
 
-	'sha1:1f925h17t3p1:....'
+    'sha1:1f925h17t3p1:....' #this will be used to setup https for jupyterlab, save it.
 
 Use next **Dockerfile** to build docker image for antares3:
    
@@ -1394,8 +1394,8 @@ Use next **Dockerfile** to build docker image for antares3:
 	#set password for jupyter lab:
 	ARG jupyter_key=$jupyter_key
 	RUN jupyter notebook --generate-config && \
-	sed -i "s/#c.NotebookApp.certfile = .*/c.NotebookApp.certfile = u'\/shared_volume\/certs\/fullchain1.pem'/" ~/.jupyter/	jupyter_notebook_config.py && \
-	sed -i "s/#c.NotebookApp.keyfile = .*/c.NotebookApp.keyfile = u'\/shared_volume\/certs\/privkey1.pem'/" ~/.jupyter/	jupyter_notebook_config.py && \
+	sed -i "s/#c.NotebookApp.certfile = .*/c.NotebookApp.certfile = u'\/shared_volume\/certs\/fullchain1.pem'/" ~/.jupyter/jupyter_notebook_config.py && \
+	sed -i "s/#c.NotebookApp.keyfile = .*/c.NotebookApp.keyfile = u'\/shared_volume\/certs\/privkey1.pem'/" ~/.jupyter/jupyter_notebook_config.py && \
 	sed -i "s/#c.NotebookApp.password = .*/c.NotebookApp.password = u'$jupyter_key'/" ~/.jupyter/jupyter_notebook_config.py && \
 	sed -i 's/#c.NotebookApp.port = .*/c.NotebookApp.port = 9999/' ~/.jupyter/jupyter_notebook_config.py
 	
@@ -1547,7 +1547,16 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 
     $cp /persistentvolumes/.datacube.conf /persistentvolumes/efs-pvc-<id>
 
-5. Exit efs docker container.
+5. Create directory ``certs`` and copy cert and private key (already created in kubernetes dashboard section):
+
+.. code-block:: bash
+
+	$mkdir /persistentvolumes/efs-pvc-<id>/certs
+	$nano /persistentvolumes/efs-pvc-<id>/certs/fullchain1.pem 
+	$nano /persistentvolumes/efs-pvc-<id>/certs/privkey1.pem
+
+
+6. Exit efs docker container.
 
 
 Deployments for dask scheduler and worker
@@ -1658,6 +1667,49 @@ Execute:
 **<public DNS of master or node (depends where dask-scheduler container is running)>:30000**
 
 .. image:: ../imgs/bokeh_1_sphinx_docu.png
+    :width: 400
+
+
+To use jupyterlab create Kubernetes service with next ``service-jupyter-lab.yaml`` (modify port according to your preference):
+
+
+.. code-block:: bash
+
+
+	kind: Service
+	apiVersion: v1
+	metadata:
+	  name: antares3-jupyter-lab
+	spec:
+	  type: LoadBalancer
+	  ports:
+	    - port: 9999
+	      targetPort: 9999
+	      protocol: TCP
+	      nodePort: 30001 ##### Select port of your preference
+	  selector:
+	    app: antares3-scheduler-app	
+	
+Execute:
+
+.. code-block:: bash
+
+    $kubectl create -f service-jupyter-lab.yaml
+
+.. note:: 
+
+	Create in security groups of master and nodes of Kubernetes a rule to access jupyterlab with the port you chose.
+
+
+**JupyterLab**
+
+**<public DNS of master or node (depends where dask-scheduler container is running)>:30001**
+
+.. image:: ../imgs/jupyterlab-1.png
+    :width: 400
+
+
+.. image:: ../imgs/jupyterlab-2.png
     :width: 400
 
 
