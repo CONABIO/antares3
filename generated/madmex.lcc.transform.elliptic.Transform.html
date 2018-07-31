@@ -195,7 +195,9 @@
 <dd><p>Antares implementation of elliptic envelop thresholding transformation</p>
 <p>This class implements the elliptic envelope method to threshold a difference
 image (like that prodced by the iMAD-MAF transform) to produce a change/no-change
-classes partition</p>
+classes partition.
+It uses an elliptic envelope, this method will detect point in the dataset
+that do not behave as expected under a Gaussian distribution.</p>
 <dl class="method">
 <dt id="madmex.lcc.transform.elliptic.Transform.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>X, bands_subset=[0, 1], outliers_fraction=0.05, assume_centered=True, support_fraction=None, no_data=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/lcc/transform/elliptic.html#Transform.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.lcc.transform.elliptic.Transform.__init__" title="Permalink to this definition">¶</a></dt>
@@ -229,7 +231,7 @@ the support of the raw MCD estimate.</li>
 <td>Instantiate class</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code>()</td>
-<td>Run transformation defined by children instance</td>
+<td>Filters outliers from a Gaussian distributed dataset.</td>
 </tr>
 </tbody>
 </table>

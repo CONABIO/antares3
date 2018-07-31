@@ -195,7 +195,9 @@
 <dd><p>Antares implementation of MAF transformation</p>
 <p>This transform maximizes the autocorrelation for the image. The bands are
 order by autocorrelation with the first band having the maximum autocorrelation
-and subjected to be uncorrelated with the other bands.</p>
+and subjected to be uncorrelated with the other bands.
+This process is useful in the sense that it improves the spatial coherence
+of the IR-MAD transform.</p>
 <dl class="method">
 <dt id="madmex.lcc.transform.maf.Transform.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>X</em>, <em>shift=(1</em>, <em>1)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/lcc/transform/maf.html#Transform.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.lcc.transform.maf.Transform.__init__" title="Permalink to this definition">¶</a></dt>
@@ -222,7 +224,7 @@ shifted before calculating the correlation with itself.</td>
 <td>Instantiate MAF transform class</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code>()</td>
-<td>Run transformation defined by children instance</td>
+<td>Computes the Maximum Autocorrelation Factor (MAF) transform.</td>
 </tr>
 </tbody>
 </table>

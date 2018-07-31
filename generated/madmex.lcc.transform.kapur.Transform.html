@@ -193,6 +193,10 @@
 <dt id="madmex.lcc.transform.kapur.Transform">
 <em class="property">class </em><code class="descclassname">madmex.lcc.transform.kapur.</code><code class="descname">Transform</code><span class="sig-paren">(</span><em>X</em>, <em>band=0</em>, <em>histogram=None</em>, <em>n_bins=1000</em>, <em>symmetrical=True</em>, <em>argmax=True</em>, <em>clip_hist_tails=3</em>, <em>no_data=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/lcc/transform/kapur.html#Transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.lcc.transform.kapur.Transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Antares implementation of Kapur, Sahoo and Wong entropy based array thresholding</p>
+<p>Using the Kapurs method for image binarization, this method will detect
+points in the dataset that do are considered background and foreground.</p>
+<p>Running <code class="docutils literal notranslate"><span class="pre">transform</span></code> on the class instance will return a 2 dimensional
+<code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> with ones for pixels that are outlier and zeros for inliers</p>
 <dl class="method">
 <dt id="madmex.lcc.transform.kapur.Transform.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>X</em>, <em>band=0</em>, <em>histogram=None</em>, <em>n_bins=1000</em>, <em>symmetrical=True</em>, <em>argmax=True</em>, <em>clip_hist_tails=3</em>, <em>no_data=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/lcc/transform/kapur.html#Transform.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.lcc.transform.kapur.Transform.__init__" title="Permalink to this definition">¶</a></dt>
@@ -213,9 +217,9 @@ array of absolute values, in which case there should only be one
 higher threshold</li>
 <li><strong>argmax</strong> (<em>bool</em>) – Determines is the histogram bin with maximum frequency
 should be ignored.</li>
-<li><strong>clip_hist_tails</strong> (<em>int</em>) – Determines if observations further away than</li>
-<li><strong>certain amount of standard deviations from the mean should be</strong> (<em>a</em>) – </li>
-<li><strong>ignored.</strong> – </li>
+<li><strong>clip_hist_tails</strong> (<em>int</em>) – Determines if observations further away than
+a certain amount of standard deviations from the mean should be
+ignored.</li>
 <li><strong>no_data</strong> (<em>int</em>) – Value to be used as no data.</li>
 </ul>
 </td>
@@ -235,7 +239,7 @@ should be ignored.</li>
 <td>Instantiate Kapur transform class</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code>()</td>
-<td>Run transformation defined by children instance</td>
+<td>Run transformation</td>
 </tr>
 </tbody>
 </table>

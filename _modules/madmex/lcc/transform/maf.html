@@ -193,6 +193,9 @@
 <span class="sd">    This transform maximizes the autocorrelation for the image. The bands are</span>
 <span class="sd">    order by autocorrelation with the first band having the maximum autocorrelation</span>
 <span class="sd">    and subjected to be uncorrelated with the other bands.</span>
+<span class="sd">    This process is useful in the sense that it improves the spatial coherence</span>
+<span class="sd">    of the IR-MAD transform.</span>
+
 <span class="sd">    &#39;&#39;&#39;</span>
 <div class="viewcode-block" id="Transform.__init__"><a class="viewcode-back" href="../../../../generated/madmex.lcc.transform.maf.Transform.html#madmex.lcc.transform.maf.Transform.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
         <span class="sd">&#39;&#39;&#39;Instantiate MAF transform class</span>
@@ -205,13 +208,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shift</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Computes the Maximum Autocorrelation Factor (MAF) transform.</span>
 
-<span class="sd">        This method computes the linear combination of the bands in the image that</span>
-<span class="sd">        maximizes its spatial autocorrelation. This process is useful in the sense that</span>
-<span class="sd">        it improves the spatial coherence of the IR-MAD transform.</span>
-<span class="sd">        </span>
 <span class="sd">        Return:</span>
 <span class="sd">            np.ndarray: Transformed array</span>
 <span class="sd">        &#39;&#39;&#39;</span>

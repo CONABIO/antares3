@@ -182,6 +182,11 @@
 <span class="sd">    by similarity instead of wavelength. This difference will capture the changes</span>
 <span class="sd">    between the images. The bands of the MAD components capture different nature of</span>
 <span class="sd">    changes.</span>
+
+<span class="sd">    Instead of stacking the two matrices together and performing a matrix multiplication of the</span>
+<span class="sd">    stack, we take advantage of the nature of the problem and just compute the parts of</span>
+<span class="sd">    the matrix that we need. This process is described in the book: Image Analysis  Classification</span>
+<span class="sd">    and Change Detection in Remote Sensing.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 <div class="viewcode-block" id="Transform.__init__"><a class="viewcode-back" href="../../../../generated/madmex.lcc.transform.mad.Transform.html#madmex.lcc.transform.mad.Transform.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">lmbda</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Instantiate MAD transformation class</span>
@@ -189,10 +194,10 @@
 <span class="sd">        Args:</span>
 <span class="sd">            lmbda (float): A value to perform regularization during the transform, this</span>
 <span class="sd">                is helpful when the condition number of the matrix involved in the</span>
-<span class="sd">                eigenvalue problem is too large. </span>
+<span class="sd">                eigenvalue problem is too large.</span>
 <span class="sd">            weights (np.ndarray): An array with same dimensions as X and Y, represents</span>
-<span class="sd">                the importance of each pixel. This argument is useful when we calculate </span>
-<span class="sd">                the iterative re-weighted MAD transform, in any other case, this value </span>
+<span class="sd">                the importance of each pixel. This argument is useful when we calculate</span>
+<span class="sd">                the iterative re-weighted MAD transform, in any other case, this value</span>
 <span class="sd">                should be a matrix filled with ones.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
@@ -200,17 +205,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;This method optimizes the proces of computing the MAD components. </span>
-<span class="sd">        </span>
-<span class="sd">        Instead of stacking the two matrices together and performing a matrix multiplication of the</span>
-<span class="sd">        stack, we take advantage of the nature of the problem and just compute the parts of</span>
-<span class="sd">        the matrix that we need. This process is described in the book: Image Analysis  Classification</span>
-<span class="sd">        and Change Detection in Remote Sensing.</span>
-<span class="sd">        </span>
-<span class="sd">        Return:</span>
-<span class="sd">            np.ndarray: Transformed array</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span>
         <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">weights</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cols</span><span class="p">))</span>

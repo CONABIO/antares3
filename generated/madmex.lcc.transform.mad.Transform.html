@@ -200,6 +200,10 @@ analysis we obtain the MAD components. The canonical correlated variates are ord
 by similarity instead of wavelength. This difference will capture the changes
 between the images. The bands of the MAD components capture different nature of
 changes.</p>
+<p>Instead of stacking the two matrices together and performing a matrix multiplication of the
+stack, we take advantage of the nature of the problem and just compute the parts of
+the matrix that we need. This process is described in the book: Image Analysis  Classification
+and Change Detection in Remote Sensing.</p>
 <dl class="method">
 <dt id="madmex.lcc.transform.mad.Transform.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>lmbda=0.0</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/lcc/transform/mad.html#Transform.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.lcc.transform.mad.Transform.__init__" title="Permalink to this definition">¶</a></dt>
