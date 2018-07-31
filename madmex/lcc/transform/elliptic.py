@@ -14,7 +14,9 @@ class Transform(TransformBase):
 
     This class implements the elliptic envelope method to threshold a difference
     image (like that prodced by the iMAD-MAF transform) to produce a change/no-change
-    classes partition
+    classes partition.
+    It uses an elliptic envelope, this method will detect point in the dataset
+    that do not behave as expected under a Gaussian distribution.
     '''
 
     def __init__(self, X, bands_subset=[0,1], outliers_fraction=0.05,
@@ -27,7 +29,7 @@ class Transform(TransformBase):
             assume_centered (bool): If True it will not center the data.
             support_fraction (float?): The proportion of points to be included in
                 the support of the raw MCD estimate.
-            no_data (int): Value to be used as no data. 
+            no_data (int): Value to be used as no data.
         '''
         super().__init__(X)
         self.bands_subset = np.array(bands_subset)
@@ -37,12 +39,9 @@ class Transform(TransformBase):
         self.no_data = no_data
 
 
-    def _transform(self):
+    def transform(self):
         """Filters outliers from a Gaussian distributed dataset.
-        
-        Using an elliptic envelope, this method will detect point in the dataset
-        that do not behave as expected under a Gaussian distribution.
-        
+
         Return:
             np.ndarray: 2 dimensional matrix with ones in the pixels that are outliers,
                 and zeros othewise.

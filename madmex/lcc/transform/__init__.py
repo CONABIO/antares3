@@ -30,10 +30,6 @@ class TransformBase(metaclass=abc.ABCMeta):
 
 
     @abc.abstractmethod
-    def _transform(self):
-        pass
-
-
     def transform(self):
         '''Run transformation defined by children instance
 
@@ -43,7 +39,7 @@ class TransformBase(metaclass=abc.ABCMeta):
         Return:
             np.ndarray: Transformed array (2D)
         '''
-        return self._transform()
+        pass
 
 
 class BitransformBase(metaclass=abc.ABCMeta):
@@ -74,10 +70,6 @@ class BitransformBase(metaclass=abc.ABCMeta):
 
 
     @abc.abstractmethod
-    def _transform(self):
-        pass
-
-
     def transform(self):
         '''Run transformation defined by children instance
 
@@ -87,4 +79,5 @@ class BitransformBase(metaclass=abc.ABCMeta):
         Return:
             np.ndarray: Transformed array
         '''
-        return self._transform()
+        pass
+

@@ -135,6 +135,12 @@ def _maximum_entropy_cut(histo, bin_edges, argmax=True):
 
 class Transform(TransformBase):
     '''Antares implementation of Kapur, Sahoo and Wong entropy based array thresholding
+
+    Using the Kapurs method for image binarization, this method will detect
+    points in the dataset that do are considered background and foreground.
+
+    Running ``transform`` on the class instance will return a 2 dimensional
+    ``np.ndarray`` with ones for pixels that are outlier and zeros for inliers
     '''
     def __init__(self, X, band=0, histogram=None, n_bins=1000, symmetrical=True,
                  argmax=True, clip_hist_tails=3, no_data=None):
@@ -153,9 +159,9 @@ class Transform(TransformBase):
             argmax (bool): Determines is the histogram bin with maximum frequency
                 should be ignored.
             clip_hist_tails (int): Determines if observations further away than
-            a certain amount of standard deviations from the mean should be 
-            ignored.
-            no_data (int): Value to be used as no data. 
+                a certain amount of standard deviations from the mean should be 
+                ignored.
+            no_data (int): Value to be used as no data.
         '''
         super().__init__(X)
         self.band=band
@@ -167,15 +173,12 @@ class Transform(TransformBase):
         self.no_data = no_data
 
 
-    def _transform(self):
-        """ 
-            Using the Kapurs method for image binarization, this method will detect
-            points in the dataset that do are considered background and foreground.
-        
+    def transform(self):
+        """Run transformation
+
         Return:
             np.ndarray: 2 dimensional matrix with ones in the pixels that are outliers,
                 and zeros otherwise.
-
         """
         change_classification = np.zeros((self.cols * self.rows), dtype=np.uint8)
         positive_threshold = None
