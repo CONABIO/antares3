@@ -1211,7 +1211,7 @@ passwd<span class="o">()</span>
 Enter password:
 Verify password:
 
-    <span class="s1">&#39;sha1:1f925h17t3p1:....&#39;</span>
+<span class="s1">&#39;sha1:1f925h17t3p1:....&#39;</span> <span class="c1">#this will be used to setup https for jupyterlab, save it.</span>
 </pre></div>
 </div>
 <p>Use next <strong>Dockerfile</strong> to build docker image for antares3:</p>
@@ -1294,8 +1294,8 @@ RUN pip3 install --user git+https://github.com/CONABIO/antares3.git@develop
 <span class="c1">#set password for jupyter lab:</span>
 ARG <span class="nv">jupyter_key</span><span class="o">=</span><span class="nv">$jupyter_key</span>
 RUN jupyter notebook --generate-config <span class="o">&amp;&amp;</span> <span class="se">\</span>
-sed -i <span class="s2">&quot;s/#c.NotebookApp.certfile = .*/c.NotebookApp.certfile = u&#39;\/shared_volume\/certs\/fullchain1.pem&#39;/&quot;</span> ~/.jupyter/ jupyter_notebook_config.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
-sed -i <span class="s2">&quot;s/#c.NotebookApp.keyfile = .*/c.NotebookApp.keyfile = u&#39;\/shared_volume\/certs\/privkey1.pem&#39;/&quot;</span> ~/.jupyter/     jupyter_notebook_config.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
+sed -i <span class="s2">&quot;s/#c.NotebookApp.certfile = .*/c.NotebookApp.certfile = u&#39;\/shared_volume\/certs\/fullchain1.pem&#39;/&quot;</span> ~/.jupyter/jupyter_notebook_config.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
+sed -i <span class="s2">&quot;s/#c.NotebookApp.keyfile = .*/c.NotebookApp.keyfile = u&#39;\/shared_volume\/certs\/privkey1.pem&#39;/&quot;</span> ~/.jupyter/jupyter_notebook_config.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
 sed -i <span class="s2">&quot;s/#c.NotebookApp.password = .*/c.NotebookApp.password = u&#39;</span><span class="nv">$jupyter_key</span><span class="s2">&#39;/&quot;</span> ~/.jupyter/jupyter_notebook_config.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
 sed -i <span class="s1">&#39;s/#c.NotebookApp.port = .*/c.NotebookApp.port = 9999/&#39;</span> ~/.jupyter/jupyter_notebook_config.py
 
@@ -1436,6 +1436,14 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 </pre></div>
 </div>
 <ol class="arabic simple" start="5">
+<li>Create directory <code class="docutils literal notranslate"><span class="pre">certs</span></code> and copy cert and private key (already created in kubernetes dashboard section):</li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$mkdir</span> /persistentvolumes/efs-pvc-&lt;id&gt;/certs
+<span class="nv">$nano</span> /persistentvolumes/efs-pvc-&lt;id&gt;/certs/fullchain1.pem
+<span class="nv">$nano</span> /persistentvolumes/efs-pvc-&lt;id&gt;/certs/privkey1.pem
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
 <li>Exit efs docker container.</li>
 </ol>
 </div>
@@ -1525,6 +1533,34 @@ spec:
 <p><strong>State of cluster</strong></p>
 <p><strong>&lt;public DNS of master or node (depends where dask-scheduler container is running)&gt;:30000</strong></p>
 <a class="reference internal image-reference" href="../_images/bokeh_1_sphinx_docu.png"><img alt="../_images/bokeh_1_sphinx_docu.png" src="../_images/bokeh_1_sphinx_docu.png" style="width: 400px;" /></a>
+<p>To use jupyterlab create Kubernetes service with next <code class="docutils literal notranslate"><span class="pre">service-jupyter-lab.yaml</span></code> (modify port according to your preference):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kind: Service
+apiVersion: v1
+metadata:
+  name: antares3-jupyter-lab
+spec:
+  type: LoadBalancer
+  ports:
+    - port: <span class="m">9999</span>
+      targetPort: <span class="m">9999</span>
+      protocol: TCP
+      nodePort: <span class="m">30001</span> <span class="c1">##### Select port of your preference</span>
+  selector:
+    app: antares3-scheduler-app
+</pre></div>
+</div>
+<p>Execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> create -f service-jupyter-lab.yaml
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Create in security groups of master and nodes of Kubernetes a rule to access jupyterlab with the port you chose.</p>
+</div>
+<p><strong>JupyterLab</strong></p>
+<p><strong>&lt;public DNS of master or node (depends where dask-scheduler container is running)&gt;:30001</strong></p>
+<a class="reference internal image-reference" href="../_images/jupyterlab-1.png"><img alt="../_images/jupyterlab-1.png" src="../_images/jupyterlab-1.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="../_images/jupyterlab-2.png"><img alt="../_images/jupyterlab-2.png" src="../_images/jupyterlab-2.png" style="width: 400px;" /></a>
 </div>
 <div class="section" id="deployment-for-dask-worker">
 <h4>Deployment for dask worker<a class="headerlink" href="#deployment-for-dask-worker" title="Permalink to this headline">¶</a></h4>
