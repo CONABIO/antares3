@@ -27,7 +27,7 @@ class Transform(TransformBase):
             bands_subset (list): Which bands to consider.
             outlier_fraction (float): The proportion of outliers in the data set.
             assume_centered (bool): If True it will not center the data.
-            support_fraction (float?): The proportion of points to be included in
+            support_fraction (float): The proportion of points to be included in
                 the support of the raw MCD estimate.
             no_data (int): Value to be used as no data.
         '''
