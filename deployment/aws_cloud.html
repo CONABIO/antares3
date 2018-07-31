@@ -949,7 +949,11 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 </div>
 <p>Open port retrieved by last command in masters security group of kubernetes cluster. In your browser type:</p>
 <p><code class="docutils literal notranslate"><span class="pre">https://&lt;location&gt;:&lt;port&gt;</span></code></p>
-<p>Documentation of <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user">Creating sample user</a> can be used to access via token generation.</p>
+<p>Documentation of <a class="reference external" href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user">Creating sample user</a> can be used to access via token generation. Use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl -n kube-system describe secret <span class="k">$(</span>kubectl -n kube-system get secret <span class="p">|</span> grep admin-user <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
+</pre></div>
+</div>
+<p>to retrieve token.</p>
 <a class="reference internal image-reference" href="../_images/k8s-dashboard-1.png"><img alt="../_images/k8s-dashboard-1.png" src="../_images/k8s-dashboard-1.png" style="width: 400px;" /></a>
 <a class="reference internal image-reference" href="../_images/k8s-dashboard-2.png"><img alt="../_images/k8s-dashboard-2.png" src="../_images/k8s-dashboard-2.png" style="width: 400px;" /></a>
 <p>To scale down components of kubernetes dashboard:</p>
@@ -1192,18 +1196,20 @@ spec:
 </div>
 <div class="section" id="dockerfile-for-containers-of-antares3-and-opendatacube">
 <h3>Dockerfile for containers of Antares3 and OpenDataCube<a class="headerlink" href="#dockerfile-for-containers-of-antares3-and-opendatacube" title="Permalink to this headline">¶</a></h3>
-<p>To have a user interface to work with, we use <a class="reference external" href="jupyterlab.readthedocs.io/en/stable/">JupyterLab</a> and to browse jupyter notebook with https we need to do some configuration, see <a class="reference external" href="https://jupyter-notebook.readthedocs.io/en/stable/public_server.html#running-a-notebook-server">Running a notebook server</a>. There is one option that will be incorporated soon to have multiple instances of the single-user Jupyter notebook server, see <a class="reference external" href="https://jupyterhub.readthedocs.io/en/stable/">JupyterHub</a> and <a class="reference external" href="https://zero-to-jupyterhub.readthedocs.io/en/latest/amazon/step-zero-aws.html">Step Zero Kubernetes on AWS</a>.</p>
+<p>To have an user interface to work with we use <a class="reference external" href="jupyterlab.readthedocs.io/en/stable/">JupyterLab</a> which can be used with https to browse jupyter notebook, see <a class="reference external" href="https://jupyter-notebook.readthedocs.io/en/stable/public_server.html#running-a-notebook-server">Running a notebook server</a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Soon we will use <a class="reference external" href="https://jupyterhub.readthedocs.io/en/stable/">JupyterHub</a> to have multiple instances of the single-user Jupyter notebook server, see <a class="reference external" href="https://zero-to-jupyterhub.readthedocs.io/en/latest/amazon/step-zero-aws.html">Step Zero Kubernetes on AWS</a>.</p>
+</div>
 <p>Create a hashed password:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo pip3 install jupyterlab
 
-    <span class="c1">#enter python and then:</span>
+<span class="c1">#enter python and then:</span>
+from notebook.auth import passwd
+passwd<span class="o">()</span>
 
-    from notebook.auth import passwd
-
-    passwd<span class="o">()</span>
-
-    Enter password: <span class="c1">#?m4dm3x_us3r#?</span>
-    Verify password:
+Enter password:
+Verify password:
 
     <span class="s1">&#39;sha1:1f925h17t3p1:....&#39;</span>
 </pre></div>
@@ -1814,7 +1820,7 @@ spec:
 </pre></div>
 </div>
 <p>and create deployments for dask-scheduler and dask-worker (see <strong>Deployments for dask scheduler and worker</strong> section).</p>
-<p>or use kubernetes dashboard:</p>
+<p>or use kubernetes dashboard (first scale efs, then scheduler and finally workers):</p>
 <a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments.png"><img alt="../_images/k8s-dashboard-deployments.png" src="../_images/k8s-dashboard-deployments.png" style="width: 400px;" /></a>
 <a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments-2.png"><img alt="../_images/k8s-dashboard-deployments-2.png" src="../_images/k8s-dashboard-deployments-2.png" style="width: 400px;" /></a>
 <ol class="arabic simple" start="4">
