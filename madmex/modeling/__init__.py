@@ -89,7 +89,8 @@ class BaseModel(abc.ABC):
 
 
     @staticmethod
-    def remove_outliers(X, y, contamination=0.1, max_samples=0.5, **kwargs):
+    def remove_outliers(X, y, n_estimators=101, max_samples=0.632, contamination=0.25,
+                        bootstrap=True, n_jobs=-1, **kwargs):
         """Performs outliers detection and removal using Isolation Forest anomaly score
 
         Args:
@@ -118,9 +119,11 @@ class BaseModel(abc.ABC):
         X_list = []
         y_list = []
         for g in grouped:
-            isolation_forest = IsolationForest(contamination=contamination,
+            isolation_forest = IsolationForest(n_estimators=n_estimators,
                                                max_samples=max_samples,
-                                               n_jobs=-1,
+                                               contamination=contamination,
+                                               bootstrap=bootstrap,
+                                               n_jobs=n_jobs,
                                                **kwargs)
             isolation_forest.fit(g[1])
             is_inlier = isolation_forest.predict(g[1])
