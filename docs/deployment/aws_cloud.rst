@@ -2015,13 +2015,16 @@ and scale down efs-provisioner deployment:
     $kubectl scale deployments/efs-provisioner --replicas=0
 
 
-or use kubernetes dashboard: 
+or use kubernetes dashboard to scale down deployments ``antares3-worker``, ``antares3-scheduler`` and `` efs-provisioner``: 
 
 .. image:: ../imgs/k8s-dashboard-deployments.png
     :width: 400
 
 .. image:: ../imgs/k8s-dashboard-deployments-2.png
     :width: 400
+
+and scale down components of kubernetes dashboard.
+
 
 Proceed to scale down nodes and master:
 
