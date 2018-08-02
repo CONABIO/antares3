@@ -1787,9 +1787,10 @@ spec:
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$kubectl</span> scale deployments/efs-provisioner --replicas<span class="o">=</span><span class="m">0</span>
 </pre></div>
 </div>
-<p>or use kubernetes dashboard:</p>
+<p>or use kubernetes dashboard to scale down deployments <code class="docutils literal notranslate"><span class="pre">antares3-worker</span></code>, <code class="docutils literal notranslate"><span class="pre">antares3-scheduler</span></code> and `` efs-provisioner``:</p>
 <a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments.png"><img alt="../_images/k8s-dashboard-deployments.png" src="../_images/k8s-dashboard-deployments.png" style="width: 400px;" /></a>
 <a class="reference internal image-reference" href="../_images/k8s-dashboard-deployments-2.png"><img alt="../_images/k8s-dashboard-deployments-2.png" src="../_images/k8s-dashboard-deployments-2.png" style="width: 400px;" /></a>
+<p>and scale down components of kubernetes dashboard.</p>
 <p>Proceed to scale down nodes and master:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#set minSize and maxSize to 0 for nodes</span>
 <span class="nv">$kops</span> edit ig nodes --name <span class="nv">$CLUSTER_FULL_NAME</span>
