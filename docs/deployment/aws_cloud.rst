@@ -2103,7 +2103,7 @@ And scale up efs-provisioner deployment :
 
 	$kubectl scale deployments/efs-provisioner --replicas=1
    
-and create deployments for dask-scheduler and dask-worker (see **Deployments for dask scheduler and worker** section).
+and scale deployments for dask-scheduler and dask-worker (see **Deployments for dask scheduler and worker** section).
 
 or use kubernetes dashboard once components of kubernetes dashboard are running. First scale efs, then scheduler and finally workers:
 
