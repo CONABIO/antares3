@@ -89,6 +89,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command line interface</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Downloading data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#create-order">Create order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-order">Download order</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ingest.html">Ingesting data</a></li>
@@ -180,7 +181,15 @@
                      --max-cloud-cover <span class="m">10</span>
 </pre></div>
 </div>
-<p>Uppon success, this command will submit a petition to the USGS portal for them to preprocess and make the order available. This command will use the credentials in the antares configuration file. When the order is ready for download, an email will be received from the USGS portal and the other command can then be used.</p>
+<p>Uppon success, this command will submit a petition to the USGS portal for them to preprocess and make the order available. Locally, the information for the order will be saved in the antares database. This command will use the credentials in the antares configuration file. When the order is ready for download, an email will be received from the USGS portal and the other command can then be used.</p>
+</div>
+<div class="section" id="download-order">
+<h2>Download order<a class="headerlink" href="#download-order" title="Permalink to this headline">¶</a></h2>
+<p>To download an order after receving the confirmation email from the USG portal we use the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>antares download_order
+</pre></div>
+</div>
+<p>This command will look into the antares database for any orders that have been submitted. It is important to note that the products will be available for a period of 7 days. After these days expire the order must be placed again in order to download the scenes.</p>
 </div>
 </div>
 
