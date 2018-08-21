@@ -1,10 +1,10 @@
-name: ls4_5_espa_scene
-description: Landsat 4,5 Collection 1 Higher Level SR scene processed by ESPA. 30m UTM based projection.
+name: ls5_espa_scene
+description: Landsat 5 Collection 1 Higher Level SR scene processed by ESPA. 30m UTM based projection.
 metadata_type: eo
 
 metadata:
     platform:
-        code: LANDSAT_4_5
+        code: LANDSAT_5
     instrument:
         name: TM
     product_type: ESPA
