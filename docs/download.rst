@@ -20,4 +20,16 @@ This command needs a span of time of interest and a polygon in the database for 
                          --landsat 8 \
                          --max-cloud-cover 10
 
-Uppon success, this command will submit a petition to the USGS portal for them to preprocess and make the order available. This command will use the credentials in the antares configuration file. When the order is ready for download, an email will be received from the USGS portal and the other command can then be used.
+Uppon success, this command will submit a petition to the USGS portal for them to preprocess and make the order available. Locally, the information for the order will be saved in the antares database. This command will use the credentials in the antares configuration file. When the order is ready for download, an email will be received from the USGS portal and the other command can then be used.
+
+Download order
+==============
+
+To download an order after receving the confirmation email from the USG portal we use the following command:
+
+.. code-block:: bash
+
+    antares download_order
+
+This command will look into the antares database for any orders that have been submitted. It is important to note that the products will be available for a period of 7 days. After these days expire the order must be placed again in order to download the scenes.
+
