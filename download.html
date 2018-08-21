@@ -174,11 +174,7 @@
 <div class="section" id="create-order">
 <h2>Create order<a class="headerlink" href="#create-order" title="Permalink to this headline">¶</a></h2>
 <p>This command needs a span of time of interest and a polygon in the database for the spatial query. Additionally one can specify the amount of cloud cover to be present in the images as parameter.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>antares create_order --shape <span class="s1">&#39;VNM&#39;</span> <span class="se">\</span>
-                     --start-date <span class="s1">&#39;2017-01-01&#39;</span> <span class="se">\</span>
-                     --end-date <span class="s1">&#39;2017-12-31&#39;</span> <span class="se">\</span>
-                     --landsat <span class="m">8</span> <span class="se">\</span>
-                     --max-cloud-cover <span class="m">10</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>antares create_order --shape <span class="s1">&#39;Chiapas&#39;</span> --start-date <span class="s1">&#39;1995-01-01&#39;</span> --end-date <span class="s1">&#39;1995-12-31&#39;</span> --landsat <span class="m">5</span> --max-cloud-cover <span class="m">10</span>
 </pre></div>
 </div>
 <p>Uppon success, this command will submit a petition to the USGS portal for them to preprocess and make the order available. Locally, the information for the order will be saved in the antares database. This command will use the credentials in the antares configuration file. When the order is ready for download, an email will be received from the USGS portal and the other command can then be used.</p>
@@ -189,7 +185,7 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>antares download_order
 </pre></div>
 </div>
-<p>This command will look into the antares database for any orders that have been submitted. It is important to note that the products will be available for a period of 7 days. After these days expire the order must be placed again in order to download the scenes.</p>
+<p>This command will look into the antares database for any orders that have been submitted and have an status of <code class="docutils literal notranslate"><span class="pre">false</span></code> in column <code class="docutils literal notranslate"><span class="pre">downloaded</span></code> of table <code class="docutils literal notranslate"><span class="pre">madmex_order</span></code> . It is important to note that the products will be available for a period of 7 days. After these days expire the order must be placed again in order to download the scenes.</p>
 </div>
 </div>
 
