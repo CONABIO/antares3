@@ -110,13 +110,13 @@ antares apply_recipe -recipe s2_20m_001 -b 2017-01-01 -e 2017-12-31 -region Jali
 
         # database query
         gwf_kwargs = { k: options[k] for k in ['lat', 'long', 'region', 'begin', 'end']}
-	if type(product) == list:
-	    iterable = {}
-	    for k in range(len(product)):
-		gwf_kwargs.update(product = product[k])
-		iterable = join_dicts(gwf_query(**gwf_kwargs,view=False), iterable, join='full')
-	    iterable = iterable.items()
-	else:
+        if type(product) == list:
+            iterable = {}
+            for k in range(len(product)):
+                gwf_kwargs.update(product = product[k])
+                iterable = join_dicts(gwf_query(**gwf_kwargs,view=False), iterable, join='full')
+                iterable = iterable.items()
+        else:
             gwf_kwargs.update(product=product)
             iterable = gwf_query(**gwf_kwargs)
 
