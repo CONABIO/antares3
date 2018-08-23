@@ -19,6 +19,7 @@ from madmex.util import yaml_to_dict, mid_date
 from madmex.recipes import RECIPES
 from madmex.wrappers import gwf_query
 from madmex.settings import INGESTION_PATH
+from madmex.util import join_dicts
 
 logger = logging.getLogger(__name__)
 
@@ -115,7 +116,8 @@ antares apply_recipe -recipe s2_20m_001 -b 2017-01-01 -e 2017-12-31 -region Jali
             for k in range(len(product)):
                 gwf_kwargs.update(product = product[k])
                 iterable = join_dicts(gwf_query(**gwf_kwargs,view=False), iterable, join='full')
-                iterable = iterable.items()
+                iterable = {k: iterable.get(k) if len(iterable.get(k))>1 else iterable.get(k)[0] for k in iterable.keys()}
+            iterable = iterable.items()
         else:
             gwf_kwargs.update(product=product)
             iterable = gwf_query(**gwf_kwargs)
