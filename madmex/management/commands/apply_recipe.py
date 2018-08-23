@@ -110,8 +110,14 @@ antares apply_recipe -recipe s2_20m_001 -b 2017-01-01 -e 2017-12-31 -region Jali
 
         # database query
         gwf_kwargs = { k: options[k] for k in ['lat', 'long', 'region', 'begin', 'end']}
-        gwf_kwargs.update(product=product)
-        iterable = gwf_query(**gwf_kwargs)
+	if type(product) == list:
+           iterable = {}
+	   for k in range(len(product)):
+	    gwf_kwargs.update(product = product[k])
+	    iterable = join_dicts(gwf_query(**gwf_kwargs,view=False), iterable, join='full').items()
+	else:
+           gwf_kwargs.update(product=product)
+           iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
