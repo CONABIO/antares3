@@ -19,7 +19,7 @@ Adding recipes:
 
 RECIPES = {
     'landsat_8_madmex_001': {
-        'product': 'ls8_espa_mexico',
+        'product': ['ls8_espa_mexico', 'ls5_espa_mexico'],
         'fun': landsat_8_madmex_001,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_8_madmex_001.yaml'),
     },
