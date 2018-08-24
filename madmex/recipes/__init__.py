@@ -18,17 +18,17 @@ Adding recipes:
 """
 
 RECIPES = {
-    'landsat_8_madmex_001': {
+    'landsat_madmex_001': {
         'product': ['ls8_espa_mexico', 'ls5_espa_mexico'],
         'fun': landsat_madmex_001,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_madmex_001.yaml'),
     },
-    'landsat_8_madmex_002': {
+    'landsat_madmex_002': {
         'product': ['ls8_espa_mexico'],
         'fun': landsat_madmex_002,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_madmex_002.yaml'),
     },
-    'landsat_8_ndvi_mean': {
+    'landsat_ndvi_mean': {
         'product': ['ls8_espa_mexico'],
         'fun': landsat_ndvi_mean,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_ndvi_mean.yaml'),
