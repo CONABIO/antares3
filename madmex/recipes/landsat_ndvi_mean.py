@@ -35,8 +35,11 @@ def run(tile, center_dt, path):
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
+        # Get crs attribute from the first tile
+        crs = tile[1][0].geobox.crs
         # Load Landsat sr
-        sr = GridWorkflow.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
+        sr = xr.merge([GridWorkflow.load(x, dask_chunks={'x': 1667, 'y': 1667})
+                       for x in tile[1]])
         # Compute ndvi
         sr['ndvi'] = (sr.nir - sr.red) / (sr.nir + sr.red) * 10000
         clear = masking.make_mask(sr.pixel_qa, clear=True)
@@ -46,7 +49,7 @@ def run(tile, center_dt, path):
         ndvi_mean = ndvi_clear.mean('time', keep_attrs=True)
         ndvi_mean['ndvi'].attrs['nodata'] = -9999
         ndvi_mean_int = ndvi_mean.apply(to_int)
-        ndvi_mean_int.attrs['crs'] = sr.attrs['crs']
+        ndvi_mean_int.attrs['crs'] = crs
         write_dataset_to_netcdf(ndvi_mean_int, nc_filename,
                                 netcdfparams={'zlib': True})
         return nc_filename

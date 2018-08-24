@@ -39,7 +39,10 @@ def run(tile, center_dt, path):
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
-        sr_0 = GridWorkflow.load(tile[1], dask_chunks={'x': 1667, 'y': 1667})
+        # Get crs attribute from the first tile
+        crs = tile[1][0].geobox.crs
+        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'x': 1667, 'y': 1667})
+                         for x in tile[1]])
         # Load terrain metrics using same spatial parameters than sr
         dc = datacube.Datacube(app = 'landsat_madmex_001_%s' % randomword(5))
         terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
@@ -94,7 +97,8 @@ def run(tile, center_dt, path):
                              sr_min.apply(to_int),
                              sr_max.apply(to_int),
                              sr_std.apply(to_int), terrain])
-        combined.attrs['crs'] = sr_0.attrs['crs']
+        combined.attrs['crs'] = crs
+        combined = combined.compute()
         write_dataset_to_netcdf(combined, nc_filename)
         return nc_filename
     except Exception as e:

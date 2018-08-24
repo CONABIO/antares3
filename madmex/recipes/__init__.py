@@ -1,7 +1,7 @@
 import os
-from .landsat_8_madmex_001 import run as landsat_8_madmex_001
-from .landsat_8_madmex_002 import run as landsat_8_madmex_002
-from .landsat_8_ndvi_mean import run as landsat_8_ndvi_mean
+from .landsat_madmex_001 import run as landsat_madmex_001
+from .landsat_madmex_002 import run as landsat_madmex_002
+from .landsat_ndvi_mean import run as landsat_ndvi_mean
 from .s2_20m_001 import run as s2_20m_001
 
 """
@@ -20,21 +20,21 @@ Adding recipes:
 RECIPES = {
     'landsat_8_madmex_001': {
         'product': ['ls8_espa_mexico', 'ls5_espa_mexico'],
-        'fun': landsat_8_madmex_001,
-        'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_8_madmex_001.yaml'),
+        'fun': landsat_madmex_001,
+        'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_madmex_001.yaml'),
     },
     'landsat_8_madmex_002': {
-        'product': 'ls8_espa_mexico',
-        'fun': landsat_8_madmex_002,
-        'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_8_madmex_002.yaml'),
+        'product': ['ls8_espa_mexico'],
+        'fun': landsat_madmex_002,
+        'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_madmex_002.yaml'),
     },
     'landsat_8_ndvi_mean': {
-        'product': 'ls8_espa_mexico',
-        'fun': landsat_8_ndvi_mean,
-        'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_8_ndvi_mean.yaml'),
+        'product': ['ls8_espa_mexico'],
+        'fun': landsat_ndvi_mean,
+        'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_ndvi_mean.yaml'),
     },
     's2_20m_001': {
-        'product': 's2_l2a_20m_mexico',
+        'product': ['s2_l2a_20m_mexico'],
         'fun': s2_20m_001,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/s2_20m_001.yaml'),
     },
