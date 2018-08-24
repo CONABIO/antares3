@@ -119,7 +119,7 @@ antares apply_recipe -recipe s2_20m_001 -b 2017-01-01 -e 2017-12-31 -region Jali
             try:
                 dict_list.append(gwf_query(**gwf_kwargs, view=False))
             # Exception is in case one of the product hasn't been registered in the datacube
-            Exception as e:
+            except Exception as e:
                 pass
         iterable = join_dicts(*dict_list).items()
 
