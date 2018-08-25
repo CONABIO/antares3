@@ -889,7 +889,7 @@ Using ``kubectl`` retrieve where is kubernetes master running:
 	
 	To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 
-Generate certificate for the <location> of last command (make sure to save directory letsencrypt in a safe place):
+Generate certificate for the <location> (remove https if it's the case, just the dns name) of last command (make sure to save directory letsencrypt in a safe place):
 
 .. code-block:: bash
 
@@ -1706,7 +1706,7 @@ Execute:
 
 **JupyterLab**
 
-**<public DNS of master or node (depends where dask-scheduler container is running)>:30001**
+**https://<location>:30001 (if you selected this port in service-jupyter-lab.yaml)**
 
 .. image:: ../imgs/jupyterlab-1.png
     :width: 400

@@ -884,7 +884,7 @@ KubeDNS is running at &lt;location&gt;/api/v1/namespaces/kube-system/services/ku
 To further debug and diagnose cluster problems, use <span class="s1">&#39;kubectl cluster-info dump&#39;</span>.
 </pre></div>
 </div>
-<p>Generate certificate for the &lt;location&gt; of last command (make sure to save directory letsencrypt in a safe place):</p>
+<p>Generate certificate for the &lt;location&gt; (remove https if it’s the case, just the dns name) of last command (make sure to save directory letsencrypt in a safe place):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$certbot</span> certonly -d &lt;location&gt; --dns-route53 --logs-dir letsencrypt/log/ --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ -m myemail@myinstitution --agree-tos --non-interactive --dns-route53-propagation-seconds <span class="m">20</span>
 </pre></div>
 </div>
@@ -1561,7 +1561,7 @@ spec:
 <p class="last">Create in security groups of master and nodes of Kubernetes a rule to access jupyterlab with the port you chose.</p>
 </div>
 <p><strong>JupyterLab</strong></p>
-<p><strong>&lt;public DNS of master or node (depends where dask-scheduler container is running)&gt;:30001</strong></p>
+<p><strong>https://&lt;location&gt;:30001 (if you selected this port in service-jupyter-lab.yaml)</strong></p>
 <a class="reference internal image-reference" href="../_images/jupyterlab-1.png"><img alt="../_images/jupyterlab-1.png" src="../_images/jupyterlab-1.png" style="width: 400px;" /></a>
 <a class="reference internal image-reference" href="../_images/jupyterlab-2.png"><img alt="../_images/jupyterlab-2.png" src="../_images/jupyterlab-2.png" style="width: 400px;" /></a>
 </div>
