@@ -1590,6 +1590,7 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 	        ports:
 	         - containerPort: 8787
 	         - containerPort: 8786
+		 - containerPort: 9999
 	        env:
 	         - name: mount_point
 	           value: /shared_volume
