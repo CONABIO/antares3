@@ -204,7 +204,7 @@
 <p>* <strong>(Not mandatory but useful)</strong> Configure an <a class="reference external" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html">Elastic IP Addresses</a>  on AWS. Master node will have this elastic ip.</p>
 <p>* AWS provide a managed relational database service <a class="reference external" href="https://aws.amazon.com/rds/">Amazon Relational Database Service (RDS)</a> with several database instance types and a <a class="reference external" href="https://www.postgresql.org/">PostgreSQL</a>  database engine.</p>
 <blockquote>
-<div><p>* Configure RDS with PostgreSQL  version 9.5 + with properly <a class="reference external" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html">Amazon RDS Security Groups</a> and subnet group for the RDS configured (see <a class="reference external" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Tutorials.WebServerDB.CreateVPC.html">Tutorial Create an Amazon VPC for Use with an Amazon RDS DB Instance</a>).</p>
+<div><p>* Configure RDS with PostgreSQL  version 9.5 + with properly <a class="reference external" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.RDSSecurityGroups.html">Amazon RDS Security Groups</a> , parameter and subnet group for the RDS configured (see <a class="reference external" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Tutorials.WebServerDB.CreateVPC.html">Tutorial Create an Amazon VPC for Use with an Amazon RDS DB Instance</a>).</p>
 <p>* Configure <a class="reference external" href="https://postgis.net/">Postgis</a> extension to PostgreSQL  for storing and managing spatial information in the instance of RDS you created.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -1077,6 +1077,9 @@ rules:
   - apiGroups: <span class="o">[</span><span class="s2">&quot;&quot;</span><span class="o">]</span>
     resources: <span class="o">[</span><span class="s2">&quot;events&quot;</span><span class="o">]</span>
     verbs: <span class="o">[</span><span class="s2">&quot;list&quot;</span>, <span class="s2">&quot;watch&quot;</span>, <span class="s2">&quot;create&quot;</span>, <span class="s2">&quot;update&quot;</span>, <span class="s2">&quot;patch&quot;</span><span class="o">]</span>
+  - apiGroups: <span class="o">[</span><span class="s2">&quot;&quot;</span><span class="o">]</span>
+    resources: <span class="o">[</span><span class="s2">&quot;endpoints&quot;</span><span class="o">]</span>
+    verbs: <span class="o">[</span><span class="s2">&quot;get&quot;</span>, <span class="s2">&quot;list&quot;</span>, <span class="s2">&quot;watch&quot;</span>, <span class="s2">&quot;create&quot;</span>, <span class="s2">&quot;update&quot;</span>, <span class="s2">&quot;patch&quot;</span><span class="o">]</span>
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1

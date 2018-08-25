@@ -21,7 +21,7 @@ Prerequisites
 \* AWS provide a managed relational database service `Amazon Relational Database Service (RDS)`_ with several database instance types and a `PostgreSQL`_  database engine.
 
 
-    \* Configure RDS with PostgreSQL  version 9.5 + with properly `Amazon RDS Security Groups`_ and subnet group for the RDS configured (see `Tutorial Create an Amazon VPC for Use with an Amazon RDS DB Instance`_).
+    \* Configure RDS with PostgreSQL  version 9.5 + with properly `Amazon RDS Security Groups`_ , parameter and subnet group for the RDS configured (see `Tutorial Create an Amazon VPC for Use with an Amazon RDS DB Instance`_).
 
 
     \* Configure `Postgis`_ extension to PostgreSQL  for storing and managing spatial information in the instance of RDS you created.
@@ -1152,6 +1152,9 @@ In the next ``efs-provisioner.yaml`` put **EFS id**, **region**, **AccessKeyId**
 	  - apiGroups: [""]
 	    resources: ["events"]
 	    verbs: ["list", "watch", "create", "update", "patch"]
+	  - apiGroups: [""]
+	    resources: ["endpoints"]
+	    verbs: ["get", "list", "watch", "create", "update", "patch"]
 	---
 	kind: ClusterRoleBinding
 	apiVersion: rbac.authorization.k8s.io/v1
