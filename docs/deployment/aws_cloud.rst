@@ -1970,7 +1970,7 @@ Using <key>.pem of user kops do a ssh and enter to docker container of dask-sche
 
 Or use jupyterlab access:
 
-**<public DNS of master or node (depends where dask-scheduler container is running)>:30001**
+**<https://<location>:30001 (if you selected this port in service-jupyter-lab.yaml)**
 
 .. image:: ../imgs/jupyterlab-1.png
     :width: 400
