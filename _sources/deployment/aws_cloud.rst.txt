@@ -1554,8 +1554,8 @@ Create ``.antares`` and ``.datacube.conf`` files in EFS:
 .. code-block:: bash
 
 	$mkdir /persistentvolumes/efs-pvc-<id>/certs
-	$nano /persistentvolumes/efs-pvc-<id>/certs/fullchain1.pem 
-	$nano /persistentvolumes/efs-pvc-<id>/certs/privkey1.pem
+	$vi /persistentvolumes/efs-pvc-<id>/certs/fullchain1.pem 
+	$vi /persistentvolumes/efs-pvc-<id>/certs/privkey1.pem
 
 
 6. Exit efs docker container.
@@ -1586,7 +1586,7 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 	      - name: antares3-scheduler
 	        imagePullPolicy: Always #IfNotPresent
 	        image: madmex/antares3-k8s-cluster-dependencies:latest #Docker image to be used for dask scheduler/worker container
-	        command: ["/bin/bash", "-c", "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps && /home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 8787 --scheduler-file /shared_volume/scheduler.json"]
+	        command: ["/bin/bash", "-c", "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps && /home/madmex_user/.local/bin/antares init && jupyter lab --ip=0.0.0.0 --no-browser & /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 8787 --scheduler-file /shared_volume/scheduler.json"]
 	        ports:
 	         - containerPort: 8787
 	         - containerPort: 8786

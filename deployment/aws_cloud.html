@@ -1441,8 +1441,8 @@ sudo docker rmi <span class="nv">$DOCKER_REPOSITORY</span>/<span class="nv">$DOC
 <li>Create directory <code class="docutils literal notranslate"><span class="pre">certs</span></code> and copy cert and private key (already created in kubernetes dashboard section):</li>
 </ol>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$mkdir</span> /persistentvolumes/efs-pvc-&lt;id&gt;/certs
-<span class="nv">$nano</span> /persistentvolumes/efs-pvc-&lt;id&gt;/certs/fullchain1.pem
-<span class="nv">$nano</span> /persistentvolumes/efs-pvc-&lt;id&gt;/certs/privkey1.pem
+<span class="nv">$vi</span> /persistentvolumes/efs-pvc-&lt;id&gt;/certs/fullchain1.pem
+<span class="nv">$vi</span> /persistentvolumes/efs-pvc-&lt;id&gt;/certs/privkey1.pem
 </pre></div>
 </div>
 <ol class="arabic simple" start="6">
@@ -1469,7 +1469,7 @@ spec:
       - name: antares3-scheduler
         imagePullPolicy: Always <span class="c1">#IfNotPresent</span>
         image: madmex/antares3-k8s-cluster-dependencies:latest <span class="c1">#Docker image to be used for dask scheduler/worker container</span>
-        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps &amp;&amp; /home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 8787 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
+        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps &amp;&amp; /home/madmex_user/.local/bin/antares init &amp;&amp; jupyter lab --ip=0.0.0.0 --no-browser &amp; /usr/local/bin/dask-scheduler --port 8786 --bokeh-port 8787 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
         ports:
          - containerPort: <span class="m">8787</span>
          - containerPort: <span class="m">8786</span>
