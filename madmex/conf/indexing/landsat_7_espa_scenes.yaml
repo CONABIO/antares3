@@ -1,0 +1,82 @@
+name: ls7_espa_scene
+description: Landsat 7 Collection 1 Higher Level SR scene processed by ESPA. 30m UTM based projection.
+metadata_type: eo
+
+metadata:
+    platform:
+        code: LANDSAT_7
+    instrument:
+        name: ETM+
+    product_type: ESPA
+    format:
+        name: GeoTiff
+
+measurements:
+    - name: 'blue'
+      aliases: [band_1, blue]
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'green'
+      aliases: [band_2, green]
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'red'
+      aliases: [band_3, red]
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'nir'
+      aliases: [band_4, nir]
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'swir1'
+      aliases: [band_5, swir1]
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'swir2'
+      aliases: [band_7, swir2]
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'pixel_qa'
+      aliases: [pixel_qa]
+      dtype: uint16
+      nodata: 1
+      units: 'bit_index'
+      flags_definition:
+        fill:
+          bits: [0]
+          description: Fill
+          values: {0: false, 1: true}
+        clear:
+          bits: [1]
+          description: Clear
+          values: {0: false, 1: true}
+        water:
+          bits: [2]
+          description: Water
+          values: {0: false, 1: true}
+        cloud_shadow:
+          bits: [3]
+          description: Cloud shadow
+          values: {0: false, 1: true}
+        snow:
+          bits: [4]
+          description: Snow
+          values: {0: false, 1: true}
+        cloud:
+          bits: [5]
+          description: Cloud
+          values: {0: false, 1: true}
+        cloud_confidence:
+          bits: [6,7]
+          description: Cloud confidence
+          values: 
+            0: none
+            1: low
+            2: medium
+            3: high

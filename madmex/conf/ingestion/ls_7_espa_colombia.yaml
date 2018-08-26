@@ -1,0 +1,146 @@
+source_type: ls7_espa_scene
+output_type: ls7_espa_colombia
+
+description: Landsat 7 Collection 1 processed to surface reflectance by espa.
+
+location: '{{ ingestion_path }}'
+file_path_template: 'LS7_espa/colombia/LS7_espa_{tile_index[0]}_{tile_index[1]}_{start_time}{% if netcdf %}.nc{% endif %}'
+global_attributes:
+  title: Humboldt Institute Data Cube Landsat Surface Reflectance
+  summary: Landsat 7 ETM+ surface reflectance processed by espa
+  source: USGS
+  institution: Humboldt Institute
+  instrument: ETM+
+  cdm_data_type: Grid
+  keywords: Humboldt Institute,LANDSAT,ETM+,SURFACE REFLECTANCE
+  keywords_vocabulary: GCMD
+  platform: LANDSAT_7
+  processing_level: L2
+  product_version: '0.0.1'
+  product_suite: USGS Landsat Collection 1
+  project: MADMEX
+  coverage_content_type: physicalMeasurement
+  references: http://dx.doi.org/10.3334/ORNLDAAC/1146
+  license: https://creativecommons.org/licenses/by/4.0/
+  naming_authority: gov.usgs
+  acknowledgment: Landsat data is provided by the United States Geological Survey (USGS).
+
+storage:
+  driver: {{ driver }}
+  bucket: '{{ bucket }}'
+  crs: EPSG 4326
+  tile_size:
+          latitude: 1.00068
+          longitude: 1.00068
+  resolution:
+          longitude: 0.000269
+          latitude: -0.000269
+  origin:
+    # top left corner
+    latitude: 15.92
+    longitude: -81.85
+  chunking:
+      x: 3720
+      y: 3720
+      time: 10
+  dimension_order: ['time', 'latitude', 'longitude']
+
+fuse_data: copy
+
+measurements:
+    - name: blue
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'blue'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 0.45-0.52 microns (Blue)"
+          alias: "band_1"
+    - name: green
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'green'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 0.52-0.60 microns (Green)"
+          alias: "band_2"
+    - name: red
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'red'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 0.63-0.69 microns (Red)"
+          alias: "band_3"
+    - name: nir
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'nir'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 0.76-0.90 microns (Near Infrared)"
+          alias: "band_4"
+    - name: swir1
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'swir1'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 1.55-1.75 microns (Short-wave Infrared)"
+          alias: "band_5"
+    - name: swir2
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'swir2'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 2.08-2.35 microns (Short-wave Infrared)"
+          alias: "band_7"
+    - name: 'pixel_qa'
+      dtype: uint16
+      nodata: 1
+      resampling_method: nearest
+      src_varname: 'pixel_qa'
+      zlib: True
+      attrs:
+          long_name: "Pixel Quality Attributes Bit Index"
+          alias: [pixel_qa]
+      flags_definition:
+        fill:
+          bits: [0]
+          description: Fill
+          values: {0: false, 1: true}
+        clear:
+          bits: [1]
+          description: Clear
+          values: {0: false, 1: true}
+        water:
+          bits: [2]
+          description: Water
+          values: {0: false, 1: true}
+        cloud_shadow:
+          bits: [3]
+          description: Cloud shadow
+          values: {0: false, 1: true}
+        snow:
+          bits: [4]
+          description: Snow
+          values: {0: false, 1: true}
+        cloud:
+          bits: [5]
+          description: Cloud
+          values: {0: false, 1: true}
+        cloud_confidence:
+          bits: [6,7]
+          description: Cloud confidence
+          values: 
+            0: none
+            1: low
+            2: medium
+            3: high
