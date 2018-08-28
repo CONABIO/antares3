@@ -81,7 +81,7 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
             if landsat == 8:
                 collection_usgs = 'LANDSAT_8_C1'
                 collection_espa = 'olitirs8_collection'
-                collection_regex = '^lc08_{1}\\w{4}_{1}[0-9]{6}_{1}[0-9]{8}_{1}[0-9]{8}_{1}[0-9]{2}_{1}\\w{2}$'
+                collection_regex = r'LC08_[0-9A-Z]{4}_\d{6}_\d{8}_\d{8}_\d{2}_(RT|T1|T2)'
             elif landsat == 7:
                 collection_usgs = 'LANDSAT_ETM_C1'
                 collection_espa = 'etm7_collection'
@@ -103,12 +103,11 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
                         scene_extent = Polygon(coords)
                         entity_id = scene.get('displayId')
                         # we use the same regular expression that espa uses to filter the names that are valid; otherwise, the order throws an error
-                        if scene_extent.intersects(shape_object.the_geom) and re.match(collection_regex, entity_id.lower()):
+                        if scene_extent.intersects(shape_object.the_geom) and re.match(collection_regex, entity_id):
                             interest.append(entity_id)
                             footprint, _ = Footprint.objects.get_or_create(
                                 name=entity_id,
-                                the_geom=scene_extent
-                            )
+                                the_geom=scene_extent)
             print(json.dumps(interest, indent=4))
             data = espa_client.order(collection_espa, interest, products)
             if data.get('status') == 'ordered':
