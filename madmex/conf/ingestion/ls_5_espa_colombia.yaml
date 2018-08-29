@@ -28,7 +28,7 @@ global_attributes:
 storage:
   driver: {{ driver }}
   bucket: '{{ bucket }}'
-  crs: EPSG 4326
+  crs: "EPSG:4326"
   tile_size:
           latitude: 1.00068
           longitude: 1.00068
