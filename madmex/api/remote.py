@@ -22,7 +22,7 @@ class UsgsApi():
     def __init__(self):
         '''
         This is the constructor, it creates an object that holds
-        credentials to usgs portal. 
+        credentials to usgs portal.
         '''
         if USGS_USER != None and USGS_PASSWORD != None:
             self.username = USGS_USER
@@ -35,17 +35,17 @@ class UsgsApi():
 
     def _consume_api_requests(self, endpoint, payload=None):
         '''Method to hide the http call from the user.
-        
+
         This method hides the complexity of making a request to usgs,
         depending on whether data parameter is given or not, it makes
         a GET or a POST request. It requires an endpoint to query the
         api if an invalid request is given, then the aip will answer
         with a 404 error message.
-        
+
         Args:
             endpoint: The endpoint to be consumed.
             payload: Data to be included in the request, if None, a GET method is used if present a POST method is used.
-        
+
         Returns:
             A dictionary representing the json response.
         '''
@@ -57,7 +57,7 @@ class UsgsApi():
             response = requests.post(url, data=payload)
         data = response.json()
         return data
-    
+
     def login(self):
         '''Function to log into the USGS query service.
 
@@ -79,7 +79,7 @@ class UsgsApi():
         else:
             return False
         return True
-    
+
     def search(self, extent, collection, node='EE', start_date=None, end_date=None, starting_number=1, max_results=50000, max_cloud_cover=100):
         '''Queries the USGS api for images in a given extent.
 
@@ -125,7 +125,7 @@ class UsgsApi():
 
             if max_results:
                 data['maxResults'] = max_results
-                
+
             if max_cloud_cover:
                 data['maxCloudCover'] = max_cloud_cover
 
@@ -133,10 +133,8 @@ class UsgsApi():
                 data['startingNumber'] = starting_number
 
             payload= {'jsonRequest': json.dumps(data)}
-            print(json.dumps(payload, indent=4))
             endpoint = '/search'
             response = self._consume_api_requests(endpoint, payload)
-            print (response)
         else:
             logger.debug('The client is not logged in, or the key has expired.')
             response = {'error':'Must log into the USGS service in order to use this function.'}
@@ -168,7 +166,7 @@ class EspaApi():
     def __init__(self):
         '''
         This is the constructor, it creates an object that holds
-        credentials to usgs portal. 
+        credentials to usgs portal.
         '''
         if USGS_USER != None and USGS_PASSWORD != None:
             self.username = USGS_USER
@@ -197,9 +195,9 @@ class EspaApi():
 
     def get_functions(self):
         '''Obtains the functions available in the api.
-        
+
         Will query the api for the valid functions that it exposes.
-        
+
         Returns:
             The dictionary representation of the api response.
         '''
@@ -207,9 +205,9 @@ class EspaApi():
 
     def get_projections(self):
         '''Returns the available projections that the api supports.
-        
+
         Just queries the api to obtain the available projections.
-        
+
         Returns:
             A dictionary with the projections.
         '''
@@ -217,34 +215,34 @@ class EspaApi():
 
     def get_available_products(self, scene_id):
         '''Returns the available products that the api offers.
-        
+
         Given a scene id, this method returns the available products
         that can be requested in an order.
-        
+
         Returns:
             A dictionary with the available products.
         '''
         return self._consume_api_requests('/%s/available-products/%s' % (espa_version, scene_id))
-    
+
     def get_formats(self):
         '''Lists the available formats for the data.
-        
+
         Retrieves the available formats in which the data can be requested. This formats
         include the type of raster the system can handle.
-        
+
         Returns:
             A list with the formats.
         '''
         return self._consume_api_requests('/%s/formats' % espa_version)
-    
+
     def order(self, collection, inputs, products):
         '''Creates an order in the ESPA api.
-        
+
         This is the only method implementing a post request. Data about which
-        scenes are requested and which products are needed is required on 
+        scenes are requested and which products are needed is required on
         this method calling. More complex querying is supported, we are keeping
         this simple for now.
-        
+
         Returns:
             A dictionary object with the order id.
         '''
@@ -257,13 +255,13 @@ class EspaApi():
                         }
         payload = json.dumps(request_json).encode('utf8')
         return self._consume_api_requests('/%s/order' % espa_version, payload)
-    
+
     def get_list_orders(self):
         '''Queries the orders that have been requested.
-        
+
         This method returns the status of the orders that have been posted. When
         the orders are ready the download may start.
-        
+
         Returns:
             A dictionary object with the orders and status.
         '''
@@ -271,11 +269,11 @@ class EspaApi():
 
     def get_resampling_methods(self):
         '''Lists the resampling methods available.
-        
+
         Returns the resampling methods available when the products are
         requested in a different resolution that the standard one. Default
         value will be nearest neighbors.
-        
+
         Returns:
             A dictionary object with the resampling methods.
         '''
@@ -283,10 +281,10 @@ class EspaApi():
 
     def get_user_info(self):
         '''Information of the key and password holders.
-        
+
         Returns information about the user that the credentials that this
         object holds.
-        
+
         Returns:
             A dictionary object with the user's information.
         '''
@@ -294,9 +292,9 @@ class EspaApi():
 
     def get_list_order(self, order_id):
         '''Retrieves the status of an order
-        
+
         Queries the system for the status of the given order id.
-        
+
         Returns:
             A dictionary object with the order's status.
         '''
@@ -307,7 +305,7 @@ class ScihubApi():
     def __init__(self):
         '''
         This is the constructor, it creates an object that holds
-        credentials to usgs portal. 
+        credentials to usgs portal.
         '''
         if SCIHUB_USER != None and SCIHUB_PASSWORD != None:
             self.username = SCIHUB_USER
@@ -320,7 +318,7 @@ class ScihubApi():
         else:
             logger.error('Please add the scihub credentials to the .env file.')
             sys.exit(-1)
-    
+
     def _consume_api_requests(self, query, data=None):
         '''
         This method hides the complexity of making a request to scihub,
@@ -329,7 +327,7 @@ class ScihubApi():
         api if an invalid request is given, then the aip will answer
         with a 404 error message.
         '''
-        url = self.host + '/dhus/search?start=0&rows=100' 
+        url = self.host + '/dhus/search?start=0&rows=100'
         logger.info(url)
         if not data:
             print('GET')
@@ -341,10 +339,10 @@ class ScihubApi():
             response = self.session.post(url, data, auth=self.session.auth)
         data = response
         return data
-    
+
     def geo_query(self):
         return self._consume_api_requests('/%s/resampling-methods' % espa_version)
-    
+
     def test(self):
         data = {'q': '*'}
         print(self._consume_api_requests('', data))

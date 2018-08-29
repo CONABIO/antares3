@@ -37,14 +37,15 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
         '''
         Just queries for the name to greet.
         '''
-        parser.add_argument('--shape', nargs=1, help='The name of the shape to use in the database.')
-        parser.add_argument('--start-date', nargs=1, help='Date to start the query, inclusive.')
-        parser.add_argument('--end-date', nargs=1, help='Date to end the query, inclusive.')
-        parser.add_argument('--landsat', nargs=1, help='Landsat mission.')
-        parser.add_argument('--max-cloud-cover', 
-                            nargs=1,
+        parser.add_argument('--region', help='The name of the shape to use in the database.')
+        parser.add_argument('--start-date', help='Date to start the query, inclusive.')
+        parser.add_argument('--end-date', help='Date to end the query, inclusive.')
+        parser.add_argument('--landsat',
                             type=int,
-                            default=100, 
+                            help='Landsat mission.')
+        parser.add_argument('--max-cloud-cover',
+                            type=int,
+                            default=100,
                             help='Maximum amount of cloud cover.')
 
     def handle(self, **options):
@@ -56,10 +57,10 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
         usgs_client = UsgsApi()
         usgs_client.login()
 
-        start_date = options['start_date'][0]
-        end_date = options['end_date'][0]
-        landsat = int(options['landsat'][0])
-        shape_name = options['shape'][0]
+        start_date = options['start_date']
+        end_date = options['end_date']
+        landsat = options['landsat']
+        shape_name = options['region']
         cloud_cover = options['max_cloud_cover']
 
         espa_client = EspaApi()
