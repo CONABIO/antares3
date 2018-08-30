@@ -40,8 +40,8 @@ storage:
     latitude: 15.92
     longitude: -81.85
   chunking:
-      x: 3720
-      y: 3720
+      longitude: 3720
+      latitude: 3720
       time: 10
   dimension_order: ['time', 'latitude', 'longitude']
 
