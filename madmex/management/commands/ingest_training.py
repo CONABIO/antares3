@@ -1,134 +1,105 @@
-'''
-Created on Jan 19, 2018
+#!/usr/bin/env python
 
-@author: agutierrez
-'''
+"""
+Author: Loic Dutrieux
+Date: 2018-08-30
+Purpose: Ingest a vector file containing training data into the antares database
+"""
 
-from functools import partial
 import logging
+import json
+import os
 
 from django.contrib.gis.geos.geometry import GEOSGeometry
 import fiona
-import pyproj
-from shapely.geometry.geo import shape
-from shapely.ops import transform
+from fiona.crs import to_string
+from pyproj import Proj
 
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import TrainObject, Tag, TrainClassification
-from madmex.util.local import basename
-
+from madmex.util.spatial import feature_transform
 
 logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
     help = """
-This command helps in the ingestion process of new training data. The schema
-consideres two classification tags, interpret and predict. Interpret is considered
-the main tag. If there is no predict tag, value will be left blank.
+Ingest a vector file containing training data into the antares database
 
 --------------
 Example usage:
 --------------
-antares ingest_training --shape <path-to-file>/1349025_finalcut.shp 
-                        --interpret interpreta 
-                        --predict predicted 
-                        --scheme madmex 
-                        --year 2015 
-                        --dataset aguascalientes_example
+antares ingest_training /path/to/file.shp --scheme madmex --year 2015 --name train_mexico --field code
     """
-    
     def add_arguments(self, parser):
-        '''
-        Adds arguments for this command.
-        '''
-        parser.add_argument('--shape',
+        parser.add_argument('input_file',
                             type=str,
-                            help='The name of the shape to ingest.')
-        parser.add_argument('--interpret',
+                            help='Path of vector file to ingest')
+        parser.add_argument('-scheme', '--scheme',
                             type=str,
-                            help='The field in the shape used as interpreted tag.')
-        parser.add_argument('--predict',
+                            help='Name of the classification scheme to which the data belong')
+        parser.add_argument('-field', '--field',
                             type=str,
-                            default=None,
-                            help='The field in the shape used as predict tag.')
-        parser.add_argument('--dataset',
+                            help='Name of the vector file field containing the numeric codes of the class of interest')
+        parser.add_argument('-name', '--name',
                             type=str,
-                            help='Identifier for the rows ingested through this workflow.')
-        parser.add_argument('--year',
-                            help='The creation year for this objects.')
-        parser.add_argument('--scheme',
+                            help='Name/identifier under which the training set should be registered in the database')
+        parser.add_argument('-year', '--year',
                             type=str,
-                            help='Classification scheme.')
-        parser.add_argument('--filter',
-                            type=int,
-                            default=None,
-                            help='Number to filter the shapes.')
-    
+                            help='Data interpretation year',
+                            required=False,
+                            default=-1)
     def handle(self, **options):
-        
-        shape_file = options['shape']
-        interpret = options['interpret']
-        predict = options['predict']
-        dataset = options['dataset']
+        input_file = options['input_file']
         year = options['year']
         scheme = options['scheme']
-        filter = options['filter']
-        
-        filename = basename(shape_file, False)
-        
-        if filter is not None and filter <= 1:
-            filter = None
+        field = options['field']
+        name = options['name']
+        # Create ValidClassification objects list
+        # Push it to database
 
-        with fiona.open(shape_file) as source:
-            project = partial(
-                pyproj.transform,
-                pyproj.Proj(source.crs),
-                pyproj.Proj(init='EPSG:4326'))
-            if filter == None:
-                object_list = [(TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt),
-                                        filename=filename,
-                                        creation_year=year), feat['properties']) for feat in source]
+        # Read file and Optionally reproject the features to longlat
+        with fiona.open(input_file) as src:
+            p = Proj(src.crs)
+            if p.is_latlong(): # Here we assume that geographic coordinates are automatically 4326 (not quite true)
+                fc = list(src)
             else:
-                object_list = [(TrainObject(the_geom = GEOSGeometry(transform(project, shape(feat['geometry'])).wkt),
-                                        filename=filename,
-                                        creation_year=year), feat['properties']) for ind, feat in enumerate(source) if ind % filter == 0]
-        TrainObject.objects.bulk_create(list(map(lambda x: x[0], object_list)))
+                crs_str = to_string(src.crs)
+                fc = [feature_transform(x, crs_out='+proj=longlat', crs_in=crs_str)
+                      for x in src]
 
-        
-        train_classification_objects = []
-        
-        tag_map = {}
+        # Write features to ValidObject table
+        def train_obj_builder(x):
+            """Build individual ValidObjects
+            """
+            geom = GEOSGeometry(json.dumps(x['geometry']))
+            obj = TrainObject(the_geom=geom,
+                              filename=os.path.basename(input_file),
+                              creation_year=year)
+            return obj
 
-        for tup in object_list:
-            o = tup[0]
-            p = tup[1]
-            
-            value = p[interpret]
-            interpret_tag = tag_map.get(value)                
-            if not interpret_tag:                    
-                interpret_tag, created = Tag.objects.get_or_create(
-                    numeric_code=value,
-                    scheme=scheme
-                )
-                tag_map[value] = interpret_tag
-                if created:
-                    logger.info('New tag created with values: numeric_code=%s, scheme=%s' % (value, scheme))
-            
-            predict_tag = None
-            if predict is not None:
-                value = p[predict]
-                predict_tag = tag_map.get(value)
-                if not predict_tag:
-                    try:
-                        predict_tag = Tag.objects.get(numeric_code=value, scheme=scheme)
-                    except Tag.DoesNotExist:
-                        predict_tag = Tag.objects.get(numeric_code=value, scheme=scheme)
-                        predict_tag.save()
-                    tag_map[value] = predict_tag
-            
-            train_classification_objects.append(TrainClassification(train_object=o,
-                                                           predict_tag=predict_tag,
-                                                           interpret_tag=interpret_tag,
-                                                           training_set=dataset))
-        TrainClassification.objects.bulk_create(train_classification_objects)
-        
+        obj_list = [train_obj_builder(x) for x in fc]
+        TrainObject.objects.bulk_create(obj_list)
+
+        # Get list of unique tags
+        unique_numeric_codes = list(set([x['properties'][field] for x in fc]))
+
+        # Update Tag table using get or create
+        def make_tag_tuple(x):
+            obj, _ = Tag.objects.get_or_create(numeric_code=x, scheme=scheme)
+            return (x, obj)
+
+        tag_dict = dict([make_tag_tuple(x) for x in unique_numeric_codes])
+
+        # Build validClassification object list (valid_tag, valid_object, valid_set)
+        def train_class_obj_builder(x):
+            """x is a tuple (ValidObject, feature)"""
+            tag = tag_dict[x[1]['properties'][field]]
+            obj = TrainClassification(predict_tag=tag,
+                                      interpret_tag=tag,
+                                      train_object=x[0],
+                                      training_set=name)
+            return obj
+
+        train_class_obj_list = [train_class_obj_builder(x) for x in zip(obj_list, fc)]
+
+        TrainClassification.objects.bulk_create(train_class_obj_list)
