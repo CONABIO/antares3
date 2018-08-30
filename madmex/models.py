@@ -53,7 +53,7 @@ class Tag(models.Model):
     '''To keep a deeper control over the tags that we can handle.
     '''
     scheme = models.CharField(max_length=50, default=None)
-    value = models.CharField(max_length=150, default=None)
+    value = models.CharField(max_length=150, default='')
     numeric_code = models.IntegerField(default=-1)
     color = models.CharField(max_length=7, default='')
 
