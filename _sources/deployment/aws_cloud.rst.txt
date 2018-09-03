@@ -180,7 +180,7 @@ The following bash script can be used in **User data** configuration of the inst
     ##Locale settings for open datacube
     echo "alias python=python3" >> /home/$user/.bash_aliases
     #dependencies for antares3 & datacube
-    pip3 install numpy && pip3 install cloudpickle && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1 --no-binary rasterio && pip3 install scipy
+    pip3 install numpy==1.14.0 && pip3 install cloudpickle && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1 --no-binary rasterio && pip3 install scipy
     pip3 install sklearn
     pip3 install lightgbm
     pip3 install fiona --no-binary fiona
@@ -1371,7 +1371,7 @@ Use next **Dockerfile** to build docker image for antares3:
 	RUN pip3 install --upgrade python-dateutil
 	
 	#Dependencies for antares3 & datacube
-	RUN pip3 install numpy && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1 --no-binary rasterio
+	RUN pip3 install numpy==1.14.0 && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1 --no-binary rasterio
 	RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
 	RUN pip3 install --no-cache --no-binary :all: psycopg2
 	RUN pip3 install futures pathlib setuptools==20.4
@@ -1721,7 +1721,8 @@ Deployment for dask worker
 
 Use next ``antares3-worker.yaml`` file to create containers for dask workers. 
 
-Example for ``t2.large`` instances which have 2 cores. Two instances were started. See `Managing Compute Resources for Containers`_ , `Assign CPU Resources to Containers and Pods`_ and `Assign Memory Resources to Containers and Pods`_ to learn how to change the requests and limits values for cpu and memory of containers.
+Example for ``t2.large`` instances which have 2 cores. Two instances were started. See `Managing Compute Resources for Containers`_ , `Assign CPU Resources to Containers and Pods`_ and `Assign Memory Resources to Containers and Pods`_ to learn how to change the requests and limits values for cpu and memory of containers. Also see `Best Practices in Dask Kubernetes`_ for dask-workers parameters.
+
 
 
 .. code-block:: bash
@@ -1743,7 +1744,7 @@ Example for ``t2.large`` instances which have 2 cores. Two instances were starte
 	      - name: antares3-worker
 	        imagePullPolicy: Always
 	        image: madmex/antares3-k8s-cluster-dependencies:latest #Docker image to be used for dask scheduler/worker container
-	        command: ["/bin/bash", "-c", "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps && /home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
+	        command: ["/bin/bash", "-c", "pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps && /home/madmex_user/.local/bin/antares init && /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --memory-limit 4GB --death-timeout 60 --scheduler-file /shared_volume/scheduler.json"]
 	        ports:
 	          - containerPort: 8786
 	        env:
@@ -2261,6 +2262,8 @@ To delete mount targets of EFS (assuming there's three subnets):
 .. _Certificate management: https://github.com/kubernetes/dashboard/wiki/Certificate-management 
 
 .. _Kubernetes Dashboard: https://github.com/kubernetes/dashboard
+
+.. _Best Practices in Dask Kubernetes: https://dask-kubernetes.readthedocs.io/en/latest/#best-practices
 
 
 .. _Assign Memory Resources to Containers and Pods: https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/#specify-a-memory-request-and-a-memory-limit

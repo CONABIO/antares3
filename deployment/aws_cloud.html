@@ -336,7 +336,7 @@ mkdir <span class="nv">$shared_volume</span>
 <span class="c1">##Locale settings for open datacube</span>
 <span class="nb">echo</span> <span class="s2">&quot;alias python=python3&quot;</span> &gt;&gt; /home/<span class="nv">$user</span>/.bash_aliases
 <span class="c1">#dependencies for antares3 &amp; datacube</span>
-pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install cloudpickle <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span> --no-binary rasterio <span class="o">&amp;&amp;</span> pip3 install scipy
+pip3 install <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.0 <span class="o">&amp;&amp;</span> pip3 install cloudpickle <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span> --no-binary rasterio <span class="o">&amp;&amp;</span> pip3 install scipy
 pip3 install sklearn
 pip3 install lightgbm
 pip3 install fiona --no-binary fiona
@@ -1271,7 +1271,7 @@ RUN pip3 install dask distributed --upgrade <span class="o">&amp;&amp;</span> pi
 RUN pip3 install --upgrade python-dateutil
 
 <span class="c1">#Dependencies for antares3 &amp; datacube</span>
-RUN pip3 install numpy <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span> --no-binary rasterio
+RUN pip3 install <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.0 <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span> --no-binary rasterio
 RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
 RUN pip3 install --no-cache --no-binary :all: psycopg2
 RUN pip3 install futures pathlib <span class="nv">setuptools</span><span class="o">==</span><span class="m">20</span>.4
@@ -1568,7 +1568,7 @@ spec:
 <div class="section" id="deployment-for-dask-worker">
 <h4>Deployment for dask worker<a class="headerlink" href="#deployment-for-dask-worker" title="Permalink to this headline">¶</a></h4>
 <p>Use next <code class="docutils literal notranslate"><span class="pre">antares3-worker.yaml</span></code> file to create containers for dask workers.</p>
-<p>Example for <code class="docutils literal notranslate"><span class="pre">t2.large</span></code> instances which have 2 cores. Two instances were started. See <a class="reference external" href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/">Managing Compute Resources for Containers</a> , <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/">Assign CPU Resources to Containers and Pods</a> and <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/#specify-a-memory-request-and-a-memory-limit">Assign Memory Resources to Containers and Pods</a> to learn how to change the requests and limits values for cpu and memory of containers.</p>
+<p>Example for <code class="docutils literal notranslate"><span class="pre">t2.large</span></code> instances which have 2 cores. Two instances were started. See <a class="reference external" href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/">Managing Compute Resources for Containers</a> , <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/">Assign CPU Resources to Containers and Pods</a> and <a class="reference external" href="https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/#specify-a-memory-request-and-a-memory-limit">Assign Memory Resources to Containers and Pods</a> to learn how to change the requests and limits values for cpu and memory of containers. Also see <a class="reference external" href="https://dask-kubernetes.readthedocs.io/en/latest/#best-practices">Best Practices in Dask Kubernetes</a> for dask-workers parameters.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -1586,7 +1586,7 @@ spec:
       - name: antares3-worker
         imagePullPolicy: Always
         image: madmex/antares3-k8s-cluster-dependencies:latest <span class="c1">#Docker image to be used for dask scheduler/worker container</span>
-        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps &amp;&amp; /home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --death-timeout 60 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
+        command: <span class="o">[</span><span class="s2">&quot;/bin/bash&quot;</span>, <span class="s2">&quot;-c&quot;</span>, <span class="s2">&quot;pip3 install --user git+https://github.com/CONABIO/antares3.git@develop --upgrade --no-deps &amp;&amp; /home/madmex_user/.local/bin/antares init &amp;&amp; /usr/local/bin/dask-worker --worker-port 8786 --nthreads 1 --no-bokeh --memory-limit 4GB --death-timeout 60 --scheduler-file /shared_volume/scheduler.json&quot;</span><span class="o">]</span>
         ports:
           - containerPort: <span class="m">8786</span>
         env:
