@@ -35,7 +35,7 @@ def run(tile, center_dt, path):
     """
     try:
         center_dt = center_dt.strftime("%Y-%m-%d")
-        nc_filename = os.path.join(path, 'landsat_colombia_002_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
+        nc_filename = os.path.join(path, 'landsat_colombia_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         # Load Landsat sr
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
@@ -44,6 +44,7 @@ def run(tile, center_dt, path):
         crs = tile[1][0].geobox.crs
         sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'latitude': 1860, 'longitude': 1860})
                          for x in tile[1]])
+        sr_0.attrs['geobox'] = tile[1][0].geobox
         # Mask clouds, shadow, water, ice,... and drop qa layer
         clear = masking.make_mask(sr_0.pixel_qa, cloud=False, cloud_shadow=False,
                                   snow=False)
