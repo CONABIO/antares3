@@ -37,7 +37,7 @@ def mid_date(date0, date1):
     Return:
         datetime.datetime: The mid date
     """
-    delta = (date0 - date1) / 2
+    delta = (date1 - date0) / 2
     return date0 + delta
 
 def parser_extra_args(x):
