@@ -344,10 +344,14 @@
     <span class="c1"># Convert projected corner coordinates to longlat</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">Proj</span><span class="p">(</span><span class="n">wkt_to_proj4</span><span class="p">(</span><span class="n">crs_wkt</span><span class="p">))</span>
     <span class="c1"># Every geographical corner has to be computed independently cause CRS are not parallels</span>
-    <span class="n">ul_long</span><span class="p">,</span> <span class="n">ul_lat</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">ur_long</span><span class="p">,</span> <span class="n">ur_lat</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">lr_long</span><span class="p">,</span> <span class="n">lr_lat</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">ll_long</span><span class="p">,</span> <span class="n">ll_lat</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1">#ul_long, ul_lat = p(xmin, ymax, inverse=True)</span>
+    <span class="c1">#ur_long, ur_lat = p(xmax, ymax, inverse=True)</span>
+    <span class="c1">#lr_long, lr_lat = p(xmax, ymin, inverse=True)</span>
+    <span class="c1">#ll_long, ll_lat = p(xmin, ymin, inverse=True)</span>
+    <span class="n">ul_long</span><span class="p">,</span> <span class="n">ul_lat</span> <span class="o">=</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">ymax</span>
+    <span class="n">ur_long</span><span class="p">,</span> <span class="n">ur_lat</span> <span class="o">=</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span>
+    <span class="n">lr_long</span><span class="p">,</span> <span class="n">lr_lat</span> <span class="o">=</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span>
+    <span class="n">ll_long</span><span class="p">,</span> <span class="n">ll_lat</span> <span class="o">=</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span>
     <span class="n">out</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid5</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">NAMESPACE_URL</span><span class="p">,</span> <span class="n">file</span><span class="p">)),</span>
         <span class="s1">&#39;creation_dt&#39;</span><span class="p">:</span> <span class="n">creation_dt</span><span class="p">,</span>
