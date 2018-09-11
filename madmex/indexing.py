@@ -179,17 +179,19 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
         # var list
         var_list = src.get_variables_by_attributes(grid_mapping='crs')
         var_list = [x.name for x in var_list]
-    # Convert projected corner coordinates to longlat
+    #Convert projected corner coordinates to longlat
     p = Proj(wkt_to_proj4(crs_wkt))
-    # Every geographical corner has to be computed independently cause CRS are not parallels
-    #ul_long, ul_lat = p(xmin, ymax, inverse=True)
-    #ur_long, ur_lat = p(xmax, ymax, inverse=True)
-    #lr_long, lr_lat = p(xmax, ymin, inverse=True)
-    #ll_long, ll_lat = p(xmin, ymin, inverse=True)
-    ul_long, ul_lat = xmin, ymax
-    ur_long, ur_lat = xmax, ymax
-    lr_long, lr_lat = xmax, ymin
-    ll_long, ll_lat = xmin, ymin
+    p2 = Proj(init="EPSG:4326")
+    if p.srs != p2.srs:
+        ul_long, ul_lat = p(xmin, ymax, inverse=True) # inverse=True to transform x,y to long, lat
+        ur_long, ur_lat = p(xmax, ymax, inverse=True)
+        lr_long, lr_lat = p(xmax, ymin, inverse=True)
+        ll_long, ll_lat = p(xmin, ymin, inverse=True)
+    else:
+        ul_long, ul_lat = xmin, ymax
+        ur_long, ur_lat = xmax, ymax
+        lr_long, lr_lat = xmax, ymin
+        ll_long, ll_lat = xmin, ymin
     out = {
         'id': str(uuid.uuid5(uuid.NAMESPACE_URL, file)),
         'creation_dt': creation_dt,
