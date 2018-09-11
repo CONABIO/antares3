@@ -42,9 +42,9 @@ storage:
           y: 15.92
           x: -81.85
   chunking:
-      x: 3720
-      y: 3720
-      time: 10
+          x: 3720
+          y: 3720
+          time: 10
   dimension_order: ['time', 'y', 'x']
 
 fuse_data: copy
