@@ -182,7 +182,11 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
     #Convert projected corner coordinates to longlat
     p = Proj(wkt_to_proj4(crs_wkt))
     p2 = Proj(init="EPSG:4326")
-    if p.srs != p2.srs:
+    s1 = osr.SpatialReference()
+    s1.ImportFromProj4(p.srs)
+    s2 = osr.SpatialReference()
+    s2.ImportFromProj4(p2.srs)
+    if not s1.IsSame(s2):
         ul_long, ul_lat = p(xmin, ymax, inverse=True) # inverse=True to transform x,y to long, lat
         ur_long, ur_lat = p(xmax, ymax, inverse=True)
         lr_long, lr_lat = p(xmax, ymin, inverse=True)
