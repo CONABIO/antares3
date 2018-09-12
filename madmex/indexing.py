@@ -169,6 +169,7 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
         to_dt = center_dt
     with nc.Dataset(file) as src:
         creation_dt = src.date_created
+        list_dimensions = [x for x in src.dimensions.keys() if x != 'time']
         lambda_function = lambda l_netcdf,l_test: l_netcdf[0] if l_netcdf[0] in l_test else l_netcdf[1]
         xdim = lambda_function(list_dimensions,['x','longitude'])
         ydim = lambda_function(list_dimensions,['y','latitude'])
