@@ -169,12 +169,15 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
         to_dt = center_dt
     with nc.Dataset(file) as src:
         creation_dt = src.date_created
+        lambda_function = lambda l_netcdf,l_test: l_netcdf[0] if l_netcdf[0] in l_test else l_netcdf[1]
+        xdim = lambda_function(list_dimensions,['x','longitude'])
+        ydim = lambda_function(list_dimensions,['y','latitude'])
         aff = Affine.from_gdal(*src['crs'].GeoTransform)
         res = aff[0]
-        xmin = min(src['x']) - res / 2
-        xmax = max(src['x']) + res / 2
-        ymin = min(src['y']) - res / 2
-        ymax = max(src['y']) + res / 2
+        xmin = min(src[xdim]) - res / 2
+        xmax = max(src[xdim]) + res / 2
+        ymin = min(src[ydim]) - res / 2
+        ymax = max(src[ydim]) + res / 2
         crs_wkt = src['crs'].crs_wkt
         # var list
         var_list = src.get_variables_by_attributes(grid_mapping='crs')
@@ -217,10 +220,10 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
         'grid_spatial': {
             'projection': {
                 'geo_ref_points': {
-                    'll': {'y': ymin, 'x': xmin},
-                    'lr': {'y': ymin, 'x': xmax},
-                    'ul': {'y': ymax, 'x': xmin},
-                    'ur': {'y': ymax, 'x': xmax}
+                    'll': {ydim: ymin, xdim: xmin},
+                    'lr': {ydim: ymin, xdim: xmax},
+                    'ul': {ydim: ymax, xdim: xmin},
+                    'ur': {ydim: ymax, xdim: xmax}
                 },
                 'spatial_reference': crs_wkt,
             },
