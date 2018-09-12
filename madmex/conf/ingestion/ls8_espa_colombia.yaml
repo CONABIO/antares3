@@ -45,7 +45,7 @@ storage:
           longitude: 3720
           latitude: 3720
           time: 10
-  dimension_order: ['time', 'y', 'x']
+  dimension_order: ['time', 'latitude', 'longitude']
 
 fuse_data: copy
 
