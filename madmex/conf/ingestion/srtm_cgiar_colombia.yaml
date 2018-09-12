@@ -27,18 +27,18 @@ storage:
   # http://spatialreference.org/ref/sr-org/mexico-inegi-lambert-conformal-conic/
   crs: "EPSG:4326"
   tile_size:
-          y: 1.00068
-          x: 1.00068
+          latitude: 1.00068
+          longitude: 1.00068
   resolution:
-          x: 0.000807
-          y: -0.000807
+          longitude: 0.000807
+          latitude: -0.000807
   origin:
           # top left corner
-          y: 15.92
-          x: -81.85
+          latitude: 15.92
+          longitude: -81.85
   chunking:
-          x: 1240
-          y: 1240
+          longitude: 1240
+          latitude: 1240
           time: 200
   dimension_order: ['time', 'y', 'x']
 
