@@ -40,7 +40,7 @@ storage:
           longitude: 1240
           latitude: 1240
           time: 200
-  dimension_order: ['time', 'y', 'x']
+  dimension_order: ['time', 'latitude', 'longitude']
 
 measurements:
     - name: 'elevation'
