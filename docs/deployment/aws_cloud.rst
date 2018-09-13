@@ -1317,15 +1317,14 @@ Use next **Dockerfile** to build docker image for antares3:
    
 .. code-block:: bash
 
+    FROM ubuntu:xenial
+    USER root
 
-	FROM ubuntu:xenial
-	USER root
-	
-	#see: https://github.com/Yelp/dumb-init/ for next line:
-	RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/dumb-init
-	
-	#base dependencies
-	RUN apt-get update && apt-get install -y \
+    #see: https://github.com/Yelp/dumb-init/ for next line:
+    RUN apt-get update && apt-get install -y wget curl && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')/dumb-init_$(curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest| grep tag_name|sed -n 's/  ".*v\(.*\)",/\1/p')_amd64 && chmod +x /usr/local/bin/dumb-init
+
+    #base dependencies
+    RUN apt-get update && apt-get install -y \
 	        openssh-server \
 	        openssl \
 	        sudo \
@@ -1347,10 +1346,10 @@ Use next **Dockerfile** to build docker image for antares3:
 	        postgresql-client \
 	        libudunits2-dev \
 	        nodejs-legacy && pip3 install --upgrade pip==9.0.3
-	
-	#Install spatial libraries
-	RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable && apt-get -qq update
-	RUN apt-get install -y \
+
+    #Install spatial libraries
+    RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable && apt-get -qq update
+    RUN apt-get install -y \
 	        netcdf-bin \
 	        libnetcdf-dev \
 	        ncview \
@@ -1358,76 +1357,73 @@ Use next **Dockerfile** to build docker image for antares3:
 	        libgeos-dev \
 	        gdal-bin \
 	        libgdal-dev
-	
     #Create directory and copy crt file for rasterio to read raster from S3 bucket
 
     RUN mkdir -p /etc/pki/tls/certs
     RUN cp /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/certs/ca-bundle.crt
 
-	#Create user: madmex_user
-	RUN groupadd madmex_user
-	RUN useradd madmex_user -g madmex_user -m -s /bin/bash
-	RUN echo "madmex_user ALL=(ALL:ALL) NOPASSWD:ALL" | (EDITOR="tee -a" visudo)
-	RUN echo "madmex_user:madmex_user" | chpasswd
+    #Create user: madmex_user
+    RUN groupadd madmex_user
+    RUN useradd madmex_user -g madmex_user -m -s /bin/bash
+    RUN echo "madmex_user ALL=(ALL:ALL) NOPASSWD:ALL" | (EDITOR="tee -a" visudo)
+    RUN echo "madmex_user:madmex_user" | chpasswd
 
-	##Install dask distributed
-	RUN pip3 install dask distributed --upgrade && pip3 install bokeh
-	##Install missing package for open datacube:
-	RUN pip3 install --upgrade python-dateutil
-	
-	#Dependencies for antares3 & datacube
-	RUN pip3 install numpy==1.14.0 && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1 --no-binary rasterio
-	RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
-	RUN pip3 install --no-cache --no-binary :all: psycopg2
-	RUN pip3 install futures pathlib setuptools==20.4
-	
-	#datacube:
-	RUN apt-get clean && apt-get update && apt-get install -y locales
-	RUN locale-gen en_US.UTF-8
-	ENV LANG en_US.UTF-8
-	ENV LC_ALL en_US.UTF-8
-	RUN pip3 install git+https://github.com/opendatacube/datacube-core.git@develop#egg=datacube[s3]
-	
-	#Upgrade awscli and tools for s3:
-	RUN pip3 install boto3 botocore awscli --upgrade
-	
-	#install jupyter lab and notebook:
-	
-	RUN pip3 install jupyter jupyterlab --upgrade
-	
-	#antares3:
-	USER madmex_user
-	RUN pip3 install --user git+https://github.com/CONABIO/antares3.git@develop
-	
-	#set password for jupyter lab:
-	ARG jupyter_key=$jupyter_key
-	RUN jupyter notebook --generate-config && \
+    ##Install dask distributed
+    RUN pip3 install dask distributed --upgrade && pip3 install bokeh
+    ##Install missing package for open datacube:
+    RUN pip3 install --upgrade python-dateutil
+
+    #Dependencies for antares3 & datacube
+    RUN pip3 install numpy==1.14.0 && pip3 install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal' && pip3 install rasterio==1.0.2 --no-binary rasterio
+    RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
+    RUN pip3 install --no-cache --no-binary :all: psycopg2
+    RUN pip3 install futures pathlib setuptools==20.4
+
+    #datacube:
+    RUN apt-get clean && apt-get update && apt-get install -y locales
+    RUN locale-gen en_US.UTF-8
+    ENV LANG en_US.UTF-8
+    ENV LC_ALL en_US.UTF-8
+    RUN pip3 install git+https://github.com/opendatacube/datacube-core.git@develop#egg=datacube[s3]
+
+    #Upgrade awscli and tools for s3:
+    RUN pip3 install boto3 botocore awscli --upgrade
+
+    #install jupyter lab and notebook:
+    RUN pip3 install jupyter jupyterlab --upgrade
+
+    #antares3:
+    USER madmex_user
+    RUN pip3 install --user git+https://github.com/CONABIO/antares3.git@develop
+
+    #set password for jupyter lab:
+    ARG jupyter_key=$jupyter_key
+    RUN jupyter notebook --generate-config && \
 	sed -i "s/#c.NotebookApp.certfile = .*/c.NotebookApp.certfile = u'\/shared_volume\/certs\/fullchain1.pem'/" ~/.jupyter/jupyter_notebook_config.py && \
 	sed -i "s/#c.NotebookApp.keyfile = .*/c.NotebookApp.keyfile = u'\/shared_volume\/certs\/privkey1.pem'/" ~/.jupyter/jupyter_notebook_config.py && \
 	sed -i "s/#c.NotebookApp.password = .*/c.NotebookApp.password = u'$jupyter_key'/" ~/.jupyter/jupyter_notebook_config.py && \
 	sed -i 's/#c.NotebookApp.port = .*/c.NotebookApp.port = 9999/' ~/.jupyter/jupyter_notebook_config.py
-	
-	##Set locales for OpenDataCube
-	RUN echo "export LC_ALL=C.UTF-8" >> ~/.profile
-	RUN echo "export LANG=C.UTF-8" >> ~/.profile
-	#Set variables
-	ARG mount_point=$mount_point
-	RUN echo "export mount_point=$mount_point" >> ~/.profile
+
+    ##Set locales for OpenDataCube
+    RUN echo "export LC_ALL=C.UTF-8" >> ~/.profile
+    RUN echo "export LANG=C.UTF-8" >> ~/.profile
+    #Set variables
+    ARG mount_point=$mount_point
+    RUN echo "export mount_point=$mount_point" >> ~/.profile
     RUN echo "export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt" >> ~/.profile
-	#Use python3
-	RUN echo "alias python=python3" >> ~/.bash_aliases
-	#Antares3:
-	RUN echo "export PATH=$PATH:/home/madmex_user/.local/bin/" >> ~/.profile
-	
-	
-	#Config files for datacube and antares
-	RUN ln -sf $mount_point/.antares ~/.antares
-	RUN ln -sf $mount_point/.datacube.conf ~/.datacube.conf
-	
-	#Final settings
-	WORKDIR /home/madmex_user/
-	VOLUME ["/shared_volume"]
-	ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
+    #Use python3
+    RUN echo "alias python=python3" >> ~/.bash_aliases
+    #Antares3:
+    RUN echo "export PATH=$PATH:/home/madmex_user/.local/bin/" >> ~/.profile
+
+    #Config files for datacube and antares
+    RUN ln -sf $mount_point/.antares ~/.antares
+    RUN ln -sf $mount_point/.datacube.conf ~/.datacube.conf
+
+    #Final settings
+    WORKDIR /home/madmex_user/
+    VOLUME ["/shared_volume"]
+    ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
 	
 
 Define variable ``jupyter_key`` with the hashed password previously generated and build docker image with next commands (needs a docker hub account):
