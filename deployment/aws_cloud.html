@@ -1218,14 +1218,14 @@ Verify password:
 </pre></div>
 </div>
 <p>Use next <strong>Dockerfile</strong> to build docker image for antares3:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    FROM ubuntu:xenial
-    USER root
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>FROM ubuntu:xenial
+USER root
 
-    <span class="c1">#see: https://github.com/Yelp/dumb-init/ for next line:</span>
-    RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y wget curl <span class="o">&amp;&amp;</span> wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>/dumb-init_<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>_amd64 <span class="o">&amp;&amp;</span> chmod +x /usr/local/bin/dumb-init
+<span class="c1">#see: https://github.com/Yelp/dumb-init/ for next line:</span>
+RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y wget curl <span class="o">&amp;&amp;</span> wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>/dumb-init_<span class="k">$(</span>curl -s https://api.github.com/repos/Yelp/dumb-init/releases/latest<span class="p">|</span> grep tag_name<span class="p">|</span>sed -n <span class="s1">&#39;s/  &quot;.*v\(.*\)&quot;,/\1/p&#39;</span><span class="k">)</span>_amd64 <span class="o">&amp;&amp;</span> chmod +x /usr/local/bin/dumb-init
 
-    <span class="c1">#base dependencies</span>
-    RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y <span class="se">\</span>
+<span class="c1">#base dependencies</span>
+RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y <span class="se">\</span>
             openssh-server <span class="se">\</span>
             openssl <span class="se">\</span>
             sudo <span class="se">\</span>
@@ -1248,9 +1248,9 @@ Verify password:
             libudunits2-dev <span class="se">\</span>
             nodejs-legacy <span class="o">&amp;&amp;</span> pip3 install --upgrade <span class="nv">pip</span><span class="o">==</span><span class="m">9</span>.0.3
 
-    <span class="c1">#Install spatial libraries</span>
-    RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable <span class="o">&amp;&amp;</span> apt-get -qq update
-    RUN apt-get install -y <span class="se">\</span>
+<span class="c1">#Install spatial libraries</span>
+RUN add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable <span class="o">&amp;&amp;</span> apt-get -qq update
+RUN apt-get install -y <span class="se">\</span>
             netcdf-bin <span class="se">\</span>
             libnetcdf-dev <span class="se">\</span>
             ncview <span class="se">\</span>
@@ -1258,76 +1258,73 @@ Verify password:
             libgeos-dev <span class="se">\</span>
             gdal-bin <span class="se">\</span>
             libgdal-dev
-
 <span class="c1">#Create directory and copy crt file for rasterio to read raster from S3 bucket</span>
 
 RUN mkdir -p /etc/pki/tls/certs
 RUN cp /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/certs/ca-bundle.crt
 
-    <span class="c1">#Create user: madmex_user</span>
-    RUN groupadd madmex_user
-    RUN useradd madmex_user -g madmex_user -m -s /bin/bash
-    RUN <span class="nb">echo</span> <span class="s2">&quot;madmex_user ALL=(ALL:ALL) NOPASSWD:ALL&quot;</span> <span class="p">|</span> <span class="o">(</span><span class="nv">EDITOR</span><span class="o">=</span><span class="s2">&quot;tee -a&quot;</span> visudo<span class="o">)</span>
-    RUN <span class="nb">echo</span> <span class="s2">&quot;madmex_user:madmex_user&quot;</span> <span class="p">|</span> chpasswd
+<span class="c1">#Create user: madmex_user</span>
+RUN groupadd madmex_user
+RUN useradd madmex_user -g madmex_user -m -s /bin/bash
+RUN <span class="nb">echo</span> <span class="s2">&quot;madmex_user ALL=(ALL:ALL) NOPASSWD:ALL&quot;</span> <span class="p">|</span> <span class="o">(</span><span class="nv">EDITOR</span><span class="o">=</span><span class="s2">&quot;tee -a&quot;</span> visudo<span class="o">)</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;madmex_user:madmex_user&quot;</span> <span class="p">|</span> chpasswd
 
-    <span class="c1">##Install dask distributed</span>
-    RUN pip3 install dask distributed --upgrade <span class="o">&amp;&amp;</span> pip3 install bokeh
-    <span class="c1">##Install missing package for open datacube:</span>
-    RUN pip3 install --upgrade python-dateutil
+<span class="c1">##Install dask distributed</span>
+RUN pip3 install dask distributed --upgrade <span class="o">&amp;&amp;</span> pip3 install bokeh
+<span class="c1">##Install missing package for open datacube:</span>
+RUN pip3 install --upgrade python-dateutil
 
-    <span class="c1">#Dependencies for antares3 &amp; datacube</span>
-    RUN pip3 install <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.0 <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span> --no-binary rasterio
-    RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
-    RUN pip3 install --no-cache --no-binary :all: psycopg2
-    RUN pip3 install futures pathlib <span class="nv">setuptools</span><span class="o">==</span><span class="m">20</span>.4
+<span class="c1">#Dependencies for antares3 &amp; datacube</span>
+RUN pip3 install <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.0 <span class="o">&amp;&amp;</span> pip3 install <span class="nv">GDAL</span><span class="o">==</span><span class="k">$(</span>gdal-config --version<span class="k">)</span> --global-option<span class="o">=</span>build_ext --global-option<span class="o">=</span><span class="s1">&#39;-I/usr/include/gdal&#39;</span> <span class="o">&amp;&amp;</span> pip3 install <span class="nv">rasterio</span><span class="o">==</span><span class="m">1</span>.0.2 --no-binary rasterio
+RUN pip3 install scipy cloudpickle sklearn lightgbm fiona django --no-binary fiona
+RUN pip3 install --no-cache --no-binary :all: psycopg2
+RUN pip3 install futures pathlib <span class="nv">setuptools</span><span class="o">==</span><span class="m">20</span>.4
 
-    <span class="c1">#datacube:</span>
-    RUN apt-get clean <span class="o">&amp;&amp;</span> apt-get update <span class="o">&amp;&amp;</span> apt-get install -y locales
-    RUN locale-gen en_US.UTF-8
-    ENV LANG en_US.UTF-8
-    ENV LC_ALL en_US.UTF-8
-    RUN pip3 install git+https://github.com/opendatacube/datacube-core.git@develop#egg<span class="o">=</span>datacube<span class="o">[</span>s3<span class="o">]</span>
+<span class="c1">#datacube:</span>
+RUN apt-get clean <span class="o">&amp;&amp;</span> apt-get update <span class="o">&amp;&amp;</span> apt-get install -y locales
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+RUN pip3 install git+https://github.com/opendatacube/datacube-core.git@develop#egg<span class="o">=</span>datacube<span class="o">[</span>s3<span class="o">]</span>
 
-    <span class="c1">#Upgrade awscli and tools for s3:</span>
-    RUN pip3 install boto3 botocore awscli --upgrade
+<span class="c1">#Upgrade awscli and tools for s3:</span>
+RUN pip3 install boto3 botocore awscli --upgrade
 
-    <span class="c1">#install jupyter lab and notebook:</span>
+<span class="c1">#install jupyter lab and notebook:</span>
+RUN pip3 install jupyter jupyterlab --upgrade
 
-    RUN pip3 install jupyter jupyterlab --upgrade
+<span class="c1">#antares3:</span>
+USER madmex_user
+RUN pip3 install --user git+https://github.com/CONABIO/antares3.git@develop
 
-    <span class="c1">#antares3:</span>
-    USER madmex_user
-    RUN pip3 install --user git+https://github.com/CONABIO/antares3.git@develop
-
-    <span class="c1">#set password for jupyter lab:</span>
-    ARG <span class="nv">jupyter_key</span><span class="o">=</span><span class="nv">$jupyter_key</span>
-    RUN jupyter notebook --generate-config <span class="o">&amp;&amp;</span> <span class="se">\</span>
+<span class="c1">#set password for jupyter lab:</span>
+ARG <span class="nv">jupyter_key</span><span class="o">=</span><span class="nv">$jupyter_key</span>
+RUN jupyter notebook --generate-config <span class="o">&amp;&amp;</span> <span class="se">\</span>
     sed -i <span class="s2">&quot;s/#c.NotebookApp.certfile = .*/c.NotebookApp.certfile = u&#39;\/shared_volume\/certs\/fullchain1.pem&#39;/&quot;</span> ~/.jupyter/jupyter_notebook_config.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
     sed -i <span class="s2">&quot;s/#c.NotebookApp.keyfile = .*/c.NotebookApp.keyfile = u&#39;\/shared_volume\/certs\/privkey1.pem&#39;/&quot;</span> ~/.jupyter/jupyter_notebook_config.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
     sed -i <span class="s2">&quot;s/#c.NotebookApp.password = .*/c.NotebookApp.password = u&#39;</span><span class="nv">$jupyter_key</span><span class="s2">&#39;/&quot;</span> ~/.jupyter/jupyter_notebook_config.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
     sed -i <span class="s1">&#39;s/#c.NotebookApp.port = .*/c.NotebookApp.port = 9999/&#39;</span> ~/.jupyter/jupyter_notebook_config.py
 
-    <span class="c1">##Set locales for OpenDataCube</span>
-    RUN <span class="nb">echo</span> <span class="s2">&quot;export LC_ALL=C.UTF-8&quot;</span> &gt;&gt; ~/.profile
-    RUN <span class="nb">echo</span> <span class="s2">&quot;export LANG=C.UTF-8&quot;</span> &gt;&gt; ~/.profile
-    <span class="c1">#Set variables</span>
-    ARG <span class="nv">mount_point</span><span class="o">=</span><span class="nv">$mount_point</span>
-    RUN <span class="nb">echo</span> <span class="s2">&quot;export mount_point=</span><span class="nv">$mount_point</span><span class="s2">&quot;</span> &gt;&gt; ~/.profile
+<span class="c1">##Set locales for OpenDataCube</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;export LC_ALL=C.UTF-8&quot;</span> &gt;&gt; ~/.profile
+RUN <span class="nb">echo</span> <span class="s2">&quot;export LANG=C.UTF-8&quot;</span> &gt;&gt; ~/.profile
+<span class="c1">#Set variables</span>
+ARG <span class="nv">mount_point</span><span class="o">=</span><span class="nv">$mount_point</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;export mount_point=</span><span class="nv">$mount_point</span><span class="s2">&quot;</span> &gt;&gt; ~/.profile
 RUN <span class="nb">echo</span> <span class="s2">&quot;export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt&quot;</span> &gt;&gt; ~/.profile
-    <span class="c1">#Use python3</span>
-    RUN <span class="nb">echo</span> <span class="s2">&quot;alias python=python3&quot;</span> &gt;&gt; ~/.bash_aliases
-    <span class="c1">#Antares3:</span>
-    RUN <span class="nb">echo</span> <span class="s2">&quot;export PATH=</span><span class="nv">$PATH</span><span class="s2">:/home/madmex_user/.local/bin/&quot;</span> &gt;&gt; ~/.profile
+<span class="c1">#Use python3</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;alias python=python3&quot;</span> &gt;&gt; ~/.bash_aliases
+<span class="c1">#Antares3:</span>
+RUN <span class="nb">echo</span> <span class="s2">&quot;export PATH=</span><span class="nv">$PATH</span><span class="s2">:/home/madmex_user/.local/bin/&quot;</span> &gt;&gt; ~/.profile
 
+<span class="c1">#Config files for datacube and antares</span>
+RUN ln -sf <span class="nv">$mount_point</span>/.antares ~/.antares
+RUN ln -sf <span class="nv">$mount_point</span>/.datacube.conf ~/.datacube.conf
 
-    <span class="c1">#Config files for datacube and antares</span>
-    RUN ln -sf <span class="nv">$mount_point</span>/.antares ~/.antares
-    RUN ln -sf <span class="nv">$mount_point</span>/.datacube.conf ~/.datacube.conf
-
-    <span class="c1">#Final settings</span>
-    WORKDIR /home/madmex_user/
-    VOLUME <span class="o">[</span><span class="s2">&quot;/shared_volume&quot;</span><span class="o">]</span>
-    ENTRYPOINT <span class="o">[</span><span class="s2">&quot;/usr/local/bin/dumb-init&quot;</span>, <span class="s2">&quot;--&quot;</span><span class="o">]</span>
+<span class="c1">#Final settings</span>
+WORKDIR /home/madmex_user/
+VOLUME <span class="o">[</span><span class="s2">&quot;/shared_volume&quot;</span><span class="o">]</span>
+ENTRYPOINT <span class="o">[</span><span class="s2">&quot;/usr/local/bin/dumb-init&quot;</span>, <span class="s2">&quot;--&quot;</span><span class="o">]</span>
 </pre></div>
 </div>
 <p>Define variable <code class="docutils literal notranslate"><span class="pre">jupyter_key</span></code> with the hashed password previously generated and build docker image with next commands (needs a docker hub account):</p>
