@@ -1359,6 +1359,11 @@ Use next **Dockerfile** to build docker image for antares3:
 	        gdal-bin \
 	        libgdal-dev
 	
+    #Create directory and copy crt file for rasterio to read raster from S3 bucket
+
+    RUN mkdir -p /etc/pki/tls/certs
+    RUN cp /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/certs/ca-bundle.crt
+
 	#Create user: madmex_user
 	RUN groupadd madmex_user
 	RUN useradd madmex_user -g madmex_user -m -s /bin/bash
@@ -1408,6 +1413,7 @@ Use next **Dockerfile** to build docker image for antares3:
 	#Set variables
 	ARG mount_point=$mount_point
 	RUN echo "export mount_point=$mount_point" >> ~/.profile
+    RUN echo "export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt" >> ~/.profile
 	#Use python3
 	RUN echo "alias python=python3" >> ~/.bash_aliases
 	#Antares3:
