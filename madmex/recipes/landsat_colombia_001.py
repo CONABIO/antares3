@@ -42,7 +42,7 @@ def run(tile, center_dt, path):
             return nc_filename
         # Get crs from first tile of tile list
         crs = tile[1][0].geobox.crs
-        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'latitude': 1860, 'longitude': 1860, 'time': 1})
+        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'latitude': 1860, 'longitude': 1860})
                          for x in tile[1]])
         sr_0.attrs['geobox'] = tile[1][0].geobox
         # Mask clouds, shadow, water, ice,... and drop qa layer
@@ -84,7 +84,7 @@ def run(tile, center_dt, path):
         dc = datacube.Datacube(app = 'landsat_colombia_%s' % randomword(5))
         terrain = dc.load(product='srtm_cgiar_colombia', like=sr_0,
                           time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
-                         dask_chunks={'latitude': 1860, 'longitude': 1860, 'time': 1})
+                         dask_chunks={'latitude': 1860, 'longitude': 1860})
         dc.close()
         # Merge dataarrays
         combined = xr.merge([sr_mean.apply(to_int),
