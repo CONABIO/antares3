@@ -1484,8 +1484,8 @@ spec:
            value: C.UTF-8
          - name: LANG
            value: C.UTF-8
-     - name: GDAL_DATA
-       value: /usr/share/gdal/2.2/
+         - name: GDAL_DATA
+           value: /usr/share/gdal/2.2/
         resources:
          requests:
           cpu: <span class="s2">&quot;.5&quot;</span>   <span class="c1">##### This value depends of type of AWS instance chosen</span>
@@ -1601,8 +1601,8 @@ spec:
             value: C.UTF-8
           - name: mount_point
             value: <span class="s2">&quot;/shared_volume&quot;</span>
-      - name: GDAL_DATA
-        value: /usr/share/gdal/2.2/
+          - name: GDAL_DATA
+            value: /usr/share/gdal/2.2/
         resources:
          requests:
           cpu: <span class="s2">&quot;.5&quot;</span>     <span class="c1">##### This value depends of type of AWS instance chosen</span>
