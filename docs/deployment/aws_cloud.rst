@@ -1600,8 +1600,8 @@ Use next ``antares3-scheduler.yaml`` file to create container for dask scheduler
 	           value: C.UTF-8
 	         - name: LANG
 	           value: C.UTF-8
-             - name: GDAL_DATA
-               value: /usr/share/gdal/2.2/
+                 - name: GDAL_DATA
+                   value: /usr/share/gdal/2.2/
 	        resources:
 	         requests:
 	          cpu: ".5"   ##### This value depends of type of AWS instance chosen
@@ -1758,8 +1758,8 @@ Example for ``t2.large`` instances which have 2 cores. Two instances were starte
 	            value: C.UTF-8
 	          - name: mount_point
 	            value: "/shared_volume"
-              - name: GDAL_DATA
-                value: /usr/share/gdal/2.2/
+                  - name: GDAL_DATA
+                    value: /usr/share/gdal/2.2/
 	        resources:
 	         requests:
 	          cpu: ".5"     ##### This value depends of type of AWS instance chosen
