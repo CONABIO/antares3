@@ -94,7 +94,7 @@ def run(tile, center_dt, path):
                              to_int(ndmi_min),
                              terrain])
         combined.attrs['crs'] = crs
-        combined = combined.compute()
+        #combined = combined.compute()
         write_dataset_to_netcdf(combined, nc_filename)
         # Explicitely deallocate objects and run garbage collector
         sr_0=sr_1=sr_mean=clear=ndvi_max=ndvi_min=ndmi_max=ndmi_min=terrain=combined=None
