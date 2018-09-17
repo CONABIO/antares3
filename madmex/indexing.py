@@ -221,10 +221,10 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
         'grid_spatial': {
             'projection': {
                 'geo_ref_points': {
-                    'll': {ydim: ymin, xdim: xmin},
-                    'lr': {ydim: ymin, xdim: xmax},
-                    'ul': {ydim: ymax, xdim: xmin},
-                    'ur': {ydim: ymax, xdim: xmax}
+                    'll': {'y': ymin, 'x': xmin},
+                    'lr': {'y': ymin, 'x': xmax},
+                    'ul': {'y': ymax, 'x': xmin},
+                    'ur': {'y': ymax, 'x': xmax}
                 },
                 'spatial_reference': crs_wkt,
             },
