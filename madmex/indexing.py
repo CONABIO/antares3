@@ -91,9 +91,10 @@ def add_product_from_recipe(recipe, name=None):
 def add_dataset(pr, dt, metadict, file):
     """Add a dataset to the datacube database
 
-    It's added to 2 tables:
+    It's added to 3 tables:
       - dataset: with all the metadata
       - dataset_location
+      - dataset_type
 
     Args:
         pr (ProductResource): A ProductResource object, contained in the return of
