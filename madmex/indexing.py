@@ -222,7 +222,7 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
         'grid_spatial': {
             'projection': {
                 'geo_ref_points': {
-                    'll': {'y': ymin, 'x': xmin},
+                    'll': {'y': ymin, 'x': xmin}, #names of coordinates must be (y,x), even if crs is EPSG 4326
                     'lr': {'y': ymin, 'x': xmax},
                     'ul': {'y': ymax, 'x': xmin},
                     'ur': {'y': ymax, 'x': xmax}
