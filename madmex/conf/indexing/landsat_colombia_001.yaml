@@ -13,15 +13,15 @@ metadata:
 storage:
     crs: "EPSG:4326"
     tile_size:
-          y: 1.00068
-          x: 1.00068
+          latitude: 1.00068
+          longitude: 1.00068
     resolution:
-          x: 0.000269
-          y: -0.000269
+          longitude: 0.000269
+          latitude: -0.000269
     origin:
           # top left corner
-          y: 15.92
-          x: -81.85
+          latitude: 15.92
+          longitude: -81.85
 
 measurements:
     - name: 'blue_mean'
