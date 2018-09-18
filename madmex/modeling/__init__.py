@@ -89,7 +89,7 @@ class BaseModel(abc.ABC):
 
 
     @staticmethod
-    def remove_outliers(X, y, n_estimators=101, max_samples=0.632, contamination=0.25,
+    def remove_outliers(X, y, n_estimators=101, max_samples='auto', contamination=0.25,
                         bootstrap=True, n_jobs=-1, **kwargs):
         """Performs outliers detection and removal using Isolation Forest anomaly score
 
