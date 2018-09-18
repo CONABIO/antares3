@@ -27,8 +27,13 @@ def rasterize_xarray(fc, dataset):
     # Use Affine from the affine library to be safe
     aff = Affine(*list(dataset.affine)[0:6])
     # Rasterize
+    dimensions_dataset = list(dataset.coords)
+    list_dimensions = [x for x in dimensions_dataset if x != 'time']
+    lambda_function = lambda l_netcdf,l_test: l_netcdf[0] if l_netcdf[0] in l_test else l_netcdf[1]
+    xdim = lambda_function(list_dimensions,['x','longitude'])
+    ydim = lambda_function(list_dimensions,['y','latitude'])
     fc_raster = rasterize(iterable, transform=aff,
-                          out_shape=(dataset.sizes['y'], dataset.sizes['x']),
+                          out_shape=(dataset.sizes[ydim], dataset.sizes[xdim]),
                           dtype='float64', fill=np.nan)
     return fc_raster
 
