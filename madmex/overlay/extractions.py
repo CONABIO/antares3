@@ -76,12 +76,17 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
         # Rasterize feature collection
         arr = rasterize_xarray(fc_sub, dataset)
         # Convert arr to a dataArray
-        xr_arr = xr.DataArray(arr, dims=['y', 'x'], name='features_id')
+        dimensions_dataset = list(dataset.coords)
+        list_dimensions = [x for x in dimensions_dataset if x != 'time']
+        lambda_function = lambda l_netcdf,l_test: l_netcdf[0] if l_netcdf[0] in l_test else l_netcdf[1]
+        xdim = lambda_function(list_dimensions,['x','longitude'])
+        ydim = lambda_function(list_dimensions,['y','latitude'])
+        xr_arr = xr.DataArray(arr, dims=[ydim, xdim], name='features_id')
         # Combine the Dataset with the DataArray
         combined = xr.merge([xr_arr, dataset])
         # Get rid of everything that is np.nan in features_id variable
         # 1: flatten, 2: delete nans
-        combined = combined.stack(z=('x', 'y')).reset_index('z').drop(['x', 'y'])
+        combined = combined.stack(z=(xdim, ydim)).reset_index('z').drop([xdim, ydim])
         combined = combined.where(np.isfinite(combined['features_id']), drop=True)
         # Coerce to pandas dataframe
         df = combined.to_dataframe()
