@@ -112,7 +112,7 @@ def add_dataset(pr, dt, metadict, file):
     dataset = Dataset(dt, metadict, sources={})
     dataset_resource.add(dataset)
     uid = metadict['id']
-    dataset_resource.add_location(uid, file)
+    dataset_resource.add_location(uid, 'file:/' + file)
 
 
 def wkt_to_proj4(wkt):
