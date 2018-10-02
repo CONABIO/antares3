@@ -96,6 +96,10 @@ antares prepare_metadata --path dir/inside/bucket --bucket conabio-s3-oregon --d
                             type=str,
                             default=None,
                             help='Optional regex like pattern to use in the initial query. Only supported for s3 queries')
+        parser.add_argument('-sc', '--scheduler',
+                            type=str,
+                            default=None,
+                            help='Path to file with scheduler information (usually called scheduler.json)')
         parser.add_argument('-multi', '--multi',
                             type=int,
                             default=1,
@@ -106,6 +110,7 @@ antares prepare_metadata --path dir/inside/bucket --bucket conabio-s3-oregon --d
         bucket = options['bucket']
         pattern = options['pattern']
         multi = options['multi']
+        scheduler_file = options['scheduler']
         if bucket is None:
             subdir_list = glob(os.path.join(path, '*'))
             # If the directory does not contain subdirectories it means that it's a single target directory
@@ -129,8 +134,12 @@ antares prepare_metadata --path dir/inside/bucket --bucket conabio-s3-oregon --d
                 return None
 
         # Set up local cluster and distribute iterator between processes
-        cluster = LocalCluster(n_workers=multi, threads_per_worker=1)
-        client = Client(cluster)
+        if scheduler_file is None:
+            cluster = LocalCluster(n_workers=multi, threads_per_worker=1)
+            client = Client(cluster)
+        else:
+            client = Client(scheduler_file = scheduler_file)
+        
         C = client.map(generate_meta_str,
                        subdir_list,
                        **{'bucket': bucket})
