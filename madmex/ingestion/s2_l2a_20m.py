@@ -64,17 +64,24 @@ def metadata_convert(path, bucket=None):
     date_str = root.find('n1:General_Info/SENSING_TIME',
                          namespaces={'n1': n1}).text
     dt = date_str[:-5]
+    
+    resolution_str = '"{}"'.format(20) #20m resolution for s2
+    resolution_int = int(resolution_str.replace("\"",""))
+    string_size = 'n1:Geometric_Info/Tile_Geocoding/Size[@resolution=%s]' % resolution_str
+    string_geoposition = 'n1:Geometric_Info/Tile_Geocoding/Geoposition[@resolution=%s]' % resolution_str
+    
     # Scene corners in projected coordinates
-    nrow = int(root.find('n1:Geometric_Info/Tile_Geocoding/Size[@resolution="20"]/NROWS',
+    nrow = int(root.find(string_size + '/NROWS',
                      namespaces={'n1': n1}).text)
-    ncol = int(root.find('n1:Geometric_Info/Tile_Geocoding/Size[@resolution="20"]/NCOLS',
+    ncol = int(root.find(string_size + '/NCOLS',
                      namespaces={'n1': n1}).text)
-    ulx = float(root.find('n1:Geometric_Info/Tile_Geocoding/Geoposition[@resolution="20"]/ULX',
+    ulx = float(root.find(string_geoposition + '/ULX',
                      namespaces={'n1': n1}).text)
-    uly = float(root.find('n1:Geometric_Info/Tile_Geocoding/Geoposition[@resolution="20"]/ULY',
+    uly = float(root.find(string_geoposition + '/ULY',
                      namespaces={'n1': n1}).text)
-    lrx = ulx + ncol * 20
-    lry = uly - nrow * 20
+    
+    lrx = ulx + ncol * resolution_int
+    lry = uly - nrow * resolution_int
     # Get coorner coordinates in long lat by transforming from projected values 
     crs = root.find('n1:Geometric_Info/Tile_Geocoding/HORIZONTAL_CS_CODE',
                                namespaces={'n1': n1}).text
@@ -86,7 +93,7 @@ def metadata_convert(path, bucket=None):
     ur_lon, ur_lat = p(lrx, uly, inverse=True)
     # FUnction to get band path from its suffix
     def get_band(suffix):
-        pattern = re.compile(r'.*GRANULE/.*/IMG_DATA/R20m/.*%s_20m\.jp2$' % suffix)
+        pattern = re.compile(r'.*GRANULE/.*/IMG_DATA/R%im/.*%s_%im\.jp2$' % (resolution_int, suffix, resolution_int))
         band = [x for x in all_files if pattern.search(x)][0]
         if bucket is not None:
             band = s3.build_rasterio_path(bucket, band)
