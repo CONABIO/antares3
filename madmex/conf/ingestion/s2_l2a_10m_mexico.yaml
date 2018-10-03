@@ -1,0 +1,114 @@
+source_type: s2_l2a_10m_granule
+output_type: s2_l2a_10m_mexico
+
+description: Sentinel 2 bottom of atmosphere processed with sen2cor. Resampled to 10m Mexico INEGI Lambert Conformal Conic projection with a 100 km tile size.
+
+location: '{{ ingestion_path }}'
+file_path_template: 's2_l2a_10m/mexico/s2_l2a_10m_{tile_index[0]}_{tile_index[1]}_{start_time}{% if netcdf %}.nc{% endif %}'
+global_attributes:
+  title: CONABIO Data Cube Landsat Surface Reflectance
+  summary: Sentinel 2 bottom of atmosphere reflectance processed with sen2cor, 10m resolution
+  source: ESA
+  institution: CONABIO
+  instrument: MSO
+  cdm_data_type: Grid
+  keywords: CONABIO,SENTINEL,MSI,SURFACE REFLECTANCE
+  keywords_vocabulary: GCMD
+  platform: SENTINEL2
+  processing_level: L2A
+  product_version: '0.0.1'
+  product_suite: Sentinel2 L2a 
+  project: MADMEX
+  coverage_content_type: physicalMeasurement
+  references: http://step.esa.int/thirdparties/sen2cor/2.5.5/docs/S2-PDGS-MPC-L2A-PDD-V2.5.5.pdf
+  license: https://creativecommons.org/licenses/by/4.0/
+  naming_authority: ESA
+  acknowledgment: ESA/copernicus
+
+storage:
+  driver: {{ driver }}
+  bucket: '{{ bucket }}'
+  ## http://spatialreference.org/ref/sr-org/mexico-albers-equal-area-conic/
+  # http://spatialreference.org/ref/sr-org/mexico-inegi-lambert-conformal-conic/
+  crs: PROJCS["unnamed",GEOGCS["WGS 84",DATUM["unknown",SPHEROID["WGS84",6378137,6556752.3141]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",17.5],PARAMETER["standard_parallel_2",29.5],PARAMETER["latitude_of_origin",12],PARAMETER["central_meridian",-102],PARAMETER["false_easting",2500000],PARAMETER["false_northing",0]] 
+  tile_size:
+          x: 100020
+          y: 100020
+  resolution:
+          x: 10
+          y: -10
+  origin:
+    # -118.21, 33.02
+    x: 977160 
+    y: 2426720
+  chunking:
+      x: 10002
+      y: 10002
+      time: 1
+  dimension_order: ['time', 'y', 'x']
+
+fuse_data: copy
+
+measurements:
+    - name: blue
+      dtype: uint16
+      nodata: 0
+      resampling_method: nearest
+      src_varname: 'blue'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance at 496.6 nm (Blue)"
+          alias: "band_2"
+    - name: green
+      dtype: uint16
+      nodata: 0
+      resampling_method: nearest
+      src_varname: 'green'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance at 560 nm (Green)"
+          alias: "band_3"
+    - name: red
+      dtype: uint16
+      nodata: 0
+      resampling_method: nearest
+      src_varname: 'red'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance at 664.5 nm (red)"
+          alias: "band_4"
+    - name: nir
+      dtype: uint16
+      nodata: 0
+      resampling_method: nearest
+      src_varname: 'nir'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance at 842 nm (nir)"
+          alias: "band_8"
+    - name: 'pixel_qa'
+      dtype: uint16
+      nodata: 0
+      resampling_method: nearest
+      src_varname: 'pixel_qa'
+      zlib: True
+      attrs:
+          long_name: "sen2cor automatic classification"
+          alias: [pixel_qa]
+      flags_definition:
+          sca:
+              bits: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+              description: Sen2Cor Scene Classification
+              values:
+                  0: No Data
+                  1: Saturated or defective pixel
+                  2: Dark features / Shadows
+                  3: Cloud shadows
+                  4: Vegetation
+                  5: Not-vegetated
+                  6: Water
+                  7: Unclassified
+                  8: Cloud medium probability
+                  9: Cloud high probability
+                  10: Thin cirrus
+                  11: Snow or ice
