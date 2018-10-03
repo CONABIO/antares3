@@ -117,7 +117,7 @@ def metadata_convert(path, bucket=None):
         'green': get_band(resolution_int, 'B03'),
         'red': get_band(resolution_int, 'B04'),
         'nir': get_band(resolution_int, 'B08'),
-        'qual': get_band(20, 'SCL'),
+        'qual': get_band(20, 'SCL'), #using 20m band of scene classification
         'instrument': instrument,
         'platform': satellite,
     }
@@ -125,4 +125,4 @@ def metadata_convert(path, bucket=None):
     env = Environment(loader=PackageLoader('madmex', 'templates'))
     template = env.get_template('s2_l2a_10m.yaml')
     out = template.render(**meta_out)
-return out
+    return out
