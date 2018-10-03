@@ -28,7 +28,7 @@ measurements:
       nodata: 0
       units: 'reflectance'
     - name: 'nir'
-      aliases: [band_8A, nir]
+      aliases: [band_8, nir]
       dtype: uint16
       nodata: 0
       units: 'reflectance'
