@@ -13,6 +13,7 @@ python:
   - "3.6"
 
 before_install:
+  - sudo apt-get update
   - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes
   - sudo apt-get --yes --force-yes update -qq
   # Datacube system dependencies (gdal and netcdf)
