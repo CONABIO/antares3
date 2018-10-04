@@ -45,7 +45,7 @@ RECIPES = {
         'fun': s2_20m_001,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/s2_20m_001.yaml'),
     },
-    's2_10m_001: {
+    's2_10m_001': {
         'product': ['s2_l2a_10m_mexico'],
         'fun': s2_10m_001,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/s2_10m_001.yaml'),
