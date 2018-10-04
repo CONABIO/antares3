@@ -98,4 +98,4 @@ def run(tile, center_dt, path):
         return nc_filename
     except Exception as e:
         logger.warning('Tile (%d, %d) not processed. %s' % (tile[0][0], tile[0][1], e))
-return None
+        return None
