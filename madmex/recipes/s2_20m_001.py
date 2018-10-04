@@ -1,4 +1,5 @@
 import os
+import gc
 import datacube
 from datacube.storage.storage import write_dataset_to_netcdf
 from datacube.api import GridWorkflow
