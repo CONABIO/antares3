@@ -49,7 +49,7 @@ def run(tile, center_dt, path):
                           dask_chunks={'x': 2501, 'y': 2501, 'time': 35})
         dc.close()
         # Keep clear pixels (2: Dark features, 4: Vegetation, 5: Not vegetated,
-        # 6: Water, 7: Unclassified, 11: Snow/Ice)
+        # 6: Water, 7: Unclassified, 8: Cloud medium probability, 11: Snow/Ice)
         sr_1 = sr_0.where(sr_0.pixel_qa.isin([2,4,5,6,7,8,11]))
         sr_1 = sr_1.drop('pixel_qa')
         # Compute ndvi
