@@ -51,6 +51,9 @@ antares apply_recipe -recipe landsat_8_madmex_002 -b 2017-01-01 -e 2017-12-31 --
 
 # Apply sentinel 20m 001 recipe (The datacube must contain the s2_20m_mexico dataset)
 antares apply_recipe -recipe s2_20m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_0
+
+# Apply sentinel 10m 001 recipe (The datacube must contain the s2_20m_mexico dataset, this recipe uses resampling functionality of datacube.load())
+antares apply_recipe -recipe s2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_10
 """
     def add_arguments(self, parser):
         # Recipe is a positional argument
