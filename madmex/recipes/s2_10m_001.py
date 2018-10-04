@@ -37,7 +37,7 @@ def run(tile, center_dt, path):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
         sr_0 = xr.merge([GridWorkflow.load(x, resolution=(-10, 10), resampling='nearest',
-        dask_chunks={'x': 2501, 'y': 2501, 'time': 35}) for x in tile[1]])
+                                           dask_chunks={'x': 2501, 'y': 2501, 'time': 35}) for x in tile[1]])
         sr_0.attrs['geobox'] = tile[1][0].geobox
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
         # Load terrain metrics using same spatial parameters than sr
