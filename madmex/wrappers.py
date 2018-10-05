@@ -15,6 +15,7 @@ from madmex.overlay.extractions import zonal_stats_xarray
 from madmex.modeling import BaseModel
 
 from madmex.models import Region, Country, Model, PredictClassification
+from datacube.model import GridSpec
 
 """
 The wrapper module gathers functions that are typically called by
