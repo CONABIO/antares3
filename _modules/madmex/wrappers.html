@@ -289,7 +289,7 @@
 
 
 <div class="viewcode-block" id="gwf_query"><a class="viewcode-back" href="../../generated/madmex.wrappers.gwf_query.html#madmex.wrappers.gwf_query">[docs]</a><span class="k">def</span> <span class="nf">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">long</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">begin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-              <span class="n">view</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+              <span class="n">view</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tilesize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">proj4</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Run a spatial query on a datacube product using either coordinates or a region name</span>
 
 <span class="sd">    Wrapper function to call at the begining of nearly all spatial processing command lines</span>
@@ -308,6 +308,10 @@
 <span class="sd">        view (bool): Returns a view instead of the dictionary returned by ``GridWorkflow.list_cells``.</span>
 <span class="sd">            Useful when the output is be used directly as an iterable (e.g. in ``distributed.map``)</span>
 <span class="sd">            Default to True</span>
+<span class="sd">        resolution (tuple): Optional. For creating a GridSpec regular spatial grid for ``GridWorkflow`` initialization.</span>
+<span class="sd">        tilesize (tuple): Optional. For creating a GridSpec regular spatial grid for ``GridWorkflow`` initialization.</span>
+<span class="sd">        origin (tuple): Optional. For creating a GridSpec regular spatial grid for ``GridWorkflow`` initialization.</span>
+<span class="sd">        proj4 (str): Optional. For creating a GridSpec regular spatial grid for ``GridWorkflow`` initialization.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict or view: Dictionary (view) of Tile index, Tile key value pair</span>
@@ -324,6 +328,8 @@
 <span class="sd">        &gt;&gt;&gt; # Using lat long box, time windowed</span>
 <span class="sd">        &gt;&gt;&gt; tiles_list = gwf_query(product=&#39;ls8_espa_mexico&#39;, lat=[19, 22], long=[-104, -102],</span>
 <span class="sd">        ...                        begin = &#39;2017-01-01&#39;, end=&#39;2017-03-31&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; tiles_list = gwf_query(resolution= (-10, 10), origin = (2426720, 977160), tile_size = (100020,100020)</span>
+<span class="sd">        ...                        proj4 = &#39;+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">query_params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;product&#39;</span><span class="p">:</span> <span class="n">product</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">region</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -348,7 +354,12 @@
 
     <span class="c1"># GridWorkflow object</span>
     <span class="n">dc</span> <span class="o">=</span> <span class="n">datacube</span><span class="o">.</span><span class="n">Datacube</span><span class="p">()</span>
-    <span class="n">gwf</span> <span class="o">=</span> <span class="n">GridWorkflow</span><span class="p">(</span><span class="n">dc</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tilesize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">origin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">proj4</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">crs</span> <span class="o">=</span> <span class="n">CRS</span><span class="p">(</span><span class="n">proj4</span><span class="p">)</span>
+        <span class="n">gs</span> <span class="o">=</span> <span class="n">GridSpec</span><span class="p">(</span><span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span> <span class="n">tile_size</span> <span class="o">=</span> <span class="n">tilesize</span><span class="p">,</span> <span class="n">resolution</span> <span class="o">=</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">origin</span> <span class="o">=</span> <span class="n">origin</span><span class="p">)</span>
+        <span class="n">gwf</span> <span class="o">=</span> <span class="n">GridWorkflow</span><span class="p">(</span><span class="n">dc</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">grid_spec</span> <span class="o">=</span> <span class="n">gs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gwf</span> <span class="o">=</span> <span class="n">GridWorkflow</span><span class="p">(</span><span class="n">dc</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">)</span>
     <span class="n">tile_dict</span> <span class="o">=</span> <span class="n">gwf</span><span class="o">.</span><span class="n">list_cells</span><span class="p">(</span><span class="o">**</span><span class="n">query_params</span><span class="p">)</span>
     <span class="c1"># Iterable (dictionary view (analog to list of tuples))</span>
     <span class="k">if</span> <span class="n">view</span><span class="p">:</span>

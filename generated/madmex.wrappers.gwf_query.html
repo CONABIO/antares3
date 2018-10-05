@@ -189,7 +189,7 @@
 <h1>madmex.wrappers.gwf_query<a class="headerlink" href="#madmex-wrappers-gwf-query" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="madmex.wrappers.gwf_query">
-<code class="descclassname">madmex.wrappers.</code><code class="descname">gwf_query</code><span class="sig-paren">(</span><em>product</em>, <em>lat=None</em>, <em>long=None</em>, <em>region=None</em>, <em>begin=None</em>, <em>end=None</em>, <em>view=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/wrappers.html#gwf_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.wrappers.gwf_query" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">madmex.wrappers.</code><code class="descname">gwf_query</code><span class="sig-paren">(</span><em>product</em>, <em>lat=None</em>, <em>long=None</em>, <em>region=None</em>, <em>begin=None</em>, <em>end=None</em>, <em>view=True</em>, <em>resolution=None</em>, <em>tilesize=None</em>, <em>origin=None</em>, <em>proj4=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/wrappers.html#gwf_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.wrappers.gwf_query" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run a spatial query on a datacube product using either coordinates or a region name</p>
 <p>Wrapper function to call at the begining of nearly all spatial processing command lines</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -210,6 +210,10 @@ Countries must be queried using ISO code (e.g.: ‘MEX’ for Mexico)</li>
 <li><strong>view</strong> (<em>bool</em>) – Returns a view instead of the dictionary returned by <code class="docutils literal notranslate"><span class="pre">GridWorkflow.list_cells</span></code>.
 Useful when the output is be used directly as an iterable (e.g. in <code class="docutils literal notranslate"><span class="pre">distributed.map</span></code>)
 Default to True</li>
+<li><strong>resolution</strong> (<em>tuple</em>) – Optional. For creating a GridSpec regular spatial grid for <code class="docutils literal notranslate"><span class="pre">GridWorkflow</span></code> initialization.</li>
+<li><strong>tilesize</strong> (<em>tuple</em>) – Optional. For creating a GridSpec regular spatial grid for <code class="docutils literal notranslate"><span class="pre">GridWorkflow</span></code> initialization.</li>
+<li><strong>origin</strong> (<em>tuple</em>) – Optional. For creating a GridSpec regular spatial grid for <code class="docutils literal notranslate"><span class="pre">GridWorkflow</span></code> initialization.</li>
+<li><strong>proj4</strong> (<em>str</em>) – Optional. For creating a GridSpec regular spatial grid for <code class="docutils literal notranslate"><span class="pre">GridWorkflow</span></code> initialization.</li>
 </ul>
 </td>
 </tr>
@@ -233,6 +237,8 @@ Default to True</li>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Using lat long box, time windowed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tiles_list</span> <span class="o">=</span> <span class="n">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="s1">&#39;ls8_espa_mexico&#39;</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="p">[</span><span class="mi">19</span><span class="p">,</span> <span class="mi">22</span><span class="p">],</span> <span class="n">long</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">104</span><span class="p">,</span> <span class="o">-</span><span class="mi">102</span><span class="p">],</span>
 <span class="gp">... </span>                       <span class="n">begin</span> <span class="o">=</span> <span class="s1">&#39;2017-01-01&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;2017-03-31&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tiles_list</span> <span class="o">=</span> <span class="n">gwf_query</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2426720</span><span class="p">,</span> <span class="mi">977160</span><span class="p">),</span> <span class="n">tile_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">100020</span><span class="p">,</span><span class="mi">100020</span><span class="p">)</span>
+<span class="gp">... </span>                       <span class="n">proj4</span> <span class="o">=</span> <span class="s1">&#39;+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
