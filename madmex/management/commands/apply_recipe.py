@@ -15,7 +15,7 @@ from dask.distributed import Client, LocalCluster
 from madmex.management.base import AntaresBaseCommand
 
 from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_netcdf
-from madmex.util import yaml_to_dict, mid_date
+from madmex.util import yaml_to_dict, mid_date, parser_extra_args
 from madmex.recipes import RECIPES
 from madmex.wrappers import gwf_query
 from madmex.settings import INGESTION_PATH
@@ -52,8 +52,8 @@ antares apply_recipe -recipe landsat_8_madmex_002 -b 2017-01-01 -e 2017-12-31 --
 # Apply sentinel 20m 001 recipe (The datacube must contain the s2_20m_mexico dataset)
 antares apply_recipe -recipe s2_20m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_0
 
-# Apply sentinel 10m 001 recipe (The datacube must contain the s2_20m_mexico dataset, this recipe uses resampling functionality of datacube.load())
-antares apply_recipe -recipe s2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_10
+# Apply sentinel 20m 001 recipe using a user defined GridSpec regular grid (The datacube must contain the s2_20m_mexico dataset, extra arguments help to define GridSpec regular spatial grid)
+antares apply_recipe -recipe s2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_10 -extra resolution=10 tilesize=100020 origin1=2426720 origin2=977160 proj4=+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs
 """
     def add_arguments(self, parser):
         # Recipe is a positional argument
@@ -93,6 +93,17 @@ antares apply_recipe -recipe s2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Jali
                             type=str,
                             default=None,
                             help='Path to file with scheduler information (usually called scheduler.json)')
+        parser.add_argument('-extra', '--extra_kwargs',
+                            type=str,
+                            default='',
+                            nargs='*',
+                            help='''
+                            Additional arguments to make a query with GridWorkflow api of Datacube using a GridSpec regular spatial grid.
+                            These arguments have to be passed in the form of key=value pairs. GridSpec is defined via
+                            resolution, origin, tilesize and proj4 e.g.:
+                            -extra resolution=10 tilesize=100020 origin1=2426720 origin2=977160
+                            proj4=+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs
+                            ''')
 
     def handle(self, *args, **options):
         path = os.path.join(INGESTION_PATH, 'recipes', options['name'])
@@ -111,9 +122,16 @@ antares apply_recipe -recipe s2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Jali
         time = (begin, end)
         center_dt = mid_date(begin, end)
         scheduler_file = options['scheduler']
+        kwargs = parser_extra_args(options['extra_kwargs'])
 
         # database query
         gwf_kwargs = { k: options[k] for k in ['lat', 'long', 'region', 'begin', 'end']}
+        if kwargs is not None:
+            resolution = (kwargs['resolution'], kwargs['resolution'])
+            tilesize = (kwargs['tilesize'], kwargs['tilesize'])
+            origin = (kwargs['origin1'], kwargs['origin2'])
+            proj4 = kwargs['proj4']
+            gwf_kwargs.update(resolution = resolution, tilesize=tilesize, origin=origin, proj4=proj4)
         if not isinstance(product, list):
             raise TypeError('Product (defined in madmex.recipes.RECIPES) must be a list')
         dict_list = []
