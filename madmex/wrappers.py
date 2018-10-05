@@ -127,7 +127,7 @@ def extract_tile_db(tile, sp, training_set, sample):
 
 
 def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None,
-              view=True):
+              view=True, resolution=None, tilesize=None, origin=None, proj4=None):
     """Run a spatial query on a datacube product using either coordinates or a region name
 
     Wrapper function to call at the begining of nearly all spatial processing command lines
@@ -146,6 +146,10 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None,
         view (bool): Returns a view instead of the dictionary returned by ``GridWorkflow.list_cells``.
             Useful when the output is be used directly as an iterable (e.g. in ``distributed.map``)
             Default to True
+        resolution (tuple): Optional. For creating a GridSpec regular spatial grid for ``GridWorkflow`` initialization.
+        tilesize (tuple): Optional. For creating a GridSpec regular spatial grid for ``GridWorkflow`` initialization.
+        origin (tuple): Optional. For creating a GridSpec regular spatial grid for ``GridWorkflow`` initialization.
+        proj4 (str): Optional. For creating a GridSpec regular spatial grid for ``GridWorkflow`` initialization.
 
     Returns:
         dict or view: Dictionary (view) of Tile index, Tile key value pair
@@ -162,6 +166,8 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None,
         >>> # Using lat long box, time windowed
         >>> tiles_list = gwf_query(product='ls8_espa_mexico', lat=[19, 22], long=[-104, -102],
         ...                        begin = '2017-01-01', end='2017-03-31')
+        >>> tiles_list = gwf_query(resolution= (-10, 10), origin = (2426720, 977160), tile_size = (100020,100020)
+        ...                        proj4 = '+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs')
     """
     query_params = {'product': product}
     if region is not None:
@@ -186,7 +192,12 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None,
 
     # GridWorkflow object
     dc = datacube.Datacube()
-    gwf = GridWorkflow(dc.index, product=product)
+    if resolution is not None and tilesize is not None and origin is not None and proj4 is not None:
+        crs = CRS(proj4)
+        gs = GridSpec(crs=crs, tile_size = tilesize, resolution = resolution, origin = origin)
+        gwf = GridWorkflow(dc.index, grid_spec = gs)
+    else:
+        gwf = GridWorkflow(dc.index, product=product)
     tile_dict = gwf.list_cells(**query_params)
     # Iterable (dictionary view (analog to list of tuples))
     if view:
