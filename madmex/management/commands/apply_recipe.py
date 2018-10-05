@@ -93,17 +93,25 @@ antares apply_recipe -recipe s2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Jali
                             type=str,
                             default=None,
                             help='Path to file with scheduler information (usually called scheduler.json)')
-        parser.add_argument('-extra', '--extra_kwargs',
+        parser.add_argument('-res', '--resolution',
+                            type=float,
+                            nargs=2,
+                            default=None,
+                            help='(Y, X) size of each data point in  GridSpec regular spatial grid, in CRS units. Y will usually be negative.')
+        parser.add_argument('-tilesize', '--tilesize',
+                            type=float,
+                            nargs=2,
+                            default=None,
+                            help='(Y, X) size of each tile, in CRS units')
+        parser.add_argument('-origin', '--origin',
+                            type=float,
+                            nargs=2,
+                            default=None,
+                            help='(Y, X) coordinates of a corner of the (0,0) tile in CRS units to use in GridSpec regular spatial grid. default is (0.0, 0.0)')
+        parser.add_argument('-proj4', '--proj4',
                             type=str,
-                            default='',
-                            nargs='*',
-                            help='''
-                            Additional arguments to make a query with GridWorkflow api of Datacube using a GridSpec regular spatial grid.
-                            These arguments have to be passed in the form of key=value pairs. GridSpec is defined via
-                            resolution, origin, tilesize and proj4 e.g.:
-                            -extra resolution=10 tilesize=100020 origin1=2426720 origin2=977160
-                            proj4=+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs
-                            ''')
+                            default=None,
+                            help='Coordinate System used to define the grid of GridSpec regular spatial grid')
 
     def handle(self, *args, **options):
         path = os.path.join(INGESTION_PATH, 'recipes', options['name'])
@@ -122,16 +130,11 @@ antares apply_recipe -recipe s2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Jali
         time = (begin, end)
         center_dt = mid_date(begin, end)
         scheduler_file = options['scheduler']
-        kwargs = parser_extra_args(options['extra_kwargs'])
+        
 
         # database query
-        gwf_kwargs = { k: options[k] for k in ['lat', 'long', 'region', 'begin', 'end']}
-        if kwargs is not None:
-            resolution = (kwargs['resolution'], kwargs['resolution'])
-            tilesize = (kwargs['tilesize'], kwargs['tilesize'])
-            origin = (kwargs['origin1'], kwargs['origin2'])
-            proj4 = kwargs['proj4']
-            gwf_kwargs.update(resolution = resolution, tilesize=tilesize, origin=origin, proj4=proj4)
+        gwf_kwargs = { k: options[k] for k in ['lat', 'long', 'region', 'begin', 'end', 'resolution', 'tilesize', 'origin', 'proj4']}
+        
         if not isinstance(product, list):
             raise TypeError('Product (defined in madmex.recipes.RECIPES) must be a list')
         dict_list = []
