@@ -50,8 +50,8 @@ def run(tile, center_dt, path):
         # Run temporal reductions and rename DataArrays
         sr_mean = sr_1.mean('time', keep_attrs=True, skipna=True)
         sr_mean.rename({'ndvi': 'ndvi_mean'}, inplace=True)
-        sr_mean.attrs['crs'] = crs
         sr_mean = sr_mean.apply(to_int)
+        sr_mean.attrs['crs'] = crs
         write_dataset_to_netcdf(sr_mean, nc_filename)
         # Explicitely deallocate objects and run garbage collector
         sr_0=sr_1=sr_mean=None
