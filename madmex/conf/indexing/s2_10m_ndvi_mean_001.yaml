@@ -1,4 +1,4 @@
-description: Intermediary dataset used for segmentation, derived from sentinel2 20m resampled when loading using GridSpec
+description: Intermediary dataset used for segmentation with ndvi, derived from sentinel2 20m resampled when loading using GridSpec
 metadata_type: eo
 
 metadata:
@@ -27,23 +27,3 @@ measurements:
       dtype: int16
       nodata: 0
       units: 'unitless'
-    - name: 'ndvi_max'
-      dtype: int16
-      nodata: 0
-      units: 'unitless'
-    - name: 'ndvi_min'
-      dtype: int16
-      nodata: 0
-      units: 'unitless'
-    - name: 'elevation'
-      dtype: int16
-      nodata: -32768
-      units: 'meter'
-    - name: 'slope'
-      dtype: float32 
-      nodata: -9999
-      units: 'degree'
-    - name: 'aspect'
-      dtype: float32
-      nodata: -9999
-      units: 'degree'
