@@ -5,7 +5,7 @@ from datacube.api import GridWorkflow
 import xarray as xr
 import numpy as np
 import dask
-
+import gc
 from madmex.util.xarray import to_float, to_int
 
 from datetime import datetime
@@ -31,21 +31,14 @@ def run(tile, center_dt, path):
     try:
         crs = tile[1][0].geobox.crs
         center_dt = center_dt.strftime("%Y-%m-%d")
-        nc_filename = os.path.join(path, 's2_10m_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
+        nc_filename = os.path.join(path, 's2_10m_ndvi_mean_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         # Load Landsat sr
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
-        sr_0 = xr.merge([GridWorkflow.load(x, resolution=(-10, 10), resampling='nearest',
-                                           dask_chunks={'x': 2501, 'y': 2501, 'time': 35}) for x in tile[1]])
+        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'time': 35}) for x in tile[1]])
         sr_0.attrs['geobox'] = tile[1][0].geobox
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
-        # Load terrain metrics using same spatial parameters than sr
-        dc = datacube.Datacube(app = 's2_10m_001_%s' % randomword(5))
-        terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
-                          time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
-                          dask_chunks={'x': 2501, 'y': 2501, 'time': 35})
-        dc.close()
         # Keep clear pixels (2: Dark features, 4: Vegetation, 5: Not vegetated,
         # 6: Water, 7: Unclassified, 8: Cloud medium probability, 11: Snow/Ice)
         sr_1 = sr_0.where(sr_0.pixel_qa.isin([2,4,5,6,7,8,11]))
@@ -57,22 +50,10 @@ def run(tile, center_dt, path):
         # Run temporal reductions and rename DataArrays
         sr_mean = sr_1.mean('time', keep_attrs=True, skipna=True)
         sr_mean.rename({'ndvi': 'ndvi_mean'}, inplace=True)
-        # Compute min/max/std only for vegetation indices
-        ndvi_max = sr_1.ndvi.max('time', keep_attrs=True, skipna=True)
-        ndvi_max = ndvi_max.rename('ndvi_max')
-        ndvi_max.attrs['nodata'] = 0
-        ndvi_min = sr_1.ndvi.min('time', keep_attrs=True, skipna=True)
-        ndvi_min = ndvi_min.rename('ndvi_min')
-        ndvi_min.attrs['nodata'] = 0
-        # Merge dataarrays
-        combined = xr.merge([sr_mean.apply(to_int),
-                             to_int(ndvi_max),
-                             to_int(ndvi_min),
-                             terrain])
-        combined.attrs['crs'] = crs
-        write_dataset_to_netcdf(combined, nc_filename)
+        sr_mean.attrs['crs'] = crs
+        write_dataset_to_netcdf(sr_mean, nc_filename)
         # Explicitely deallocate objects and run garbage collector
-        sr_0=sr_1=sr_mean=ndvi_max=ndvi_min=terrain=combined=None
+        sr_0=sr_1=sr_mean=None
         gc.collect()
         return nc_filename
     except Exception as e:
