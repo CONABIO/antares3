@@ -53,7 +53,7 @@ antares apply_recipe -recipe landsat_8_madmex_002 -b 2017-01-01 -e 2017-12-31 --
 antares apply_recipe -recipe s2_20m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_0
 
 # Apply sentinel 20m 001 recipe using a user defined GridSpec regular grid (The datacube must contain the s2_20m_mexico dataset, extra arguments help to define GridSpec regular spatial grid)
-antares apply_recipe -recipe s2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_10 --resolution -10 10 --tilesize 100020 100020 --origin 2426720 977160 --proj4 '+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs'
+antares apply_recipe -recipe s2_10m_ndvi_mean_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_10 --resolution -10 10 --tilesize 100020 100020 --origin 2426720 977160 --proj4 '+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs'
 """
     def add_arguments(self, parser):
         # Recipe is a positional argument
