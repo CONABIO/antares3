@@ -1,4 +1,4 @@
-description: Intermediary dataset used for model training and prediction, derived from sentinel2 resampled with datacube.load
+description: Intermediary dataset used for segmentation, derived from sentinel2 20m resampled when loading using GridSpec
 metadata_type: eo
 
 metadata:
@@ -23,47 +23,7 @@ storage:
         y: 2426720
 
 measurements:
-    - name: 'blue_mean'
-      dtype: int16
-      nodata: 0
-      units: 'reflectance'
-    - name: 'green_mean'
-      dtype: int16
-      nodata: 0
-      units: 'reflectance'
-    - name: 'red_mean'
-      dtype: int16
-      nodata: 0
-      units: 'reflectance'
-    - name: 're1_mean'
-      dtype: int16
-      nodata: 0
-      units: 'reflectance'
-    - name: 're2_mean'
-      dtype: int16
-      nodata: 0
-      units: 'reflectance'
-    - name: 're3_mean'
-      dtype: int16
-      nodata: 0
-      units: 'reflectance'
-    - name: 'nir_mean'
-      dtype: int16
-      nodata: 0
-      units: 'reflectance'
-    - name: 'swir1_mean'
-      dtype: int16
-      nodata: 0
-      units: 'reflectance'
-    - name: 'swir2_mean'
-      dtype: int16
-      nodata: 0
-      units: 'reflectance'
     - name: 'ndvi_mean'
-      dtype: int16
-      nodata: 0
-      units: 'unitless'
-    - name: 'ndmi_mean'
       dtype: int16
       nodata: 0
       units: 'unitless'
@@ -72,14 +32,6 @@ measurements:
       nodata: 0
       units: 'unitless'
     - name: 'ndvi_min'
-      dtype: int16
-      nodata: 0
-      units: 'unitless'
-    - name: 'ndmi_max'
-      dtype: int16
-      nodata: 0
-      units: 'unitless'
-    - name: 'ndmi_min'
       dtype: int16
       nodata: 0
       units: 'unitless'
