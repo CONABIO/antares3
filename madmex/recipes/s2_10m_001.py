@@ -53,22 +53,10 @@ def run(tile, center_dt, path):
         # Compute ndvi
         sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
         sr_1['ndvi'].attrs['nodata'] = 0
-        # Compute ndmi
-        sr_1['ndmi'] = ((sr_1.nir - sr_1.swir1) / (sr_1.nir + sr_1.swir1)) * 10000
-        sr_1['ndmi'].attrs['nodata'] = 0
+        sr_1 = sr_1.drop(['blue', 'green', 'red', 're1', 're2', 're3', 'nir', 'swir1', 'swir2'])     
         # Run temporal reductions and rename DataArrays
         sr_mean = sr_1.mean('time', keep_attrs=True, skipna=True)
-        sr_mean.rename({'blue': 'blue_mean',
-                        'green': 'green_mean',
-                        'red': 'red_mean',
-                        're1': 're1_mean',
-                        're2': 're2_mean',
-                        're3': 're3_mean',
-                        'nir': 'nir_mean',
-                        'swir1': 'swir1_mean',
-                        'swir2': 'swir2_mean',
-                        'ndmi': 'ndmi_mean',
-                        'ndvi': 'ndvi_mean'}, inplace=True)
+        sr_mean.rename({'ndvi': 'ndvi_mean'}, inplace=True)
         # Compute min/max/std only for vegetation indices
         ndvi_max = sr_1.ndvi.max('time', keep_attrs=True, skipna=True)
         ndvi_max = ndvi_max.rename('ndvi_max')
@@ -76,24 +64,15 @@ def run(tile, center_dt, path):
         ndvi_min = sr_1.ndvi.min('time', keep_attrs=True, skipna=True)
         ndvi_min = ndvi_min.rename('ndvi_min')
         ndvi_min.attrs['nodata'] = 0
-        # ndmi
-        ndmi_max = sr_1.ndmi.max('time', keep_attrs=True, skipna=True)
-        ndmi_max = ndmi_max.rename('ndmi_max')
-        ndmi_max.attrs['nodata'] = 0
-        ndmi_min = sr_1.ndmi.min('time', keep_attrs=True, skipna=True)
-        ndmi_min = ndmi_min.rename('ndmi_min')
-        ndmi_min.attrs['nodata'] = 0
         # Merge dataarrays
         combined = xr.merge([sr_mean.apply(to_int),
                              to_int(ndvi_max),
                              to_int(ndvi_min),
-                             to_int(ndmi_max),
-                             to_int(ndmi_min),
                              terrain])
         combined.attrs['crs'] = crs
         write_dataset_to_netcdf(combined, nc_filename)
         # Explicitely deallocate objects and run garbage collector
-        sr_0=sr_1=sr_mean=ndvi_max=ndvi_min=ndmi_max=ndmi_min=terrain=combined=None
+        sr_0=sr_1=sr_mean=ndvi_max=ndvi_min=terrain=combined=None
         gc.collect()
         return nc_filename
     except Exception as e:
