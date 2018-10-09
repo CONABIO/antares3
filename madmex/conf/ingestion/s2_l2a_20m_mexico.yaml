@@ -32,8 +32,8 @@ storage:
   # http://spatialreference.org/ref/sr-org/mexico-inegi-lambert-conformal-conic/
   crs: PROJCS["unnamed",GEOGCS["WGS 84",DATUM["unknown",SPHEROID["WGS84",6378137,6556752.3141]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",17.5],PARAMETER["standard_parallel_2",29.5],PARAMETER["latitude_of_origin",12],PARAMETER["central_meridian",-102],PARAMETER["false_easting",2500000],PARAMETER["false_northing",0]] 
   tile_size:
-          x: 100020
-          y: 100020
+          x: 100040
+          y: 100040
   resolution:
           x: 20
           y: -20
@@ -42,8 +42,8 @@ storage:
     x: 977160 
     y: 2426720
   chunking:
-      x: 200
-      y: 200
+      x: 5002
+      y: 5002
       time: 1
   dimension_order: ['time', 'y', 'x']
 
