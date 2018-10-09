@@ -135,17 +135,9 @@ antares apply_recipe -recipe s2_10m_ndvi_mean_001 -b 2017-01-01 -e 2017-12-31 -r
         # database query
         gwf_kwargs = { k: options[k] for k in ['lat', 'long', 'region', 'begin', 'end', 'resolution', 'tilesize', 'origin', 'proj4']}
         
-        if not isinstance(product, list):
-            raise TypeError('Product (defined in madmex.recipes.RECIPES) must be a list')
-        dict_list = []
-        for prod in product:
-            gwf_kwargs.update(product = prod)
-            try:
-                dict_list.append(gwf_query(**gwf_kwargs, view=False))
-            # Exception is in case one of the product hasn't been registered in the datacube
-            except Exception as e:
-                pass
-        iterable = join_dicts(*dict_list).items()
+        gwf_kwargs.update(product=product)
+        
+        iterable = gwf_query(**gwf_kwargs)
 
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
