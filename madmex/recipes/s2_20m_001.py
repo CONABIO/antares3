@@ -41,7 +41,6 @@ def run(tile, center_dt, path):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
         sr_0 = GridWorkflow.load(tile[1], dask_chunks={'x': 2501, 'y': 2501, 'time': 35})
-        sr_0.attrs['geobox'] = tile[1][0].geobox
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
         # Load terrain metrics using same spatial parameters than sr
         dc = datacube.Datacube(app = 's2_20m_001_%s' % randomword(5))
