@@ -41,7 +41,7 @@ RECIPES = {
         'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_ndvi_mean.yaml'),
     },
     's2_20m_001': {
-        'product': ['s2_l2a_20m_mexico'],
+        'product': ['s2_l2a_20m_mexico_test'],
         'fun': s2_20m_001,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/s2_20m_001.yaml'),
     },
