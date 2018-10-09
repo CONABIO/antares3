@@ -33,7 +33,7 @@ def run(tile, center_dt, path):
         str: The filename of the netcdf file created
     """
     try:
-        crs = tile[1][0].geobox.crs
+        crs = tile[1].geobox.crs
         center_dt = center_dt.strftime("%Y-%m-%d")
         nc_filename = os.path.join(path, 's2_20m_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         # Load Landsat sr
