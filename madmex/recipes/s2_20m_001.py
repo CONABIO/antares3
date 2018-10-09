@@ -40,7 +40,7 @@ def run(tile, center_dt, path):
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
-        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'x': 2501, 'y': 2501, 'time': 35}) for x in tile[1]])
+        sr_0 = GridWorkflow.load(tile[1], dask_chunks={'x': 2501, 'y': 2501, 'time': 35})
         sr_0.attrs['geobox'] = tile[1][0].geobox
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
         # Load terrain metrics using same spatial parameters than sr
@@ -94,7 +94,6 @@ def run(tile, center_dt, path):
                              to_int(ndmi_min),
                              terrain])
         combined.attrs['crs'] = crs
-        combined = combined.compute()
         write_dataset_to_netcdf(combined, nc_filename)
         # Explicitely deallocate objects and run garbage collector
         sr_0=sr_1=sr_mean=ndvi_max=ndvi_min=ndmi_max=ndmi_min=terrain=combined=None
