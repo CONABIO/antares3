@@ -68,7 +68,7 @@ antares init -c mex gtm
         # Ingest geometries of selected countries in database
         if countries is not None:
             for country in countries:
-                url = 'http://biogeo.ucdavis.edu/data/diva/adm/%s_adm_shp.zip' % country.upper()
+                url = 'http://data.biogeo.ucdavis.edu/data/gadm2.8/shp/%s_adm_shp.zip' % country.upper()
                 filepath = aware_download(url, TEMP_DIR)
                 unzipdir = extract_zip(filepath, TEMP_DIR)
                 country_file = glob(os.path.join(unzipdir, '*adm0.shp'))[0]
