@@ -1,0 +1,71 @@
+source_type: srtm_cgiar_mosaic
+output_type: srtm_cgiar_belize
+
+description: Terrain metrics (altitude, slope, aspect) derived from CGIAR version of SRTM. 90m longlat. Resampled to 30m EPSG:4326 projection with a 100 km tile size.
+
+location: '{{ ingestion_path }}'
+file_path_template: 'srtm_cgiar/belize/srtm_{tile_index[0]}_{tile_index[1]}_{start_time}{% if netcdf %}.nc{% endif %}'
+global_attributes:
+  title: Belize CGIAR SRTM
+  summary: Terrain metrics derived from CGIAR version of SRTM
+  source: CGIAR
+  institution: Not specified
+  instrument: SIR
+  cdm_data_type: Grid
+  keywords: Belize,SRTM,TERRAIN,SLOPE,ASPECT
+  keywords_vocabulary: GCMD
+  platform: Space Shuttle Endeavour
+  processing_level: L2
+  product_version: '0.0.1'
+  product_suite: CGIAR
+  project: MADMEX
+  coverage_content_type: physicalMeasurement
+
+storage:
+  driver: {{ driver }}
+  bucket: '{{ bucket }}'
+  crs: "EPSG:4326"
+  tile_size:
+          latitude: 1.00068
+          longitude: 1.00068
+  resolution:
+          longitude: 0.000807
+          latitude: -0.000807
+  origin:
+          # top left corner
+          latitude: 18.50
+          longitude: -89.23
+  chunking:
+          longitude: 1240
+          latitude: 1240
+          time: 200
+  dimension_order: ['time', 'latitude', 'longitude']
+
+measurements:
+    - name: 'elevation'
+      dtype: int16
+      nodata: -32768
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'elevation'
+      attrs:
+          long_name: "Elevation from SRTM"
+          alias: "elevation"
+    - name: 'slope'
+      dtype: float32
+      nodata: -9999
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'slope'
+      attrs:
+          long_name: "Slope from SRTM"
+          alias: "slope"
+    - name: 'aspect'
+      dtype: float32
+      nodata: -9999
+      resampling_method: nearest
+      zlib: True
+      src_varname: 'aspect'
+      attrs:
+          long_name: "Aspect from SRTM"
+          alias: "aspect"
