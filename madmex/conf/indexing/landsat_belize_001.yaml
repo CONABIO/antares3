@@ -1,0 +1,86 @@
+description: Intermediary dataset used for model training and prediction
+metadata_type: eo
+
+metadata:
+    platform:
+        code: multi
+    instrument:
+        name: multi
+    product_type: intermediary
+    format:
+        name: NetCDF
+
+storage:
+    crs: "EPSG:4326"
+    tile_size:
+          latitude: 1.00068
+          longitude: 1.00068
+    resolution:
+          longitude: 0.000269
+          latitude: -0.000269
+    origin:
+          # top left corner
+          latitude: 18.50
+          longitude: -89.23
+
+measurements:
+    - name: 'blue_mean'
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'green_mean'
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'red_mean'
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'nir_mean'
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'swir1_mean'
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'swir2_mean'
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'ndvi_mean'
+      dtype: int16
+      nodata: -9999
+      units: 'unitless'
+    - name: 'ndmi_mean'
+      dtype: int16
+      nodata: -9999
+      units: 'unitless'
+    - name: 'ndvi_max'
+      dtype: int16
+      nodata: -9999
+      units: 'unitless'
+    - name: 'ndvi_min'
+      dtype: int16
+      nodata: -9999
+      units: 'unitless'
+    - name: 'ndmi_max'
+      dtype: int16
+      nodata: -9999
+      units: 'unitless'
+    - name: 'ndmi_min'
+      dtype: int16
+      nodata: -9999
+      units: 'unitless'
+    - name: 'elevation'
+      dtype: int16
+      nodata: -32768
+      units: 'meter'
+    - name: 'slope'
+      dtype: float32
+      nodata: -9999
+      units: 'degree'
+    - name: 'aspect'
+      dtype: float32
+      nodata: -9999
+      units: 'degree'
