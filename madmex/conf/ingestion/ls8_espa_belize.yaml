@@ -1,0 +1,158 @@
+source_type: ls8_espa_scene
+output_type: ls8_espa_belize
+
+description: Landsat 8 Collection 1 processed to surface reflectance by espa. Resampled to longlat
+
+location: '{{ ingestion_path }}'
+file_path_template: 'LS8_espa/belize/LS8_espa_{tile_index[0]}_{tile_index[1]}_{start_time}{% if netcdf %}.nc{% endif %}'
+global_attributes:
+  title: Belize Landsat Surface Reflectance
+  summary: Landsat 8 OLI surface reflectance processed by espa
+  source: USGS
+  institution: Not specified
+  instrument: OLI_TIRS
+  cdm_data_type: Grid
+  keywords: Belize,LANDSAT,OLI,SURFACE REFLECTANCE
+  keywords_vocabulary: GCMD
+  platform: LANDSAT_8
+  processing_level: L2
+  product_version: '0.0.1'
+  product_suite: USGS Landsat Collection 1
+  project: MADMEX
+  coverage_content_type: physicalMeasurement
+  references: http://dx.doi.org/10.3334/ORNLDAAC/1146
+  license: https://creativecommons.org/licenses/by/4.0/
+  naming_authority: gov.usgs
+  acknowledgment: Landsat data is provided by the United States Geological Survey (USGS).
+
+storage:
+  driver: {{ driver }}
+  bucket: '{{ bucket }}'
+  crs: "EPSG:4326"
+  tile_size:
+          latitude: 1.00068
+          longitude: 1.00068
+  resolution:
+          longitude: 0.000269
+          latitude: -0.000269
+  origin:
+          # top left corner
+          latitude: 18.50
+          longitude: -89.23
+  chunking:
+          longitude: 3720
+          latitude: 3720
+          time: 10
+  dimension_order: ['time', 'latitude', 'longitude']
+
+fuse_data: copy
+
+measurements:
+    - name: blue
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'blue'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 0.45-0.52 microns (Blue)"
+          alias: "band_2"
+    - name: green
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'green'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 0.52-0.60 microns (Green)"
+          alias: "band_3"
+    - name: red
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'red'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 0.63-0.69 microns (Red)"
+          alias: "band_4"
+    - name: nir
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'nir'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 0.76-0.90 microns (Near Infrared)"
+          alias: "band_5"
+    - name: swir1
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'swir1'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 1.55-1.75 microns (Short-wave Infrared)"
+          alias: "band_6"
+    - name: swir2
+      dtype: int16
+      nodata: -9999
+      resampling_method: nearest
+      src_varname: 'swir2'
+      zlib: True
+      attrs:
+          long_name: "Surface Reflectance 2.08-2.35 microns (Short-wave Infrared)"
+          alias: "band_7"
+    - name: 'pixel_qa'
+      dtype: int16
+      nodata: 1
+      resampling_method: nearest
+      src_varname: 'pixel_qa'
+      zlib: True
+      attrs:
+          long_name: "Pixel Quality Attributes Bit Index"
+          alias: [pixel_qa]
+      flags_definition:
+        fill:
+          bits: [0]
+          description: Fill
+          values: {0: false, 1: true}
+        clear:
+          bits: [1]
+          description: Clear
+          values: {0: false, 1: true}
+        water:
+          bits: [2]
+          description: Water
+          values: {0: false, 1: true}
+        cloud_shadow:
+          bits: [3]
+          description: Cloud shadow
+          values: {0: false, 1: true}
+        snow:
+          bits: [4]
+          description: Snow
+          values: {0: false, 1: true}
+        cloud:
+          bits: [5]
+          description: Cloud
+          values: {0: false, 1: true}
+        cloud_confidence:
+          bits: [6,7]
+          description: Cloud confidence
+          values: 
+            0: none
+            1: low
+            2: medium
+            3: high
+        cloud_confidence:
+          bits: [8,9]
+          description: Cirrus confidence
+          values: 
+            0: none
+            1: low
+            2: medium
+            3: high
+        terrain_occlusion:
+          bits: [10]
+          description: Terrain occlusion
+          values: {0: false, 1: true}
