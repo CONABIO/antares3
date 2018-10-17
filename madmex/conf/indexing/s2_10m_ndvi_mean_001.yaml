@@ -1,4 +1,4 @@
-description: Intermediary dataset used for segmentation with ndvi, derived from sentinel2 20m resampled when loading using GridSpec
+description: Intermediary dataset used for segmentation with ndvi, derived from sen2cor
 metadata_type: eo
 
 metadata:
