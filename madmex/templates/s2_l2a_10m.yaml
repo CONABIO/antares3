@@ -23,7 +23,6 @@ image:
     green: {layer: 1, path: "{{ green }}" }
     red: {layer: 1, path: "{{ red }}" }
     nir: {layer: 1, path: "{{ nir }}" }
-    pixel_qa: {layer: 1, path: "{{ qual }}" }
 instrument: {name: {{ instrument }} }
 lineage:
   source_datasets: {}
