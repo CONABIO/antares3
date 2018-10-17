@@ -35,6 +35,11 @@ RECIPES = {
         'fun': landsat_colombia_001,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_colombia_001.yaml'),
     },
+    'landsat_belize_001': {
+        'product': ['ls8_espa_belize'],
+        'fun': landsat_belize_001,
+        'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_belize_001.yaml'),
+    },
     'landsat_ndvi_mean': {
         'product': ['ls8_espa_mexico'],
         'fun': landsat_ndvi_mean,
