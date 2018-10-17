@@ -2,6 +2,7 @@ import os
 from .landsat_madmex_001 import run as landsat_madmex_001
 from .landsat_madmex_002 import run as landsat_madmex_002
 from .landsat_colombia_001 import run as landsat_colombia_001
+from .landsat_belize_001 import run as landsat_belize_001
 from .landsat_ndvi_mean import run as landsat_ndvi_mean
 from .s2_20m_001 import run as s2_20m_001
 from .s2_10m_ndvi_mean_001 import run as s2_10m_ndvi_mean_001
