@@ -36,7 +36,7 @@ def run(tile, center_dt, path):
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
-        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'x': 5001, 'y': 5001, 'time': 10}) for x in tile[1]])
+        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'time': 10}) for x in tile[1]])
         sr_0.attrs['geobox'] = tile[1][0].geobox
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
         # Keep clear pixels (2: Dark features, 4: Vegetation, 5: Not vegetated,
@@ -52,6 +52,7 @@ def run(tile, center_dt, path):
         sr_mean.rename({'ndvi': 'ndvi_mean'}, inplace=True)
         sr_mean = sr_mean.apply(to_int)
         sr_mean.attrs['crs'] = crs
+        sr_mean = sr_mean.compute()
         write_dataset_to_netcdf(sr_mean, nc_filename)
         # Explicitely deallocate objects and run garbage collector
         sr_0=sr_1=sr_mean=None
