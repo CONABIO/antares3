@@ -7,7 +7,7 @@ metadata:
         code: sentinel2
     instrument:
         name: MSI
-    product_type: sen2cor
+    product_type: sen2cor_10m
     format:
         name: JPEG2000
 
