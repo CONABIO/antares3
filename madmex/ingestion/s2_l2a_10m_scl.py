@@ -95,7 +95,7 @@ def metadata_convert(path, bucket=None):
         return band
     # Prepare metadata fields
     meta_out = {
-        'id': uuid.uuid5(uuid.NAMESPACE_URL, path + '/10m'),
+        'id': uuid.uuid5(uuid.NAMESPACE_URL, path + '/10m/scl'),
         'dt': dt,
         'll_lat': ll_lat,
         'lr_lat': lr_lat,
