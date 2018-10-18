@@ -41,7 +41,7 @@ def run(tile, center_dt, path):
         sr_0.attrs['geobox'] = tile[1][0].geobox
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
 	#datacube
-	dc = datacube.Datacube(app = 's2_10m_001_%s' % randomword(5))
+        dc = datacube.Datacube(app = 's2_10m_001_%s' % randomword(5))
         # Keep clear pixels (2: Dark features, 4: Vegetation, 5: Not vegetated,
         # 6: Water, 7: Unclassified, 8: Cloud medium probability, 11: Snow/Ice)
         s2_20m_scl = dc.load(product='s2_l2a_20m_mexico', 
