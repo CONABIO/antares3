@@ -42,6 +42,7 @@ def run(tile, center_dt, path):
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
         # Keep clear pixels (2: Dark features, 4: Vegetation, 5: Not vegetated,
         # 6: Water, 7: Unclassified, 8: Cloud medium probability, 11: Snow/Ice)
+	dc = datacube.Datacube(app = 's2_10m_001_%s' % randomword(5))
         s2_20m_scl = dc.load(product='s2_l2a_20m_mexico', 
 					 like = sr_0,
 			     measurements = ['pixel_qa'],
