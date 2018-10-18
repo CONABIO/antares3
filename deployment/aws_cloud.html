@@ -897,6 +897,16 @@ To further debug and diagnose cluster problems, use <span class="s1">&#39;kubect
 </pre></div>
 </div>
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Also you need to have some symlinks created under directory: <code class="docutils literal notranslate"><span class="pre">`letsencrypt/config/live/&lt;location&gt;`</span></code>:</p>
+<div class="last highlight-bash notranslate"><div class="highlight"><pre><span></span>cert.pem -&gt; ../../archive/&lt;location&gt;/cert1.pem
+chain.pem -&gt; ../../archive/&lt;location&gt;/chain1.pem
+fullchain.pem -&gt; ../../archive/&lt;location&gt;/fullchain1.pem
+privkey.pem -&gt; ../../archive/&lt;location&gt;/privkey1.pem
+</pre></div>
+</div>
+</div>
 <p>Create directory <code class="docutils literal notranslate"><span class="pre">certs</span></code> and copy cert and private key:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$mkdir</span> certs
 <span class="nv">$cp</span> letsencrypt/config/archive/&lt;location&gt;/fullchain1.pem certs/

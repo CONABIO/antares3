@@ -905,6 +905,17 @@ Generate certificate for the <location> (remove https if it's the case, just the
 		 --config-dir letsencrypt/config/ --work-dir letsencrypt/work/ \
 		 --non-interactive	
 
+.. note::
+    Also you need to have some symlinks created under directory: ```letsencrypt/config/live/<location>```:
+
+    .. code-block:: bash
+
+        cert.pem -> ../../archive/<location>/cert1.pem
+        chain.pem -> ../../archive/<location>/chain1.pem
+        fullchain.pem -> ../../archive/<location>/fullchain1.pem
+        privkey.pem -> ../../archive/<location>/privkey1.pem
+
+
 
 Create directory ``certs`` and copy cert and private key:
 
