@@ -1,0 +1,32 @@
+id: {{ id }}
+extent:
+  center_dt: '{{ dt }}'
+  coord:
+    ll: {lat: {{ ll_lat }}, lon: {{  ll_lon }} }
+    lr: {lat: {{ lr_lat }}, lon: {{  lr_lon }} }
+    ul: {lat: {{ ul_lat }}, lon: {{  ul_lon }} }
+    ur: {lat: {{ ur_lat }}, lon: {{  ur_lon }} }
+  from_dt: '{{ dt }}'
+  to_dt: '{{ dt }}'
+format: {name: JPEG2000}
+grid_spatial:
+  projection:
+    geo_ref_points:
+      ll: {x: {{ ll_x }}, y: {{ ll_y }} }
+      lr: {x: {{ lr_x }}, y: {{ lr_y }} }
+      ul: {x: {{ ul_x }}, y: {{ ul_y }} }
+      ur: {x: {{ ur_x }}, y: {{ ur_y }} }
+    spatial_reference: {{ crs }}
+image:
+  bands:
+    blue: {layer: 1, path: "{{ blue }}" }
+    green: {layer: 1, path: "{{ green }}" }
+    red: {layer: 1, path: "{{ red }}" }
+    nir: {layer: 1, path: "{{ nir }}" }
+    pixel_qa: {layer: 1, path: "{{ qual }}" }
+instrument: {name: {{ instrument }} }
+lineage:
+  source_datasets: {}
+platform: {code: {{ platform }} }
+processing_level: L2A
+product_type: sen2cor_10m_scl
