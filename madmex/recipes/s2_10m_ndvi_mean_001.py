@@ -44,7 +44,7 @@ def run(tile, center_dt, path):
         # Keep clear pixels (2: Dark features, 4: Vegetation, 5: Not vegetated,
         # 6: Water, 7: Unclassified, 8: Cloud medium probability, 11: Snow/Ice)
         s2_20m_scl = dc.load(product='s2_l2a_20m_mexico', 
-					 like = sr_0,
+			     like = sr_0,
 			     measurements = ['pixel_qa'],
 			    dask_chunks = {'x': 2000, 'y': 2000, 'time':35})
         sr_1 = sr_0.where(s2_20m_scl.pixel_qa.isin([2,4,5,6,7,8,11]))
