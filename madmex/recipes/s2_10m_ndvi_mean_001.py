@@ -36,7 +36,7 @@ def run(tile, center_dt, path):
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
-        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'x': 2000, 'y': 2000, 'time': 35},
+        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'time': 1},
 					   measurements=['red','nir']) for x in tile[1]])
         sr_0.attrs['geobox'] = tile[1][0].geobox
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
@@ -47,7 +47,7 @@ def run(tile, center_dt, path):
         s2_20m_scl = dc.load(product='s2_l2a_20m_mexico', 
 			     like = sr_0,
 			     measurements = ['pixel_qa'],
-			    dask_chunks = {'x': 2000, 'y': 2000, 'time':35})
+			    dask_chunks = {'time': 1})
         sr_1 = sr_0.where(s2_20m_scl.pixel_qa.isin([2,4,5,6,7,8,11]))
         # Compute ndvi
         sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
