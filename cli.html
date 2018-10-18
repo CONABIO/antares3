@@ -390,80 +390,32 @@
   &quot;&quot;&quot;)
 /home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/dask/context.py:23: UserWarning: The dask.set_options function has been deprecated. Please use dask.config.set instead
   warnings.warn(&quot;The dask.set_options function has been deprecated. &quot;
-usage: antares model_fit [-h] [--version] [-v {0,1,2,3}] [--settings SETTINGS]
-                         [--pythonpath PYTHONPATH] [--traceback] [--no-color]
-                         [-model MODEL] -p PRODUCT -t TRAINING [-lat LAT LAT]
-                         [-long LONG LONG] [-region REGION] [-sample SAMPLE]
-                         [-name NAME] [-sp SPATIAL_AGGREGATION]
-                         [-categorical_variables [CATEGORICAL_VARIABLES [CATEGORICAL_VARIABLES ...]]]
-                         [--remove-outliers] [-filename FILENAME]
-                         [-extra [EXTRA_KWARGS [EXTRA_KWARGS ...]]]
-                         [-sc SCHEDULER]
-
-Command line for training a statistical model over a given extent using:
-    - A training set of geometries with attributes stored in the database
-    - A datacube product
-    - One of the models implemented in madmex.modeling
-
-The steps of the process are for each tile of the datacube product to:
-    - Load the data as an xarray Dataset
-    - Query and load the corresponding training geometries from the database
-    - Perform data extraction and spatial aggregation for the geometries overlay
-All extracted data are then concatenated and used to train a statistical model. The model is then
-saved to the database
-
---------------
-Example usage:
---------------
-# Extract data for an area covering more or less Jalisco and fit a random forest model to the extracted data
-antares model_fit -model rf -p landsat_madmex_001_jalisco_2017 -t chips_jalisco -lat 19 23 -long -106 -101 --name rf_landsat_madmex_001_jalisco_2017 -sp mean
-
-# With extra args passed to the random forest object constructor, use region name instead of lat long bounding box
-antares model_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -t jalisco_chips --region Jalisco --name rf_landsat_madmex_001_jalisco_2017_jalisco_chips -sp mean -extra n_estimators=60 n_jobs=15
-
-# Only extract data and write the X and y array to file for further inspection (no model is fitted in that case)
-antares model_fit -p s2_001_jalisco_2017_0 -t jalisco_bits --region Jalisco --filename training_sentinel2_jalisco_bits.pkl
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --version             show program&#39;s version number and exit
-  -v {0,1,2,3}, --verbosity {0,1,2,3}
-                        Verbosity level; 0=minimal output, 1=normal output, 2=verbose output, 3=very verbose output
-  --settings SETTINGS   The Python path to a settings module, e.g. &quot;myproject.settings.main&quot;. If this isn&#39;t provided, the DJANGO_SETTINGS_MODULE environment variable will be used.
-  --pythonpath PYTHONPATH
-                        A directory to add to the Python path, e.g. &quot;/home/djangoprojects/myproject&quot;.
-  --traceback           Raise on CommandError exceptions
-  --no-color            Don&#39;t colorize the command output.
-  -model MODEL, --model MODEL
-                        Name of the model to apply to the dataset. It is posible to retrieve a list of implemented models using the antares model_params command line
-  -p PRODUCT, --product PRODUCT
-                        Name of the datacube product to use for model fitting
-  -t TRAINING, --training TRAINING
-                        Training data database identifier
-  -lat LAT LAT, --lat LAT LAT
-                        minimum and maximum latitude of the bounding box over which the model should be trained
-  -long LONG LONG, --long LONG LONG
-                        minimum and maximum longitude of the bounding box over which the model should be trained
-  -region REGION, --region REGION
-                        Name of the region over which the recipe should be applied. The geometry of the region should be present in the madmex-region or the madmex-country table of the database (Overrides lat and long when present) Use ISO country code for country name
-  -sample SAMPLE, --sample SAMPLE
-                        Proportion of the training data to use. Must be float between 0 and 1. A random sampling of the training objects is performed (defaults to 0.2).
-  -name NAME, --name NAME
-                        Name under which the produced model should be referenced in the database
-  -sp SPATIAL_AGGREGATION, --spatial_aggregation SPATIAL_AGGREGATION
-                        Function to use for spatially aggregating the pixels over the training geometries (defaults to mean)
-  -categorical_variables [CATEGORICAL_VARIABLES [CATEGORICAL_VARIABLES ...]], --categorical_variables [CATEGORICAL_VARIABLES [CATEGORICAL_VARIABLES ...]]
-                        List of categorical variables to be encoded using One Hot Encoding before model fit
-  --remove-outliers     Perform outlier removal via isolation forest anomaly score before model fitting
-  -filename FILENAME, --filename FILENAME
-                        Name of a pickle file to store X and y array. Optional, no model is fitted when used
-  -extra [EXTRA_KWARGS [EXTRA_KWARGS ...]], --extra_kwargs [EXTRA_KWARGS [EXTRA_KWARGS ...]]
-                        
-                        Additional named arguments passed to the selected model class constructor. These arguments have
-                        to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 arg2=median
-                        To consult the exposed arguments for each model, use the &quot;model_params&quot; command line
-  -sc SCHEDULER, --scheduler SCHEDULER
-                        Path to file with scheduler information (usually called scheduler.json)
+Traceback (most recent call last):
+  File &quot;/home/travis/virtualenv/python3.6.3/bin/antares&quot;, line 11, in &lt;module&gt;
+    sys.exit(main())
+  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/entry.py&quot;, line 15, in main
+    execute_from_command_line(sys.argv)
+  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/django/core/management/__init__.py&quot;, line 381, in execute_from_command_line
+    utility.execute()
+  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/django/core/management/__init__.py&quot;, line 375, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/django/core/management/__init__.py&quot;, line 224, in fetch_command
+    klass = load_command_class(app_name, subcommand)
+  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/django/core/management/__init__.py&quot;, line 36, in load_command_class
+    module = import_module(&#39;%s.management.commands.%s&#39; % (app_name, name))
+  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/importlib/__init__.py&quot;, line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 994, in _gcd_import
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 971, in _find_and_load
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 955, in _find_and_load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 665, in _load_unlocked
+  File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 678, in exec_module
+  File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 219, in _call_with_frames_removed
+  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/management/commands/model_fit.py&quot;, line 21, in &lt;module&gt;
+    from madmex.recipes import RECIPES
+  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/recipes/__init__.py&quot;, line 9, in &lt;module&gt;
+    from .s2_10m_scl_ndvi_mean_001 import run as s2_10m_scl_ndvi_mean_001
+ModuleNotFoundError: No module named &#39;madmex.recipes.s2_10m_scl_ndvi_mean_001&#39;
 </pre></div>
 </div>
 </div>
