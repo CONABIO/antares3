@@ -36,7 +36,7 @@ def run(tile, center_dt, path):
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
-        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'x': 2000, 'y': 2000, 'time': 1},
+        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'x': 2000, 'y': 2000, 'time': 35},
 					   measurements=['red','nir']) for x in tile[1]])
         sr_0.attrs['geobox'] = tile[1][0].geobox
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
