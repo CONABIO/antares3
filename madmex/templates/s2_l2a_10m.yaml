@@ -28,4 +28,4 @@ lineage:
   source_datasets: {}
 platform: {code: {{ platform }} }
 processing_level: L2A
-product_type: sen2cor_10m
+product_type: sen2cor
