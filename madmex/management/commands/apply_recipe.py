@@ -58,6 +58,10 @@ antares apply_recipe -recipe s2_20m_001 -b 2017-01-01 -e 2017-12-31 -region Jali
 #Apply sentinel 10m 001 recipe (ndvi)
 antares apply_recipe -recipe s2_10m_ndvi_mean_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_10 
 
+#Apply sentinel 10m_scl 001 recipe (ndvi)
+antares apply_recipe -recipe s2_10m_scl_ndvi_mean_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_10 
+
+
 """
     def add_arguments(self, parser):
         # Recipe is a positional argument
