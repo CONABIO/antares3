@@ -45,7 +45,7 @@ def run(tile, center_dt, path):
         s2_20m_scl = dc.load(product='s2_l2a_20m_mexico', 
 					 like = sr_0,
 			     measurements = ['pixel_qa'],
-			    dask_chunks = {'x': 2000, 'y': 2000})
+			    dask_chunks = {'x': 2000, 'y': 2000, 'time':35})
         sr_1 = sr_0.where(s2_20m_scl.pixel_qa.isin([2,4,5,6,7,8,11]))
         # Compute ndvi
         sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
