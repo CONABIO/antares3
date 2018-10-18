@@ -1,4 +1,4 @@
-name: s2_l2a_10m_granule_scl
+name: s2_l2a_10m_scl_granule
 description: Sentinel 2 data processed with sen2cor 10m resolution and scl band of s2 20m resolution
 metadata_type: eo
 
