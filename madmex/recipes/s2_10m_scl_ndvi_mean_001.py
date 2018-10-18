@@ -31,7 +31,7 @@ def run(tile, center_dt, path):
     try:
         crs = tile[1][0].geobox.crs
         center_dt = center_dt.strftime("%Y-%m-%d")
-        nc_filename = os.path.join(path, 's2_10m_ndvi_mean_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
+        nc_filename = os.path.join(path, 's2_10m_scl_ndvi_mean_001_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         # Load Landsat sr
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
