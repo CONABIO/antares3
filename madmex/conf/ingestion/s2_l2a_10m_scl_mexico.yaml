@@ -1,4 +1,4 @@
-source_type: s2_l2a_10m_granule_scl
+source_type: s2_l2a_10m_scl_granule
 output_type: s2_l2a_10m_scl_mexico
 
 description: Sentinel 2 bottom of atmosphere processed with sen2cor. Resampled to 10m and band scl of 20m to Mexico INEGI Lambert Conformal Conic projection with a 100 km tile size.
