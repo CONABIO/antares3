@@ -41,8 +41,10 @@ def run(tile, center_dt, path):
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
         # Keep clear pixels (2: Dark features, 4: Vegetation, 5: Not vegetated,
         # 6: Water, 7: Unclassified, 8: Cloud medium probability, 11: Snow/Ice)
-        sr_1 = sr_0.where(sr_0.pixel_qa.isin([2,4,5,6,7,8,11]))
-        sr_1 = sr_1.drop('pixel_qa')
+        s2_20m_scl = dc.load(product='s2_l2a_20m_mexico', 
+					 like = sr_0,
+                     measurements = ['pixel_qa'])
+        sr_1 = sr_0.where(s2_20m_scl.pixel_qa.isin([2,4,5,6,7,8,11]))
         # Compute ndvi
         sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
         sr_1['ndvi'].attrs['nodata'] = 0
@@ -54,7 +56,7 @@ def run(tile, center_dt, path):
         sr_mean = sr_mean.compute()
         write_dataset_to_netcdf(sr_mean, nc_filename)
         # Explicitely deallocate objects and run garbage collector
-        sr_0=sr_1=sr_mean=None
+        sr_0=sr_1=sr_mean=s2_20m_scl=None
         gc.collect()
         return nc_filename
     except Exception as e:
