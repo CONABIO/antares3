@@ -46,6 +46,7 @@ def run(tile, center_dt, path):
         # Compute ndvi
         sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
         sr_1['ndvi'].attrs['nodata'] = 0
+	sr_1 = sr_1.drop(['red', 'nir', 'pixel_qa'])
         # Run temporal reductions and rename DataArrays
         sr_mean = sr_1.mean('time', keep_attrs=True, skipna=True)
         sr_mean.rename({'ndvi': 'ndvi_mean'}, inplace=True)
