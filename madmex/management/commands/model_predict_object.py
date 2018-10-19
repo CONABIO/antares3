@@ -9,6 +9,7 @@ import os
 import logging
 
 from dask.distributed import Client, LocalCluster
+from django import db
 
 from madmex.management.base import AntaresBaseCommand
 
@@ -95,6 +96,7 @@ antares model_predict_object -p landsat_madmex_001_jalisco_2017_2 -m rf_madmex_0
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
         client.restart()
+        db.connections.close_all()
         C = client.map(predict_object,
                        iterable,
                        pure=False,
