@@ -41,7 +41,7 @@ def run(tile, center_dt, path):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
         # Get crs from first tile of tile list
-        #crs = tile[1][0].geobox.crs
+        crs = tile[1][0].geobox.crs
         sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'latitude': 1860, 'longitude': 1860, 'time': 1})
                          for x in tile[1]])
         sr_0.attrs['geobox'] = tile[1][0].geobox
