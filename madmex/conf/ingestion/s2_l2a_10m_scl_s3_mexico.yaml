@@ -1,5 +1,5 @@
 source_type: s2_l2a_10m_scl_granule
-output_type: s2_l2a_10m_scl_mexico
+output_type: s2_l2a_10m_scl_s3_mexico
 
 description: Sentinel 2 bottom of atmosphere processed with sen2cor use it for AWS-S3. Resampled to 10m and band scl of 20m to Mexico INEGI Lambert Conformal Conic projection with a 50 km tile size. 
 
