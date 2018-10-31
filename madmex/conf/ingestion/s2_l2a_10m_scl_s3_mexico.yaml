@@ -1,7 +1,7 @@
 source_type: s2_l2a_10m_scl_granule
 output_type: s2_l2a_10m_scl_s3_mexico
 
-description: Sentinel 2 bottom of atmosphere processed with sen2cor use it for AWS-S3. Resampled to 10m and band scl of 20m to Mexico INEGI Lambert Conformal Conic projection with a 50 km tile size. 
+description: Sentinel 2 bottom of atmosphere processed with sen2cor -use it for AWS-S3- and scl band of 20m to Mexico INEGI Lambert Conformal Conic projection with a 50 km tile size. 
 
 location: '{{ ingestion_path }}'
 file_path_template: 's2_l2a_10m_scl_s3/mexico/s2_l2a_10m_scl_s3_{tile_index[0]}_{tile_index[1]}_{start_time}{% if netcdf %}.nc{% endif %}'
@@ -32,8 +32,8 @@ storage:
   # http://spatialreference.org/ref/sr-org/mexico-inegi-lambert-conformal-conic/
   crs: PROJCS["unnamed",GEOGCS["WGS 84",DATUM["unknown",SPHEROID["WGS84",6378137,6556752.3141]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",17.5],PARAMETER["standard_parallel_2",29.5],PARAMETER["latitude_of_origin",12],PARAMETER["central_meridian",-102],PARAMETER["false_easting",2500000],PARAMETER["false_northing",0]] 
   tile_size:
-          x: 70020
-          y: 70020
+          x: 50020
+          y: 50020
   resolution:
           x: 10
           y: -10
@@ -42,8 +42,8 @@ storage:
     x: 977160 
     y: 2426720
   chunking:
-      x: 7002
-      y: 7002
+      x: 5002
+      y: 5002
       time: 1
   dimension_order: ['time', 'y', 'x']
 
