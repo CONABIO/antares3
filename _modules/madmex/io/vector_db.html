@@ -227,7 +227,7 @@
     <span class="n">geobox</span> <span class="o">=</span> <span class="n">geoarray</span><span class="o">.</span><span class="n">geobox</span>
     <span class="n">crs</span> <span class="o">=</span> <span class="n">geoarray</span><span class="o">.</span><span class="n">crs</span><span class="o">.</span><span class="n">_crs</span><span class="o">.</span><span class="n">ExportToProj4</span><span class="p">()</span>
     <span class="n">poly</span> <span class="o">=</span> <span class="n">Polygon</span><span class="o">.</span><span class="n">from_geobox</span><span class="p">(</span><span class="n">geobox</span><span class="p">)</span>
-    <span class="n">query_set</span> <span class="o">=</span> <span class="n">PredictObject</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">the_geom__contained</span><span class="o">=</span><span class="n">poly</span><span class="p">,</span>
+    <span class="n">query_set</span> <span class="o">=</span> <span class="n">PredictObject</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">the_geom__intersects</span><span class="o">=</span><span class="n">poly</span><span class="p">,</span>
                                              <span class="n">segmentation_information__name</span><span class="o">=</span><span class="n">segmentation_name</span><span class="p">)</span>
     <span class="n">fc</span> <span class="o">=</span> <span class="p">[</span><span class="n">predict_object_to_feature</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">crs</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">query_set</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">fc</span></div>
@@ -269,7 +269,6 @@
         <script type="text/javascript" src="../../../_static/jquery.js"></script>
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   
