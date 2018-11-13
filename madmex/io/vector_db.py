@@ -63,7 +63,7 @@ def load_segmentation_from_dataset(geoarray, segmentation_name):
     geobox = geoarray.geobox
     crs = geoarray.crs._crs.ExportToProj4()
     poly = Polygon.from_geobox(geobox)
-    query_set = PredictObject.objects.filter(the_geom__contained=poly,
+    query_set = PredictObject.objects.filter(the_geom__intersects=poly,
                                              segmentation_information__name=segmentation_name)
     fc = [predict_object_to_feature(x, crs) for x in query_set]
     return fc
