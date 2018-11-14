@@ -4,16 +4,16 @@ Created on Nov 24, 2016
 @author: agutierrez
 '''
 
+import os
 import abc
 import logging
-import dill
 
+import dill
 import numpy as np
 from sklearn import metrics
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import IsolationForest
 
-import os
 from madmex.models import Model
 from madmex.settings import SERIALIZED_OBJECTS_DIR
 from madmex.util import randomword
