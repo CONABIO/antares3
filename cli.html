@@ -411,19 +411,10 @@ Traceback (most recent call last):
   File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 219, in _call_with_frames_removed
   File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/management/commands/model_fit.py&quot;, line 21, in &lt;module&gt;
     from madmex.recipes import RECIPES
-  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/recipes/__init__.py&quot;, line 2, in &lt;module&gt;
-    from .landsat_madmex_001 import run as landsat_madmex_001
-  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/recipes/landsat_madmex_001.py&quot;, line 18, in &lt;module&gt;
-    dask.set_options(get=dask.get)
-  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/dask/context.py&quot;, line 18, in set_options
-    raise TypeError(&quot;The dask.set_options function has been deprecated.\n&quot;
-TypeError: The dask.set_options function has been deprecated.
-Please use dask.config.set instead
-
-  Before: with dask.set_options(foo=&#39;bar&#39;):
-              ...
-  After:  with dask.config.set(foo=&#39;bar&#39;):
-              ...
+  File &quot;/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/madmex/recipes/__init__.py&quot;, line 11
+    from .s1-2_10m_001 import run as s1-2_10m_001
+            ^
+SyntaxError: invalid syntax
 </pre></div>
 </div>
 </div>
