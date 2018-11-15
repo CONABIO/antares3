@@ -12,7 +12,6 @@ import numpy as np
 import xarray as xr
 
 from madmex.overlay.conversions import rasterize_xarray
-from madmex.util.xarray import to_float
 from madmex.util import chunk
 
 logger = logging.getLogger(__name__)
@@ -63,8 +62,6 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
     Return:
         list: A list of [0] predictors array, and [2] target values [X, y]
     """
-    # Convert dataSet to float, so that no data are replaced by np.Nan
-    dataset = dataset.apply(func=to_float, keep_attrs=True)
     # Build spatial aggregation mapping
     var_list = list(dataset.data_vars)
     if categorical_variables is None:
