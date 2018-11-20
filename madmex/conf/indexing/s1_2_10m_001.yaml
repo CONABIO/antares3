@@ -99,9 +99,7 @@ measurements:
       dtype: float32
       nodata: 0.0
       units: 'radar'
-      resampling_method: nearest
     - name: 'vv'
       dtype: float32
       nodata: 0.0
       units: 'radar'
-      resampling_method: nearest
