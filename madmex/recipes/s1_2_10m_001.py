@@ -40,7 +40,7 @@ def run(tile, center_dt, path):
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
-        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'x': 4000, 'y': 4000}) for x in tile[1]])
+        sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'x': 3000, 'y': 3000}) for x in tile[1]])
         sr_0.attrs['geobox'] = tile[1][0].geobox
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
         # Split sentinel  and sentinel 2 to avoid doing cloud masking on sar data
@@ -55,7 +55,7 @@ def run(tile, center_dt, path):
         dc = datacube.Datacube(app = 's1-2_10m_001_%s' % randomword(5))
         terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
                           time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
-                          dask_chunks={'x': 4000, 'y': 4000})
+                          dask_chunks={'x': 3000, 'y': 3000})
         dc.close()
         # Keep clear pixels (2: Dark features, 4: Vegetation, 5: Not vegetated,
         # 6: Water, 7: Unclassified, 8: Cloud medium probability, 11: Snow/Ice)
