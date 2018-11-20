@@ -34,6 +34,8 @@ Datasets details:
     - s2_l2a_20m corresponds to 20m bands resolution of sentinel2 granule's processed with sen2cor. Every scene contains data and metadata with SAFE structure.
     
     - s2_l2a_10m_scl corresponds to 10m bands resolution of to sentinel2 granule's processed with sen2cor. Every scene contains data and metadata with SAFE structure.
+    
+    - s1_grd_vh_vv ....
 
     - srtm_cgiar corresponds to the 90m gap filled version of the srtm DEM prepared by CGIAR. It is distributed in 5 degrees
         tile (can be downloaded manually from e.g. http://dwtkns.com/srtm/). A mosaic as well as derived terrain metrics has to
@@ -72,6 +74,9 @@ antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name 
 
 # Sentinel2 L2A 10m
 antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name s2_l2a_10m_scl --outfile metadata_sentinel2_10m.yaml
+
+# Sentinel1
+antares prepare_metadata --path /path/to/dir/containing/... --bucket bucket_example --dataset_name s1_grd_vh_vv --outfile metadata_sentinel1.yaml
 
 # Country mask
 antares prepare_metadata --path /path/to/dir/with/tiles --dataset_name country_mask --outfile metadata_country_mask.yaml
