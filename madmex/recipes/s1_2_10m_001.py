@@ -44,7 +44,9 @@ def run(tile, center_dt, path):
         sr_0.attrs['geobox'] = tile[1][0].geobox
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
         # Split sentinel  and sentinel 2 to avoid doing cloud masking on sar data
-        sar = sr_0.drop(['polarisation_VH', 'polarisation_VV'])
+        sr_0 = sr_0.drop(['polarisation_VH', 'polarisation_VV'])
+        sar = xr.merge([sr_0.polarisation_VH, sr_0.polarisation_VV])
+        sar.attrs['geobox'] = tile[1][1].geobox
         # Reduce time dimension of sar variables
         sar_mean = sar.mean('time', keep_attrs=True, skipna=True)
         sar_mean.rename({'polarisation_VH': 'vh',
