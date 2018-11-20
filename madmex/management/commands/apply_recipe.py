@@ -38,6 +38,7 @@ Available recipes are:
     - s2_20m_001: Temporal metrics (mean) of Sentinel2 20m bands and ndmi, ndvi (min,max) combined with terrain metrics (elevation, slope and aspect)
     - s2_20m_resampled_10m_001: Temporal metrics (mean) of Sentinel2 20m bands resampled to 10m resolution using GridSpec functionality of datacube (same description of s2_20m_001 recipe).
     - s2_10m_scl_ndvi_mean_001: Ndvi of Sentinel2 10m resolution bands
+    - s1_2_10m_001: Temporal metrics (mean) of Sentinel2 and Sentinel1 bands. For Sentinel2 also nd ndmi, ndvi (min,max) combined with terrain metrics (elevation, slope and aspect) are calculated.
     
 
 See docstring in madmex/recipes/__init__.py for instructions on how to add new recipes to the system
@@ -63,6 +64,8 @@ antares apply_recipe -recipe s2_20m_resampled_10m_001 -b 2017-01-01 -e 2017-12-3
 #Apply sentinel 10m_scl 001 recipe (ndvi)
 antares apply_recipe -recipe s2_10m_scl_ndvi_mean_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_10 
 
+#Apply s1_2_10m_001 recipe (combination with S2, S1 and terrain)
+antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s1_2_001_jalisco_2017
 
 """
     def add_arguments(self, parser):
