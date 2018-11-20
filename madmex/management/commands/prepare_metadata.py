@@ -30,6 +30,10 @@ Datasets details:
     - landsat_espa corresponds to landsat surface reflectance data ordered via the espa platform. Every scene
         must be unzipped so that it corresponds to a folder with at least the individual surface reflectance bands,
         the pixel_qa band and the .xml metadata file.
+    
+    - s2_l2a_20m corresponds to 20m bands resolution of sentinel2 granule's processed with sen2cor. Every scene contains data and metadata with SAFE structure.
+    
+    - s2_l2a_10m_scl corresponds to 10m bands resolution of to sentinel2 granule's processed with sen2cor. Every scene contains data and metadata with SAFE structure.
 
     - srtm_cgiar corresponds to the 90m gap filled version of the srtm DEM prepared by CGIAR. It is distributed in 5 degrees
         tile (can be downloaded manually from e.g. http://dwtkns.com/srtm/). A mosaic as well as derived terrain metrics has to
@@ -64,7 +68,10 @@ antares prepare_metadata --path /path/to/dir/containing/scenes --dataset_name la
 antares prepare_metadata --path /path/to/dir/containing/srtm_terrain_metrics --dataset_name srtm_cgiar --outfile metadata_srtm.yaml
 
 # Sentinel2 L2A 20m
-antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name s2_l2a_20m --outfile metadata_sentinel.yaml
+antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name s2_l2a_20m --outfile metadata_sentinel2.yaml
+
+# Sentinel2 L2A 10m
+antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name s2_l2a_10m_scl --outfile metadata_sentinel2_10m.yaml
 
 # Country mask
 antares prepare_metadata --path /path/to/dir/with/tiles --dataset_name country_mask --outfile metadata_country_mask.yaml
