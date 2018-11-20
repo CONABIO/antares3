@@ -35,7 +35,10 @@ Datasets details:
     
     - s2_l2a_10m_scl corresponds to 10m bands resolution of to sentinel2 granule's processed with sen2cor. Every scene contains data and metadata with SAFE structure.
     
-    - s1_grd_vh_vv ....
+    - s1_grd_vh_vv The VH corresponds to a mode of radar polarisation where the microwaves of the electric field are oriented in the vertical plane for signal transmission,
+                   and where the horizontally polarised electric field of the backscattered energy is received by the radar antenna. On the other hand, VV is the mode of 
+                   radar polarisation where the microwaves of the electric field are oriented in the vertical plane for both signal transmission and reception by means of 
+                   a radar antenna. The final preprocessed product has units of decibels.
 
     - srtm_cgiar corresponds to the 90m gap filled version of the srtm DEM prepared by CGIAR. It is distributed in 5 degrees
         tile (can be downloaded manually from e.g. http://dwtkns.com/srtm/). A mosaic as well as derived terrain metrics has to
