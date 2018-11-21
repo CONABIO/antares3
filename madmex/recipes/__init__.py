@@ -74,7 +74,7 @@ RECIPES = {
         'config_file': os.path.expanduser('~/.config/madmex/indexing/s2_10m_ndvi_mean_001.yaml'),
     },
     's1_2_10m_001': {
-        'product': ['s2_l2a_20m_s3_mexico', 's1_snappy_vh_vv_mexico'],
+        'product': ['s2_l2a_20m_s3_mexico'],
         'fun': s1_2_10m_001,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/s1_2_10m_001.yaml'),
     },
