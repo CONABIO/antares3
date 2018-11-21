@@ -43,16 +43,16 @@ def run(tile, center_dt, path):
         sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'x': 3000, 'y': 3000}) for x in tile[1]])
         sr_0.attrs['geobox'] = tile[1][0].geobox
         sr_0 = sr_0.apply(func=to_float, keep_attrs=True)
-        # Split sentinel  and sentinel 2 to avoid doing cloud masking on sar data
-        sar = xr.merge([sr_0.polarisation_VH, sr_0.polarisation_VV])
-        sr_0 = sr_0.drop(['polarisation_VH', 'polarisation_VV'])
-        sar.attrs['geobox'] = tile[1][1].geobox
+        #load s1 data
+        dc = datacube.Datacube(app = 's1-2_10m_001_%s' % randomword(5))
+        sar = dc.load(product='s1_snappy_vh_vv_mexico', like=sr_0, time=(datetime(2015, 1, 1), datetime(2015, 12, 31)), dask_chunks={'x': 3000, 'y': 3000})
+        sar = sar.apply(func=to_float, keep_attrs=True)
+        sar.attrs['geobox'] = tile[1][0].geobox
         # Reduce time dimension of sar variables
         sar_mean = sar.mean('time', keep_attrs=True, skipna=True)
         sar_mean.rename({'polarisation_VH': 'vh',
                          'polarisation_VV': 'vv'}, inplace=True)
         # Load terrain metrics using same spatial parameters than sr
-        dc = datacube.Datacube(app = 's1-2_10m_001_%s' % randomword(5))
         terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
                           time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
                           dask_chunks={'x': 3000, 'y': 3000})
