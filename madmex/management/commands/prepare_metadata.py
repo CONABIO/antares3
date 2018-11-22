@@ -79,7 +79,7 @@ antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name 
 antares prepare_metadata --path /path/to/dir/containing/granules --dataset_name s2_l2a_10m_scl --outfile metadata_sentinel2_10m.yaml
 
 # Sentinel1
-antares prepare_metadata --path /path/to/dir/containing/... --bucket bucket_example --dataset_name s1_grd_vh_vv --outfile metadata_sentinel1.yaml
+antares prepare_metadata --path /path/to/dir/containing/granules --bucket bucket_example --dataset_name s1_grd_vh_vv --outfile metadata_sentinel1.yaml
 
 # Country mask
 antares prepare_metadata --path /path/to/dir/with/tiles --dataset_name country_mask --outfile metadata_country_mask.yaml
