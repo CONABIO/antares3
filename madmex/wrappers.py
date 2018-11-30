@@ -167,7 +167,7 @@ def gwf_query(product, lat=None, long=None, region=None, begin=None, end=None,
         >>> # Using lat long box, time windowed
         >>> tiles_list = gwf_query(product='ls8_espa_mexico', lat=[19, 22], long=[-104, -102],
         ...                        begin = '2017-01-01', end='2017-03-31')
-        >>> tiles_list = gwf_query(resolution= (-10, 10), origin = (2426720, 977160), tile_size = (100020,100020)
+        >>> tiles_list = gwf_query(resolution= (-10, 10), origin = (2426720, 977160), tilesize = (100020,100020)
         ...                        proj4 = '+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs')
     """
     query_params = {'product': product}
