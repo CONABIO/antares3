@@ -98,8 +98,8 @@ measurements:
     - name: 'vh'
       dtype: float32
       nodata: 0.0
-      units: 'unitless'
+      units: 'decibels'
     - name: 'vv'
       dtype: float32
       nodata: 0.0
-      units: 'unitless'
+      units: 'decibels'
