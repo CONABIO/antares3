@@ -146,7 +146,7 @@ measurements:
             1: low
             2: medium
             3: high
-        cloud_confidence:
+        cirrus_confidence:
           bits: [8,9]
           description: Cirrus confidence
           values: 
