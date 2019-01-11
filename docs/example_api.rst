@@ -187,8 +187,8 @@ The function can then be applied to both input arrays (2014 and 2017).
 
 .. code-block:: python
 
-    features_pre = ls8_pp(geoarray_pre)
-    features_post = ls8_pp(geoarray_post)
+    features_pre = landsat_prepare_features(geoarray_pre)
+    features_post = landsat_prepare_features(geoarray_post)
     print(features_pre)
 
 
