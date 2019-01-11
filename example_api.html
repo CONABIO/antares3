@@ -361,8 +361,8 @@ The complete set or subsets of these features will be used in various steps of t
 </pre></div>
 </div>
 <p>The function can then be applied to both input arrays (2014 and 2017).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">features_pre</span> <span class="o">=</span> <span class="n">ls8_pp</span><span class="p">(</span><span class="n">geoarray_pre</span><span class="p">)</span>
-<span class="n">features_post</span> <span class="o">=</span> <span class="n">ls8_pp</span><span class="p">(</span><span class="n">geoarray_post</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">features_pre</span> <span class="o">=</span> <span class="n">landsat_prepare_features</span><span class="p">(</span><span class="n">geoarray_pre</span><span class="p">)</span>
+<span class="n">features_post</span> <span class="o">=</span> <span class="n">landsat_prepare_features</span><span class="p">(</span><span class="n">geoarray_post</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">features_pre</span><span class="p">)</span>
 </pre></div>
 </div>
