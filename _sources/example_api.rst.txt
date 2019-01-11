@@ -312,7 +312,7 @@ The same feature now appears with the numeric code ``2`` instead of the tag-id `
 Train a model
 =============
 
-In the present case, we are not saving the model to the database or doing any other kind of antares specific operations related to modeling, so that we do not really benefit from using the ``Model`` class from the ``madmex.modeling.supervized`` submodules. Calling the scikit learn interface of lightGBM would provide the same results, however, for consistency with the rest of the tutorial we will use the madmex modeling interface.
+In the present case, we are not saving the model to the database or doing any other kind of antares specific operations related to modeling, so that we do not really benefit from using the ``Model`` class from the ``madmex.modeling.supervised`` submodules. Calling the scikit learn interface of lightGBM would provide the same results, however, for consistency with the rest of the tutorial we will use the madmex modeling interface.
 
 
 
