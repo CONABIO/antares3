@@ -1,6 +1,6 @@
 import os
 import datacube
-from datacube.storage.storage import write_dataset_to_netcdf
+from datacube.drivers.netcdf import write_dataset_to_netcdf
 from datacube.api import GridWorkflow
 import xarray as xr
 import numpy as np
@@ -14,7 +14,7 @@ from madmex.util import randomword
 import logging
 logger = logging.getLogger(__name__)
 
-dask.set_options(get=dask.get)
+dask.config.set(get=dask.get)
 
 def run(tile, center_dt, path):
     """Basic datapreparation recipe 001
