@@ -163,6 +163,7 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
         client.restart()
+        dask.config.set(scheduler=client)
         C = client.map(fun, iterable,
                        pure=False,
                        **{'center_dt': center_dt,
