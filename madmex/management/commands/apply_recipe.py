@@ -20,6 +20,7 @@ from madmex.recipes import RECIPES
 from madmex.wrappers import gwf_query
 from madmex.settings import INGESTION_PATH
 from madmex.util import join_dicts
+import dask
 
 logger = logging.getLogger(__name__)
 
