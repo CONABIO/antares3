@@ -5,8 +5,6 @@ from datacube.drivers.netcdf import write_dataset_to_netcdf
 from datacube.api import GridWorkflow
 import xarray as xr
 import numpy as np
-import dask
-
 from madmex.util.xarray import to_float, to_int
 
 from datetime import datetime
