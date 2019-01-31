@@ -14,7 +14,6 @@ from datetime import datetime
 from madmex.util import randomword
 import logging
 logger = logging.getLogger(__name__)
-dask.config.set(scheduler='processes')
 
 def run(tile, center_dt, path):
     """Basic datapreparation recipe 001
