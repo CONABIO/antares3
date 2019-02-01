@@ -147,9 +147,7 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
 
         # database query
         gwf_kwargs = { k: options[k] for k in ['lat', 'long', 'region', 'begin', 'end', 'resolution', 'tilesize', 'origin', 'proj4']}
-        
-        print('searching for error')
-        print(gwf_kwargs)
+
         if not isinstance(product, list):
             raise TypeError('Product (defined in madmex.recipes.RECIPES) must be a list')
         dict_list = []
