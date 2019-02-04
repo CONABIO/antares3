@@ -6,7 +6,7 @@ from madmex.bin.bis import segment_gen
 class Segmentation(BaseSegmentation):
     """Antares implementation of Berkeley Image segmentation algorithm
     """
-    def __init__(self, array, affine, crs, t=12, s=0.3, c=0.8):
+    def __init__(self, array, affine, crs, extent_wkt, extent_json, t=12, s=0.3, c=0.8):
         """BIS segmentation algorithm
 
         Args:
@@ -28,7 +28,7 @@ class Segmentation(BaseSegmentation):
             >>> meta.save()
             >>> Seg.to_db()
         """
-        super().__init__(array=array, affine=affine, crs=crs)
+        super().__init__(array=array, affine=affine, crs=crs, extent_wkt=extent_wkt, extent_json=extent_json)
         self.algorithm = 'bis'
         self.t = t
         self.s = s
