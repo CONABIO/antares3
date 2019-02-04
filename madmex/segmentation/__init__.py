@@ -31,6 +31,8 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         self.array = array
         self.affine = affine
         self.crs = crs
+        self.extent_wkt = extent_wkt
+        self.extent_json = extent_json
         self.fc = None
         self.segments_array = None
         self.algorithm = None
@@ -49,7 +51,9 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         array = np.moveaxis(array, 0, 2)
         affine = Affine(*list(geoarray.affine)[0:6])
         crs = geoarray.crs._crs.ExportToProj4()
-        return cls(array=array, affine=affine, crs=crs, **kwargs)
+        extent_wkt = geoarray.geobox.extent.wkt
+        extent_json = sr_0.geobox.extent.json
+        return cls(array=array, affine=affine, crs=crs, extent_wkt = extent_wkt, extent_json = extent_json, **kwargs)
 
     @abc.abstractmethod
     def segment(self):
