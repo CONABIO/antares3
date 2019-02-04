@@ -19,7 +19,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
     algorithms on raster data, converting input and output data and interacting with the
     database.
     """
-    def __init__(self, array, affine, crs):
+    def __init__(self, array, affine, crs, extent_wkt, extent_json):
         """Parent class to run spatial segmentation
 
         Args:
@@ -53,7 +53,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         crs = geoarray.crs._crs.ExportToProj4()
         extent_wkt = geoarray.geobox.extent.wkt
         extent_json = geoarray.geobox.extent.json
-        return cls(array=array, affine=affine, crs=crs, extent_wkt = extent_wkt, extent_json = extent_json, **kwargs)
+        return cls(array=array, affine=affine, crs=crs, extent_wkt=extent_wkt, extent_json=extent_json, **kwargs)
 
     @abc.abstractmethod
     def segment(self):
