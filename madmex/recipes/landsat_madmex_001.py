@@ -5,7 +5,7 @@ from datacube.storage import masking
 from datacube.api import GridWorkflow
 import xarray as xr
 import numpy as np
-import dask
+
 
 from madmex.util.xarray import to_float, to_int
 
@@ -15,7 +15,7 @@ from madmex.util import randomword
 import logging
 logger = logging.getLogger(__name__)
 
-dask.config.set(get=dask.get)
+
 
 def run(tile, center_dt, path):
     """Basic datapreparation recipe 001
@@ -98,7 +98,7 @@ def run(tile, center_dt, path):
                              sr_max.apply(to_int),
                              sr_std.apply(to_int), terrain])
         combined.attrs['crs'] = crs
-        combined = combined.compute()
+        combined = combined.compute(scheduler='threads')
         write_dataset_to_netcdf(combined, nc_filename)
         return nc_filename
     except Exception as e:
