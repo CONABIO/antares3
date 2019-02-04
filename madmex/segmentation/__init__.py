@@ -52,7 +52,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         affine = Affine(*list(geoarray.affine)[0:6])
         crs = geoarray.crs._crs.ExportToProj4()
         extent_wkt = geoarray.geobox.extent.wkt
-        extent_json = sr_0.geobox.extent.json
+        extent_json = geoarray.geobox.extent.json
         return cls(array=array, affine=affine, crs=crs, extent_wkt = extent_wkt, extent_json = extent_json, **kwargs)
 
     @abc.abstractmethod
