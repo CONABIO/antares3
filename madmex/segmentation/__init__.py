@@ -155,6 +155,8 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             >>> Seg.to_filesystem(path, name_file)
         
         """
+        schema = {'geometry': 'Polygon',
+                  'properties': [('id', 'int')]}
         with fiona.open(path, 'w', layer = name_file,
                         schema=schema,
                         driver='ESRI Shapefile',
