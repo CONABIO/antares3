@@ -3,6 +3,7 @@
 import abc
 import json
 import gc
+import fiona
 from affine import Affine
 import numpy as np
 import os
