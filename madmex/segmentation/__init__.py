@@ -1,6 +1,5 @@
 """Spatial segmentation module"""
 
-
 import abc
 import json
 import gc
@@ -8,10 +7,12 @@ from affine import Affine
 import numpy as np
 from rasterio import features
 from django.contrib.gis.geos.geometry import GEOSGeometry
+from datacube.utils.geometry import CRS, GeoBox
 
 from madmex.util.spatial import feature_transform
 from madmex.models import PredictObject
 from madmex.util import chunk
+
 
 class BaseSegmentation(metaclass=abc.ABCMeta):
     """
@@ -19,7 +20,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
     algorithms on raster data, converting input and output data and interacting with the
     database.
     """
-    def __init__(self, array, affine, crs, extent_wkt, extent_json):
+    def __init__(self, array, affine, crs):
         """Parent class to run spatial segmentation
 
         Args:
@@ -31,8 +32,6 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         self.array = array
         self.affine = affine
         self.crs = crs
-        self.extent_wkt = extent_wkt
-        self.extent_json = extent_json
         self.fc = None
         self.segments_array = None
         self.algorithm = None
@@ -51,9 +50,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         array = np.moveaxis(array, 0, 2)
         affine = Affine(*list(geoarray.affine)[0:6])
         crs = geoarray.crs._crs.ExportToProj4()
-        extent_wkt = geoarray.geobox.extent.wkt
-        extent_json = geoarray.geobox.extent.json
-        return cls(array=array, affine=affine, crs=crs, extent_wkt=extent_wkt, extent_json=extent_json, **kwargs)
+        return cls(array=array, affine=affine, crs=crs, **kwargs)
 
     @abc.abstractmethod
     def segment(self):
@@ -61,6 +58,15 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         """
         pass
 
+    @property
+    def geobox(self):
+        """Object geobox
+
+        Returns:
+            datacube.utils.geometry.GeoBox
+        """
+        return GeoBox(width=self.array.shape[1], height=self.array.shape[0],
+                      affine=self.affine, crs=CRS(self.crs))
 
     def polygonize(self, crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"):
         """Transform the raster result of a segmentation to a feature collection
