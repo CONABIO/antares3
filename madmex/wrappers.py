@@ -14,7 +14,7 @@ from madmex.util import chunk
 from madmex.io.vector_db import VectorDb, load_segmentation_from_dataset
 from madmex.overlay.extractions import zonal_stats_xarray
 from madmex.modeling import BaseModel
-
+from madmex.settings import TEMP_DIR
 from madmex.models import Region, Country, Model, PredictClassification
 from datacube.model import GridSpec
 
