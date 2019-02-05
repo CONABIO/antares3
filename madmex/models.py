@@ -86,6 +86,7 @@ class PredictObject(models.Model):
     regions and each object should have an assigned tag which is the ground truth for
     it.
     '''
+    path = models.CharField(max_length=400, default='')
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
     prediction_tags = models.ManyToManyField(Tag, through='PredictClassification')
