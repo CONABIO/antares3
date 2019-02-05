@@ -201,3 +201,4 @@ STATIC_URL = '/static/'
 # Driver and ingestion bucket
 DRIVER = os.getenv('DRIVER', 'NetCDF CF')
 INGESTION_BUCKET = os.getenv('INGESTION_BUCKET', '')
+SEGMENTATION_BUCKET = os.getenv('SEGMENTATION_BUCKET','')
