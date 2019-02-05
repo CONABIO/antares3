@@ -232,7 +232,7 @@ def segment(tile, algorithm, segmentation_meta,
     try:
         # Load tile
         geoarray = GridWorkflow.load(tile[1], measurements=band_list)
-        dataset_name = segmentation_meta.datasource + '_%d_%d_' % (tile[0][0], tile[0][1]) + segmentation_meta.year
+        dataset_name = segmentation_meta.datasource + '_%d_%d_' % (tile[0][0], tile[0][1]) + segmentation_meta.datasource_year
         hash = hashlib.md5(dataset_name.encode('utf-8')).hexdigest()[0:6]
         name_file = hash + '_' + dataset_name
         path = os.path.join(TEMP_DIR, 'segmentation_results')
