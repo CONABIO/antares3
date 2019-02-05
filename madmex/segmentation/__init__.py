@@ -5,10 +5,12 @@ import json
 import gc
 from affine import Affine
 import numpy as np
+import os
+import boto3
 from rasterio import features
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from datacube.utils.geometry import CRS, GeoBox
-
+from madmex.settings import SEGMENTATION_BUCKET
 from madmex.util.spatial import feature_transform
 from madmex.models import PredictObject
 from madmex.util import chunk
@@ -101,13 +103,14 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         self.fc = fc_out
 
 
-    def to_db(self, out_file, meta_object):
+    def to_db(self, name_file, meta_object):
         """Write the result of a segmentation to the database
 
         Args:
+            name_file (str): file name for segmentation result in s3
             meta_object (madmex.models.SegmentationInformation.object): The python mapping
                 of a django object containing segmentation metadata information
-            out_file (str): Absolute path for segmentation result file in s3
+            
 
         Example:
             >>> from madmex.models import SegmentationInformation
@@ -121,20 +124,83 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             >>>                                parameters="{'compactness': 12}",
             >>>                                datasource_year='2018')
             >>> meta.save()
-            >>> out_file = 's3://my-segmentation-bucket/shapefile'
+            >>> name_file = 'shapefile'
 
-            >>> Seg.to_db(out_file, meta)
+            >>> Seg.to_db(name_file, meta)
         """
         if self.fc is None:
             raise ValueError('fc (feature collection) attribute is empty, you must first run the polygonize method')
 
         geom = GEOSGeometry(self.geobox.extent.wkt)
-        filename = out_file + '.shp'
-        obj = PredictObject(path=out_file, the_geom=geom, segmentation_information=meta_object)
+        SEGMENTATION_BUCKET = os.getenv('SEGMENTATION_BUCKET', '')
+        filename = name_file + '.shp'
+        file_path_in_s3 = 's3://' + SEGMENTATION_BUCKET + '/' + filename
+        obj = PredictObject(path=file_path_in_s3, the_geom=geom, segmentation_information=meta_object)
         PredictObject.objects.bulk_create(obj)
         gc.collect()
-    def to_bucket(self, out_file):
-        return True
+    def to_filesystem(self, path, name_file):
+        """Write result of a segmentation to filesystem in directory
+        Args:
+            path (str): absolute path that will have results of segmentation
+            name_file (str): file name for segmentation result in s3
+        Example:
+            >>> from madmex.models import SegmentationInformation
+            >>> from madmex.segmentation.bis import Segmentation
+            >>> Seg = Segmentation.from_geoarray(geoarray, compactness=12)
+            >>> Seg.segment()
+            >>> Seg.polygonize() 
+            >>> path = '/my_shared_volume/'
+            >>> name_file = 'my_segmentation_result'
+            >>> Seg.to_filesystem(path, name_file)
+        
+        """
+        with fiona.open(path, 'w', layer = name_file,
+                        schema=schema,
+                        driver='ESRI Shapefile',
+                        crs=seg.crs) as dst:
+            for feature in seg.fc:
+                dst.write(feature)
+        
+    def to_bucket(self, path, name_file):
+        """Write result of a segmentation to bucket in s3
+        Args:
+            path (str): absolute path that will have results of segmentation in bucket. In .antares 
+                is specified the bucket in s3 for segmentation results                  
+            name_file (str): file name for segmentation result in s3
+        Example:
+            >>> from madmex.models import SegmentationInformation
+            >>> from madmex.segmentation.bis import Segmentation
+            >>> Seg = Segmentation.from_geoarray(geoarray, compactness=12)
+            >>> Seg.segment()
+            >>> Seg.polygonize() 
+            >>> path = '/my_shared_volume/'
+            >>> name_file = 'my_segmentation_result'
+            >>> Seg.to_filesystem(path, name_file)
+            >>> Seg.to_bucket(path,name_file)
+        
+        """        
+        SEGMENTATION_BUCKET = os.getenv('SEGMENTATION_BUCKET', '')
+        s3 = boto3.client('s3')
+        filename = name_file + '.shp'
+        filepath = path + '/' + filename
+        s3.upload_file(filepath, SEGMENTATION_BUCKET, filename)
+        os.remove(filepath)
+        filename = name_file + '.shx'
+        filepath = path + '/' + filename
+        s3.upload_file(filepath, SEGMENTATION_BUCKET, filename)
+        os.remove(filepath)
+        filename = name_file + '.cpg'
+        filepath = path + '/' + filename
+        s3.upload_file(filepath, SEGMENTATION_BUCKET, filename)
+        os.remove(filepath)
+        filename = name_file + '.dbf'
+        filepath = path + '/' + filename
+        s3.upload_file(filepath, SEGMENTATION_BUCKET, filename)
+        os.remove(filepath)
+        filename = name_file + '.prj'
+        filepath = path + '/' + filename
+        s3.upload_file(filepath, SEGMENTATION_BUCKET, filename)
+        os.remove(filepath)
         
 
 
