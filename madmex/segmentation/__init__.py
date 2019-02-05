@@ -160,8 +160,8 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         with fiona.open(path, 'w', layer = name_file,
                         schema=schema,
                         driver='ESRI Shapefile',
-                        crs=seg.crs) as dst:
-            for feature in seg.fc:
+                        crs=self.crs) as dst:
+            for feature in self.fc:
                 dst.write(feature)
         
     def to_bucket(self, path, name_file):
