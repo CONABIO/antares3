@@ -238,15 +238,15 @@ def segment(tile, algorithm, segmentation_meta,
         path = os.path.join(TEMP_DIR, 'segmentation_results')
         if not os.path.exists(path):
             os.makedirs(path)
-        out_file = path + '/' + name_file
         seg = Segmentation.from_geoarray(geoarray, **extra_args)
         seg.segment()
         # Try deallocating input array
         seg.array = None
         geoarray = None
         seg.polygonize()
-        seg.to_db(out_file, segmentation_meta)
-        seg.to_bucket(out_file)
+        seg.to_filesystem(path,name_file)
+        seg.to_db(name_file, segmentation_meta)
+        seg.to_bucket(path, name_file)
         gc.collect()
         return True
     except Exception as e:
