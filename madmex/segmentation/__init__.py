@@ -136,8 +136,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         SEGMENTATION_BUCKET = os.getenv('SEGMENTATION_BUCKET', '')
         filename = name_file + '.shp'
         file_path_in_s3 = 's3://' + SEGMENTATION_BUCKET + '/' + filename
-        obj = PredictObject(path=file_path_in_s3, the_geom=geom, segmentation_information=meta_object)
-        PredictObject.objects.bulk_create(obj)
+        PredictObject.objects.get_or_create(path=file_path_in_s3, the_geom=geom, segmentation_information=meta_object)
         gc.collect()
     def to_filesystem(self, path, name_file):
         """Write result of a segmentation to filesystem in directory
