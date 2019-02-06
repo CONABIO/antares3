@@ -269,11 +269,11 @@ def predict_object(tile, model_name, segmentation_name,
     try:
         # Load geoarray and feature collection
         geoarray = GridWorkflow.load(tile[1])
-        fc = load_segmentation_from_dataset(geoarray, segmentation_name)
-        # Extract array of features
-        X, y = zonal_stats_xarray(dataset=geoarray, fc=fc, field='id',
-                                  categorical_variables=categorical_variables,
-                                  aggregation=aggregation)
+        path = load_segmentation_from_dataset(geoarray, segmentation_name)
+        with fiona.open(path) as src:
+            X, y = zonal_stats_xarray(dataset = geoarray, fc=src, field='id',
+                                          categorical_variables=categorical_variables,
+                                          aggregation=aggregation)
         # Deallocate geoarray and feature collection
         geoarray = None
         fc = None
