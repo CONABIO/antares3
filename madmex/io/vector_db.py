@@ -48,7 +48,7 @@ class VectorDb(AntaresDb):
         return fc
 
 def load_segmentation_from_dataset(geoarray, segmentation_name):
-    """Retrieve a segmentation intersecting with a geoarray from the database
+    """Retrieve a path in s3 segmentation intersecting with a geoarray
 
     Args:
         geoarray (xarray.Dataset): Typical Dataset object generated using one of
@@ -56,15 +56,12 @@ def load_segmentation_from_dataset(geoarray, segmentation_name):
         segmentation_name (str): Unique segmentation identifier
 
     Return:
-        list: A geojson like feature collection. See ``madmex.overlay.conversions.predict_object_to_feature``
-        for more details about the structure of each feature.
+        location of segmentation in s3 (str)
     """
     # TODO: We'll probably have to introduce a buffer here to account for the curving of reprojected extent
-    geobox = geoarray.geobox
-    crs = geoarray.crs._crs.ExportToProj4()
-    poly = Polygon.from_geobox(geobox)
+    poly = Polygon.from_ewkt(geoarray.geobox.extent.wkt)
     query_set = PredictObject.objects.filter(the_geom__intersects=poly,
-                                             segmentation_information__name=segmentation_name)
-    fc = [predict_object_to_feature(x, crs) for x in query_set]
-    return fc
+                                         segmentation_information__name=segmentation_name)
+    
+    return query_set[0].path
 
