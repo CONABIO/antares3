@@ -58,7 +58,6 @@ def load_segmentation_from_dataset(geoarray, segmentation_name):
     Return:
         location of segmentation in s3 (str)
     """
-    # TODO: We'll probably have to introduce a buffer here to account for the curving of reprojected extent
     poly = Polygon.from_ewkt(geoarray.geobox.extent.wkt)
     query_set = PredictObject.objects.filter(the_geom__intersects=poly,
                                          segmentation_information__name=segmentation_name)
