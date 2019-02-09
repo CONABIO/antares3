@@ -179,6 +179,9 @@
 <span class="kn">from</span> <span class="nn">madmex.models</span> <span class="k">import</span> <span class="n">Region</span><span class="p">,</span> <span class="n">Country</span><span class="p">,</span> <span class="n">Model</span><span class="p">,</span> <span class="n">PredictClassification</span>
 <span class="kn">from</span> <span class="nn">datacube.model</span> <span class="k">import</span> <span class="n">GridSpec</span>
 
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The wrapper module gathers functions that are typically called by</span>
 <span class="sd">command lines</span>
@@ -540,6 +543,7 @@
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Change detection failed because: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Change detection failed because: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
 </pre></div>
