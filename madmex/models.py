@@ -89,7 +89,6 @@ class PredictObject(models.Model):
     path = models.CharField(max_length=400, default='')
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
-    prediction_tags = models.ManyToManyField(Tag, through='PredictClassification')
     segmentation_information = models.ForeignKey(SegmentationInformation, on_delete=models.CASCADE, default=-1)
 
 class TrainClassification(models.Model):
