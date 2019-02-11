@@ -163,6 +163,7 @@
 <span></span><span class="kn">import</span> <span class="nn">rasterio</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 <span class="kn">import</span> <span class="nn">gc</span>
@@ -171,6 +172,7 @@
 <span class="kn">from</span> <span class="nn">datacube.utils.geometry</span> <span class="k">import</span> <span class="n">Geometry</span><span class="p">,</span> <span class="n">CRS</span>
 <span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">import_module</span>
 <span class="kn">from</span> <span class="nn">madmex.util.xarray</span> <span class="k">import</span> <span class="n">to_float</span>
+<span class="kn">from</span> <span class="nn">madmex.util</span> <span class="k">import</span> <span class="n">StreamToLogger</span>
 <span class="kn">from</span> <span class="nn">madmex.util</span> <span class="k">import</span> <span class="n">chunk</span>
 <span class="kn">from</span> <span class="nn">madmex.io.vector_db</span> <span class="k">import</span> <span class="n">VectorDb</span><span class="p">,</span> <span class="n">load_segmentation_from_dataset</span>
 <span class="kn">from</span> <span class="nn">madmex.overlay.extractions</span> <span class="k">import</span> <span class="n">zonal_stats_xarray</span>
@@ -181,6 +183,13 @@
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">stdout_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;STDOUT&#39;</span><span class="p">)</span>
+<span class="n">stdl</span> <span class="o">=</span> <span class="n">StreamToLogger</span><span class="p">(</span><span class="n">stdout_logger</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">stdl</span>
+<span class="n">stderr_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;STDERR&#39;</span><span class="p">)</span>
+<span class="n">stdl</span> <span class="o">=</span> <span class="n">StreamToLogger</span><span class="p">(</span><span class="n">stderr_logger</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">stdl</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The wrapper module gathers functions that are typically called by</span>
