@@ -1,0 +1,6 @@
+madmex.wrappers.predict\_object
+===============================
+
+.. currentmodule:: madmex.wrappers
+
+.. autofunction:: predict_object
