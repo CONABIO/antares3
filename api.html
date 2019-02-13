@@ -17,34 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="madmex.api.remote.UsgsApi" href="generated/madmex.api.remote.UsgsApi.html" />
     <link rel="prev" title="Extending the system" href="extend.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -200,12 +202,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/madmex.validation.pprint_val_dict.html">madmex.validation.pprint_val_dict</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#wrappers">Wrappers</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/madmex.wrappers.predict_pixel_tile.html">madmex.wrappers.predict_pixel_tile</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/madmex.wrappers.extract_tile_db.html">madmex.wrappers.extract_tile_db</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/madmex.wrappers.gwf_query.html">madmex.wrappers.gwf_query</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/madmex.wrappers.segment.html">madmex.wrappers.segment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/madmex.wrappers.predict_object.html">madmex.wrappers.predict_object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#wrappers">Wrappers</a><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#utils">Utils</a><ul>
@@ -694,20 +691,20 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.wrappers.predict_pixel_tile.html#madmex.wrappers.predict_pixel_tile" title="madmex.wrappers.predict_pixel_tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.predict_pixel_tile</span></code></a>(tile,&nbsp;model_id)</td>
-<td>Run a model in prediction mode and generates a raster file written to disk</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.predict_pixel_tile</span></code></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.wrappers.extract_tile_db.html#madmex.wrappers.extract_tile_db" title="madmex.wrappers.extract_tile_db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.extract_tile_db</span></code></a>(tile,&nbsp;sp,&nbsp;…)</td>
-<td>Function to extract data under training geometries for a given tile</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.extract_tile_db</span></code></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.wrappers.gwf_query.html#madmex.wrappers.gwf_query" title="madmex.wrappers.gwf_query"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.gwf_query</span></code></a>(product[,&nbsp;lat,&nbsp;long,&nbsp;…])</td>
-<td>Run a spatial query on a datacube product using either coordinates or a region name</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.gwf_query</span></code></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/madmex.wrappers.segment.html#madmex.wrappers.segment" title="madmex.wrappers.segment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.segment</span></code></a>(tile,&nbsp;algorithm,&nbsp;…)</td>
-<td>Run a segmentation algorithm on tile</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.segment</span></code></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/madmex.wrappers.predict_object.html#madmex.wrappers.predict_object" title="madmex.wrappers.predict_object"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.predict_object</span></code></a>(tile,&nbsp;model_name,&nbsp;…)</td>
-<td>Run a trained classifier in prediction mode on all objects intersection with a tile</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrappers.predict_object</span></code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -827,7 +824,7 @@
         <a href="generated/madmex.api.remote.UsgsApi.html" class="btn btn-neutral float-right" title="madmex.api.remote.UsgsApi" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="extend.html" class="btn btn-neutral" title="Extending the system" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="extend.html" class="btn btn-neutral float-left" title="Extending the system" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -853,26 +850,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

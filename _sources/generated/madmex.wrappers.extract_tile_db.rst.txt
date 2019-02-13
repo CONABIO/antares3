@@ -1,6 +1,0 @@
-madmex.wrappers.extract\_tile\_db
-=================================
-
-.. currentmodule:: madmex.wrappers
-
-.. autofunction:: extract_tile_db
