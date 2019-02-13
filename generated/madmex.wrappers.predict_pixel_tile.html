@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>madmex.util.randomword &mdash; antares3 0.4.0 documentation</title>
+  <title>madmex.wrappers.predict_pixel_tile &mdash; antares3 0.4.0 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="madmex.util.yaml_to_dict" href="madmex.util.yaml_to_dict.html" />
-    <link rel="prev" title="madmex.wrappers.predict_object" href="madmex.wrappers.predict_object.html" /> 
+    <link rel="next" title="madmex.wrappers.extract_tile_db" href="madmex.wrappers.extract_tile_db.html" />
+    <link rel="prev" title="madmex.validation.pprint_val_dict" href="madmex.validation.pprint_val_dict.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -105,40 +105,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../api.html#overlay">Overlay</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#segmentation">Segmentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api.html#validation">Validation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api.html#wrappers">Wrappers</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api.html#utils">Utils</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.util.randomword</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.yaml_to_dict.html">madmex.util.yaml_to_dict</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.mid_date.html">madmex.util.mid_date</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.parser_extra_args.html">madmex.util.parser_extra_args</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.chunk.html">madmex.util.chunk</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.pprint_args.html">madmex.util.pprint_args</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.fill_and_copy.html">madmex.util.fill_and_copy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.join_dicts.html">madmex.util.join_dicts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.datacube.var_to_ind.html">madmex.util.datacube.var_to_ind</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.local.aware_download.html">madmex.util.local.aware_download</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.local.extract_zip.html">madmex.util.local.extract_zip</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.local.aware_make_dir.html">madmex.util.local.aware_make_dir</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.local.basename.html">madmex.util.local.basename</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.local.filter_files_from_folder.html">madmex.util.local.filter_files_from_folder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.xarray.to_float.html">madmex.util.xarray.to_float</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.xarray.to_int.html">madmex.util.xarray.to_int</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.numpy.groupby.html">madmex.util.numpy.groupby</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.feature_transform.html">madmex.util.spatial.feature_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.geometry_transform.html">madmex.util.spatial.geometry_transform</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.get_geom_bbox.html">madmex.util.spatial.get_geom_bbox</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.spatial.grid_gen.html">madmex.util.spatial.grid_gen</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.list_folders.html">madmex.util.s3.list_folders</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.list_files.html">madmex.util.s3.list_files</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.build_rasterio_path.html">madmex.util.s3.build_rasterio_path</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.read_file.html">madmex.util.s3.read_file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.s3.write_raster.html">madmex.util.s3.write_raster</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.db.classification_to_cmap.html">madmex.util.db.classification_to_cmap</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.db.get_label_encoding.html">madmex.util.db.get_label_encoding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.db.get_validation_scheme_name.html">madmex.util.db.get_validation_scheme_name</a></li>
-<li class="toctree-l3"><a class="reference internal" href="madmex.util.parsers.postgis_box_parser.html">madmex.util.parsers.postgis_box_parser</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#wrappers">Wrappers</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.wrappers.predict_pixel_tile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.wrappers.extract_tile_db.html">madmex.wrappers.extract_tile_db</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.wrappers.gwf_query.html">madmex.wrappers.gwf_query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.wrappers.segment.html">madmex.wrappers.segment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.wrappers.predict_object.html">madmex.wrappers.predict_object</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#utils">Utils</a></li>
 </ul>
 </li>
 </ul>
@@ -193,13 +168,13 @@
         
           <li><a href="../api.html">API reference</a> &raquo;</li>
         
-      <li>madmex.util.randomword</li>
+      <li>madmex.wrappers.predict_pixel_tile</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/generated/madmex.util.randomword.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/madmex.wrappers.predict_pixel_tile.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -212,12 +187,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="madmex-util-randomword">
-<h1>madmex.util.randomword<a class="headerlink" href="#madmex-util-randomword" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="madmex-wrappers-predict-pixel-tile">
+<h1>madmex.wrappers.predict_pixel_tile<a class="headerlink" href="#madmex-wrappers-predict-pixel-tile" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="madmex.util.randomword">
-<code class="descclassname">madmex.util.</code><code class="descname">randomword</code><span class="sig-paren">(</span><em>length</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/util.html#randomword"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.util.randomword" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a random string of desired length</p>
+<dt id="madmex.wrappers.predict_pixel_tile">
+<code class="descclassname">madmex.wrappers.</code><code class="descname">predict_pixel_tile</code><span class="sig-paren">(</span><em>tile</em>, <em>model_id</em>, <em>outdir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/wrappers.html#predict_pixel_tile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.wrappers.predict_pixel_tile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a model in prediction mode and generates a raster file written to disk</p>
+<p>Meant to be called within a dask.distributed.Cluster.map() over a list of tiles
+returned by GridWorkflow.list_cells
+Called in model_predict command line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tile</strong> – Datacube tile as returned by GridWorkflow.list_cells()</li>
+<li><strong>model_id</strong> (<em>str</em>) – Database identifier of trained model to use. The model
+must have been trained against a numeric dependent variable.
+(See –encode flag in model_fit command line)</li>
+<li><strong>outdir</strong> (<em>str</em>) – Directory where output data should be written. Only makes sense
+when generating unregistered geotiffs. The directory must already exist,
+it is therefore a good idea to generate it in the command line function
+before sending the tasks</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The function is used for its side effect of generating a predicted
+array and writting it to a raster file (GeoTiff or NetCDF). OPtionally the file is registered as a storage unit in the datacube database.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -230,10 +233,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="madmex.util.yaml_to_dict.html" class="btn btn-neutral float-right" title="madmex.util.yaml_to_dict" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="madmex.wrappers.extract_tile_db.html" class="btn btn-neutral float-right" title="madmex.wrappers.extract_tile_db" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="madmex.wrappers.predict_object.html" class="btn btn-neutral float-left" title="madmex.wrappers.predict_object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="madmex.validation.pprint_val_dict.html" class="btn btn-neutral float-left" title="madmex.validation.pprint_val_dict" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>madmex.wrappers.gwf_query &mdash; antares3 0.4.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="madmex.wrappers.segment" href="madmex.wrappers.segment.html" />
+    <link rel="prev" title="madmex.wrappers.extract_tile_db" href="madmex.wrappers.extract_tile_db.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> antares3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deployment.html">Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../download.html">Downloading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ingest.html">Ingesting data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../extend.html">Extending the system</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#api">Api</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#indexing">Indexing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#ingestion">Ingestion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#i-o">I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#land-cover-change-lcc">Land cover change (lcc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#modeling">Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#overlay">Overlay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#validation">Validation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#wrappers">Wrappers</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="madmex.wrappers.predict_pixel_tile.html">madmex.wrappers.predict_pixel_tile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.wrappers.extract_tile_db.html">madmex.wrappers.extract_tile_db</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">madmex.wrappers.gwf_query</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.wrappers.segment.html">madmex.wrappers.segment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="madmex.wrappers.predict_object.html">madmex.wrappers.predict_object</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#utils">Utils</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../example_s2_land_cover.html">Sentinel 2 based Land cover example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_api.html">Land cover and land cover change: API example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">antares3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API reference</a> &raquo;</li>
+        
+      <li>madmex.wrappers.gwf_query</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/generated/madmex.wrappers.gwf_query.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="madmex-wrappers-gwf-query">
+<h1>madmex.wrappers.gwf_query<a class="headerlink" href="#madmex-wrappers-gwf-query" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="madmex.wrappers.gwf_query">
+<code class="descclassname">madmex.wrappers.</code><code class="descname">gwf_query</code><span class="sig-paren">(</span><em>product</em>, <em>lat=None</em>, <em>long=None</em>, <em>region=None</em>, <em>begin=None</em>, <em>end=None</em>, <em>view=True</em>, <em>resolution=None</em>, <em>tilesize=None</em>, <em>origin=None</em>, <em>proj4=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/madmex/wrappers.html#gwf_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#madmex.wrappers.gwf_query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a spatial query on a datacube product using either coordinates or a region name</p>
+<p>Wrapper function to call at the begining of nearly all spatial processing command lines</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>product</strong> (<em>str</em>) – Name of an ingested datacube product. The product to query</li>
+<li><strong>lat</strong> (<em>tuple</em>) – OPtional. For coordinate based spatial query. Tuple of min and max
+latitudes in decimal degreees.</li>
+<li><strong>long</strong> (<em>tuple</em>) – OPtional. For coordinate based spatial query. Tuple of min and max
+longitudes in decimal degreees.</li>
+<li><strong>region</strong> (<em>str</em>) – Optional name of a region or country whose geometry is present in the database
+region  or country table. Overrides lat and long when present (not None).
+Countries must be queried using ISO code (e.g.: ‘MEX’ for Mexico)</li>
+<li><strong>begin</strong> (<em>str</em>) – Date string in the form ‘%Y-%m-%d’. For temporally bounded queries</li>
+<li><strong>end</strong> (<em>str</em>) – Date string in the form ‘%Y-%m-%d’. For temporally bounded queries</li>
+<li><strong>view</strong> (<em>bool</em>) – Returns a view instead of the dictionary returned by <code class="docutils literal notranslate"><span class="pre">GridWorkflow.list_cells</span></code>.
+Useful when the output is be used directly as an iterable (e.g. in <code class="docutils literal notranslate"><span class="pre">distributed.map</span></code>)
+Default to True</li>
+<li><strong>resolution</strong> (<em>tuple</em>) – Optional. For creating a GridSpec regular spatial grid for <code class="docutils literal notranslate"><span class="pre">GridWorkflow</span></code> initialization.</li>
+<li><strong>tilesize</strong> (<em>tuple</em>) – Optional. For creating a GridSpec regular spatial grid for <code class="docutils literal notranslate"><span class="pre">GridWorkflow</span></code> initialization.</li>
+<li><strong>origin</strong> (<em>tuple</em>) – Optional. For creating a GridSpec regular spatial grid for <code class="docutils literal notranslate"><span class="pre">GridWorkflow</span></code> initialization.</li>
+<li><strong>proj4</strong> (<em>str</em>) – Optional. For creating a GridSpec regular spatial grid for <code class="docutils literal notranslate"><span class="pre">GridWorkflow</span></code> initialization.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Dictionary (view) of Tile index, Tile key value pair</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict or view</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">madmex.wrappers</span> <span class="k">import</span> <span class="n">gwf_query</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Using region name, time unbounded</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tiles_list</span> <span class="o">=</span> <span class="n">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="s1">&#39;ls8_espa_mexico&#39;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;Jalisco&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Using region name, time windowed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tiles_list</span> <span class="o">=</span> <span class="n">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="s1">&#39;ls8_espa_mexico&#39;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s1">&#39;Jalisco&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                       <span class="n">begin</span> <span class="o">=</span> <span class="s1">&#39;2017-01-01&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;2017-03-31&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Using lat long box, time windowed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tiles_list</span> <span class="o">=</span> <span class="n">gwf_query</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="s1">&#39;ls8_espa_mexico&#39;</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="p">[</span><span class="mi">19</span><span class="p">,</span> <span class="mi">22</span><span class="p">],</span> <span class="n">long</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">104</span><span class="p">,</span> <span class="o">-</span><span class="mi">102</span><span class="p">],</span>
+<span class="gp">... </span>                       <span class="n">begin</span> <span class="o">=</span> <span class="s1">&#39;2017-01-01&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;2017-03-31&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tiles_list</span> <span class="o">=</span> <span class="n">gwf_query</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2426720</span><span class="p">,</span> <span class="mi">977160</span><span class="p">),</span> <span class="n">tilesize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">100020</span><span class="p">,</span><span class="mi">100020</span><span class="p">)</span>
+<span class="gp">... </span>                       <span class="n">proj4</span> <span class="o">=</span> <span class="s1">&#39;+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="madmex.wrappers.segment.html" class="btn btn-neutral float-right" title="madmex.wrappers.segment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="madmex.wrappers.extract_tile_db.html" class="btn btn-neutral float-left" title="madmex.wrappers.extract_tile_db" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
