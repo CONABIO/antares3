@@ -75,7 +75,7 @@ antares init -c mex gtm
                 logger.info('This %s shape file will be ingested.' % country_file)
                 mapping = {
                     'name' : 'ISO',
-                    'the_geom' : 'POLYGON'
+                    'the_geom' : 'OGC'
                 }
                 ingest_countries_from_shape(country_file, mapping)
                 # Ingest first level of adm boundaries (e.g.: regions, states)
@@ -87,7 +87,7 @@ antares init -c mex gtm
                     mapping = {
                         'country': {'name': 'ISO'},
                         'name' : 'NAME_1',
-                        'the_geom' : 'POLYGON'
+                        'the_geom' : 'OGC'
                     }
                     ingest_states_from_shape(regions_file, mapping)
 
