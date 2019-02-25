@@ -18,7 +18,8 @@ from madmex.settings import TEMP_DIR
 from madmex.models import Region, Country, Model, PredictClassification, PredictObject
 from datacube.model import GridSpec
 from operator import itemgetter
-
+from shapely.geometry import mapping
+import fiona
 """
 The wrapper module gathers functions that are typically called by
 command lines
