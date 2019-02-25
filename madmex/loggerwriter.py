@@ -1,4 +1,3 @@
-
 class LoggerWriter(object):
     def __init__(self, writer):
         self._writer = writer
