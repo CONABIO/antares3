@@ -18,19 +18,9 @@ from madmex.settings import TEMP_DIR
 from madmex.models import Region, Country, Model, PredictClassification, PredictObject
 from datacube.model import GridSpec
 from operator import itemgetter
-from shapely.geometry import mapping
+from shapely.geometry import mapping, shape
+from madmex.util.spatial import geometry_transform, feature_transform
 import fiona
-
-from madmex.loggerwriter import LoggerWriter
-import logging
-logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
-logger = logging.getLogger(__name__)
-
-stdl = LoggerWriter(logger.debug)
-sys.stdout = stdl
-stdl = LoggerWriter(logger.error)
-sys.stderr = stdl
-
 """
 The wrapper module gathers functions that are typically called by
 command lines
@@ -328,7 +318,7 @@ def predict_object(tile, model_name, segmentation_name,
         print('Prediction failed because: %s' % e)
         return False
 
-def write_predict_result_to_vector(id, geometry, path_destiny):
+def write_predict_result_to_vector(id, geometry, path_destiny, proj4=None):
     """Retrieve classification results in db: label and confidence per polygon. Add this information to
     to segmentation file via fiona's functionality and write result to destiny (by this time only writes to 
     file system are supported)
@@ -339,19 +329,32 @@ def write_predict_result_to_vector(id, geometry, path_destiny):
     
     Args:
         id (int): id of segmentation file registered in PredictObject table.
-        geometry (geom): geometry of a region generated via ``shapely.geometry.shape()`` function.
+        geometry (geom): geometry of a region in a geojson-format
         pat_destiny (str): Path that will hold results. By this time only writes to file system are supported.
+        proj4 (str): Optional. crs projection in string format.
     
     """
     seg = PredictObject.objects.filter(id=id)
     path = seg[0].path
-    geom_dc_tile = geometry.intersection(shape(json.loads(seg[0].the_geom.geojson)))
+    if proj4 is not None:
+        geometry_proj = geometry_transform(geometry,proj4)
+    else:
+        geometry_proj = geometry_transform(geometry, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+    shape_region=shape(geometry_proj)
+    geom_dc_tile = shape_region.intersection(shape(json.loads(seg[0].the_geom.geojson)))
     segmentation_name_classified = os.path.basename(path_destiny).split('.')[0] + '_classified'
     with fiona.open(path) as src:
         source_driver = src.driver
-        source_crs = src.crs
+        if proj4 is not None:
+            fc = (feature_transform(x, crs_out=proj4) for x in src)
+            source_crs = from_string(proj4)
+        else:
+            fc = (feature_transform(x, crs_out='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') for x in src)
+            source_crs = from_string('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+            
         pred_objects_sorted = PredictClassification.objects.filter(name=name_predict, predict_object_id=id).prefetch_related('tag').order_by('features_id')
-        fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
+        fc_pred=[(x['properties']['id'], x['geometry']) for x in fc]
+        fc = None
         fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
         fc_pred = [(x[0][1], x[1].tag.numeric_code,
                     x[1].tag.value,
