@@ -15,7 +15,7 @@ from madmex.io.vector_db import VectorDb, load_segmentation_from_dataset
 from madmex.overlay.extractions import zonal_stats_xarray
 from madmex.modeling import BaseModel
 from madmex.settings import TEMP_DIR
-from madmex.models import Region, Country, Model, PredictClassification
+from madmex.models import Region, Country, Model, PredictClassification, PredictObject
 from datacube.model import GridSpec
 
 """
@@ -269,46 +269,48 @@ def predict_object(tile, model_name, segmentation_name,
     try:
         # Load geoarray and feature collection
         geoarray = GridWorkflow.load(tile[1])
-        path = load_segmentation_from_dataset(geoarray, segmentation_name)
+        poly = Polygon.from_ewkt(geoarray.geobox.extent.wkt)
+        query_set = PredictObject.objects.filter(the_geom__intersects=poly,
+                                                 segmentation_information__name=segmentation_name)
+        seg_id = query_set[0].id
         with fiona.open(path) as src:
             X, y = zonal_stats_xarray(dataset = geoarray, fc=src, field='id',
                                           categorical_variables=categorical_variables,
                                           aggregation=aggregation)
-        # Deallocate geoarray and feature collection
-        geoarray = None
-        fc = None
-        gc.collect()
-        # Load model
-        PredModel = BaseModel.from_db(model_name)
-        model_id = Model.objects.get(name=model_name).id
-        try:
-            # Avoid opening several threads in each process
-            PredModel.model.n_jobs = 1
-        except Exception as e:
-            pass
-        # Run prediction
-        y_pred = PredModel.predict(X)
-        y_conf = PredModel.predict_confidence(X)
-        # Deallocate arrays of extracted values and model
-        X = None
-        PredModel = None
-        gc.collect()
-        # Build list of PredictClassification objects
-        def predict_object_builder(i, pred, conf):
-            return PredictClassification(model_id=model_id, predict_object_id=i,
-                                         tag_id=pred, confidence=conf, name=name)
-        # Write labels to database combining chunking and bulk_create
-        for sub_zip in chunk(zip(y, y_pred, y_conf), 10000):
-            obj_list = [predict_object_builder(i,pred,conf) for i, pred, conf in
-                        sub_zip]
-            PredictClassification.objects.bulk_create(obj_list)
-            obj_list = None
+            # Deallocate geoarray and feature collection
+            geoarray = None
+            fc = None
             gc.collect()
-        y = None
-        y_pred = None
-        y_conf = None
-        gc.collect()
-        return True
+            # Load model
+            PredModel = BaseModel.from_db(model_name)
+            model_id = Model.objects.get(name=model_name).id
+            try:
+                # Avoid opening several threads in each process
+                PredModel.model.n_jobs = 1
+            except Exception as e:
+                pass
+            # Run prediction
+            y_pred = PredModel.predict(X)
+            y_conf = PredModel.predict_confidence(X)
+            # Deallocate arrays of extracted values and model
+            X = None
+            PredModel = None
+            gc.collect()
+            # Build list of PredictClassification objects
+            def predict_object_builder(i, pred, conf):
+                return PredictClassification(model_id=model_id, predict_object_id=seg_id,
+                                             tag_numeric_code=pred, name=name, confidence=conf, features_id=i)
+            # Write labels to database combining chunking and bulk_create
+            for sub_zip in chunk(zip(y, y_pred, y_conf), 10000):
+                obj_list = [predict_object_builder(i,pred,conf) for i, pred, conf in sub_zip]
+                PredictClassification.objects.bulk_create(obj_list)
+                obj_list = None
+            gc.collect()
+            y = None
+            y_pred = None
+            y_conf = None
+            gc.collect()
+            return True
     except Exception as e:
         print('Prediction failed because: %s' % e)
         return False
