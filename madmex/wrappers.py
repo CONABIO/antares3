@@ -21,6 +21,7 @@ from operator import itemgetter
 from shapely.geometry import mapping
 import fiona
 
+from madmex.loggerwriter import LoggerWriter
 import logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
 logger = logging.getLogger(__name__)
