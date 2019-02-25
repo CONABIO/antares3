@@ -1,40 +1,25 @@
 #!/usr/bin/env python
 
 """
-Author: Loic Dutrieux
-Date: 2018-05-07
-Purpose: Query the result of a classification and write the results to a vector
+Author: palmoreck
+Date: 2019-02-025
+Purpose: Write result of classification + segmentation to a vector
     file on disk
 """
 from madmex.management.base import AntaresBaseCommand
 
 from madmex.models import Country, Region, PredictClassification
-from madmex.util.spatial import feature_transform
-
-import fiona
-from fiona.crs import from_string
+from dask.distributed import Client
 import json
 import logging
+import fiona
+from madmex.settings import TEMP_DIR
+from os.path import expanduser
 
 logger = logging.getLogger(__name__)
 
-def write_to_file(fc, filename, layer, driver, crs):
-    # Define output file schema
-    schema = {'geometry': 'Polygon',
-              'properties': {'class':'str',
-                             'code':'int'}}
 
-    # Write to file
-    logger.info('Writing feature collection to file')
-    crs = from_string(crs)
-    with fiona.open(filename, 'w',
-                    encoding='utf-8',
-                    schema=schema,
-                    driver=driver,
-                    layer=layer,
-                    crs=crs) as dst:
-        write = dst.write
-        [write(feature) for feature in fc]
+
 
 class Command(AntaresBaseCommand):
     help = """
@@ -80,44 +65,55 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                             type=str,
                             default=None,
                             help='Optional proj4 string defining the output projection')
-
+        parser.add_argument('-sc', '--scheduler',
+                            type=str,
+                            default=None,
+                            help='Path to file with scheduler information (usually called scheduler.json)')
 
     def handle(self, *args, **options):
-        name = options['name']
+        name_predict = options['name']
         region = options['region']
         filename = options['filename']
         layer = options['layer']
         driver = options['driver']
         proj4 = options['proj4']
+        scheduler_file = options['scheduler']
+        
+        region_geom = Region.objects.get(name=region).the_geom
+        region_geojson = region_geom.geojson
+        geometry = json.loads(region_geojson)
 
-        # Define function to convert query set object to feature
-        def to_fc(x):
-            geometry = json.loads(x.predict_object.the_geom.geojson)
-            feature = {'type': 'feature',
-                       'geometry': geometry,
-                       'properties': {'class': x.tag.value, 'code': x.tag.numeric_code}}
-            return feature
-
+        path_destiny = os.path.join(TEMP_DIR, 'segmentation_results')
+        if not os.path.exists(path_destiny):
+            os.makedirs(path_destiny)
+            
         # Query country or region contour
         try:
             region = Country.objects.get(name=region).the_geom
         except Country.DoesNotExist:
             region = Region.objects.get(name=region).the_geom
-
-        # Query objects
-        logger.info('Querying the database for intersecting records')
-        qs = PredictClassification.objects.filter(name=name)
-        qs = qs.filter(predict_object__the_geom__intersects=region).prefetch_related('predict_object', 'tag')
-
-        # Convert query set to feature collection generator
-        logger.info('Generating feature collection')
-        fc = (to_fc(x) for x in qs)
-        crs = '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'
-        if proj4 is not None:
-            fc = (feature_transform(x, crs_out=proj4) for x in fc)
-            crs = proj4
-
-        write_to_file(fc, filename, layer=layer, driver=driver, crs=crs)
-
-
-
+        region_geojson = region.geojson
+        geometry = json.loads(region_geojson)
+        
+        qs_ids = PredictClassification.objects.filter(name=name_predict).distinct('predict_object_id')
+        list_ids = [x.predict_object_id for x in qs_ids]
+        
+        client = Client(scheduler_file=scheduler_file)
+        client.restart()
+        c = client.map(fun,list_ids,**{'path_destiny': path_destiny,
+                                      'geometry': geometry})
+        result = client.gather(c)        
+        logger.info('Merging results')
+        meta = fiona.open(result[0]).meta
+        
+        filename_merge = expanduser("~") + filename
+        
+        with fiona.open(filename_merge, 'w', **meta) as dst:
+            [[dst.write(features) for features in fiona.open(x)] for x in result]
+        for file in result:
+            path_basename = file.split('.shp')[0]
+            os.remove(file)
+            os.remove(path_basename + '.shx')
+            os.remove(path_basename + '.cpg')
+            os.remove(path_basename + '.dbf')
+            os.remove(path_basename + '.prj')
