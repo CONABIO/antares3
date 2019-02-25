@@ -101,7 +101,8 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         client = Client(scheduler_file=scheduler_file)
         client.restart()
         c = client.map(fun,list_ids,**{'path_destiny': path_destiny,
-                                      'geometry': geometry})
+                                      'geometry': geometry,
+                                      'proj4': proj4})
         result = client.gather(c)        
         logger.info('Merging results')
         meta = fiona.open(result[0]).meta
