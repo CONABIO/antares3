@@ -22,6 +22,7 @@ from shapely.geometry import mapping, shape
 from madmex.util.spatial import geometry_transform, feature_transform
 import fiona
 
+import sys
 from madmex.loggerwriter import LoggerWriter
 import logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
