@@ -329,7 +329,7 @@ def predict_object(tile, model_name, segmentation_name,
         print('Prediction failed because: %s' % e)
         return False
 
-def write_predict_result_to_vector(id, geometry, path_destiny, proj4=None):
+def write_predict_result_to_vector(id, predict_name, geometry, path_destiny, driver='ESRI Shapefile', layer=None, proj4=None):
     """Retrieve classification results in db: label and confidence per polygon. Add this information to
     to segmentation file via fiona's functionality and write result to destiny (by this time only writes to 
     file system are supported)
@@ -340,8 +340,11 @@ def write_predict_result_to_vector(id, geometry, path_destiny, proj4=None):
     
     Args:
         id (int): id of segmentation file registered in PredictObject table.
+        predict_name (str): name of predict file registered in PredictObject table.
         geometry (geom): geometry of a region in a geojson-format
         pat_destiny (str): Path that will hold results. By this time only writes to file system are supported.
+        driver (str): OGR driver to use for writting the data to file. Defaults to ESRI Shapefile
+        layer (str): Name of the layer (only for drivers that support multi-layer files)
         proj4 (str): Optional. crs projection in string format.
     
     """
@@ -358,12 +361,13 @@ def write_predict_result_to_vector(id, geometry, path_destiny, proj4=None):
         source_driver = src.driver
         if proj4 is not None:
             fc = (feature_transform(x, crs_out=proj4) for x in src)
-            source_crs = from_string(proj4)
+            crs = from_string(proj4)
         else:
-            fc = (feature_transform(x, crs_out='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') for x in src)
-            source_crs = from_string('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+            fc = (feature_transform(x,
+                                    crs_out='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') for x in src)
+            crs = from_string('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
             
-        pred_objects_sorted = PredictClassification.objects.filter(name=name_predict, predict_object_id=id).prefetch_related('tag').order_by('features_id')
+        pred_objects_sorted = PredictClassification.objects.filter(name=predict_name, predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in fc]
         fc = None
         fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
@@ -377,8 +381,11 @@ def write_predict_result_to_vector(id, geometry, path_destiny, proj4=None):
                                     'class':'str',
                                     'confidence': 'float'}}
         filename = path_destiny + segmentation_name_classified + '.shp'
-        with fiona.open(filename,
-                        'w',driver=source_driver, crs=source_crs,
+        with fiona.open(filename, 'w',
+                        encoding='utf-8',
+                        driver=driver,
+                        layer=layer,
+                        crs=crs,
                         schema=fc_schema) as dst:
             [dst.write({'geometry': mapping(shape(feat[0]).intersection(geom_dc_tile)),
                         'properties':{'code': feat[1],
