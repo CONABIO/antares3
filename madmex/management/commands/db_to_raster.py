@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
     help = """
-Query the result of a classification and write it to a raster file (only supports GeoTiff for now)
+Write result of classification to a raster file (only supports GeoTiff for now)
 
 --------------
 Example usage:
