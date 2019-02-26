@@ -1,31 +1,23 @@
 #!/usr/bin/env python
 
 """
-Author: Loic Dutrieux
-Date: 2018-05-31
-Purpose: Query the result of a classification and write the results to a raster
-    file on disk
+Author: palmoreck
+Date: 2019-02-26
+Purpose: Write result of a classification to a raster file on disk
 """
 from madmex.management.base import AntaresBaseCommand
 
 from madmex.models import Country, Region, PredictClassification
-from madmex.util.spatial import geometry_transform, get_geom_bbox
-from madmex.util import chunk
-from madmex.util import parsers
 from madmex.util.db import classification_to_cmap
-from django.db import connection
-
 import fiona
-from fiona.crs import from_string
 import json
 import logging
 import gc
-import re
-
-import numpy as np
-from affine import Affine
 import rasterio
-from rasterio.features import rasterize
+from rasterio.merge import merge
+from dask.distributed import Client
+import os
+from os.path import expanduser
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +55,10 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                             type=str,
                             default=None,
                             help='Optional proj4 string defining the output projection')
-
+        parser.add_argument('-sc', '--scheduler',
+                            type=str,
+                            default=None,
+                            help='Path to file with scheduler information (usually called scheduler.json)')
 
     def handle(self, *args, **options):
         name = options['name']
@@ -72,81 +67,51 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         resolution = options['resolution']
         # Proj4 string needs to be quoted in query
         proj4 = options['proj4']
-
-        # Query 0: Create the temp table
-        q_0_proj = """
-CREATE TEMP TABLE predict_proj AS
-SELECT
-    st_transform(public.madmex_predictobject.the_geom, %s) AS geom_proj,
-    public.madmex_tag.numeric_code AS tag
-FROM
-    public.madmex_predictclassification
-INNER JOIN
-    public.madmex_predictobject ON public.madmex_predictclassification.predict_object_id = public.madmex_predictobject.id AND st_intersects(public.madmex_predictobject.the_geom, ST_GeometryFromText(%s, 4326)) AND public.madmex_predictclassification.name = %s
-INNER JOIN
-    public.madmex_tag ON public.madmex_predictclassification.tag_id = public.madmex_tag.id;
-        """
-
-        q_0_longlat = """
-CREATE TEMP TABLE predict_proj AS
-SELECT
-    public.madmex_predictobject.the_geom AS geom_proj,
-    public.madmex_tag.numeric_code AS tag
-FROM
-    public.madmex_predictclassification
-INNER JOIN
-    public.madmex_predictobject ON public.madmex_predictclassification.predict_object_id = public.madmex_predictobject.id AND st_intersects(public.madmex_predictobject.the_geom, ST_GeometryFromText(%s, 4326)) AND public.madmex_predictclassification.name = %s
-INNER JOIN
-    public.madmex_tag ON public.madmex_predictclassification.tag_id = public.madmex_tag.id;
-        """
-
-        # Query 1: Get bbox
-        q_1 = """
-SELECT
-    st_extent(geom_proj)
-FROM
-    predict_proj;
-        """
-
-        # Query 2: Get the whole queryset/table
-        q_2 = """
-SELECT st_asgeojson(geom_proj, 5), tag FROM predict_proj;
-        """
-
-        # Define function to convert query set object to feature
-        def to_feature(x):
-            """Not really a feature; more like a geometry/value tuple
-            """
-            geometry = json.loads(x[0])
-            return (geometry, x[1])
+        scheduler_file = options['scheduler']
 
         # Query country or region contour
         try:
             region = Country.objects.get(name=region).the_geom
         except Country.DoesNotExist:
             region = Region.objects.get(name=region).the_geom
+        
+        region_geojson = region.geojson
+        geometry = json.loads(region_geojson)
+        
+        path_destiny = os.path.join(TEMP_DIR, 'db_to_raster_results')
+        if not os.path.exists(path_destiny):
+            os.makedirs(path_destiny)
 
-        # Query objects
-        logger.info('Querying the database for intersecting records')
-        with connection.cursor() as c:
-            if proj4 is not None:
-                c.execute(q_0_proj, [proj4, region.wkt, name])
-            else:
-                c.execute(q_0_longlat, [region.wkt, name])
-            c.execute(q_1)
-            bbox = c.fetchone()
-            c.execute(q_2)
-            qs = c.fetchall()
-
-        xmin, ymin, xmax, ymax = parsers.postgis_box_parser(bbox[0])
-
-        # Define output raster shape
-        nrows = int(((ymax - ymin) // resolution) + 1)
-        ncols = int(((xmax - xmin) // resolution) + 1)
-        shape = (nrows, ncols)
-        logger.info('Allocating array of shape (%d, %d)' % (nrows, ncols))
-        arr = np.zeros((nrows, ncols), dtype=np.uint8)
-        aff = Affine(resolution, 0, xmin, 0, -resolution, ymax)
+        qs_ids = PredictClassification.objects.filter(name=predict_name).distinct('predict_object_id')
+        list_ids = [x.predict_object_id for x in qs_ids]
+        
+        client = Client(scheduler_file=scheduler_file)
+        client.restart()
+        c = client.map(fun,list_ids,**{'predict_name': name,
+                                       'geometry': geometry,
+                                       'resolution': resolution,
+                                       'path_destiny': path_destiny,
+                                       'proj4': proj4})
+        result = client.gather(c) 
+        logger.info('Merging results')
+        
+        src_files_to_mosaic=[]
+        for file in result:
+            src = rasterio.open(file)
+            src_files_to_mosaic.append(src)
+        
+        mosaic, out_trans = merge(src_files_to_mosaic)
+        meta = {'driver': 'GTiff',
+                'width': mosaic.shape[2],
+                'height': mosaic.shape[1],
+                'count': 1,
+                'dtype': mosaic.dtype,
+                'crs': proj4,
+                'transform': out_trans,
+                'compress': 'lzw',
+                'nodata': 0}
+        
+        filename_mosaic = expanduser("~") + filename
 
         # Define affine transform
         logger.info('Rasterizing feature collection')
@@ -170,14 +135,16 @@ SELECT st_asgeojson(geom_proj, 5), tag FROM predict_proj;
                 'transform': aff,
                 'compress': 'lzw',
                 'nodata': 0}
-
-        logger.info('Writing rasterized feature collection to file')
-        with rasterio.open(filename, 'w', **meta) as dst:
-            dst.write(arr, 1)
+        with rasterio.open(filename_mosaic, 'w', **meta) as dst:
+            dst.write(mosaic)
             try:
                 cmap = classification_to_cmap(name)
-                dst.write_colormap(1, cmap)
+                dst.write_colormap(1,cmap)
             except Exception as e:
                 logger.info('Didn\'t find a colormap or couldn\'t write it: %s' % e)
                 pass
-
+        
+        #close & clean:
+        for i in range(0,len(result)):
+            src_files_to_mosaic[i].close()
+            os.remove(result[i])
