@@ -21,6 +21,16 @@ from operator import itemgetter
 from shapely.geometry import mapping, shape
 from madmex.util.spatial import geometry_transform, feature_transform
 import fiona
+
+from madmex.loggerwriter import LoggerWriter
+import logging
+logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
+logger = logging.getLogger(__name__)
+
+stdl = LoggerWriter(logger.debug)
+sys.stdout = stdl
+stdl = LoggerWriter(logger.error)
+sys.stderr = stdl
 """
 The wrapper module gathers functions that are typically called by
 command lines
