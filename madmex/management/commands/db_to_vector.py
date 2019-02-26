@@ -78,23 +78,19 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         driver = options['driver']
         proj4 = options['proj4']
         scheduler_file = options['scheduler']
-        
-        region_geom = Region.objects.get(name=region).the_geom
-        region_geojson = region_geom.geojson
-        geometry = json.loads(region_geojson)
-
-        path_destiny = os.path.join(TEMP_DIR, 'db_to_vector_results')
-        if not os.path.exists(path_destiny):
-            os.makedirs(path_destiny)
-            
         # Query country or region contour
         try:
             region = Country.objects.get(name=region).the_geom
         except Country.DoesNotExist:
             region = Region.objects.get(name=region).the_geom
+            
         region_geojson = region.geojson
         geometry = json.loads(region_geojson)
-        
+
+        path_destiny = os.path.join(TEMP_DIR, 'db_to_vector_results')
+        if not os.path.exists(path_destiny):
+            os.makedirs(path_destiny)
+
         qs_ids = PredictClassification.objects.filter(name=predict_name).distinct('predict_object_id')
         list_ids = [x.predict_object_id for x in qs_ids]
         
