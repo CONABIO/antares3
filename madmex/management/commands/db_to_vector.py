@@ -105,7 +105,7 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                                        'path_destiny': path_destiny,
                                        'driver': driver,
                                        'layer': layer,
-                                      'proj4': proj4})
+                                       'proj4': proj4})
         result = client.gather(c)        
         logger.info('Merging results')
         meta = fiona.open(result[0]).meta
