@@ -180,7 +180,14 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             >>> Seg.to_filesystem(path, name_file)
             >>> Seg.to_bucket(path,name_file)
         
-        """        
+        """
+        try:
+            os.environ['SEGMENTATION_BUCKET']
+        except KeyError: 
+            print ('Please set the environment variable SEGMENTATION_BUCKET')
+            raise KeyError ('Environ variable not set')
+            sys.exit(1)
+
         SEGMENTATION_BUCKET = os.getenv('SEGMENTATION_BUCKET', '')
         s3 = boto3.client('s3')
         filename = name_file + '.shp'
