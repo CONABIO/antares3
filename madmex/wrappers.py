@@ -21,10 +21,12 @@ from operator import itemgetter
 from shapely.geometry import mapping, shape
 from madmex.util.spatial import geometry_transform, feature_transform
 import fiona
-
+from fiona.crs import from_string
 import sys
 from madmex.loggerwriter import LoggerWriter
 import logging
+
+
 logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -359,7 +361,6 @@ def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
     geom_dc_tile = shape_region.intersection(shape(json.loads(seg[0].the_geom.geojson)))
     segmentation_name_classified = os.path.basename(path_destiny).split('.')[0] + '_classified'
     with fiona.open(path) as src:
-        source_driver = src.driver
         if proj4 is not None:
             fc = (feature_transform(x, crs_out=proj4) for x in src)
             crs = from_string(proj4)
@@ -394,6 +395,64 @@ def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
                                       'confidence': feat[3]}}) for feat in fc_pred if shape(feat[0]).intersects(geom_dc_tile)]
         fc_pred = None     
     return filename
+
+
+def write_predict_result_to_raster(id, predict_name, geometry, resolution,
+                                   path_destiny, proj4=None):
+    """
+    
+    """
+    seg = PredictObject.objects.filter(id=id)
+    if proj4 is not None:
+        geometry_proj = geometry_transform(geometry,proj4)
+    else:
+        geometry_proj = geometry_transform(geometry, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+    shape_region=shape(geometry_proj)
+    geom_dc_tile = shape_region.intersection(shape(json.loads(seg[0].the_geom.geojson)))
+    segmentation_name_classified = os.path.basename(path_destiny).split('.')[0] + '_classified'
+    with fiona.open(path) as src:
+        if proj4 is not None:
+            fc = (feature_transform(x, crs_out=proj4) for x in src)
+            crs = from_string(proj4)
+        else:
+            fc = (feature_transform(x,
+                                    crs_out='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') for x in src)
+            crs = from_string('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+            
+        pred_objects_sorted = PredictClassification.objects.filter(name=predict_name, predict_object_id=id).prefetch_related('tag').order_by('features_id')
+        fc_pred=[(x['properties']['id'], x['geometry']) for x in fc]
+        fc = None
+        fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
+        fc_pred = [(x[0][1],
+                    x[1].tag.numeric_code) for x in zip(fc_pred_sorted, pred_objects_sorted)]
+        fc_pred_sorted = None
+        pred_objects_sorted = None
+        fc_schema = {'geometry': 'Polygon',
+                     'properties': {'code': 'int'}}
+        bbox = seg[0].the_geom
+        xmin, ymin, xmax, ymax = bbox.extent
+        nrows = int(((ymax - ymin) // resolution) + 1)
+        ncols = int(((xmax - xmin) // resolution) + 1)
+        shape_dim = (nrows, ncols)
+        arr = np.zeros((nrows, ncols), dtype=np.uint8)
+        aff = Affine(resolution, 0, xmin, 0, -resolution, ymax)
+        fc_pred_intersection = [(mapping(shape(feat[0]).intersection(geom_dc_tile)),
+                                 feat[1]) for feat in fc_pred if shape(feat[0]).intersects(geom_dc_tile)]
+        rasterize(shapes=fc_pred_intersection, transform=aff, dtype=np.uint8, out=arr)
+        meta = {'driver': 'GTiff',
+                'width': shape_dim[1],
+                'height': shape_dim[0],
+                'count': 1,
+                'dtype': arr.dtype,
+                'crs': proj4,
+                'transform': aff,
+                'compress': 'lzw',
+                'nodata': 0}
+        filename = path_fs + segmentation_name_classified + '.tif'
+        with rasterio.open(filename, 'w', **meta) as dst:
+            dst.write(arr, 1)
+    return filename
+
 
 def detect_and_classify_change(tiles, algorithm, change_meta, band_list, mmu,
                                lc_pre, lc_post, extra_args,
