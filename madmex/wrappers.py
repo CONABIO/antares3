@@ -329,7 +329,8 @@ def predict_object(tile, model_name, segmentation_name,
         print('Prediction failed because: %s' % e)
         return False
 
-def write_predict_result_to_vector(id, predict_name, geometry, path_destiny, driver='ESRI Shapefile', layer=None, proj4=None):
+def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
+                                   driver='ESRI Shapefile', layer=None, proj4=None):
     """Retrieve classification results in db: label and confidence per polygon. Add this information to
     to segmentation file via fiona's functionality and write result to destiny (by this time only writes to 
     file system are supported)
