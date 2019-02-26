@@ -83,7 +83,7 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         region_geojson = region_geom.geojson
         geometry = json.loads(region_geojson)
 
-        path_destiny = os.path.join(TEMP_DIR, 'segmentation_results')
+        path_destiny = os.path.join(TEMP_DIR, 'db_to_vector_results')
         if not os.path.exists(path_destiny):
             os.makedirs(path_destiny)
             
