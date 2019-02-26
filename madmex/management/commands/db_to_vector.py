@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
     help = """
-Query the result of a classification and write the results to a vector file on disk
+Write results of classification + segmentation to a vector file on disk
 
 --------------
 Example usage:
