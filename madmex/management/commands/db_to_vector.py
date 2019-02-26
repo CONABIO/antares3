@@ -71,7 +71,7 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                             help='Path to file with scheduler information (usually called scheduler.json)')
 
     def handle(self, *args, **options):
-        name_predict = options['name']
+        predict_name = options['name']
         region = options['region']
         filename = options['filename']
         layer = options['layer']
@@ -95,13 +95,16 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         region_geojson = region.geojson
         geometry = json.loads(region_geojson)
         
-        qs_ids = PredictClassification.objects.filter(name=name_predict).distinct('predict_object_id')
+        qs_ids = PredictClassification.objects.filter(name=predict_name).distinct('predict_object_id')
         list_ids = [x.predict_object_id for x in qs_ids]
         
         client = Client(scheduler_file=scheduler_file)
         client.restart()
-        c = client.map(fun,list_ids,**{'path_destiny': path_destiny,
-                                      'geometry': geometry,
+        c = client.map(fun,list_ids,**{'predict_name': predict_name,
+                                       'geometry': geometry,
+                                       'path_destiny': path_destiny,
+                                       'driver': driver,
+                                       'layer': layer,
                                       'proj4': proj4})
         result = client.gather(c)        
         logger.info('Merging results')
