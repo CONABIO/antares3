@@ -25,6 +25,7 @@ from fiona.crs import from_string
 import sys
 from madmex.loggerwriter import LoggerWriter
 import logging
+from django.contrib.gis.geos import Polygon
 
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
