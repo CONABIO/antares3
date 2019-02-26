@@ -113,18 +113,6 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         
         filename_mosaic = expanduser("~") + filename
 
-        # Define affine transform
-        logger.info('Rasterizing feature collection')
-        for qs_sub in chunk(qs, 100000):
-            # Convert query set to feature collection 
-            fc = [to_feature(x) for x in qs_sub]
-            rasterize(shapes=fc, transform=aff, dtype=np.uint8, out=arr)
-            fc = None
-            gc.collect()
-
-        if proj4 is None:
-            proj4 = "+proj=longlat"
-
         # Write array to file
         meta = {'driver': 'GTiff',
                 'width': shape[1],
