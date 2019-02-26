@@ -141,6 +141,7 @@ def extract_tile_db(tile, sp, training_set, sample):
         # Return the extracted array (or a list of two arrays?)
         return extract
     except Exception as e:
+        print(e)
         return [None, None]
 
 
