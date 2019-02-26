@@ -25,6 +25,7 @@ from fiona.crs import from_string
 import sys
 from madmex.loggerwriter import LoggerWriter
 import logging
+from django.contrib.gis.geos import Polygon
 
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
@@ -290,6 +291,7 @@ def predict_object(tile, model_name, segmentation_name,
         query_set = PredictObject.objects.filter(the_geom__intersects=poly,
                                                  segmentation_information__name=segmentation_name)
         seg_id = query_set[0].id
+        path = query_set[0].path
         with fiona.open(path) as src:
             X, y = zonal_stats_xarray(dataset = geoarray, fc=src, field='id',
                                           categorical_variables=categorical_variables,
