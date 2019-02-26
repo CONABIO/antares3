@@ -334,7 +334,7 @@ def predict_object(tile, model_name, segmentation_name,
 def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
                                    driver='ESRI Shapefile', layer=None, proj4=None):
     """Retrieve classification results in db: label and confidence per polygon. Add this information to
-    to segmentation file via fiona's functionality and write result to destiny (by this time only writes to 
+    to segmentation file via fiona's functionality and write result to path_destiny (by this time only writes to 
     file system are supported)
     
     This function uses dask.distributed.Cluster.map() over a list of id's of segmentation files already registered
@@ -345,7 +345,7 @@ def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
         id (int): id of segmentation file registered in PredictObject table.
         predict_name (str): Name of predict file registered in PredictObject table.
         geometry (geom): Geometry of a region in a geojson-format
-        pat_destiny (str): Path that will hold results. By this time only writes to file system are supported.
+        pat_destiny (str): Path that will hold results. Only writes to file system are supported now.
         driver (str): OGR driver to use for writting the data to file. Defaults to ESRI Shapefile
         layer (str): Name of the layer (only for drivers that support multi-layer files)
         proj4 (str): Optional. crs projection in string format.
@@ -400,8 +400,8 @@ def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
 
 def write_predict_result_to_raster(id, predict_name, geometry, resolution,
                                    path_destiny, proj4=None):
-    """Retrieve classification results in db: label and confidence per polygon. Add this information to
-    to segmentation file via fiona's functionality and write result to destiny (by this time only writes to 
+    """Retrieve classification results in db: label per polygon. Add this information to
+    to segmentation file via fiona's functionality and write result to path_destiny (by this time only writes to 
     file system are supported)
     
     This function uses dask.distributed.Cluster.map() over a list of id's of segmentation files already registered
@@ -413,7 +413,7 @@ def write_predict_result_to_raster(id, predict_name, geometry, resolution,
         predict_name (str): Name of predict file registered in PredictObject table.
         geometry (geom): Geometry of a region in a geojson-format
         resolution (int): Resolution of the output raster in crs units. (See the proj4 argument to define a projection, otherwise will be in longlat and resolution has to be specified in degrees)
-        pat_destiny (str): Path that will hold results. By this time only writes to file system are supported.
+        pat_destiny (str): Path that will hold results. Only writes to file system are supported now.
         proj4 (str): Optional. crs projection in string format.
     
     """
