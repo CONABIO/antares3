@@ -259,7 +259,7 @@ def segment(tile, algorithm, segmentation_meta,
         seg = Segmentation.from_geoarray(geoarray, **extra_args)
         seg.segment()
         # Try deallocating input array
-        seg.polygonize()
+        seg.polygonize(crs_out=None)
         seg.to_filesystem(path,name_file)
         seg.to_db(name_file, segmentation_meta)
         seg.to_bucket(path, name_file)
