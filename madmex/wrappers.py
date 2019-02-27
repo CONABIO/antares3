@@ -288,7 +288,7 @@ def predict_object(tile, model_name, segmentation_name,
         # Load geoarray and feature collection
         geoarray = GridWorkflow.load(tile[1])
         poly = Polygon.from_ewkt(geoarray.geobox.extent.wkt)
-        query_set = PredictObject.objects.filter(the_geom__intersects=poly,
+        query_set = PredictObject.objects.filter(the_geom__contained=poly,
                                                  segmentation_information__name=segmentation_name)
         seg_id = query_set[0].id
         path = query_set[0].path
