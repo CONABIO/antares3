@@ -114,16 +114,6 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         
         filename_mosaic = expanduser("~") + filename
 
-        # Write array to file
-        meta = {'driver': 'GTiff',
-                'width': shape[1],
-                'height': shape[0],
-                'count': 1,
-                'dtype': arr.dtype,
-                'crs': proj4,
-                'transform': aff,
-                'compress': 'lzw',
-                'nodata': 0}
         with rasterio.open(filename_mosaic, 'w', **meta) as dst:
             dst.write(mosaic)
             try:
