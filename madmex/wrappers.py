@@ -433,7 +433,7 @@ def write_predict_result_to_raster(id, predict_name, geometry, resolution,
     segmentation_name_classified = os.path.basename(path_destiny).split('.')[0] + '_classified'
     with fiona.open(path) as src:
         if proj4 is not None:
-            fc = (feature_transform(x, crs_out=proj4) for x in src)
+            fc = (feature_transform(x, crs_out=proj4, crs_in=proj4) for x in src)
             crs = from_string(proj4)
         else:
             fc = (feature_transform(x,
