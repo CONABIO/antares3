@@ -18,6 +18,7 @@ from rasterio.merge import merge
 from dask.distributed import Client
 import os
 from os.path import expanduser
+from madmex.settings import TEMP_DIR
 
 logger = logging.getLogger(__name__)
 
