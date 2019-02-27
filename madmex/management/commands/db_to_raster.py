@@ -19,7 +19,7 @@ from dask.distributed import Client
 import os
 from os.path import expanduser
 from madmex.settings import TEMP_DIR
-
+from madmex.wrappers import write_predict_result_to_raster
 logger = logging.getLogger(__name__)
 
 
@@ -88,7 +88,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         
         client = Client(scheduler_file=scheduler_file)
         client.restart()
-        c = client.map(fun,list_ids,**{'predict_name': name,
+        c = client.map(write_predict_result_to_raster,list_ids,**{'predict_name': name,
                                        'geometry': geometry,
                                        'resolution': resolution,
                                        'path_destiny': path_destiny,
