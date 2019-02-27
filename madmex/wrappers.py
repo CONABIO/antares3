@@ -422,6 +422,7 @@ def write_predict_result_to_raster(id, predict_name, geometry, resolution,
     
     """
     seg = PredictObject.objects.filter(id=id)
+    path = seg[0].path
     if proj4 is not None:
         geometry_proj = geometry_transform(geometry,proj4)
     else:
