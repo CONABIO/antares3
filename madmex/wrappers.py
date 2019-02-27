@@ -318,7 +318,7 @@ def predict_object(tile, model_name, segmentation_name,
             # Build list of PredictClassification objects
             def predict_object_builder(i, pred, conf):
                 return PredictClassification(model_id=model_id, predict_object_id=seg_id,
-                                             tag_numeric_code=pred, name=name, confidence=conf, features_id=i)
+                                             tag_id=pred, name=name, confidence=conf, features_id=i)
             # Write labels to database combining chunking and bulk_create
             for sub_zip in chunk(zip(y, y_pred, y_conf), 10000):
                 obj_list = [predict_object_builder(i,pred,conf) for i, pred, conf in sub_zip]
