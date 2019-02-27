@@ -93,7 +93,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                                        'resolution': resolution,
                                        'path_destiny': path_destiny,
                                        'proj4': proj4})
-        result = await client.gather(c) 
+        result = client.gather(c) 
         logger.info('Merging results')
         
         src_files_to_mosaic=[]
