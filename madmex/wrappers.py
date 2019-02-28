@@ -364,7 +364,7 @@ def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
         geometry_proj = geometry_transform(geometry, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
     shape_region=shape(geometry_proj)
     geom_dc_tile = shape_region.intersection(shape(json.loads(seg[0].the_geom.geojson)))
-    segmentation_name_classified = os.path.basename(path_destiny).split('.')[0] + '_classified'
+    segmentation_name_classified = os.path.basename(path).split('.')[0] + '_classified'
     with fiona.open(path) as src:
         if proj4 is not None:
             fc = (feature_transform(x, crs_out=proj4) for x in src)
@@ -388,7 +388,7 @@ def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
                      'properties': {'code': 'int',
                                     'class':'str',
                                     'confidence': 'float'}}
-        filename = path_destiny + segmentation_name_classified + '.shp'
+        filename = path_destiny + '/' + segmentation_name_classified + '.shp'
         with fiona.open(filename, 'w',
                         encoding='utf-8',
                         driver=driver,
