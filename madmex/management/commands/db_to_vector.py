@@ -16,6 +16,7 @@ import fiona
 from madmex.settings import TEMP_DIR
 from os.path import expanduser
 from madmex.wrappers import write_predict_result_to_vector
+import os 
 
 logger = logging.getLogger(__name__)
 
