@@ -112,7 +112,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                 'compress': 'lzw',
                 'nodata': 0}
         
-        filename_mosaic = expanduser("~") + filename
+        filename_mosaic = expanduser("~") + '/' + filename
 
         with rasterio.open(filename_mosaic, 'w', **meta) as dst:
             dst.write(mosaic)
