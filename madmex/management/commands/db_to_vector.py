@@ -107,7 +107,7 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         logger.info('Merging results')
         meta = fiona.open(result[0]).meta
         
-        filename_merge = expanduser("~") + filename
+        filename_merge = expanduser("~") + '/' + filename
         
         with fiona.open(filename_merge, 'w', **meta) as dst:
             [[dst.write(features) for features in fiona.open(x)] for x in result]
