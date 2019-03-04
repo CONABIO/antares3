@@ -19,7 +19,6 @@ from madmex.models import Region, Country, Model, PredictClassification, Predict
 from datacube.model import GridSpec
 from operator import itemgetter
 from shapely.geometry import mapping, shape
-from madmex.util.spatial import geometry_transform, feature_transform
 import fiona
 from fiona.crs import from_string
 import sys
