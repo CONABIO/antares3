@@ -20,6 +20,8 @@ import os
 from os.path import expanduser
 from madmex.settings import TEMP_DIR
 from madmex.wrappers import write_predict_result_to_raster
+from madmex.util.spatial import geometry_transform
+
 logger = logging.getLogger(__name__)
 
 
@@ -79,6 +81,11 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         region_geojson = region.geojson
         geometry = json.loads(region_geojson)
         
+        if proj4 is not None:
+            geometry_proj = geometry_transform(geometry,proj4)
+        else:
+            geometry_proj = geometry_transform(geometry, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+            
         path_destiny = os.path.join(TEMP_DIR, 'db_to_raster_results')
         if not os.path.exists(path_destiny):
             os.makedirs(path_destiny)
