@@ -87,13 +87,13 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         except Country.DoesNotExist:
             region = Region.objects.get(name=region).the_geom
 
+        region_geojson = region.geojson
+        geometry = json.loads(region_geojson)
+        
         if proj4 is not None:
             geometry_proj = geometry_transform(geometry,proj4)
         else:
             geometry_proj = geometry_transform(geometry, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
-            
-        region_geojson = region.geojson
-        geometry = json.loads(region_geojson)
 
         path_destiny = os.path.join(TEMP_DIR, 'db_to_vector_results')
         if not os.path.exists(path_destiny):
