@@ -105,7 +105,7 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         client = Client(scheduler_file=scheduler_file)
         client.restart()
         c = client.map(write_predict_result_to_vector,list_ids,**{'predict_name': predict_name,
-                                       'geometry': geometry,
+                                       'geometry': geometry_proj,
                                        'path_destiny': path_destiny,
                                        'driver': driver,
                                        'layer': layer,
