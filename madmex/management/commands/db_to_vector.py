@@ -17,6 +17,7 @@ from madmex.settings import TEMP_DIR
 from os.path import expanduser
 from madmex.wrappers import write_predict_result_to_vector
 import os 
+from madmex.util.spatial import geometry_transform
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +86,11 @@ antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
             region = Country.objects.get(name=region).the_geom
         except Country.DoesNotExist:
             region = Region.objects.get(name=region).the_geom
+
+        if proj4 is not None:
+            geometry_proj = geometry_transform(geometry,proj4)
+        else:
+            geometry_proj = geometry_transform(geometry, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
             
         region_geojson = region.geojson
         geometry = json.loads(region_geojson)
