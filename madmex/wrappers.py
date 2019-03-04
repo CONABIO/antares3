@@ -250,9 +250,9 @@ def segment(tile, algorithm, segmentation_meta,
     try:
         # Load tile
         geoarray = GridWorkflow.load(tile[1], measurements=band_list)
-        dataset_name = segmentation_meta.datasource + '_%d_%d_' % (tile[0][0], tile[0][1]) + segmentation_meta.datasource_year
-        hash = hashlib.md5(dataset_name.encode('utf-8')).hexdigest()[0:6]
-        name_file = hash + '_' + dataset_name
+        name = segmentation_meta.name + '_' + segmentation_meta.datasource + '_%d_%d_' % (tile[0][0], tile[0][1]) + segmentation_meta.datasource_year
+        hash = hashlib.md5(name.encode('utf-8')).hexdigest()[0:6]
+        filename = hash + '_' + name
         path = os.path.join(TEMP_DIR, 'segmentation_results')
         if not os.path.exists(path):
             os.makedirs(path)
@@ -260,9 +260,9 @@ def segment(tile, algorithm, segmentation_meta,
         seg.segment()
         # Try deallocating input array
         seg.polygonize(crs_out=None)
-        seg.to_filesystem(path,name_file)
-        seg.to_db(name_file, segmentation_meta)
-        seg.to_bucket(path, name_file)
+        seg.to_filesystem(path,filename)
+        seg.to_db(filename, segmentation_meta)
+        seg.to_bucket(path, filename)
         seg.array = None
         geoarray = None
         gc.collect()
