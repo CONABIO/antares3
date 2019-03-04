@@ -96,7 +96,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         client = Client(scheduler_file=scheduler_file)
         client.restart()
         c = client.map(write_predict_result_to_raster,list_ids,**{'predict_name': name,
-                                       'geometry': geometry,
+                                       'geometry': geometry_proj,
                                        'resolution': resolution,
                                        'path_destiny': path_destiny,
                                        'proj4': proj4})
