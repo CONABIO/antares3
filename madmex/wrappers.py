@@ -413,24 +413,13 @@ def write_predict_result_to_raster(id, predict_name, geometry, resolution,
     """
     seg = PredictObject.objects.filter(id=id)
     path = seg[0].path
-    if proj4 is not None:
-        geometry_proj = geometry_transform(geometry,proj4)
-    else:
-        geometry_proj = geometry_transform(geometry, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
-    shape_region=shape(geometry_proj)
+    shape_region=shape(geometry)
     geom_dc_tile = shape_region.intersection(shape(json.loads(seg[0].the_geom.geojson)))
     segmentation_name_classified = os.path.basename(path).split('.')[0] + '_classified'
     with fiona.open(path) as src:
-        if proj4 is not None:
-            fc = (feature_transform(x, crs_out=proj4) for x in src)
-            crs = from_string(proj4)
-        else:
-            fc = (feature_transform(x,
-                                    crs_out='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') for x in src)
-            crs = from_string('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
-            
+        crs = src.crs
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name, predict_object_id=id).prefetch_related('tag').order_by('features_id')
-        fc_pred=[(x['properties']['id'], x['geometry']) for x in fc]
+        fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
         fc = None
         fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
         fc_pred = [(x[0][1],
