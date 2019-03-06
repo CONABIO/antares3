@@ -128,6 +128,7 @@ class ValidObject(models.Model):
     """
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
+    filename = models.CharField(max_length=200, default='')
     validation_tags = models.ManyToManyField(Tag, through='ValidClassification')
 
 class ValidClassification(models.Model):
