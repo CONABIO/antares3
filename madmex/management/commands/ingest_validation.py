@@ -72,7 +72,8 @@ antares ingest_validation /path/to/file.shp --scheme madmex --year 2015 --name r
             """Build individual ValidObjects
             """
             geom = GEOSGeometry(json.dumps(x['geometry']))
-            obj = ValidObject(the_geom=geom)
+            obj = ValidObject(filename=os.path.basename(input_file),
+                              the_geom=geom)
             return obj
 
         obj_list = [valid_obj_builder(x) for x in fc]
