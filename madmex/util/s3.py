@@ -152,3 +152,14 @@ def write_raster(bucket, path, arr, **kwargs):
                 dst.write(band, band_id)
         s3.upload_fileobj(memfile, bucket, path)
 
+
+def copy_shapefile(bucket, filename):
+    """Copy a shapefile from filesystem to an S3 bucket
+
+    Args:
+        bucket (str): Name of an existing s3 bucket
+        filename (str): Name of the main file of a shapefile to copy to S3
+    """
+    pass
+    # Search all associated files using glob
+    # Keep only files basenames and push them all to S3 using boto3

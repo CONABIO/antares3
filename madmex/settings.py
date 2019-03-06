@@ -15,6 +15,7 @@ import os
 from os.path import join, dirname, expanduser
 import sys
 import warnings
+import tempfile
 
 from dotenv.main import load_dotenv
 
@@ -175,7 +176,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-TEMP_DIR = os.getenv('TEMP_DIR', os.getenv('HOME'))
+TEMP_DIR = os.getenv('TEMP_DIR', tempfile.gettempdir())
 
 USGS_USER = os.getenv('USGS_USER')
 USGS_PASSWORD = os.getenv('USGS_PASSWORD')
@@ -201,4 +202,6 @@ STATIC_URL = '/static/'
 # Driver and ingestion bucket
 DRIVER = os.getenv('DRIVER', 'NetCDF CF')
 INGESTION_BUCKET = os.getenv('INGESTION_BUCKET', '')
-SEGMENTATION_BUCKET = os.getenv('SEGMENTATION_BUCKET','')
+SEGMENTATION_BUCKET = os.getenv('SEGMENTATION_BUCKET', None)
+SEGMENTATION_DIR = os.getenv('SEGMENTATION_DIR', None)
+
