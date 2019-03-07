@@ -100,7 +100,7 @@ def validate(y_true, y_pred, sample_weight=None, scheme=None):
     return acc_dict
 
 
-def query_validation_intersect(id_dc_tile, validation_set, test_set, geometry_region_proj=None):
+def query_validation_intersect(id_dc_tile, validation_set, test_set, geometry_region=None):
     """Query intersecting records from the validation and the predictClassification database table
     validation_set and test_set must exist in the ValidClassification and PredictClassification
     respectively
@@ -113,7 +113,7 @@ def query_validation_intersect(id_dc_tile, validation_set, test_set, geometry_re
         validation_set (str): Name/unique identifier of the validation set to use
         test_set (str): Name/unique identifier of the data to validate. Must be present
             in the PredictClassification table of the database
-        geometry_region_proj (geom): Optional geometry of a region in a geojson-format
+        geometry_region (geom): Optional geometry of a region in a geojson-format
 
     Return:
         tuple: A tuple (fc_valid, fc_test) of two list of (geometry, value) tupples
@@ -127,20 +127,21 @@ def query_validation_intersect(id_dc_tile, validation_set, test_set, geometry_re
     geometry = json.loads(poly_geojson)
     proj4_out = '+proj=longlat'
     with fiona.open(s3_path) as src:
-        proj4_in = to_string(src.crs)
-        geometry_proj = geometry_transform(geometry,proj4_out,crs_in=proj4_in)
+        crs = to_string(src.crs)
+        geometry_proj = geometry_transform(geometry,proj4_out,crs_in=crs)
         poly_proj = GEOSGeometry(json.dumps(geometry_proj))
         qs_dc_tile = ValidClassification.objects.filter(valid_object__the_geom__contained=poly_proj,
                                                    valid_set=validation_set).prefetch_related('valid_object', 'valid_tag') 
     
-        fc_qs = [valid_object_to_feature(x, proj4_in) for x in qs_dc_tile]
-        if geometry_region_proj is not None:
-            shape_region=shape(geometry_region_proj)
-            fc_qs_in_region = [(mapping(shape_region.intersection(shape(x['geometry']))),
-                                x['properties']['class']) for x in fc_qs if shape_region.intersects(shape(x['geometry']))]
+        fc_qs = [valid_object_to_feature(x) for x in qs_dc_tile]
+        if geometry_region is not None:
+            shape_region=shape(geometry_region)
+            fc_qs_in_region = [{'geometry': mapping(shape_region.intersection(shape(x['geometry']))),
+                                'class': x['properties']['class']} for x in fc_qs if shape_region.intersects(shape(x['geometry']))]
             fc_qs = fc_qs_in_region
             fc_qs_in_region = None 
-        
+        fc_qs_proj = [feature_transform(x, crs_out=crs) for x in fc_qs]
+        fc_qs_proj = [(x['geometry'],x['class']) for x in fc_qs_proj]
         #create fc with (geometry, tag) values
         pred_objects_sorted = PredictClassification.objects.filter(name=test_set,
                                                                    predict_object_id=id_dc_tile).prefetch_related('tag').order_by('features_id')
@@ -150,9 +151,9 @@ def query_validation_intersect(id_dc_tile, validation_set, test_set, geometry_re
         fc_pred_sorted = None
         pred_objects_sorted = None
         #intersect with fc of validation set
-        fc_pred_intersect_validset = [(x[0],x[1]) for x in fc_pred for y in fc_qs if shape(x[0]).intersects(shape(y[0]))]
+        fc_pred_intersect_validset = [(x[0],x[1]) for x in fc_pred for y in fc_qs_proj if shape(x[0]).intersects(shape(y[0]))]
         fc_pred = None   
-    return [fc_qs, fc_pred_intersect_validset]
+    return [fc_qs_proj, fc_pred_intersect_validset]
 
 
 def pprint_val_dict(d):
