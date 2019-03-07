@@ -4,7 +4,7 @@ from sklearn.metrics import precision_score as user_acc
 from sklearn.metrics import recall_score as prod_acc
 from sklearn.metrics import accuracy_score, confusion_matrix
 from django.db import connection
-from madmex.models import PredictObject, ValidClassification
+from madmex.models import PredictObject, ValidClassification, PredictClassification
 from madmex.models import Country, Region
 from madmex.util.db import get_label_encoding
 from django.contrib.gis.geos.geometry import GEOSGeometry
