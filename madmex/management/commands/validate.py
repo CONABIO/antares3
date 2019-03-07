@@ -13,10 +13,8 @@ from madmex.validation import query_validation_intersect, pprint_val_dict
 from madmex.util.db import get_validation_scheme_name
 from madmex.models import ValidationResults
 from dask.distributed import Client
-from madmex.util.spatial import geometry_transform
 from pprint import pprint
 from madmex.models import Country, Region, PredictClassification
-from madmex.validation import query_validation_intersect
 
 logger = logging.getLogger(__name__)
 
