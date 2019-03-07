@@ -89,3 +89,30 @@ def predict_object_to_feature(x, crs=None):
     if crs is not None:
         feature = feature_transform(feature, crs)
     return feature
+
+def valid_object_to_feature(x, crs):
+    """Convert a ValidObject to a feature
+    This function is often meant to be called in a list comprehension whose iterator
+    is a django QuerySet.
+    The feature has a single attribute corresponding to the database object id
+
+    Args:
+        x (ValidObject): Object extracted from the database
+        crs (str): proj4 string to reproject to. Can be extrated from a geoarray using
+            ``geoarray.crs._crs.ExportToProj4()``. Default to None in which case no
+            reprojection is performed. Data in the database must be stored in 4326 crs
+
+    Return:
+        dict: A geojson like feature
+    """
+    attr = {'class': x.valid_tag.numeric_code}
+    if crs is None:
+        geometry = json.loads(x.valid_object.the_geom.geojson)
+    else:
+        geometry = json.loads(x.valid_object.the_geom.transform(crs, clone=True).geojson)
+    feature = {
+        "type": "Feature",
+        "geometry": geometry,
+        "properties": attr
+    }
+    return feature
