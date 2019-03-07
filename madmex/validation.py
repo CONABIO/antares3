@@ -134,7 +134,7 @@ def query_validation_intersect(id_dc_tile, validation_set, test_set, geometry_re
                                                    valid_set=validation_set).prefetch_related('valid_object', 'valid_tag') 
     
         fc_qs = [valid_object_to_feature(x, proj4_in) for x in qs_dc_tile]
-        if geometry_region_proj:
+        if geometry_region_proj is not None:
             shape_region=shape(geometry_region_proj)
             fc_qs_in_region = [(mapping(shape_region.intersection(shape(x['geometry']))),
                                 x['properties']['class']) for x in fc_qs if shape_region.intersects(shape(x['geometry']))]
