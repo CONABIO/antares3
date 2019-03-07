@@ -365,7 +365,6 @@ def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name,
                                                                    predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
-        fc = None
         fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
         fc_pred = [(x[0][1], x[1].tag.numeric_code,
                     x[1].tag.value,
@@ -419,7 +418,6 @@ def write_predict_result_to_raster(id, predict_name, geometry, resolution,
         crs = src.crs
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name, predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
-        fc = None
         fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
         fc_pred = [(x[0][1],
                     x[1].tag.numeric_code) for x in zip(fc_pred_sorted, pred_objects_sorted)]
