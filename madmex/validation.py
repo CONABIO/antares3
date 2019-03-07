@@ -94,100 +94,56 @@ def validate(y_true, y_pred, sample_weight=None, scheme=None):
     return acc_dict
 
 
-def query_validation_intersect(validation_set, test_set, region=None):
+def query_validation_intersect(id_dc_tile, validation_set, test_set, geometry_region_proj=None):
     """Query intersecting records from the validation and the predictClassification database table
 
     validation_set and test_set must exist in the ValidClassification and PredictClassification
     respectively
 
     Args:
+        id_dc_tile (int): id of segmentation file registered in PredictObject table.
         validation_set (str): Name/unique identifier of the validation set to use
         test_set (str): Name/unique identifier of the data to validate. Must be present
             in the PredictClassification table of the database
-        region (str): Optional region withing which to query the data. Specified as
-            iso country code (Country table) or region name (Region table)
+        geometry_region_proj (geom): Optional geometry of a region in a geojson-format
 
     Return:
         tuple: A tuple (fc_valid, fc_test) of two list of (geometry, value) tupples
     """
-    # Create temp table with validation geometries filtered by name and optionally by region (geom, value)
-    # Get that table converting to geojson on the fly
-    # Query the PredictClassification data that intersect with the validation data (st_asgeojson(the_geom), value)
-    q0_sp_filter = """
-CREATE TEMP TABLE validation AS
-SELECT
-    public.madmex_validobject.the_geom AS geom,
-    public.madmex_tag.numeric_code AS tag
-FROM
-    public.madmex_validclassification
-INNER JOIN
-    public.madmex_validobject ON public.madmex_validclassification.valid_object_id = public.madmex_validobject.id
-    AND
-    st_intersects(public.madmex_validobject.the_geom, st_geometryFromText(%s, 4326))
-    AND
-    public.madmex_validclassification.valid_set = %s
-INNER JOIN
-    public.madmex_tag ON public.madmex_validclassification.valid_tag_id = public.madmex_tag.id;
-    """
-
-    q0 = """
-CREATE TEMP TABLE validation AS
-SELECT
-    public.madmex_validobject.the_geom AS geom,
-    public.madmex_tag.numeric_code AS tag
-FROM
-    public.madmex_validclassification AS vc
-INNER JOIN
-    public.madmex_validobject ON vc.valid_object_id = public.madmex_validobject.id
-    AND
-    vc.valid_set = %s
-INNER JOIN
-    public.madmex_tag ON vc.valid_tag_id = public.madmex_tag.id;
-    """
-
-    q1 = """
-SELECT
-    st_asgeojson(geom, 6),
-    tag
-FROM
-    validation;
-    """
-
-    q2 = """
-SELECT
-    st_asgeojson(public.madmex_predictobject.the_geom, 6),
-    public.madmex_tag.numeric_code
-FROM
-    public.madmex_predictclassification AS cl
-INNER JOIN
-    public.madmex_predictobject ON cl.predict_object_id = public.madmex_predictobject.id
-INNER JOIN
-    validation ON st_intersects(validation.geom, public.madmex_predictobject.the_geom)
-INNER JOIN
-    public.madmex_tag ON cl.tag_id = public.madmex_tag.id
-WHERE
-    cl.name = %s;
-    """
-    if region is not None:
-        # Query country or region contour
-        try:
-            region = Country.objects.get(name=region).the_geom
-        except Country.DoesNotExist:
-            region = Region.objects.get(name=region).the_geom
-
-    with connection.cursor() as c:
-        if region is None:
-            c.execute(q0, [validation_set])
-        else:
-            c.execute(q0_sp_filter, [region.wkt, validation_set])
-        c.execute(q1)
-        val_qs = c.fetchall()
-        c.execute(q2, [test_set])
-        pred_qs = c.fetchall()
-
-    val_fc = [(json.loads(x[0]), x[1]) for x in val_qs]
-    pred_fc = [(json.loads(x[0]), x[1]) for x in pred_qs]
-    return (val_fc, pred_fc)
+    seg = PredictObject.objects.filter(id=id_dc_tile)
+    s3_path = seg[0].path
+    poly = seg[0].the_geom
+    #next lines to reproyect extent registered in DB TODO: register geometry of 
+    #extent of each dc tile in lat long
+    poly_geojson = poly.geojson
+    geometry = json.loads(poly_geojson)
+    with fiona.open(s3_path) as src:
+        proj4_in = to_string(src.crs)
+        geometry_proj = geometry_transform(geometry,proj4_out,crs_in=proj4_in)
+        poly_proj = GEOSGeometry(json.dumps(geometry_proj))
+        qs_dc_tile = ValidClassification.objects.filter(valid_object__the_geom__contained=poly_proj,
+                                                   valid_set=validation_set).prefetch_related('valid_object', 'valid_tag') 
+    
+        fc_qs = [valid_object_to_feature(x, proj4_in) for x in qs_dc_tile]
+        if geometry_region_proj:
+            shape_region=shape(geometry_region_proj)
+            fc_qs_in_region = [(mapping(shape_region.intersection(shape(x['geometry']))),
+                                x['properties']['class']) for x in fc_qs if shape_region.intersects(shape(x['geometry']))]
+            fc_qs = fc_qs_in_region
+            fc_qs_in_region = None 
+        
+        #create fc with (geometry, tag) values
+        pred_objects_sorted = PredictClassification.objects.filter(name=test_set,
+                                                                   predict_object_id=id_dc_tile).prefetch_related('tag').order_by('features_id')
+        fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
+        fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
+        fc_pred = [(x[0][1], x[1].tag.numeric_code) for x in zip(fc_pred_sorted, pred_objects_sorted)]
+        fc_pred_sorted = None
+        pred_objects_sorted = None
+        #intersect with fc of validation set
+        fc_pred_intersect_validset = [(x[0],x[1]) for x in fc_pred for y in fc_qs if shape(x[0]).intersects(shape(y[0]))]
+        fc_pred = None   
+    return [fc_qs, fc_pred_intersect_validset]
 
 
 def pprint_val_dict(d):
