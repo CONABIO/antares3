@@ -1,13 +1,18 @@
 import json
 
-from shapely.geometry import shape
 from sklearn.metrics import precision_score as user_acc
 from sklearn.metrics import recall_score as prod_acc
 from sklearn.metrics import accuracy_score, confusion_matrix
 from django.db import connection
-
+from madmex.models import PredictObject, ValidClassification
 from madmex.models import Country, Region
 from madmex.util.db import get_label_encoding
+from django.contrib.gis.geos.geometry import GEOSGeometry
+from shapely.geometry import shape, mapping
+from operator import itemgetter
+from madmex.util.spatial import geometry_transform
+import fiona
+from fiona.crs import to_string
 
 def prepare_validation(fc_valid, fc_test, valid_field=None, test_field=None):
     """Generate area weighted confusion matrix
