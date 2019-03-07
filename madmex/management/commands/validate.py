@@ -12,8 +12,10 @@ from madmex.validation import validate, prepare_validation
 from madmex.validation import query_validation_intersect, pprint_val_dict
 from madmex.util.db import get_validation_scheme_name
 from madmex.models import ValidationResults
-
+from dask.distributed import Client
+from madmex.util.spatial import geometry_transform
 from pprint import pprint
+from madmex.models import Country, Region, PredictClassification
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +56,14 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
                             type=str,
                             default=None,
                             help='Optional quotted comment to be added to the database')
+        parser.add_argument('-p', '--proj4',
+                            type=str,
+                            default=None,
+                            help='Optional proj4 string defining the output projection')
+        parser.add_argument('-sc', '--scheduler',
+                            type=str,
+                            default=None,
+                            help='Path to file with scheduler information (usually called scheduler.json)')
 
     def handle(self, *args, **options):
         # Unpack variables
@@ -62,14 +72,40 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
         region = options['region']
         log = options['log']
         comment = options['comment']
+        proj4 = options['proj4']
+        scheduler_file = options['scheduler']
 
         # Get the scheme name
         scheme = get_validation_scheme_name(validation)
-
+        # Query country or region contour
+        try:
+            region = Country.objects.get(name=region).the_geom
+        except Country.DoesNotExist:
+            region = Region.objects.get(name=region).the_geom
+        
+        region_geojson = region.geojson
+        geometry_region = json.loads(region_geojson)
+        
+        if proj4 is not None:
+            geometry_region_proj = geometry_transform(geometry_region,proj4)
+        else:
+            geometry_region_proj = geometry_transform(geometry_region, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+ 
         # Query the data
-        fc_valid, fc_test = query_validation_intersect(validation_set=validation,
-                                                       test_set=classification,
-                                                       region=region)
+        
+        qs_ids = PredictClassification.objects.filter(name=classification).distinct('predict_object_id')
+        list_ids = [x.predict_object_id for x in qs_ids]
+        
+        
+        client = Client(scheduler_file=scheduler_file)
+        client.restart()
+        c = client.map(fun,list_ids,**{'validation_set': validation,
+                                       'test_set': classification,
+                              'geometry_region_proj': geometry_region_proj})
+        result = client.gather(c)
+        fc_valid = [x[0][index] for x in result for index in range(0,len(x[0]))]
+        fc_test = [x[1][index] for x in result for index in range(0,len(x[1]))]
+
         report = """
                       Validation Report
 Region: %s
