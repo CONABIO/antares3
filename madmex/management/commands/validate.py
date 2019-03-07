@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-Author: Loic Dutrieux
-Date: 2018-06-08
+Author: palmoreck
+Date: 2019-03-07
 Purpose: Compute validation metrics on an existing object based classification
 """
 from madmex.management.base import AntaresBaseCommand
@@ -31,7 +31,7 @@ See the antares ingest_validation for instruction on how to ingest a validation 
 Example usage:
 --------------
 # Validate map, and log the result to the database
-antares validate --classification chihuahua_nalcm_2015 --validation bits_interpret --region Chihuahua --log --proj4 '+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs' -sc scheduler.json
+antares validate --classification chihuahua_nalcm_2015 --validation bits_interpret --region Chihuahua --log -sc scheduler.json
 """
     def add_arguments(self, parser):
         parser.add_argument('-c', '--classification',
@@ -56,10 +56,6 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
                             type=str,
                             default=None,
                             help='Optional quotted comment to be added to the database')
-        parser.add_argument('-p', '--proj4',
-                            type=str,
-                            default=None,
-                            help='Optional proj4 string defining the output projection')
         parser.add_argument('-sc', '--scheduler',
                             type=str,
                             default=None,
@@ -72,7 +68,6 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
         region = options['region']
         log = options['log']
         comment = options['comment']
-        proj4 = options['proj4']
         scheduler_file = options['scheduler']
 
         # Get the scheme name
@@ -86,11 +81,6 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
         region_geojson = region.geojson
         geometry_region = json.loads(region_geojson)
         
-        if proj4 is not None:
-            geometry_region_proj = geometry_transform(geometry_region,proj4)
-        else:
-            geometry_region_proj = geometry_transform(geometry_region, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
- 
         # Query the data
         
         qs_ids = PredictClassification.objects.filter(name=classification).distinct('predict_object_id')
@@ -101,7 +91,7 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
         client.restart()
         c = client.map(fun,list_ids,**{'validation_set': validation,
                                        'test_set': classification,
-                                       'geometry_region_proj': geometry_region_proj})
+                                       'geometry_region': geometry_region})
         result = client.gather(c)
         fc_valid = [x[0][index] for x in result for index in range(0,len(x[0]))]
         fc_test = [x[1][index] for x in result for index in range(0,len(x[1]))]
