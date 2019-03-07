@@ -90,7 +90,7 @@ def predict_object_to_feature(x, crs=None):
         feature = feature_transform(feature, crs)
     return feature
 
-def valid_object_to_feature(x, crs):
+def valid_object_to_feature(x, crs=None):
     """Convert a ValidObject to a feature
     This function is often meant to be called in a list comprehension whose iterator
     is a django QuerySet.
