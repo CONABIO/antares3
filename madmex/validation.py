@@ -141,6 +141,7 @@ def query_validation_intersect(id_dc_tile, validation_set, test_set, geometry_re
             fc_qs = fc_qs_in_region
             fc_qs_in_region = None 
         fc_qs_proj = [feature_transform(x, crs_out=crs) for x in fc_qs]
+        fc_qs = None
         fc_qs_proj = [(x['geometry'],x['class']) for x in fc_qs_proj]
         #create fc with (geometry, tag) values
         pred_objects_sorted = PredictClassification.objects.filter(name=test_set,
