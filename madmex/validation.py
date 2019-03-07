@@ -125,6 +125,7 @@ def query_validation_intersect(id_dc_tile, validation_set, test_set, geometry_re
     #TODO: register geometry of extent of each dc tile in lat long
     poly_geojson = poly.geojson
     geometry = json.loads(poly_geojson)
+    proj4_out = '+proj=longlat'
     with fiona.open(s3_path) as src:
         proj4_in = to_string(src.crs)
         geometry_proj = geometry_transform(geometry,proj4_out,crs_in=proj4_in)
