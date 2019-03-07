@@ -101,7 +101,7 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
         client.restart()
         c = client.map(fun,list_ids,**{'validation_set': validation,
                                        'test_set': classification,
-                              'geometry_region_proj': geometry_region_proj})
+                                       'geometry_region_proj': geometry_region_proj})
         result = client.gather(c)
         fc_valid = [x[0][index] for x in result for index in range(0,len(x[0]))]
         fc_test = [x[1][index] for x in result for index in range(0,len(x[1]))]
