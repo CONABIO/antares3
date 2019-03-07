@@ -17,7 +17,7 @@ class Model(BaseModel):
     """
 
     def __init__(self, categorical_features=None, n_estimators=50, n_jobs=-1,
-                 max_depth=10, class_weight=None):
+                 max_depth=10, class_weight=None, random_state=None):
         '''
         Example:
             >>> from madmex.modeling.supervised.rf import Model
@@ -29,7 +29,8 @@ class Model(BaseModel):
         '''
         super().__init__(categorical_features=categorical_features)
         self.model = RandomForestClassifier(n_estimators=n_estimators,
-                                            n_jobs=n_jobs, max_depth=max_depth, class_weight=class_weight)
+                                            n_jobs=n_jobs, max_depth=max_depth, 
+                                            class_weight=class_weight, random_state=random_state)
         self.model_name = 'rf'
 
     def fit(self, X, y):
