@@ -16,6 +16,7 @@ from dask.distributed import Client
 from madmex.util.spatial import geometry_transform
 from pprint import pprint
 from madmex.models import Country, Region, PredictClassification
+from madmex.validation import query_validation_intersect
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +90,7 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
         
         client = Client(scheduler_file=scheduler_file)
         client.restart()
-        c = client.map(fun,list_ids,**{'validation_set': validation,
+        c = client.map(query_validation_intersect,list_ids,**{'validation_set': validation,
                                        'test_set': classification,
                                        'geometry_region': geometry_region})
         result = client.gather(c)
