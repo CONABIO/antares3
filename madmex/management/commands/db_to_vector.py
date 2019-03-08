@@ -32,13 +32,11 @@ Write results of classification + segmentation to a vector file on disk
 Example usage:
 --------------
 # Query classification performed for the state of Jalisco and write it to ESRI Shapfile
-antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --filename Jalisco_s2.shp
+antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --filename Jalisco_s2.shp --scheduler scheduler.json
 
 # Query classification performed for the state of Jalisco and write it to Geopackage
 antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --filename madmex_mexico.shp --layer Jalisco --driver GPKG
 
-# With reprojection
-antares db_to_vector --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --filename Jalisco_s2.shp --scheduler scheduler.json
 """
     def add_arguments(self, parser):
         parser.add_argument('-n', '--name',
