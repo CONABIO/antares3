@@ -186,7 +186,6 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         except KeyError: 
             print ('Please set the environment variable SEGMENTATION_BUCKET')
             raise KeyError ('Environ variable not set')
-            sys.exit(1)
 
         SEGMENTATION_BUCKET = os.getenv('SEGMENTATION_BUCKET', '')
         s3 = boto3.client('s3')
