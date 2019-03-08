@@ -33,7 +33,7 @@ Write result of classification to a raster file (only supports GeoTiff for now)
 Example usage:
 --------------
 # Query classification performed for the state of Jalisco and write it to  GeoTiff
-antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --filename Jalisco_sentinel_2017.tif --resolution 20 --proj4 '+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs' -sc scheduler.json
+antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --filename Jalisco_sentinel_2017.tif --resolution 20 --scheduler scheduler.json
 """
     def add_arguments(self, parser):
         parser.add_argument('-n', '--name',
@@ -68,8 +68,6 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         region = options['region']
         filename = options['filename']
         resolution = options['resolution']
-        # Proj4 string needs to be quoted in query
-        proj4 = options['proj4']
         scheduler_file = options['scheduler']
 
         # Query country or region contour
@@ -79,12 +77,8 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
             region = Region.objects.get(name=region).the_geom
         
         region_geojson = region.geojson
-        geometry = json.loads(region_geojson)
+        geometry_region = json.loads(region_geojson)
         
-        if proj4 is not None:
-            geometry_proj = geometry_transform(geometry,proj4)
-        else:
-            geometry_proj = geometry_transform(geometry, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
             
         path_destiny = os.path.join(TEMP_DIR, 'db_to_raster_results')
         if not os.path.exists(path_destiny):
@@ -96,10 +90,9 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         client = Client(scheduler_file=scheduler_file)
         client.restart()
         c = client.map(write_predict_result_to_raster,list_ids,**{'predict_name': name,
-                                       'geometry': geometry_proj,
+                                       'geometry_region': geometry_region,
                                        'resolution': resolution,
-                                       'path_destiny': path_destiny,
-                                       'proj4': proj4})
+                                       'path_destiny': path_destiny})
         result = client.gather(c) 
         logger.info('Merging results')
         
@@ -114,7 +107,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                 'height': mosaic.shape[1],
                 'count': 1,
                 'dtype': mosaic.dtype,
-                'crs': proj4,
+                'crs': src.crs,
                 'transform': out_trans,
                 'compress': 'lzw',
                 'nodata': 0}
