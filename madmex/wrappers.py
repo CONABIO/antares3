@@ -363,7 +363,6 @@ def write_predict_result_to_vector(id, predict_name, geometry_region, path_desti
     poly_geojson = poly.geojson
     geometry_seg = json.loads(poly_geojson)
     proj4_out = '+proj=longlat'
-    geom_dc_tile = shape_region.intersection(shape(json.loads(seg[0].the_geom.geojson)))
     segmentation_name_classified = os.path.basename(path).split('.')[0] + '_classified'
     with fiona.open(path) as src:
         crs = src.crs
