@@ -54,10 +54,6 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                             type=float,
                             required=True,
                             help='Resolution of the output raster in crs units. (See the --proj4 argument to define a projection, otherwise will be in longlat and resolution has to be specified in degrees)')
-        parser.add_argument('-p', '--proj4',
-                            type=str,
-                            default=None,
-                            help='Optional proj4 string defining the output projection')
         parser.add_argument('-sc', '--scheduler',
                             type=str,
                             default=None,
