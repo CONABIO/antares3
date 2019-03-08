@@ -123,7 +123,7 @@ Number of intersecting classification polygons: %d
             ValidationResults.objects.create(classification=classification[0:10],
                                              validation=validation,
                                              region=region,
-                                             scheme=scheme,
+                                             scheme='madmex_31',
                                              n_val=len(fc_valid),
                                              n_pred=len(fc_test),
                                              overall_acc=acc_dict['overall_accuracy'],
