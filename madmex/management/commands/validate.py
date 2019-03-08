@@ -120,7 +120,7 @@ Number of intersecting classification polygons: %d
         # Optionally log the results to the db
         if log:
             logger.info('Writing validation results to the database')
-            ValidationResults.objects.create(classification=classification,
+            ValidationResults.objects.create(classification=classification[0:20],
                                              validation=validation,
                                              region=region,
                                              scheme=scheme,
