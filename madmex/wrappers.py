@@ -355,7 +355,7 @@ def write_predict_result_to_vector(id, predict_name, geometry_region, path_desti
     
     """
     seg = PredictObject.objects.filter(id=id)
-    path = seg[0].path
+    path_seg = seg[0].path
     shape_region=shape(geometry_region)
     #TODO: next lines are to intersect extent of segmentation with region. They can be avoided if 
     #extent of segmentation is registered with latlong proj in DB
@@ -363,8 +363,8 @@ def write_predict_result_to_vector(id, predict_name, geometry_region, path_desti
     poly_geojson = poly.geojson
     geometry_seg = json.loads(poly_geojson)
     proj4_out = '+proj=longlat'
-    segmentation_name_classified = os.path.basename(path).split('.')[0] + '_classified'
-    with fiona.open(path) as src:
+    segmentation_name_classified = os.path.basename(path_seg).split('.')[0] + '_classified'
+    with fiona.open(path_seg) as src:
         crs = src.crs
         geometry_seg_proj = geometry_transform(geometry_seg,proj4_out,crs_in=crs)        
         shape_dc_tile = shape_region.intersection(shape(geometry_seg_proj))
@@ -424,7 +424,7 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
     poly_geojson = poly.geojson
     geometry_seg = json.loads(poly_geojson)
     proj4_out = '+proj=longlat' 
-    segmentation_name_classified = os.path.basename(path).split('.')[0] + '_classified'
+    segmentation_name_classified = os.path.basename(path_seg).split('.')[0] + '_classified'
     with fiona.open(path_seg) as src:
         crs = src.crs
         geometry_seg_proj = geometry_transform(geometry_seg,proj4_out,crs_in=crs)
