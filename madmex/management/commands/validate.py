@@ -16,6 +16,8 @@ from dask.distributed import Client
 from pprint import pprint
 from madmex.models import Country, Region, PredictClassification
 
+import json
+
 logger = logging.getLogger(__name__)
 
 class Command(AntaresBaseCommand):
