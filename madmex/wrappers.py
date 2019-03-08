@@ -335,8 +335,8 @@ def predict_object(tile, model_name, segmentation_name,
         logger.exception('Pred failed because: %s' % e)
         return False
 
-def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
-                                   driver='ESRI Shapefile', layer=None, proj4=None):
+def write_predict_result_to_vector(id, predict_name, geometry_region, path_destiny,
+                                   driver='ESRI Shapefile', layer=None):
     """Retrieve classification results in db: label and confidence per polygon. Add this information to
     to segmentation file via fiona's functionality and write result to path_destiny (by this time only writes to 
     file system are supported)
@@ -348,20 +348,28 @@ def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
     Args:
         id (int): id of segmentation file registered in PredictObject table.
         predict_name (str): Name of predict file registered in PredictObject table.
-        geometry (geom): Geometry of a region in a geojson-format
+        geometry_region (geom): Geometry of a region in a geojson-format
         pat_destiny (str): Path that will hold results. Only writes to file system are supported now.
         driver (str): OGR driver to use for writting the data to file. Defaults to ESRI Shapefile
         layer (str): Name of the layer (only for drivers that support multi-layer files)
-        proj4 (str): Optional. crs projection in string format.
     
     """
     seg = PredictObject.objects.filter(id=id)
     path = seg[0].path
-    shape_region=shape(geometry)
+    shape_region=shape(geometry_region)
+    #TODO: next lines are to intersect extent of segmentation with region. They can be avoided if 
+    #extent of segmentation is registered with latlong proj in DB
+    poly = seg[0].the_geom
+    poly_geojson = poly.geojson
+    geometry_seg = json.loads(poly_geojson)
+    proj4_out = '+proj=longlat'
     geom_dc_tile = shape_region.intersection(shape(json.loads(seg[0].the_geom.geojson)))
     segmentation_name_classified = os.path.basename(path).split('.')[0] + '_classified'
     with fiona.open(path) as src:
         crs = src.crs
+        geometry_seg_proj = geometry_transform(geometry_seg,proj4_out,crs_in=crs)        
+        shape_dc_tile = shape_region.intersection(shape(geometry_seg_proj))
+        shape_dc_tile_proj = shape(geometry_transform(mapping(shape_dc_tile),crs))
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name,
                                                                    predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
@@ -382,10 +390,10 @@ def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
                         layer=layer,
                         crs=crs,
                         schema=fc_schema) as dst:
-            [dst.write({'geometry': mapping(shape(feat[0]).intersection(geom_dc_tile)),
+            [dst.write({'geometry': mapping(shape(feat[0]).intersection(shape_dc_tile_proj)),
                         'properties':{'code': feat[1],
                                       'class': feat[2],
-                                      'confidence': feat[3]}}) for feat in fc_pred if shape(feat[0]).intersects(geom_dc_tile)]
+                                      'confidence': feat[3]}}) for feat in fc_pred if shape(feat[0]).intersects(shape_dc_tile_proj)]
         fc_pred = None     
     return filename
 
@@ -410,6 +418,7 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
     """
     seg = PredictObject.objects.filter(id=id)
     path_seg = seg[0].path
+    shape_region=shape(geometry_region)
     #TODO: next lines are to intersect extent of segmentation with region. They can be avoided if 
     #extent of segmentation is registered with latlong proj in DB
     poly = seg[0].the_geom
@@ -420,7 +429,6 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
     with fiona.open(path_seg) as src:
         crs = src.crs
         geometry_seg_proj = geometry_transform(geometry_seg,proj4_out,crs_in=crs)
-        shape_region=shape(geometry_region)
         shape_dc_tile = shape_region.intersection(shape(geometry_seg_proj))
         shape_dc_tile_proj = shape(geometry_transform(mapping(shape_dc_tile),crs))
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name, predict_object_id=id).prefetch_related('tag').order_by('features_id')
