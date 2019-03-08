@@ -15,7 +15,6 @@ from madmex.models import ValidationResults
 from dask.distributed import Client
 from pprint import pprint
 from madmex.models import Country, Region, PredictClassification
-from madmex.util.spatial import feature_transform
 
 import json
 
