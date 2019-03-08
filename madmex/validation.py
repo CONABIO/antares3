@@ -14,6 +14,7 @@ from madmex.util.spatial import geometry_transform
 import fiona
 from fiona.crs import to_string
 from madmex.overlay.conversions import valid_object_to_feature
+from madmex.util.spatial import feature_transform
 
 def prepare_validation(fc_valid, fc_test, valid_field=None, test_field=None):
     """Generate area weighted confusion matrix
