@@ -27,6 +27,7 @@ import logging
 from django.contrib.gis.geos import Polygon
 from affine import Affine
 from rasterio.features import rasterize
+from madmex.util.spatial import geometry_transform
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
 logger = logging.getLogger(__name__)
