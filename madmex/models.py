@@ -143,8 +143,8 @@ class ValidClassification(models.Model):
 class ValidationResults(models.Model):
     """Log validation results
     """
-    classification = models.CharField(max_length=100, default='')
-    validation = models.CharField(max_length=100, default='')
+    classification = models.CharField(max_length=200, default='')
+    validation = models.CharField(max_length=200, default='')
     region = models.CharField(max_length=100, default='', null=True)
     scheme = models.CharField(max_length=100, default='')
     n_val = models.IntegerField(default=-1)
