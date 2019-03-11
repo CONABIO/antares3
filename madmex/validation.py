@@ -10,7 +10,6 @@ from madmex.util.db import get_label_encoding
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from shapely.geometry import shape, mapping
 from operator import itemgetter
-from madmex.util.spatial import geometry_transform
 import fiona
 from fiona.crs import to_string
 from madmex.overlay.conversions import valid_object_to_feature
