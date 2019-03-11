@@ -420,17 +420,13 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
     seg = PredictObject.objects.filter(id=id)
     path_seg = seg[0].path
     shape_region=shape(geometry_region)
-    #TODO: next lines are to intersect extent of segmentation with region. They can be avoided if 
-    #extent of segmentation is registered with latlong proj in DB
     poly = seg[0].the_geom
     poly_geojson = poly.geojson
     geometry_seg = json.loads(poly_geojson)
-    proj4_out = '+proj=longlat' 
     segmentation_name_classified = os.path.basename(path_seg).split('.')[0] + '_classified'
     with fiona.open(path_seg) as src:
         crs = src.crs
-        geometry_seg_proj = geometry_transform(geometry_seg,proj4_out,crs_in=crs)
-        shape_dc_tile = shape_region.intersection(shape(geometry_seg_proj))
+        shape_dc_tile = shape_region.intersection(shape(geometry_seg))
         shape_dc_tile_proj = shape(geometry_transform(mapping(shape_dc_tile),crs))
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name, predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
