@@ -132,10 +132,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         if self.fc is None:
             raise ValueError('fc (feature collection) attribute is empty, you must first run the polygonize method')
 
-        proj4_out = '+proj=longlat'
-        geometry_seg_proj = geometry_transform(self.geobox.extent.json, crs_out = proj4_out, crs_in = self.crs)
-        geometry_mapping = shape(geometry_seg_proj)
-        geom = GEOSGeometry(geometry_mapping.wkt)
+        geom = GEOSGeometry(json.dumps(self.geobox.geographic_extent.json))
         SEGMENTATION_BUCKET = os.getenv('SEGMENTATION_BUCKET', '')
         filename = name_file + '.shp'
         file_path_in_s3 = 's3://' + SEGMENTATION_BUCKET + '/' + filename
