@@ -422,6 +422,7 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
     with fiona.open(path_seg) as src:
         crs = src.crs
         shape_dc_tile = shape_region.intersection(shape(geometry_seg))
+        shape_dc_tile_proj = shape(geometry_transform(mapping(shape_dc_tile),crs))
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name, predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
         fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
@@ -437,8 +438,8 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
         shape_dim = (nrows, ncols)
         arr = np.zeros((nrows, ncols), dtype=np.uint8)
         aff = Affine(resolution, 0, xmin, 0, -resolution, ymax)
-        fc_pred_intersection = [(mapping(shape(feat[0]).intersection(shape_dc_tile)),
-                                 feat[1]) for feat in fc_pred if shape(feat[0]).intersects(shape_dc_tile)]
+        fc_pred_intersection = [(mapping(shape(feat[0]).intersection(shape_dc_tile_proj)),
+                                 feat[1]) for feat in fc_pred if shape(feat[0]).intersects(shape_dc_tile_proj)]
         rasterize(shapes=fc_pred_intersection, transform=aff, dtype=np.uint8, out=arr)
         meta = {'driver': 'GTiff',
                 'width': shape_dim[1],
