@@ -12,10 +12,10 @@ from rasterio import features
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from datacube.utils.geometry import CRS, GeoBox
 from madmex.settings import SEGMENTATION_BUCKET
-from madmex.util.spatial import feature_transform
+from madmex.util.spatial import feature_transform, geometry_transform
 from madmex.models import PredictObject
 from madmex.util import chunk
-
+from shapely.geometry import shape
 
 class BaseSegmentation(metaclass=abc.ABCMeta):
     """
@@ -132,7 +132,10 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         if self.fc is None:
             raise ValueError('fc (feature collection) attribute is empty, you must first run the polygonize method')
 
-        geom = GEOSGeometry(self.geobox.extent.wkt)
+        proj4_out = '+proj=longlat'
+        geometry_seg_proj = geometry_transform(self.geobox.extent.json, crs_out = proj4_out, crs_in = self.crs)
+        geometry_mapping = shape(geometry_seg_proj)
+        geom = GEOSGeometry(geometry_mapping.wkt)
         SEGMENTATION_BUCKET = os.getenv('SEGMENTATION_BUCKET', '')
         filename = name_file + '.shp'
         file_path_in_s3 = 's3://' + SEGMENTATION_BUCKET + '/' + filename
