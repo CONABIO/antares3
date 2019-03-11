@@ -122,8 +122,6 @@ def query_validation_intersect(id_dc_tile, validation_set, test_set, geometry_re
     seg = PredictObject.objects.filter(id=id_dc_tile)
     s3_path = seg[0].path
     poly = seg[0].the_geom
-    #next lines to reproyect extent registered in DB 
-    #TODO: register geometry of extent of each shapefile of segments of dc tile in lat long
     poly_geojson = poly.geojson
     geometry = json.loads(poly_geojson)
     with fiona.open(s3_path) as src:
