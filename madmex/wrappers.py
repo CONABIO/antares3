@@ -366,6 +366,7 @@ def write_predict_result_to_vector(id, predict_name, geometry_region, path_desti
     with fiona.open(path_seg) as src:
         crs = src.crs
         shape_dc_tile = shape_region.intersection(shape(geometry_seg))
+        shape_dc_tile_proj = shape(geometry_transform(mapping(shape_dc_tile),crs))
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name,
                                                                    predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
@@ -386,10 +387,10 @@ def write_predict_result_to_vector(id, predict_name, geometry_region, path_desti
                         layer=layer,
                         crs=crs,
                         schema=fc_schema) as dst:
-            [dst.write({'geometry': mapping(shape(feat[0]).intersection(shape_dc_tile)),
+            [dst.write({'geometry': mapping(shape(feat[0]).intersection(shape_dc_tile_proj)),
                         'properties':{'code': feat[1],
                                       'class': feat[2],
-                                      'confidence': feat[3]}}) for feat in fc_pred if shape(feat[0]).intersects(shape_dc_tile)]
+                                      'confidence': feat[3]}}) for feat in fc_pred if shape(feat[0]).intersects(shape_dc_tile_proj)]
         fc_pred = None     
     return filename
 
