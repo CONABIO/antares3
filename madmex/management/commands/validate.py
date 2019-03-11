@@ -66,7 +66,7 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
         # Unpack variables
         classification = options['classification']
         validation = options['validation']
-        region = options['region']
+        region_name = options['region']
         log = options['log']
         comment = options['comment']
         scheduler_file = options['scheduler']
@@ -75,9 +75,9 @@ antares validate --classification chihuahua_nalcm_2015 --validation bits_interpr
         scheme = get_validation_scheme_name(validation)
         # Query country or region contour
         try:
-            region = Country.objects.get(name=region).the_geom
+            region = Country.objects.get(name=region_name).the_geom
         except Country.DoesNotExist:
-            region = Region.objects.get(name=region).the_geom
+            region = Region.objects.get(name=region_name).the_geom
         
         region_geojson = region.geojson
         geometry_region = json.loads(region_geojson)
@@ -107,7 +107,7 @@ Number of intersecting classification polygons: %d
 
 """
 
-        print(report % (region, classification, validation,
+        print(report % (region_name, classification, validation,
                         len(fc_valid), len(fc_test)))
 
         # Prepare validation vectors
@@ -120,9 +120,9 @@ Number of intersecting classification polygons: %d
         # Optionally log the results to the db
         if log:
             logger.info('Writing validation results to the database')
-            ValidationResults.objects.create(classification=classification[0:10],
+            ValidationResults.objects.create(classification=classification,
                                              validation=validation,
-                                             region=region,
+                                             region=region_name,
                                              scheme='madmex_31',
                                              n_val=len(fc_valid),
                                              n_pred=len(fc_test),
