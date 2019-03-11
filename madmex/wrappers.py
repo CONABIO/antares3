@@ -28,6 +28,7 @@ from django.contrib.gis.geos import Polygon
 from affine import Affine
 from rasterio.features import rasterize
 from madmex.util.spatial import geometry_transform
+from django.contrib.gis.geos.geometry import GEOSGeometry
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -288,8 +289,8 @@ def predict_object(tile, model_name, segmentation_name,
     try:
         # Load geoarray and feature collection
         geoarray = GridWorkflow.load(tile[1])
-        poly = Polygon.from_ewkt(geoarray.geobox.extent.wkt)
-        query_set = PredictObject.objects.filter(the_geom__contained=poly,
+        poly_proj = GEOSGeometry(json.dumps(geoarray.geobox.geographic_extent.json))
+        query_set = PredictObject.objects.filter(the_geom__contained=poly_proj,
                                                  segmentation_information__name=segmentation_name)
         seg_id = query_set[0].id
         path = query_set[0].path
