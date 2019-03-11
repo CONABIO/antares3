@@ -359,18 +359,13 @@ def write_predict_result_to_vector(id, predict_name, geometry_region, path_desti
     seg = PredictObject.objects.filter(id=id)
     path_seg = seg[0].path
     shape_region=shape(geometry_region)
-    #TODO: next lines are to intersect extent of segmentation with region. They can be avoided if 
-    #extent of segmentation is registered with latlong proj in DB
     poly = seg[0].the_geom
     poly_geojson = poly.geojson
     geometry_seg = json.loads(poly_geojson)
-    proj4_out = '+proj=longlat'
     segmentation_name_classified = os.path.basename(path_seg).split('.')[0] + '_classified'
     with fiona.open(path_seg) as src:
         crs = src.crs
-        geometry_seg_proj = geometry_transform(geometry_seg,proj4_out,crs_in=crs)        
-        shape_dc_tile = shape_region.intersection(shape(geometry_seg_proj))
-        shape_dc_tile_proj = shape(geometry_transform(mapping(shape_dc_tile),crs))
+        shape_dc_tile = shape_region.intersection(shape(geometry_seg))
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name,
                                                                    predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
@@ -391,10 +386,10 @@ def write_predict_result_to_vector(id, predict_name, geometry_region, path_desti
                         layer=layer,
                         crs=crs,
                         schema=fc_schema) as dst:
-            [dst.write({'geometry': mapping(shape(feat[0]).intersection(shape_dc_tile_proj)),
+            [dst.write({'geometry': mapping(shape(feat[0]).intersection(shape_dc_tile)),
                         'properties':{'code': feat[1],
                                       'class': feat[2],
-                                      'confidence': feat[3]}}) for feat in fc_pred if shape(feat[0]).intersects(shape_dc_tile_proj)]
+                                      'confidence': feat[3]}}) for feat in fc_pred if shape(feat[0]).intersects(shape_dc_tile)]
         fc_pred = None     
     return filename
 
@@ -427,7 +422,6 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
     with fiona.open(path_seg) as src:
         crs = src.crs
         shape_dc_tile = shape_region.intersection(shape(geometry_seg))
-        shape_dc_tile_proj = shape(geometry_transform(mapping(shape_dc_tile),crs))
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name, predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
         fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
@@ -443,8 +437,8 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
         shape_dim = (nrows, ncols)
         arr = np.zeros((nrows, ncols), dtype=np.uint8)
         aff = Affine(resolution, 0, xmin, 0, -resolution, ymax)
-        fc_pred_intersection = [(mapping(shape(feat[0]).intersection(shape_dc_tile_proj)),
-                                 feat[1]) for feat in fc_pred if shape(feat[0]).intersects(shape_dc_tile_proj)]
+        fc_pred_intersection = [(mapping(shape(feat[0]).intersection(shape_dc_tile)),
+                                 feat[1]) for feat in fc_pred if shape(feat[0]).intersects(shape_dc_tile)]
         rasterize(shapes=fc_pred_intersection, transform=aff, dtype=np.uint8, out=arr)
         meta = {'driver': 'GTiff',
                 'width': shape_dim[1],
