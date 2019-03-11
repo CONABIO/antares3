@@ -98,14 +98,16 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             return fc_out
         return [to_feature(x) for x in geom_collection]
 
-    def to_shapefile(self, filename, fc=None):
+    def to_shapefile(self, filename, fc=None, bucket=None):
         """Write the result of the segmentation to a ESRI Shapefile file
 
         Args:
-            filename (str): Full path where to write the file
+            filename (str): File name (use full path when writing to filesystem)
+                and basename when writing to s3 bucket
             fc (dict): Feature collection with one property who's name must be
                 id. Typically the return of the ``polygonize()`` method.
                 Can be ``None``, in which case, it is generated on the fly
+            bucket (string): Optional name of s3 bucket to write the shapefile
 
         Return:
             str: The function is used for its side effect of writing a feature
@@ -116,12 +118,17 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         crs = from_string(self.crs)
         schema = {'geometry': 'Polygon',
                   'properties': {'id': 'int'}}
-        with fiona.open(filename, 'w',
-                        driver='ESRI Shapefile',
-                        schema=schema,
-                        crs=crs) as dst:
-            for feature in fc:
-                dst.write(feature)
+        if bucket is None:
+            with fiona.open(filename, 'w',
+                            driver='ESRI Shapefile',
+                            schema=schema,
+                            crs=crs) as dst:
+                for feature in fc:
+                    dst.write(feature)
+        else:
+            filename = s3.write_shapefile(bucket=bucket, fc=fc, schema=schema,
+                                          crs=crs)
+        return filename
 
     def save(self, filename, fc=None, bucket=None):
         """Write the result of a segmentation to disk or an S3 bucket if specified
@@ -141,19 +148,9 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         """
         geom = GEOSGeometry(self.geobox.extent.wkt)
         # TODO: Generate segmentation_information object
-        if bucket is not None:
-            # Write the shapefile first to tempdir then to S3
-            tmp_filename = os.path.join(TEMP_DIR, filename)
-            self.to_shapefile(filename=tmp_filename, fc=fc)
-            s3_path = s3.copy_shapefile(bucket=bucket, filename=filename)
-            # index in database
-            PredictObject.objects.get_or_create(path=s3_path,
-                                                the_geom=geom,
-                                                segmentation_information=meta_object)
-        else:
-            self.to_shapefile(filename=filename, fc=fc)
-            PredictObject.objects.get_or_create(path=filename,
-                                                the_geom=geom,
-                                                segmentation_information=meta_object)
+        shp_path = self.to_shapefile(filename=filename, fc=fc, bucket=bucket)
+        PredictObject.objects.get_or_create(path=shp_path,
+                                            the_geom=geom,
+                                            segmentation_information=meta_object)
         return filename
 
