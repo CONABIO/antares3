@@ -432,8 +432,8 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
         fc_pred_sorted = None
         pred_objects_sorted = None
         #rasterize
-        bbox = seg[0].the_geom
-        xmin, ymin, xmax, ymax = bbox.extent
+        geometry_seg_proj = geometry_transform(geometry_seg, crs_out = crs)
+        xmin, ymin, xmax, ymax = shape(geometry_seg_proj).bounds
         nrows = int(((ymax - ymin) // resolution) + 1)
         ncols = int(((xmax - xmin) // resolution) + 1)
         shape_dim = (nrows, ncols)
