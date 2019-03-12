@@ -368,7 +368,10 @@ def write_predict_result_to_vector(id, predict_name, geometry_region, path_desti
     with fiona.open(path_seg) as src:
         crs = src.crs
         shape_dc_tile = shape_region.intersection(shape(geometry_seg))
-        shape_dc_tile_proj = shape(geometry_transform(mapping(shape_dc_tile),crs))
+        geom_dc_tile_geojson = mapping(shape_dc_tile)
+        shape_dc_tile_proj = shape(transform_geom(CRS_rio.from_epsg(4326),
+                                                  CRS_rio.from_proj4(crs),
+                                                  geom_dc_tile_geojson))
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name,
                                                                    predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
