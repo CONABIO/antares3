@@ -46,21 +46,4 @@ class VectorDb(AntaresDb):
 
         fc = (train_object_to_feature(x, crs) for x in query_set)
         return fc
-#TODO: remove next function
-def load_segmentation_from_dataset(geoarray, segmentation_name):
-    """Retrieve a path in s3 segmentation intersecting with a geoarray
-
-    Args:
-        geoarray (xarray.Dataset): Typical Dataset object generated using one of
-            the datacube load method (GridWorkflow or Datacube clases)
-        segmentation_name (str): Unique segmentation identifier
-
-    Return:
-        location of segmentation in s3 (str)
-    """
-    poly = Polygon.from_ewkt(geoarray.geobox.extent.wkt)
-    query_set = PredictObject.objects.filter(the_geom__intersects=poly,
-                                         segmentation_information__name=segmentation_name)
-    
-    return query_set[0].path
 
