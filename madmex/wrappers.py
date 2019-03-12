@@ -27,7 +27,6 @@ import logging
 from django.contrib.gis.geos import Polygon
 from affine import Affine
 from rasterio.features import rasterize
-from madmex.util.spatial import geometry_transform
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from rasterio.warp import transform_geom
 from rasterio.crs import CRS as CRS_rio
