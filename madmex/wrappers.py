@@ -11,7 +11,7 @@ from datacube.utils.geometry import Geometry, CRS
 from importlib import import_module
 from madmex.util.xarray import to_float
 from madmex.util import chunk
-from madmex.io.vector_db import VectorDb, load_segmentation_from_dataset
+from madmex.io.vector_db import VectorDb
 from madmex.overlay.extractions import zonal_stats_xarray
 from madmex.modeling import BaseModel
 from madmex.settings import TEMP_DIR
