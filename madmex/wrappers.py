@@ -29,6 +29,8 @@ from affine import Affine
 from rasterio.features import rasterize
 from madmex.util.spatial import geometry_transform
 from django.contrib.gis.geos.geometry import GEOSGeometry
+from rasterio.warp import transform_geom
+from rasterio.crs import CRS as CRS_rio
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -423,7 +425,10 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
     with fiona.open(path_seg) as src:
         crs = src.crs
         shape_dc_tile = shape_region.intersection(shape(geometry_seg))
-        shape_dc_tile_proj = shape(geometry_transform(mapping(shape_dc_tile),crs))
+        geom_dc_tile_geojson = mapping(shape_dc_tile)
+        shape_dc_tile_proj = shape(transform_geom(CRS_rio.from_epsg(4326),
+                                                  CRS_rio.from_proj4(crs),
+                                                  geom_dc_tile_geojson))
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name, predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
         fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
@@ -432,7 +437,9 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
         fc_pred_sorted = None
         pred_objects_sorted = None
         #rasterize
-        geometry_seg_proj = geometry_transform(geometry_seg, crs_out = crs)
+        geometry_seg_proj = transform_geom(CRS_rio.from_epsg(4326),
+                                           CRS_rio.from_proj4(crs),
+                                           geometry_seg)
         xmin, ymin, xmax, ymax = shape(geometry_seg_proj).bounds
         nrows = int(((ymax - ymin) // resolution) + 1)
         ncols = int(((xmax - xmin) // resolution) + 1)
