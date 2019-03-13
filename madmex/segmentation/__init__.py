@@ -82,7 +82,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             raise ValueError("self.segments_array is None, you must run segment before this method")
         # Use rasterio.features.shapes to generate a geometries collection from the
         # segmented raster
-        geom_collection = features.shapes(self.segments_array.astype(np.uint16),
+        geom_collection = features.shapes(self.segments_array.astype(np.uint32),
                                           transform=self.affine)
         # Make it a valid featurecollection
         def to_feature(feature):
