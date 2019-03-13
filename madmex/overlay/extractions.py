@@ -94,7 +94,7 @@ def zonal_stats_xarray(dataset, fc, field, aggregation='mean',
         df = df.groupby('features_id').agg(agg_ordered_dict)
         X_list.append(df.values)
         # TODO: Use numpy.array instead of list here to reduce memory footprint (see np.vectorize)
-        ids = list(df.index.values.astype('uint64') - 1)
+        ids = list(df.index.values.astype('int') - 1)
         df = None
         y_list.append(np.array([fc_sub[x]['properties'][field] for x in ids]))
         gc.collect()
