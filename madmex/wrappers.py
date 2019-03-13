@@ -20,7 +20,7 @@ from datacube.model import GridSpec
 from operator import itemgetter
 from shapely.geometry import mapping, shape
 import fiona
-from fiona.crs import from_string
+from fiona.crs import from_string, to_string
 import sys
 from madmex.loggerwriter import LoggerWriter
 import logging
@@ -366,7 +366,7 @@ def write_predict_result_to_vector(id, predict_name, geometry_region, path_desti
     geometry_seg = json.loads(poly_geojson)
     segmentation_name_classified = os.path.basename(path_seg).split('.')[0] + '_classified'
     with fiona.open(path_seg) as src:
-        crs = src.crs
+        crs = to_string(src.crs)
         shape_dc_tile = shape_region.intersection(shape(geometry_seg))
         geom_dc_tile_geojson = mapping(shape_dc_tile)
         shape_dc_tile_proj = shape(transform_geom(CRS_rio.from_epsg(4326),
@@ -426,7 +426,7 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
     geometry_seg = json.loads(poly_geojson)
     segmentation_name_classified = os.path.basename(path_seg).split('.')[0] + '_classified'
     with fiona.open(path_seg) as src:
-        crs = src.crs
+        crs = to_string(src.crs)
         shape_dc_tile = shape_region.intersection(shape(geometry_seg))
         geom_dc_tile_geojson = mapping(shape_dc_tile)
         shape_dc_tile_proj = shape(transform_geom(CRS_rio.from_epsg(4326),
