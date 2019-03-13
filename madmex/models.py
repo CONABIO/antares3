@@ -163,7 +163,7 @@ class PredictClassification(models.Model):
     model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='model', default=None)
     name = models.CharField(max_length=200, default='')
     confidence = models.FloatField(default=-1.0)
-    features_id = models.IntegerField(default=-1)
+    features_id = models.BigIntegerField(default=-1)
 
 class Scene(models.Model):
     '''This table represents a satellite scene and information to build a catalalog.
