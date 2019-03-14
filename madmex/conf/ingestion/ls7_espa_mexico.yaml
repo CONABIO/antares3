@@ -10,7 +10,7 @@ global_attributes:
   summary: Landsat 7 ETM+ surface reflectance processed by espa
   source: USGS
   institution: CONABIO
-  instrument: ETM+
+  instrument: ETM
   cdm_data_type: Grid
   keywords: CONABIO,LANDSAT,ETM+,SURFACE REFLECTANCE
   keywords_vocabulary: GCMD
