@@ -10,6 +10,7 @@ import numpy as np
 import fiona
 import boto3
 from rasterio import features
+from shapely.geometry import shape, mapping
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from datacube.utils.geometry import CRS, GeoBox
 
@@ -90,7 +91,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             """Tranforms the results of rasterio.feature.shape to a feature"""
             fc_out = {
                 "type": "Feature",
-                "geometry": feature[0],
+                "geometry": mapping(shape(feature[0]).buffer(0)),
                 "properties": {
                     "id": feature[1]
                 }
