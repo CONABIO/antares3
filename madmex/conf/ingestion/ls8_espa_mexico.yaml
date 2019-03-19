@@ -105,7 +105,7 @@ measurements:
           long_name: "Surface Reflectance 2.08-2.35 microns (Short-wave Infrared)"
           alias: "band_7"
     - name: 'pixel_qa'
-      dtype: int16
+      dtype: uint16
       nodata: 1
       resampling_method: nearest
       src_varname: 'pixel_qa'
