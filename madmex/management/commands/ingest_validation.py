@@ -80,7 +80,7 @@ antares ingest_validation /path/to/file.shp --scheme madmex --year 2015 --name r
         valid_obj_list = [obj for obj in obj_list if obj.the_geom.is_valid]
         if len(valid_obj_list) < len(obj_list)*0.9:
             raise Error('Too many invalid geometries')
-        ValidObject.objects.bulk_create(obj_list)
+        ValidObject.objects.bulk_create(valid_obj_list)
 
         # Get list of unique tags
         unique_numeric_codes = list(set([x['properties'][field] for x in fc]))
@@ -100,6 +100,6 @@ antares ingest_validation /path/to/file.shp --scheme madmex --year 2015 --name r
                                       valid_set=name, interpretation_year=year)
             return obj
 
-        valid_class_obj_list = [valid_class_obj_builder(x) for x in zip(obj_list, fc)]
+        valid_class_obj_list = [valid_class_obj_builder(x) for x in zip(valid_obj_list, fc)]
 
         ValidClassification.objects.bulk_create(valid_class_obj_list)
