@@ -71,12 +71,15 @@ antares ingest_validation /path/to/file.shp --scheme madmex --year 2015 --name r
         def valid_obj_builder(x):
             """Build individual ValidObjects
             """
-            geom = GEOSGeometry(json.dumps(x['geometry']))
+            geom = GEOSGeometry(json.dumps(x['geometry'])).buffer(0)
             obj = ValidObject(filename=os.path.basename(input_file),
                               the_geom=geom)
             return obj
 
         obj_list = [valid_obj_builder(x) for x in fc]
+        valid_obj_list = [obj for obj in obj_list if obj.the_geom.is_valid]
+        if len(valid_obj_list) < len(obj_list)*0.9:
+            raise Error('Too many invalid geometries')
         ValidObject.objects.bulk_create(obj_list)
 
         # Get list of unique tags
