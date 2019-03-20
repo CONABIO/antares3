@@ -336,7 +336,6 @@ def predict_object(tile, model_name, segmentation_name,
     except Exception as e:
         print('Prediction failed because: %s' % e)
         logger.exception('Pred failed because: %s' % e)
-        print('failed path: {}'.format(path))
         return False
 
 def write_predict_result_to_vector(id, predict_name, geometry_region, path_destiny,
