@@ -140,7 +140,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         
         filename_masked_mosaic = expanduser("~") + '/' + filename
         
-        with rasterio.open(filename_mosaic_masked, "w", **out_meta) as dst:
+        with rasterio.open(filename_masked_mosaic, "w", **out_meta) as dst:
             dst.write(masked_mosaic)
             try:
                 cmap = classification_to_cmap(name)
