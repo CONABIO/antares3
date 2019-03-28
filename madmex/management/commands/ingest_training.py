@@ -78,7 +78,6 @@ antares ingest_training /path/to/file.shp --scheme madmex --year 2015 --name tra
         
         # Read file and Optionally reproject the features to longlat
         with rasterio.open(input_file) as src:
-          try:
             train_arr = src.read(1)
             aff = src.transform
             #crs_str = to_string(src.crs)
