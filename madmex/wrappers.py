@@ -399,7 +399,7 @@ def write_predict_result_to_vector(id, predict_name, geometry_region, path_desti
     return filename
 
 
-def write_predict_result_to_raster(id, predict_name, geometry_region, resolution,
+def write_predict_result_to_raster(id, predict_name, resolution,
                                    path_destiny):
     """Retrieve classification results in db: label per polygon. Add this information to
     to segmentation file via fiona's functionality and write result to path_destiny (by this time only writes to 
@@ -412,14 +412,12 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
     Args:
         id (int): id of segmentation file registered in PredictObject table.
         predict_name (str): Name of predict file registered in PredictObject table.
-        geometry_region (geom): Geometry of a region in a geojson-format
         resolution (int): Resolution of the output raster in crs units. (See the proj4 argument to define a projection, otherwise will be in longlat and resolution has to be specified in degrees)
         pat_destiny (str): Path that will hold results. Only writes to file system are supported now.
     
     """
     seg = PredictObject.objects.filter(id=id)
     path_seg = seg[0].path
-    shape_region=shape(geometry_region)
     poly = seg[0].the_geom
     poly_geojson = poly.geojson
     geometry_seg = json.loads(poly_geojson)
