@@ -448,9 +448,7 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
         shape_dim = (nrows, ncols)
         arr = np.zeros((nrows, ncols), dtype=np.uint8)
         aff = Affine(resolution, 0, xmin, 0, -resolution, ymax)
-        fc_pred_intersection = [(mapping(shape(feat[0]).intersection(shape_dc_tile_proj)),
-                                 feat[1]) for feat in fc_pred if shape(feat[0]).intersects(shape_dc_tile_proj)]
-        rasterize(shapes=fc_pred_intersection, transform=aff, dtype=np.uint8, out=arr)
+        rasterize(shapes=fc_pred, transform=aff, dtype=np.uint8, out=arr)
         meta = {'driver': 'GTiff',
                 'width': shape_dim[1],
                 'height': shape_dim[0],
