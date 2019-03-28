@@ -3,7 +3,7 @@
 """
 Author: Loic Dutrieux
 Date: 2018-08-30
-Purpose: Ingest a vector file containing training data into the antares database
+Purpose: Ingest a subset of training data randomly sampled from a raster into the antares database
 """
 
 import logging
