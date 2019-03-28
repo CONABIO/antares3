@@ -426,11 +426,6 @@ def write_predict_result_to_raster(id, predict_name, geometry_region, resolution
     segmentation_name_classified = os.path.basename(path_seg).split('.')[0] + '_classified'
     with fiona.open(path_seg) as src:
         crs = to_string(src.crs)
-        shape_dc_tile = shape_region.intersection(shape(geometry_seg))
-        geom_dc_tile_geojson = mapping(shape_dc_tile)
-        shape_dc_tile_proj = shape(transform_geom(CRS_rio.from_epsg(4326),
-                                                  CRS_rio.from_proj4(crs),
-                                                  geom_dc_tile_geojson))
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name, predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
         fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
