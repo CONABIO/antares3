@@ -31,7 +31,7 @@ Ingest a subset of training data randomly sampled from a raster into the antares
 --------------
 Example usage:
 --------------
-antares ingest_training /path/to/file.shp --scheme madmex --year 2015 --name train_mexico --field code
+antares ingest_training /path/to/file.shp --fraction 0.0001 --scheme madmex --year 2015 --name train_mexico --field code
     """
     def add_arguments(self, parser):
         parser.add_argument('input_file',
