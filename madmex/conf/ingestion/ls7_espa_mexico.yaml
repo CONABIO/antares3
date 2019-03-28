@@ -1,16 +1,16 @@
-source_type: ls7_espa_scene
-output_type: ls7_espa_mexico
+source_type: ls7_espa_scene_50km
+output_type: ls7_espa_mexico_50km
 
 description: Landsat 7 Collection 1 processed to surface reflectance by espa. Resampled to 30m Mexico INEGI Lambert Conformal Conic projection with a 100 km tile size.
 
 location: '{{ ingestion_path }}'
-file_path_template: 'LS7_espa/mexico/LS7_espa_{tile_index[0]}_{tile_index[1]}_{start_time}{% if netcdf %}.nc{% endif %}'
+file_path_template: 'LS7_espa_50km/mexico/LS7_espa_{tile_index[0]}_{tile_index[1]}_{start_time}{% if netcdf %}.nc{% endif %}'
 global_attributes:
   title: CONABIO Data Cube Landsat Surface Reflectance
   summary: Landsat 7 ETM+ surface reflectance processed by espa
   source: USGS
   institution: CONABIO
-  instrument: ETM+
+  instrument: ETM
   cdm_data_type: Grid
   keywords: CONABIO,LANDSAT,ETM+,SURFACE REFLECTANCE
   keywords_vocabulary: GCMD
@@ -31,8 +31,8 @@ storage:
   # http://spatialreference.org/ref/sr-org/mexico-inegi-lambert-conformal-conic/
   crs: PROJCS["unnamed",GEOGCS["WGS 84",DATUM["unknown",SPHEROID["WGS84",6378137,6556752.3141]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",17.5],PARAMETER["standard_parallel_2",29.5],PARAMETER["latitude_of_origin",12],PARAMETER["central_meridian",-102],PARAMETER["false_easting",2500000],PARAMETER["false_northing",0]] 
   tile_size:
-          x: 100020
-          y: 100020
+          x: 50010
+          y: 50010
   resolution:
           x: 30
           y: -30
@@ -41,8 +41,8 @@ storage:
     x: 977160 
     y: 2426720
   chunking:
-      x: 3334
-      y: 3334
+      x: 1667
+      y: 1667
       time: 10
   dimension_order: ['time', 'y', 'x']
 

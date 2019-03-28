@@ -2,6 +2,7 @@ import rasterio
 import numpy as np
 import os
 import json
+import hashlib
 from datetime import datetime
 import gc
 import datacube
@@ -10,13 +11,33 @@ from datacube.utils.geometry import Geometry, CRS
 from importlib import import_module
 from madmex.util.xarray import to_float
 from madmex.util import chunk
-from madmex.io.vector_db import VectorDb, load_segmentation_from_dataset
+from madmex.io.vector_db import VectorDb
 from madmex.overlay.extractions import zonal_stats_xarray
 from madmex.modeling import BaseModel
-
-from madmex.models import Region, Country, Model, PredictClassification
+from madmex.settings import TEMP_DIR
+from madmex.models import Region, Country, Model, PredictClassification, PredictObject
 from datacube.model import GridSpec
+from operator import itemgetter
+from shapely.geometry import mapping, shape
+import fiona
+from fiona.crs import from_string, to_string
+import sys
+from madmex.loggerwriter import LoggerWriter
+import logging
+from django.contrib.gis.geos import Polygon
+from affine import Affine
+from rasterio.features import rasterize
+from django.contrib.gis.geos.geometry import GEOSGeometry
+from rasterio.warp import transform_geom
+from rasterio.crs import CRS as CRS_rio
 
+logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
+logger = logging.getLogger(__name__)
+
+stdl = LoggerWriter(logger.debug)
+sys.stdout = stdl
+stdl = LoggerWriter(logger.error)
+sys.stderr = stdl
 """
 The wrapper module gathers functions that are typically called by
 command lines
@@ -124,6 +145,7 @@ def extract_tile_db(tile, sp, training_set, sample):
         # Return the extracted array (or a list of two arrays?)
         return extract
     except Exception as e:
+        print(e)
         return [None, None]
 
 
@@ -231,13 +253,21 @@ def segment(tile, algorithm, segmentation_meta,
     try:
         # Load tile
         geoarray = GridWorkflow.load(tile[1], measurements=band_list)
+        name = segmentation_meta.algorithm + '_' + segmentation_meta.name + '_' + segmentation_meta.datasource + '_%d_%d_' % (tile[0][0], tile[0][1]) + segmentation_meta.datasource_year
+        hash = hashlib.md5(name.encode('utf-8')).hexdigest()[0:6]
+        filename = hash + '_' + name
+        path = os.path.join(TEMP_DIR, 'segmentation_results')
+        if not os.path.exists(path):
+            os.makedirs(path)
         seg = Segmentation.from_geoarray(geoarray, **extra_args)
         seg.segment()
         # Try deallocating input array
+        seg.polygonize(crs_out=None)
+        seg.to_filesystem(path,filename)
+        seg.to_db(filename, segmentation_meta)
+        seg.to_bucket(path, filename)
         seg.array = None
         geoarray = None
-        seg.polygonize()
-        seg.to_db(segmentation_meta)
         gc.collect()
         return True
     except Exception as e:
@@ -260,49 +290,178 @@ def predict_object(tile, model_name, segmentation_name,
     try:
         # Load geoarray and feature collection
         geoarray = GridWorkflow.load(tile[1])
-        fc = load_segmentation_from_dataset(geoarray, segmentation_name)
-        # Extract array of features
-        X, y = zonal_stats_xarray(dataset=geoarray, fc=fc, field='id',
-                                  categorical_variables=categorical_variables,
-                                  aggregation=aggregation)
-        # Deallocate geoarray and feature collection
-        geoarray = None
-        fc = None
-        gc.collect()
-        # Load model
-        PredModel = BaseModel.from_db(model_name)
-        model_id = Model.objects.get(name=model_name).id
-        try:
-            # Avoid opening several threads in each process
-            PredModel.model.n_jobs = 1
-        except Exception as e:
-            pass
-        # Run prediction
-        y_pred = PredModel.predict(X)
-        y_conf = PredModel.predict_confidence(X)
-        # Deallocate arrays of extracted values and model
-        X = None
-        PredModel = None
-        gc.collect()
-        # Build list of PredictClassification objects
-        def predict_object_builder(i, pred, conf):
-            return PredictClassification(model_id=model_id, predict_object_id=i,
-                                         tag_id=pred, confidence=conf, name=name)
-        # Write labels to database combining chunking and bulk_create
-        for sub_zip in chunk(zip(y, y_pred, y_conf), 10000):
-            obj_list = [predict_object_builder(i,pred,conf) for i, pred, conf in
-                        sub_zip]
-            PredictClassification.objects.bulk_create(obj_list)
-            obj_list = None
+        geom = GEOSGeometry(json.dumps(geoarray.geobox.geographic_extent.json))
+        query_set = PredictObject.objects.filter(the_geom__contained=geom,
+                                                 segmentation_information__name=segmentation_name)
+        seg_id = query_set[0].id
+        path = query_set[0].path
+        with fiona.open(path) as src:
+            X, y = zonal_stats_xarray(dataset = geoarray, fc=src, field='id',
+                                          categorical_variables=categorical_variables,
+                                          aggregation=aggregation)
+            # Deallocate geoarray and feature collection
+            geoarray = None
+            fc = None
             gc.collect()
-        y = None
-        y_pred = None
-        y_conf = None
-        gc.collect()
-        return True
+            # Load model
+            PredModel = BaseModel.from_db(model_name)
+            model_id = Model.objects.get(name=model_name).id
+            try:
+                # Avoid opening several threads in each process
+                PredModel.model.n_jobs = 1
+            except Exception as e:
+                pass
+            # Run prediction
+            y_pred = PredModel.predict(X)
+            y_conf = PredModel.predict_confidence(X)
+            # Deallocate arrays of extracted values and model
+            X = None
+            PredModel = None
+            gc.collect()
+            # Build list of PredictClassification objects
+            def predict_object_builder(i, pred, conf):
+                return PredictClassification(model_id=model_id, predict_object_id=seg_id,
+                                             tag_id=pred, name=name, confidence=conf, features_id=i)
+            # Write labels to database combining chunking and bulk_create
+            for sub_zip in chunk(zip(y, y_pred, y_conf), 10000):
+                obj_list = [predict_object_builder(i,pred,conf) for i, pred, conf in sub_zip]
+                PredictClassification.objects.bulk_create(obj_list)
+                obj_list = None
+            gc.collect()
+            y = None
+            y_pred = None
+            y_conf = None
+            gc.collect()
+            return True
     except Exception as e:
         print('Prediction failed because: %s' % e)
+        logger.exception('Pred failed because: %s' % e)
         return False
+
+def write_predict_result_to_vector(id, predict_name, geometry_region, path_destiny,
+                                   driver='ESRI Shapefile', layer=None):
+    """Retrieve classification results in db: label and confidence per polygon. Add this information to
+    to segmentation file via fiona's functionality and write result to path_destiny (by this time only writes to 
+    file system are supported)
+    
+    This function uses dask.distributed.Cluster.map() over a list of id's of segmentation files already registered
+    in db PredictObject table related to name of prediction file and generated by arguments passed in command line.
+    Works by datacube tile.
+    
+    Args:
+        id (int): id of segmentation file registered in PredictObject table.
+        predict_name (str): Name of predict file registered in PredictObject table.
+        geometry_region (geom): Geometry of a region in a geojson-format
+        pat_destiny (str): Path that will hold results. Only writes to file system are supported now.
+        driver (str): OGR driver to use for writting the data to file. Defaults to ESRI Shapefile
+        layer (str): Name of the layer (only for drivers that support multi-layer files)
+    
+    """
+    seg = PredictObject.objects.filter(id=id)
+    path_seg = seg[0].path
+    shape_region=shape(geometry_region)
+    poly = seg[0].the_geom
+    poly_geojson = poly.geojson
+    geometry_seg = json.loads(poly_geojson)
+    segmentation_name_classified = os.path.basename(path_seg).split('.')[0] + '_classified'
+    with fiona.open(path_seg) as src:
+        crs = to_string(src.crs)
+        shape_dc_tile = shape_region.intersection(shape(geometry_seg))
+        geom_dc_tile_geojson = mapping(shape_dc_tile)
+        shape_dc_tile_proj = shape(transform_geom(CRS_rio.from_epsg(4326),
+                                                  CRS_rio.from_proj4(crs),
+                                                  geom_dc_tile_geojson))
+        pred_objects_sorted = PredictClassification.objects.filter(name=predict_name,
+                                                                   predict_object_id=id).prefetch_related('tag').order_by('features_id')
+        fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
+        fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
+        fc_pred = [(x[0][1], x[1].tag.numeric_code,
+                    x[1].tag.value,
+                    x[1].confidence) for x in zip(fc_pred_sorted, pred_objects_sorted)]
+        fc_pred_sorted = None
+        pred_objects_sorted = None
+        fc_schema = {'geometry': 'Polygon',
+                     'properties': {'code': 'int',
+                                    'class':'str',
+                                    'confidence': 'float'}}
+        filename = path_destiny + '/' + segmentation_name_classified + '.shp'
+        with fiona.open(filename, 'w',
+                        encoding='utf-8',
+                        driver=driver,
+                        layer=layer,
+                        crs=crs,
+                        schema=fc_schema) as dst:
+            [dst.write({'geometry': mapping(shape(feat[0]).intersection(shape_dc_tile_proj)),
+                        'properties':{'code': feat[1],
+                                      'class': feat[2],
+                                      'confidence': feat[3]}}) for feat in fc_pred if shape(feat[0]).intersects(shape_dc_tile_proj)]
+        fc_pred = None     
+    return filename
+
+
+def write_predict_result_to_raster(id, predict_name, geometry_region, resolution,
+                                   path_destiny):
+    """Retrieve classification results in db: label per polygon. Add this information to
+    to segmentation file via fiona's functionality and write result to path_destiny (by this time only writes to 
+    file system are supported)
+    
+    This function uses dask.distributed.Cluster.map() over a list of id's of segmentation files already registered
+    in db PredictObject table related to name of prediction file and generated by arguments passed in command line.
+    Works by datacube tile.
+    
+    Args:
+        id (int): id of segmentation file registered in PredictObject table.
+        predict_name (str): Name of predict file registered in PredictObject table.
+        geometry_region (geom): Geometry of a region in a geojson-format
+        resolution (int): Resolution of the output raster in crs units. (See the proj4 argument to define a projection, otherwise will be in longlat and resolution has to be specified in degrees)
+        pat_destiny (str): Path that will hold results. Only writes to file system are supported now.
+    
+    """
+    seg = PredictObject.objects.filter(id=id)
+    path_seg = seg[0].path
+    shape_region=shape(geometry_region)
+    poly = seg[0].the_geom
+    poly_geojson = poly.geojson
+    geometry_seg = json.loads(poly_geojson)
+    segmentation_name_classified = os.path.basename(path_seg).split('.')[0] + '_classified'
+    with fiona.open(path_seg) as src:
+        crs = to_string(src.crs)
+        shape_dc_tile = shape_region.intersection(shape(geometry_seg))
+        geom_dc_tile_geojson = mapping(shape_dc_tile)
+        shape_dc_tile_proj = shape(transform_geom(CRS_rio.from_epsg(4326),
+                                                  CRS_rio.from_proj4(crs),
+                                                  geom_dc_tile_geojson))
+        pred_objects_sorted = PredictClassification.objects.filter(name=predict_name, predict_object_id=id).prefetch_related('tag').order_by('features_id')
+        fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
+        fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
+        fc_pred = [(x[0][1],
+                    x[1].tag.numeric_code) for x in zip(fc_pred_sorted, pred_objects_sorted)]
+        fc_pred_sorted = None
+        pred_objects_sorted = None
+        #rasterize
+        geometry_seg_proj = transform_geom(CRS_rio.from_epsg(4326),
+                                           CRS_rio.from_proj4(crs),
+                                           geometry_seg)
+        xmin, ymin, xmax, ymax = shape(geometry_seg_proj).bounds
+        nrows = int(((ymax - ymin) // resolution) + 1)
+        ncols = int(((xmax - xmin) // resolution) + 1)
+        shape_dim = (nrows, ncols)
+        arr = np.zeros((nrows, ncols), dtype=np.uint8)
+        aff = Affine(resolution, 0, xmin, 0, -resolution, ymax)
+        rasterize(shapes=fc_pred, transform=aff, dtype=np.uint8, out=arr)
+        meta = {'driver': 'GTiff',
+                'width': shape_dim[1],
+                'height': shape_dim[0],
+                'count': 1,
+                'dtype': arr.dtype,
+                'crs': crs,
+                'transform': aff,
+                'compress': 'lzw',
+                'nodata': 0}
+        filename = path_destiny + '/' + segmentation_name_classified + '.tif'
+        with rasterio.open(filename, 'w', **meta) as dst:
+            dst.write(arr, 1)
+    return filename
 
 
 def detect_and_classify_change(tiles, algorithm, change_meta, band_list, mmu,

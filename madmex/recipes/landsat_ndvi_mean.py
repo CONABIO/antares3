@@ -1,15 +1,15 @@
 import os
 import datacube
-from datacube.storage.storage import write_dataset_to_netcdf
+from datacube.drivers.netcdf import write_dataset_to_netcdf
 from datacube.storage import masking
 from datacube.api import GridWorkflow
 import xarray as xr
 import numpy as np
-import dask
+
 
 from madmex.util.xarray import to_int
 
-dask.set_options(get=dask.get)
+
 
 from datetime import datetime
 import logging

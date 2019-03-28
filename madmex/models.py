@@ -13,14 +13,14 @@ class Country(models.Model):
     '''This table stores the geometries for the countries.
     '''
     name = models.CharField(max_length=100, unique=True)
-    the_geom = models.MultiPolygonField()
+    the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
 
 class Region(models.Model):
     '''This model represents a region that can be related to a Country.
     '''
     name = models.CharField(max_length=100)
-    the_geom = models.MultiPolygonField()
+    the_geom = models.GeometryField()
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='country', default=None)
     added = models.DateTimeField(auto_now_add=True)
 
@@ -86,9 +86,9 @@ class PredictObject(models.Model):
     regions and each object should have an assigned tag which is the ground truth for
     it.
     '''
+    path = models.CharField(max_length=400, default='')
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
-    prediction_tags = models.ManyToManyField(Tag, through='PredictClassification')
     segmentation_information = models.ForeignKey(SegmentationInformation, on_delete=models.CASCADE, default=-1)
 
 class TrainClassification(models.Model):
@@ -128,6 +128,7 @@ class ValidObject(models.Model):
     """
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
+    filename = models.CharField(max_length=200, default='')
     validation_tags = models.ManyToManyField(Tag, through='ValidClassification')
 
 class ValidClassification(models.Model):
@@ -162,6 +163,7 @@ class PredictClassification(models.Model):
     model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='model', default=None)
     name = models.CharField(max_length=200, default='')
     confidence = models.FloatField(default=-1.0)
+    features_id = models.IntegerField(default=-1)
 
 class Scene(models.Model):
     '''This table represents a satellite scene and information to build a catalalog.

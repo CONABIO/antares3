@@ -1,12 +1,12 @@
 import os
 import gc
 import datacube
-from datacube.storage.storage import write_dataset_to_netcdf
+from datacube.drivers.netcdf import write_dataset_to_netcdf
 from datacube.storage import masking
 from datacube.api import GridWorkflow
 import xarray as xr
 import numpy as np
-import dask
+
 
 from madmex.util.xarray import to_float, to_int
 
@@ -16,7 +16,7 @@ from madmex.util import randomword
 import logging
 logger = logging.getLogger(__name__)
 
-dask.set_options(get=dask.get)
+
 
 def run(tile, center_dt, path):
     """Basic datapreparation recipe 001
@@ -34,16 +34,17 @@ def run(tile, center_dt, path):
         str: The filename of the netcdf file created
     """
     try:
+        # Get crs from first tile of tile list
+        crs = tile[1][0].geobox.crs
         center_dt = center_dt.strftime("%Y-%m-%d")
         nc_filename = os.path.join(path, 'madmex_002_%d_%d_%s.nc' % (tile[0][0], tile[0][1], center_dt))
         # Load Landsat sr
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
-        # Get crs from first tile of tile list
-        crs = tile[1][0].geobox.crs
         sr_0 = xr.merge([GridWorkflow.load(x, dask_chunks={'x': 1667, 'y': 1667})
                          for x in tile[1]])
+        sr_0.attrs['geobox'] = tile[1][0].geobox
         # Mask clouds, shadow, water, ice,... and drop qa layer
         clear = masking.make_mask(sr_0.pixel_qa, cloud=False, cloud_shadow=False,
                                   snow=False)
@@ -93,7 +94,7 @@ def run(tile, center_dt, path):
                              to_int(ndmi_min),
                              terrain])
         combined.attrs['crs'] = crs
-        combined = combined.compute()
+        combined = combined.compute(scheduler='threads')
         write_dataset_to_netcdf(combined, nc_filename)
         # Explicitely deallocate objects and run garbage collector
         sr_0=sr_1=sr_mean=clear=ndvi_max=ndvi_min=ndmi_max=ndmi_min=terrain=combined=None

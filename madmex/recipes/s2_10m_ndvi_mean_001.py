@@ -1,10 +1,10 @@
 import os
 import datacube
-from datacube.storage.storage import write_dataset_to_netcdf
+from datacube.drivers.netcdf import write_dataset_to_netcdf
 from datacube.api import GridWorkflow
 import xarray as xr
 import numpy as np
-import dask
+
 import gc
 from madmex.util.xarray import to_float, to_int
 
@@ -14,7 +14,7 @@ from madmex.util import randomword
 import logging
 logger = logging.getLogger(__name__)
 
-dask.set_options(get=dask.get)
+
 
 def run(tile, center_dt, path):
     """Basic datapreparation recipe 001
@@ -57,7 +57,7 @@ def run(tile, center_dt, path):
         sr_mean.rename({'ndvi': 'ndvi_mean'}, inplace=True)
         sr_mean = sr_mean.apply(to_int)
         sr_mean.attrs['crs'] = crs
-        sr_mean = sr_mean.compute()
+        sr_mean = sr_mean.compute(scheduler='threads')
         write_dataset_to_netcdf(sr_mean, nc_filename)
         # Explicitely deallocate objects and run garbage collector
         sr_0=sr_1=sr_mean=s2_20m_scl=None

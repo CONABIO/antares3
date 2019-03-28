@@ -6,7 +6,7 @@ from skimage.segmentation import slic
 class Segmentation(BaseSegmentation):
     """Antares implementation of scikit-image's SLIC segmentation algorithm
     """
-    def __init__(self, array, affine, crs,  n_segments=10000, compactness=10.0):
+    def __init__(self, array, affine, crs, n_segments=10000, compactness=10.0):
         """SLIC superpixel segmentation
 
         See http://scikit-image.org/docs/dev/api/skimage.segmentation.html#skimage.segmentation.slic
