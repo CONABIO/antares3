@@ -125,7 +125,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                 pass
         geometry_region_proj = transform_geom(CRS_rio.from_epsg(4326),
                                               CRS_rio.from_proj4(to_string(src.crs)),
-                                              mapping(shape_region))
+                                              geometry_region)
         shape_region_proj=shape(geometry_region_proj)
         with rasterio.open(filename_mosaic, 'r') as src:
             masked_mosaic, mask_transform = rasterio.mask.mask(src,
