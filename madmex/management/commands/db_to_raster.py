@@ -21,6 +21,11 @@ from os.path import expanduser
 from madmex.settings import TEMP_DIR
 from madmex.wrappers import write_predict_result_to_raster
 from madmex.util.spatial import geometry_transform
+from fiona.crs import to_string
+import rasterio.mask
+from rasterio.warp import transform_geom
+from rasterio.crs import CRS as CRS_rio
+from shapely.geometry import mapping, shape
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +113,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                 'compress': 'lzw',
                 'nodata': 0}
         
-        filename_mosaic = expanduser("~") + '/' + filename
+        filename_mosaic = expanduser("~") + '/' + os.path.splitext(filename)[0] + '_not_cropped' + '.tif'
 
         with rasterio.open(filename_mosaic, 'w', **meta) as dst:
             dst.write(mosaic)
@@ -118,6 +123,26 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
             except Exception as e:
                 logger.info('Didn\'t find a colormap or couldn\'t write it: %s' % e)
                 pass
+        geometry_region_proj = transform_geom(CRS_rio.from_epsg(4326),
+                                              CRS_rio.from_proj4(to_string(src.crs)),
+                                              mapping(shape_region))
+        shape_region_proj=shape(geometry_region_proj)
+        with rasterio.open(filename_mosaic, 'r') as src:
+            masked_mosaic, mask_transform = rasterio.mask.mask(src,
+                                                               shape_region_proj,
+                                                               crop=True)
+            out_meta = src.meta.copy()
+        out_meta.update({'driver': 'GTiff',
+                         'height': masked_mosaic.shape[1],
+                         'width': masked_mosaic.shape[2],
+                         'transform': mask_transform,
+                         'compress': 'lzw'})
+        
+        filename_masked_mosaic = expanduser("~") + '/' + filename
+        
+        with rasterio.open(filename_mosaic_masked, "w", **out_meta) as dst:
+            dst.write(masked_mosaic)
+        
         
         #close & clean:
         for i in range(0,len(result)):
