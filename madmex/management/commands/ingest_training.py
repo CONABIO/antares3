@@ -57,6 +57,7 @@ antares ingest_training /path/to/file.shp --fraction 0.0001 --scheme madmex --ye
     def handle(self, **options):
         input_file = options['input_file']
         year = options['year']
+        frac = options['fraction']
         scheme = options['scheme']
         field = options['field']
         name = options['name']
