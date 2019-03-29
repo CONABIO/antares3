@@ -17,6 +17,7 @@ from affine import Affine
 import datacube
 from datacube.api import GridWorkflow
 from datacube.utils.geometry import Geometry, CRS
+from rasterio.crs import CRS as CRS_rio
 from datacube.model import GridSpec
 from django.contrib.gis.geos import Polygon
 from rasterio.warp import transform_geom
