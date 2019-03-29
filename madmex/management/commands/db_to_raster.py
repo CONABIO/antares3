@@ -82,7 +82,6 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         if not os.path.exists(path_destiny):
             os.makedirs(path_destiny)
 
-        # TODO: Add spatial filter (intersect between region and predict_object.the_geom
         qs_ids = PredictClassification.objects.filter(name=name).distinct('predict_object_id')
         list_ids = [x.predict_object_id for x in qs_ids]
 
@@ -101,25 +100,25 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         meta = src_files_to_mosaic[0].meta.copy()
 
         mosaic, out_trans = merge(src_files_to_mosaic)
-        meta.update(width=mosaic.shape[1], # Here was 1 and 2, how come?
-                    height=mosaic.shape[0],
+        meta.update(width=mosaic.shape[2], 
+                    height=mosaic.shape[1],
                     transform=out_trans,
                     compress='lzw')
 
         # Reproject geometry of the region
         geometry_region_proj = transform_geom(CRS_rio.from_epsg(4326),
-                                              CRS_rio.from_proj4(to_string(meta.crs)),
+                                              CRS_rio.from_proj4(to_string(meta['crs'])),
                                               geometry_region)
 
         # rasterize region using mosaic as template
         mask_array = features.rasterize(shapes=[(geometry_region_proj, 1)],
-                                        out_shape=mosaic.shape,
+                                        out_shape=(mosaic.shape[1],mosaic.shape[2]),
                                         fill=0,
-                                        transform=meta.transform,
+                                        transform=meta['transform'],
                                         dtype=rasterio.uint8)
 
         # Apply mask to mosaic
-        mosaic[mask_array==0] = 0
+        mosaic[:,mask_array==0] = 0
 
         # Write results to file
         filename_mosaic = os.path.expanduser(os.path.join("~/", filename))
