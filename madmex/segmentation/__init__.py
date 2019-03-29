@@ -3,20 +3,24 @@
 import abc
 import json
 import gc
-import fiona
+import os
+
 from affine import Affine
 import numpy as np
-import os
+import fiona
 import boto3
 import rasterio
 from rasterio import features
+from shapely.geometry import shape, mapping
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from datacube.utils.geometry import CRS, GeoBox
-from madmex.settings import SEGMENTATION_BUCKET
-from madmex.util.spatial import feature_transform, geometry_transform
+
+from madmex.settings import TEMP_DIR
+from madmex.util.spatial import feature_transform
 from madmex.models import PredictObject
-from madmex.util import chunk
-from shapely.geometry import shape, mapping
+from madmex.util import chunk, s3
+
+
 
 class BaseSegmentation(metaclass=abc.ABCMeta):
     """
@@ -72,12 +76,11 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         return GeoBox(width=self.array.shape[1], height=self.array.shape[0],
                       affine=self.affine, crs=CRS(self.crs))
 
-    def polygonize(self, crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"):
+    def polygonize(self):
         """Transform the raster result of a segmentation to a feature collection
 
-        Args:
-            crs_out (proj4): The coordinate reference system of the feature collection
-                produced. Defaults to longlat, can be None if no reprojection is needed
+        Return:
+            list: The feature collection resulting from the segmentation
         """
         if self.segments_array is None:
             raise ValueError("self.segments_array is None, you must run segment before this method")
@@ -90,10 +93,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             """Tranforms the results of rasterio.feature.shape to a feature"""
             fc_out = {
                 "type": "Feature",
-                "geometry": {
-                    "type": feature[0]['type'],
-                    "coordinates": feature[0]['coordinates']
-                },
+                "geometry": mapping(shape(feature[0]).buffer(0)),
                 "properties": {
                     "id": feature[1]
                 }
@@ -102,118 +102,61 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             geos_geom_buffer = GEOSGeometry(json.dumps(fc_out['geometry'])).buffer(0)
             fc_out['geometry'] = json.loads(geos_geom_buffer.geojson)
             return fc_out
-        fc_out = (to_feature(x) for x in geom_collection)
-        if crs_out is not None:
-            fc_out = (feature_transform(x, crs_out=crs_out, crs_in=self.crs) for x in fc_out)
-        self.fc = fc_out
+        return [to_feature(x) for x in geom_collection]
 
-
-    def to_db(self, name_file, meta_object):
-        """Write the result of a segmentation to the database
+    def to_shapefile(self, filename, fc=None, bucket=None):
+        """Write the result of the segmentation to a ESRI Shapefile file
 
         Args:
-            name_file (str): file name for segmentation result in s3
-            meta_object (madmex.models.SegmentationInformation.object): The python mapping
-                of a django object containing segmentation metadata information
-            
+            filename (str): File name (use full path when writing to filesystem)
+                and basename when writing to s3 bucket
+            fc (dict): Feature collection with one property who's name must be
+                id. Typically the return of the ``polygonize()`` method.
+                Can be ``None``, in which case, it is generated on the fly
+            bucket (string): Optional name of s3 bucket to write the shapefile
 
-        Example:
-            >>> from madmex.models import SegmentationInformation
-            >>> from madmex.segmentation.bis import Segmentation
-
-            >>> Seg = Segmentation.from_geoarray(geoarray, compactness=12)
-            >>> Seg.segment()
-            >>> Seg.polygonize()
-
-            >>> meta = SegmentationInformation(algorithm='bis', datasource='sentinel2',
-            >>>                                parameters="{'compactness': 12}",
-            >>>                                datasource_year='2018')
-            >>> meta.save()
-            >>> name_file = 'shapefile'
-
-            >>> Seg.to_db(name_file, meta)
+        Return:
+            str: The function is used for its side effect of writing a feature
+            collection to file, however, it also returns the path to the written file
         """
-        if self.fc is None:
-            raise ValueError('fc (feature collection) attribute is empty, you must first run the polygonize method')
-
-        geom = GEOSGeometry(json.dumps(self.geobox.geographic_extent.json))
-        SEGMENTATION_BUCKET = os.getenv('SEGMENTATION_BUCKET', '')
-        filename = name_file + '.shp'
-        file_path_in_s3 = 's3://' + SEGMENTATION_BUCKET + '/' + filename
-        PredictObject.objects.get_or_create(path=file_path_in_s3, the_geom=geom, segmentation_information=meta_object)
-        gc.collect()
-    def to_filesystem(self, path, name_file):
-        """Write result of a segmentation to filesystem in directory
-        Args:
-            path (str): absolute path that will have results of segmentation
-            name_file (str): file name for segmentation result in s3
-        Example:
-            >>> from madmex.models import SegmentationInformation
-            >>> from madmex.segmentation.bis import Segmentation
-            >>> Seg = Segmentation.from_geoarray(geoarray, compactness=12)
-            >>> Seg.segment()
-            >>> Seg.polygonize() 
-            >>> path = '/my_shared_volume/'
-            >>> name_file = 'my_segmentation_result'
-            >>> Seg.to_filesystem(path, name_file)
-        
-        """
+        if fc is None:
+            fc = self.polygonize()
+        crs = from_string(self.crs)
         schema = {'geometry': 'Polygon',
-                  'properties': [('id', 'int')]}
-        with fiona.open(path, 'w', layer = name_file,
-                        schema=schema,
-                        driver='ESRI Shapefile',
-                        crs=self.crs) as dst:
-            for feature in self.fc:
-                dst.write(feature)
-        
-    def to_bucket(self, path, name_file):
-        """Write result of a segmentation to bucket in s3
+                  'properties': {'id': 'int'}}
+        if bucket is None:
+            with fiona.open(filename, 'w',
+                            driver='ESRI Shapefile',
+                            schema=schema,
+                            crs=crs) as dst:
+                for feature in fc:
+                    dst.write(feature)
+        else:
+            filename = s3.write_shapefile(bucket=bucket, fc=fc, schema=schema,
+                                          crs=crs)
+        return filename
+
+    def save(self, filename, meta_object, fc=None, bucket=None):
+        """Write the result of a segmentation to disk or an S3 bucket if specified
+
+        Also references the file path and extent in the antares database
+
         Args:
-            path (str): absolute path that will have results of segmentation in bucket. In .antares 
-                is specified the bucket in s3 for segmentation results                  
-            name_file (str): file name for segmentation result in s3
-        Example:
-            >>> from madmex.models import SegmentationInformation
-            >>> from madmex.segmentation.bis import Segmentation
-            >>> Seg = Segmentation.from_geoarray(geoarray, compactness=12)
-            >>> Seg.segment()
-            >>> Seg.polygonize() 
-            >>> path = '/my_shared_volume/'
-            >>> name_file = 'my_segmentation_result'
-            >>> Seg.to_filesystem(path, name_file)
-            >>> Seg.to_bucket(path,name_file)
-        
+            filename (str): Output file name (must end with shp)
+            meta_object (SegmentationInformation): The python mapping
+                of a django object containing segmentation metadata information
+            fc (dict): Feature collection with one property who's name must be
+                id. Typically the return of the ``polygonize()`` method.
+                Can be ``None``, in which case, it is generated on the fly
+            bucket (str): Optional name of an S3 bucket where to write the file 
+
+        Returns:
+            str: Used for its side effect of writting a file to filesystem or S3
+            and indexing it in the database. Also returns the filename
         """
-        try:
-            os.environ['SEGMENTATION_BUCKET']
-        except KeyError: 
-            print ('Please set the environment variable SEGMENTATION_BUCKET')
-            raise KeyError ('Environ variable not set')
-
-        SEGMENTATION_BUCKET = os.getenv('SEGMENTATION_BUCKET', '')
-        s3 = boto3.client('s3')
-        filename = name_file + '.shp'
-        filepath = path + '/' + filename
-        s3.upload_file(filepath, SEGMENTATION_BUCKET, filename)
-        os.remove(filepath)
-        filename = name_file + '.shx'
-        filepath = path + '/' + filename
-        s3.upload_file(filepath, SEGMENTATION_BUCKET, filename)
-        os.remove(filepath)
-        filename = name_file + '.cpg'
-        filepath = path + '/' + filename
-        s3.upload_file(filepath, SEGMENTATION_BUCKET, filename)
-        os.remove(filepath)
-        filename = name_file + '.dbf'
-        filepath = path + '/' + filename
-        s3.upload_file(filepath, SEGMENTATION_BUCKET, filename)
-        os.remove(filepath)
-        filename = name_file + '.prj'
-        filepath = path + '/' + filename
-        s3.upload_file(filepath, SEGMENTATION_BUCKET, filename)
-        os.remove(filepath)
-        
-
-
-
+        geom = GEOSGeometry(self.geobox.extent.wkt)
+        shp_path = self.to_shapefile(filename=filename, fc=fc, bucket=bucket)
+        PredictObject.objects.get_or_create(path=shp_path,
+                                            the_geom=geom,
+                                            segmentation_information=meta_object)
+        return filename

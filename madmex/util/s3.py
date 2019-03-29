@@ -1,13 +1,18 @@
 import os
 import re
+import glob
+
 from rasterio.io import MemoryFile
 import numpy as np
+import fiona
 try:
     import boto3
 except ImportError:
     _has_boto3 = False
 else:
     _has_boto3 = True
+
+from madmex.settings import TEMP_DIR
 
 
 def list_folders(bucket, path, pattern=None):
@@ -152,3 +157,32 @@ def write_raster(bucket, path, arr, **kwargs):
                 dst.write(band, band_id)
         s3.upload_fileobj(memfile, bucket, path)
 
+
+def write_shapefile(bucket, fc, schema, crs, filename):
+    """Copy a shapefile from filesystem to an S3 bucket
+
+    The shapefile is written at the root of the bucket
+
+    Args:
+        bucket (str): Name of an existing s3 bucket
+        fc (list): Feature collection
+        schema (dict): See fiona schemas
+        crs (CRS): fiona or rasterio crs or proj4 string
+        filename (str): Name of the main file of a shapefile to copy to S3
+    """
+    if not _has_boto3:
+        raise ImportError('boto3 is required for working with s3 buckets')
+    s3 = boto3.client('s3')
+    tmp_filename = os.path.join(TEMP_DIR, filename)
+    # write the feature collection to temporary location of filesystem
+    with fiona.open(tmp_filename, 'w',
+                    driver='ESRI Shapefile',
+                    schema=schema,
+                    crs=crs) as dst:
+        for feature in fc:
+            dst.write(feature)
+    # Write all components of shapefile to s3 bucket using boto3
+    shp_files = glob.glob(os.path.splitext(tmp_filename)[0] + '*')
+    [s3.upload_file(x, bucket, os.path.basename(x)) for x in shp_files]
+    [os.remove(x) for x in shp_files]
+    return 's3://%s/%s' % (bucket, os.path.basename(filename))
