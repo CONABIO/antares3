@@ -5,22 +5,24 @@ Author: palmoreck
 Date: 2019-02-26
 Purpose: Write result of a classification to a raster file on disk
 """
-from madmex.management.base import AntaresBaseCommand
-
-from madmex.models import Country, Region, PredictClassification
-from madmex.util.db import classification_to_cmap
-import fiona
+import os
 import json
 import logging
 import gc
-import rasterio
-from rasterio.merge import merge
+
 from dask.distributed import Client
-import os
-from os.path import expanduser
+from fiona.crs import to_string
+import rasterio
+from rasterio.warp import transform_geom
+from rasterio.crs import CRS as CRS_rio
+from rasterio.merge import merge
+from rasterio import features
+
+from madmex.management.base import AntaresBaseCommand
+from madmex.models import Country, Region, PredictClassification
+from madmex.util.db import classification_to_cmap
 from madmex.settings import TEMP_DIR
 from madmex.wrappers import write_predict_result_to_raster
-from madmex.util.spatial import geometry_transform
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +35,7 @@ Write result of classification to a raster file (only supports GeoTiff for now)
 Example usage:
 --------------
 # Query classification performed for the state of Jalisco and write it to  GeoTiff
-antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --filename Jalisco_sentinel_2017.tif --resolution 20 --proj4 '+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs'
+antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --filename Jalisco_sentinel_2017.tif --resolution 20 --scheduler scheduler.json
 """
     def add_arguments(self, parser):
         parser.add_argument('-n', '--name',
@@ -54,10 +56,6 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                             type=float,
                             required=True,
                             help='Resolution of the output raster in crs units. (See the --proj4 argument to define a projection, otherwise will be in longlat and resolution has to be specified in degrees)')
-        parser.add_argument('-p', '--proj4',
-                            type=str,
-                            default=None,
-                            help='Optional proj4 string defining the output projection')
         parser.add_argument('-sc', '--scheduler',
                             type=str,
                             default=None,
@@ -68,8 +66,6 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         region = options['region']
         filename = options['filename']
         resolution = options['resolution']
-        # Proj4 string needs to be quoted in query
-        proj4 = options['proj4']
         scheduler_file = options['scheduler']
 
         # Query country or region contour
@@ -77,51 +73,57 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
             region = Country.objects.get(name=region).the_geom
         except Country.DoesNotExist:
             region = Region.objects.get(name=region).the_geom
-        
+
         region_geojson = region.geojson
-        geometry = json.loads(region_geojson)
-        
-        if proj4 is not None:
-            geometry_proj = geometry_transform(geometry,proj4)
-        else:
-            geometry_proj = geometry_transform(geometry, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
-            
+        geometry_region = json.loads(region_geojson)
+
+
         path_destiny = os.path.join(TEMP_DIR, 'db_to_raster_results')
         if not os.path.exists(path_destiny):
             os.makedirs(path_destiny)
 
+        # TODO: Add spatial filter (intersect between region and predict_object.the_geom
         qs_ids = PredictClassification.objects.filter(name=name).distinct('predict_object_id')
         list_ids = [x.predict_object_id for x in qs_ids]
-        
+
         client = Client(scheduler_file=scheduler_file)
         client.restart()
-        c = client.map(write_predict_result_to_raster,list_ids,**{'predict_name': name,
-                                       'geometry': geometry_proj,
-                                       'resolution': resolution,
-                                       'path_destiny': path_destiny,
-                                       'proj4': proj4})
-        result = client.gather(c) 
+        c = client.map(write_predict_result_to_raster,
+                       list_ids,
+                       **{'predict_name': name,
+                          'resolution': resolution,
+                          'path_destiny': path_destiny})
+        result = client.gather(c)
         logger.info('Merging results')
-        
-        src_files_to_mosaic=[]
-        for file in result:
-            src = rasterio.open(file)
-            src_files_to_mosaic.append(src)
-        
-        mosaic, out_trans = merge(src_files_to_mosaic)
-        meta = {'driver': 'GTiff',
-                'width': mosaic.shape[2],
-                'height': mosaic.shape[1],
-                'count': 1,
-                'dtype': mosaic.dtype,
-                'crs': proj4,
-                'transform': out_trans,
-                'compress': 'lzw',
-                'nodata': 0}
-        
-        filename_mosaic = expanduser("~") + '/' + filename
 
-        with rasterio.open(filename_mosaic, 'w', **meta) as dst:
+        src_files_to_mosaic = [rasterio.open(f) for f in result]
+        # Retrieve metadata of one file for later use
+        meta = src_files_to_mosaic[0].meta.copy()
+
+        mosaic, out_trans = merge(src_files_to_mosaic)
+        meta.update(width=mosaic.shape[1], # Here was 1 and 2, how come?
+                    height=mosaic.shape[0],
+                    transform=out_trans,
+                    compress='lzw')
+
+        # Reproject geometry of the region
+        geometry_region_proj = transform_geom(CRS_rio.from_epsg(4326),
+                                              CRS_rio.from_proj4(to_string(meta.crs)),
+                                              geometry_region)
+
+        # rasterize region using mosaic as template
+        mask_array = features.rasterize(shapes=[(geometry_region_proj, 1)],
+                                        out_shape=mosaic.shape,
+                                        fill=0,
+                                        transform=meta.transform,
+                                        dtype=rasterio.uint8)
+
+        # Apply mask to mosaic
+        mosaic[mask_array==0] = 0
+
+        # Write results to file
+        filename_mosaic = os.path.expanduser(os.path.join("~/", filename))
+        with rasterio.open(filename_mosaic, "w", **meta) as dst:
             dst.write(mosaic)
             try:
                 cmap = classification_to_cmap(name)
@@ -129,7 +131,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
             except Exception as e:
                 logger.info('Didn\'t find a colormap or couldn\'t write it: %s' % e)
                 pass
-        
+
         #close & clean:
         for i in range(0,len(result)):
             src_files_to_mosaic[i].close()

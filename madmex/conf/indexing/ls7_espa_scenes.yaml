@@ -1,4 +1,4 @@
-name: ls7_espa_scene
+name: ls7_espa_scene_50km
 description: Landsat 7 Collection 1 Higher Level SR scene processed by ESPA. 30m UTM based projection.
 metadata_type: eo
 
@@ -6,7 +6,7 @@ metadata:
     platform:
         code: LANDSAT_7
     instrument:
-        name: ETM+
+        name: ETM
     product_type: ESPA
     format:
         name: GeoTiff

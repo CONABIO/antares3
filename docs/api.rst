@@ -59,7 +59,6 @@ Read and write data
    io.vector_db.from_geobox
    io.vector_db.VectorDb
    io.vector_db.VectorDb.load_training_from_dataset
-   io.vector_db.load_segmentation_from_dataset
 
 
 Land cover change (lcc)

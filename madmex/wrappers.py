@@ -22,12 +22,13 @@ from django.contrib.gis.geos import Polygon
 
 from madmex.util.xarray import to_float
 from madmex.util import chunk
-from madmex.io.vector_db import VectorDb, load_segmentation_from_dataset
+from madmex.io.vector_db import VectorDb
 from madmex.overlay.extractions import zonal_stats_xarray
 from madmex.modeling import BaseModel
 from madmex.settings import TEMP_DIR, SEGMENTATION_BUCKET, SEGMENTATION_DIR
 from madmex.models import Region, Country, Model, PredictClassification, PredictObject
 from madmex.loggerwriter import LoggerWriter
+
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -290,8 +291,8 @@ def predict_object(tile, model_name, segmentation_name,
     try:
         # Load geoarray and feature collection
         geoarray = GridWorkflow.load(tile[1])
-        poly = Polygon.from_ewkt(geoarray.geobox.extent.wkt)
-        query_set = PredictObject.objects.filter(the_geom__contained=poly,
+        geom = GEOSGeometry(json.dumps(geoarray.geobox.geographic_extent.json))
+        query_set = PredictObject.objects.filter(the_geom__contained=geom,
                                                  segmentation_information__name=segmentation_name)
         seg_id = query_set[0].id
         path = query_set[0].path
@@ -339,8 +340,8 @@ def predict_object(tile, model_name, segmentation_name,
         return False
 
 
-def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
-                                   driver='ESRI Shapefile', layer=None, proj4=None):
+def write_predict_result_to_vector(id, predict_name, geometry_region, path_destiny,
+                                   driver='ESRI Shapefile', layer=None):
     """Retrieve classification results in db: label and confidence per polygon. Add this information to
     to segmentation file via fiona's functionality and write result to path_destiny (by this time only writes to 
     file system are supported)
@@ -352,24 +353,29 @@ def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
     Args:
         id (int): id of segmentation file registered in PredictObject table.
         predict_name (str): Name of predict file registered in PredictObject table.
-        geometry (geom): Geometry of a region in a geojson-format
+        geometry_region (geom): Geometry of a region in a geojson-format
         pat_destiny (str): Path that will hold results. Only writes to file system are supported now.
         driver (str): OGR driver to use for writting the data to file. Defaults to ESRI Shapefile
         layer (str): Name of the layer (only for drivers that support multi-layer files)
-        proj4 (str): Optional. crs projection in string format.
     
     """
     seg = PredictObject.objects.filter(id=id)
-    path = seg[0].path
-    shape_region=shape(geometry)
-    geom_dc_tile = shape_region.intersection(shape(json.loads(seg[0].the_geom.geojson)))
-    segmentation_name_classified = os.path.basename(path).split('.')[0] + '_classified'
-    with fiona.open(path) as src:
-        crs = src.crs
+    path_seg = seg[0].path
+    shape_region=shape(geometry_region)
+    poly = seg[0].the_geom
+    poly_geojson = poly.geojson
+    geometry_seg = json.loads(poly_geojson)
+    segmentation_name_classified = os.path.basename(path_seg).split('.')[0] + '_classified'
+    with fiona.open(path_seg) as src:
+        crs = to_string(src.crs)
+        shape_dc_tile = shape_region.intersection(shape(geometry_seg))
+        geom_dc_tile_geojson = mapping(shape_dc_tile)
+        shape_dc_tile_proj = shape(transform_geom(CRS_rio.from_epsg(4326),
+                                                  CRS_rio.from_proj4(crs),
+                                                  geom_dc_tile_geojson))
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name,
                                                                    predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
-        fc = None
         fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
         fc_pred = [(x[0][1], x[1].tag.numeric_code,
                     x[1].tag.value,
@@ -387,16 +393,16 @@ def write_predict_result_to_vector(id, predict_name, geometry, path_destiny,
                         layer=layer,
                         crs=crs,
                         schema=fc_schema) as dst:
-            [dst.write({'geometry': mapping(shape(feat[0]).intersection(geom_dc_tile)),
+            [dst.write({'geometry': mapping(shape(feat[0]).intersection(shape_dc_tile_proj)),
                         'properties':{'code': feat[1],
                                       'class': feat[2],
-                                      'confidence': feat[3]}}) for feat in fc_pred if shape(feat[0]).intersects(geom_dc_tile)]
+                                      'confidence': feat[3]}}) for feat in fc_pred if shape(feat[0]).intersects(shape_dc_tile_proj)]
         fc_pred = None     
     return filename
 
 
-def write_predict_result_to_raster(id, predict_name, geometry, resolution,
-                                   path_destiny, proj4=None):
+def write_predict_result_to_raster(id, predict_name, resolution,
+                                   path_destiny):
     """Retrieve classification results in db: label per polygon. Add this information to
     to segmentation file via fiona's functionality and write result to path_destiny (by this time only writes to 
     file system are supported)
@@ -408,44 +414,42 @@ def write_predict_result_to_raster(id, predict_name, geometry, resolution,
     Args:
         id (int): id of segmentation file registered in PredictObject table.
         predict_name (str): Name of predict file registered in PredictObject table.
-        geometry (geom): Geometry of a region in a geojson-format
         resolution (int): Resolution of the output raster in crs units. (See the proj4 argument to define a projection, otherwise will be in longlat and resolution has to be specified in degrees)
         pat_destiny (str): Path that will hold results. Only writes to file system are supported now.
-        proj4 (str): Optional. crs projection in string format.
     
     """
-    seg = PredictObject.objects.filter(id=id)
-    path = seg[0].path
-    shape_region=shape(geometry)
-    geom_dc_tile = shape_region.intersection(shape(json.loads(seg[0].the_geom.geojson)))
-    segmentation_name_classified = os.path.basename(path).split('.')[0] + '_classified'
-    with fiona.open(path) as src:
-        crs = src.crs
+    seg = PredictObject.objects.get(id=id)
+    path_seg = seg.path
+    poly = seg.the_geom
+    poly_geojson = poly.geojson
+    geometry_seg = json.loads(poly_geojson)
+    segmentation_name_classified = os.path.basename(path_seg).split('.')[0] + '_classified'
+    with fiona.open(path_seg) as src:
+        crs = to_string(src.crs)
         pred_objects_sorted = PredictClassification.objects.filter(name=predict_name, predict_object_id=id).prefetch_related('tag').order_by('features_id')
         fc_pred=[(x['properties']['id'], x['geometry']) for x in src]
-        fc = None
         fc_pred_sorted = sorted(fc_pred, key=itemgetter(0))
         fc_pred = [(x[0][1],
                     x[1].tag.numeric_code) for x in zip(fc_pred_sorted, pred_objects_sorted)]
         fc_pred_sorted = None
         pred_objects_sorted = None
         #rasterize
-        bbox = seg[0].the_geom
-        xmin, ymin, xmax, ymax = bbox.extent
+        geometry_seg_proj = transform_geom(CRS_rio.from_epsg(4326),
+                                           CRS_rio.from_proj4(crs),
+                                           geometry_seg)
+        xmin, ymin, xmax, ymax = shape(geometry_seg_proj).bounds
         nrows = int(((ymax - ymin) // resolution) + 1)
         ncols = int(((xmax - xmin) // resolution) + 1)
         shape_dim = (nrows, ncols)
         arr = np.zeros((nrows, ncols), dtype=np.uint8)
         aff = Affine(resolution, 0, xmin, 0, -resolution, ymax)
-        fc_pred_intersection = [(mapping(shape(feat[0]).intersection(geom_dc_tile)),
-                                 feat[1]) for feat in fc_pred if shape(feat[0]).intersects(geom_dc_tile)]
-        rasterize(shapes=fc_pred_intersection, transform=aff, dtype=np.uint8, out=arr)
+        rasterize(shapes=fc_pred, transform=aff, dtype=np.uint8, out=arr)
         meta = {'driver': 'GTiff',
                 'width': shape_dim[1],
                 'height': shape_dim[0],
                 'count': 1,
                 'dtype': arr.dtype,
-                'crs': proj4,
+                'crs': crs,
                 'transform': aff,
                 'compress': 'lzw',
                 'nodata': 0}
