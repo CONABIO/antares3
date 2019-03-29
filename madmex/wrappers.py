@@ -25,7 +25,7 @@ from madmex.util import chunk
 from madmex.io.vector_db import VectorDb, load_segmentation_from_dataset
 from madmex.overlay.extractions import zonal_stats_xarray
 from madmex.modeling import BaseModel
-from madmex.settings import TEMP_DIR, SEGMENTATION_BUCKET
+from madmex.settings import TEMP_DIR, SEGMENTATION_BUCKET, SEGMENTATION_DIR
 from madmex.models import Region, Country, Model, PredictClassification, PredictObject
 from madmex.loggerwriter import LoggerWriter
 
@@ -251,19 +251,20 @@ def segment(tile, algorithm, segmentation_meta, band_list, extra_args):
     try:
         # Load tile
         geoarray = GridWorkflow.load(tile[1], measurements=band_list)
-        name = segmentation_meta.name + '_' + segmentation_meta.datasource + '_%d_%d_' % (tile[0][0], tile[0][1]) + segmentation_meta.datasource_year
-        hash = hashlib.md5(name.encode('utf-8')).hexdigest()[0:6]
-        filename = hash + '_' + name
-        path = os.path.join(TEMP_DIR, 'segmentation_results')
-        if not os.path.exists(path):
-            os.makedirs(path)
+        basename = segmentation_meta.name + '_' + segmentation_meta.datasource + '_%d_%d_' % (tile[0][0], tile[0][1]) + segmentation_meta.datasource_year + '.shp'
+        if SEGMENTATION_DIR is not None:
+            filename = os.path.join(SEGMENTATION_DIR, basename)
+        elif SEGMENTATION_BUCKET is not None:
+            hash = hashlib.md5(name.encode('utf-8')).hexdigest()[0:6]
+            filename = hash + '_' + basename
+        else:
+            raise ValueError('You must set one of SEGMENTATION_DIR or SEGMENTATION_BUCKET variables')
         seg = Segmentation.from_geoarray(geoarray, **extra_args)
         seg.segment()
         # Try deallocating input array
-        seg.polygonize(crs_out=None)
-        seg.to_filesystem(path,filename)
-        seg.to_db(filename, segmentation_meta)
-        seg.to_bucket(path, filename)
+        fc = seg.polygonize()
+        seg.save(filename=filename, meta_object=segmentation_meta, fc=fc,
+                 bucket=SEGMENTATION_BUCKET)
         seg.array = None
         geoarray = None
         gc.collect()

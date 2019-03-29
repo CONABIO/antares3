@@ -131,13 +131,15 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
                                           crs=crs)
         return filename
 
-    def save(self, filename, fc=None, bucket=None):
+    def save(self, filename, meta_object, fc=None, bucket=None):
         """Write the result of a segmentation to disk or an S3 bucket if specified
 
         Also references the file path and extent in the antares database
 
         Args:
             filename (str): Output file name (must end with shp)
+            meta_object (SegmentationInformation): The python mapping
+                of a django object containing segmentation metadata information
             fc (dict): Feature collection with one property who's name must be
                 id. Typically the return of the ``polygonize()`` method.
                 Can be ``None``, in which case, it is generated on the fly
@@ -148,7 +150,6 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             and indexing it in the database. Also returns the filename
         """
         geom = GEOSGeometry(self.geobox.extent.wkt)
-        # TODO: Generate segmentation_information object
         shp_path = self.to_shapefile(filename=filename, fc=fc, bucket=bucket)
         PredictObject.objects.get_or_create(path=shp_path,
                                             the_geom=geom,
