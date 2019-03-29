@@ -174,19 +174,28 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
         # Add product
         product_description = yaml_to_dict(yaml_file)
         pr, dt = add_product_from_yaml(yaml_file, options['name'])
-        # Function to run on the list of filenames returned by Client.map()
-        def index_nc_file(nc):
-            """Helper function with tons of variables taken from the local environment
-            """
+        def write_and_index(nc, center_dt, from_dt, to_dt, algorithm, description, pr, dt):
             try:
-                print("Adding %s to datacube database" % nc)
-                metadict = metadict_from_netcdf(file=nc, description=product_description,
-                                                center_dt=center_dt, from_dt=begin,
-                                                to_dt=end, algorithm=options['recipe'])
+                metadict = metadict_from_netcdf(file=nc, description=description,
+                                                center_dt=center_dt, from_dt=from_dt,
+                                                to_dt=to_dt, algorithm=algorithm)
                 add_dataset(pr=pr, dt=dt, metadict=metadict, file=nc)
-            except Exception as e:
-                pass
-
-        [index_nc_file(x) for x in nc_list]
-
-
+                return True
+            except:
+                return False
+        client.restart()
+        C = client.map(write_and_index, nc_list,
+                       **{'center_dt': center_dt,
+                          'from_dt': begin,
+                          'to_dt': end,
+                          'algorithm': options['recipe'],
+                          'description': product_description,
+                          'pr': pr, 
+                          'dt': dt})
+        
+        nc_write_list = client.gather(C)
+        if not False in nc_write_list:
+            logger.info('Processing done, %d tiles written to S3' % n_tiles)
+        else:
+            logger.info('A nc file (or more) failed to written to S3')
+        
