@@ -416,9 +416,9 @@ def write_predict_result_to_raster(id, predict_name, resolution,
         pat_destiny (str): Path that will hold results. Only writes to file system are supported now.
     
     """
-    seg = PredictObject.objects.filter(id=id)
-    path_seg = seg[0].path
-    poly = seg[0].the_geom
+    seg = PredictObject.objects.get(id=id)
+    path_seg = seg.path
+    poly = seg.the_geom
     poly_geojson = poly.geojson
     geometry_seg = json.loads(poly_geojson)
     segmentation_name_classified = os.path.basename(path_seg).split('.')[0] + '_classified'

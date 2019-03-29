@@ -5,27 +5,24 @@ Author: palmoreck
 Date: 2019-02-26
 Purpose: Write result of a classification to a raster file on disk
 """
-from madmex.management.base import AntaresBaseCommand
-
-from madmex.models import Country, Region, PredictClassification
-from madmex.util.db import classification_to_cmap
-import fiona
+import os
 import json
 import logging
 import gc
-import rasterio
-from rasterio.merge import merge
+
 from dask.distributed import Client
-import os
-from os.path import expanduser
-from madmex.settings import TEMP_DIR
-from madmex.wrappers import write_predict_result_to_raster
-from madmex.util.spatial import geometry_transform
 from fiona.crs import to_string
-import rasterio.mask
+import rasterio
 from rasterio.warp import transform_geom
 from rasterio.crs import CRS as CRS_rio
-from shapely.geometry import mapping, shape
+from rasterio.merge import merge
+from rasterio import features
+
+from madmex.management.base import AntaresBaseCommand
+from madmex.models import Country, Region, PredictClassification
+from madmex.util.db import classification_to_cmap
+from madmex.settings import TEMP_DIR
+from madmex.wrappers import write_predict_result_to_raster
 
 logger = logging.getLogger(__name__)
 
@@ -76,45 +73,57 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
             region = Country.objects.get(name=region).the_geom
         except Country.DoesNotExist:
             region = Region.objects.get(name=region).the_geom
-        
+
         region_geojson = region.geojson
         geometry_region = json.loads(region_geojson)
-        
-            
+
+
         path_destiny = os.path.join(TEMP_DIR, 'db_to_raster_results')
         if not os.path.exists(path_destiny):
             os.makedirs(path_destiny)
 
+        # TODO: Add spatial filter (intersect between region and predict_object.the_geom
         qs_ids = PredictClassification.objects.filter(name=name).distinct('predict_object_id')
         list_ids = [x.predict_object_id for x in qs_ids]
-        
+
         client = Client(scheduler_file=scheduler_file)
         client.restart()
-        c = client.map(write_predict_result_to_raster,list_ids,**{'predict_name': name,
-                                       'resolution': resolution,
-                                       'path_destiny': path_destiny})
-        result = client.gather(c) 
+        c = client.map(write_predict_result_to_raster,
+                       list_ids,
+                       **{'predict_name': name,
+                          'resolution': resolution,
+                          'path_destiny': path_destiny})
+        result = client.gather(c)
         logger.info('Merging results')
-        
-        src_files_to_mosaic=[]
-        for file in result:
-            src = rasterio.open(file)
-            src_files_to_mosaic.append(src)
-        
-        mosaic, out_trans = merge(src_files_to_mosaic)
-        meta = {'driver': 'GTiff',
-                'width': mosaic.shape[2],
-                'height': mosaic.shape[1],
-                'count': 1,
-                'dtype': mosaic.dtype,
-                'crs': src.crs,
-                'transform': out_trans,
-                'compress': 'lzw',
-                'nodata': 0}
-        
-        filename_mosaic = expanduser("~") + '/' + os.path.splitext(filename)[0] + '_not_cropped' + '.tif'
 
-        with rasterio.open(filename_mosaic, 'w', **meta) as dst:
+        src_files_to_mosaic = [rasterio.open(f) for f in result]
+        # Retrieve metadata of one file for later use
+        meta = src_files_to_mosaic[0].meta.copy()
+
+        mosaic, out_trans = merge(src_files_to_mosaic)
+        meta.update(width=mosaic.shape[1], # Here was 1 and 2, how come?
+                    height=mosaic.shape[0],
+                    transform=out_trans,
+                    compress='lzw')
+
+        # Reproject geometry of the region
+        geometry_region_proj = transform_geom(CRS_rio.from_epsg(4326),
+                                              CRS_rio.from_proj4(to_string(meta.crs)),
+                                              geometry_region)
+
+        # rasterize region using mosaic as template
+        mask_array = features.rasterize(shapes=[(geometry_region_proj, 1)],
+                                        out_shape=mosaic.shape,
+                                        fill=0,
+                                        transform=meta.transform,
+                                        dtype=rasterio.uint8)
+
+        # Apply mask to mosaic
+        mosaic[mask_array==0] = 0
+
+        # Write results to file
+        filename_mosaic = os.path.expanduser(os.path.join("~/", filename))
+        with rasterio.open(filename_mosaic, "w", **meta) as dst:
             dst.write(mosaic)
             try:
                 cmap = classification_to_cmap(name)
@@ -122,32 +131,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
             except Exception as e:
                 logger.info('Didn\'t find a colormap or couldn\'t write it: %s' % e)
                 pass
-        geometry_region_proj = transform_geom(CRS_rio.from_epsg(4326),
-                                              CRS_rio.from_proj4(to_string(src.crs)),
-                                              geometry_region)
-        shape_region_proj=shape(geometry_region_proj)
-        with rasterio.open(filename_mosaic, 'r') as src:
-            masked_mosaic, mask_transform = rasterio.mask.mask(src,
-                                                               shape_region_proj,
-                                                               crop=True)
-            out_meta = src.meta.copy()
-        out_meta.update({'driver': 'GTiff',
-                         'height': masked_mosaic.shape[1],
-                         'width': masked_mosaic.shape[2],
-                         'transform': mask_transform,
-                         'compress': 'lzw'})
-        
-        filename_masked_mosaic = expanduser("~") + '/' + filename
-        
-        with rasterio.open(filename_masked_mosaic, "w", **out_meta) as dst:
-            dst.write(masked_mosaic)
-            try:
-                cmap = classification_to_cmap(name)
-                dst.write_colormap(1,cmap)
-            except Exception as e:
-                logger.info('Didn\'t find a colormap or couldn\'t write it: %s' % e)
-                pass
-        
+
         #close & clean:
         for i in range(0,len(result)):
             src_files_to_mosaic[i].close()
