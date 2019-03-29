@@ -6,7 +6,7 @@ import gc
 from importlib import import_module
 from operator import itemgetter
 import logging
-
+import sys
 import numpy as np
 import rasterio
 from rasterio.features import rasterize
