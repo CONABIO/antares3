@@ -11,7 +11,7 @@ import numpy as np
 import rasterio
 from rasterio.features import rasterize
 import fiona
-from fiona.crs import from_string
+from fiona.crs import to_string
 from shapely.geometry import mapping, shape
 from affine import Affine
 import datacube
