@@ -184,14 +184,15 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
             except:
                 return False
         client.restart()
-        C = client.map(write_and_index, nc_list,
-                       **{'center_dt': center_dt,
-                          'from_dt': begin,
-                          'to_dt': end,
-                          'algorithm': options['recipe'],
-                          'description': product_description,
-                          'pr': pr, 
-                          'dt': dt})
+        for nc_file in nc_list:
+            C = client.map(write_and_index, nc_file,
+                           **{'center_dt': center_dt,
+                              'from_dt': begin,
+                              'to_dt': end,
+                              'algorithm': options['recipe'],
+                              'description': product_description,
+                              'pr': pr, 
+                              'dt': dt})
         
         nc_write_list = client.gather(C)
         if not False in nc_write_list:
