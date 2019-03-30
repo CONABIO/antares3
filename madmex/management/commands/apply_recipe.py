@@ -173,9 +173,10 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
 
         # Add product
         product_description = yaml_to_dict(yaml_file)
-        pr, dt = add_product_from_yaml(yaml_file, options['name'])
-        def write_and_index(nc, center_dt, from_dt, to_dt, algorithm, description, pr, dt):
+        def write_and_index(nc):
             try:
+                print("Adding %s to datacube database" % nc)
+                pr, dt = add_product_from_yaml(yaml_file, options['name'])
                 metadict = metadict_from_netcdf(file=nc, description=description,
                                                 center_dt=center_dt, from_dt=from_dt,
                                                 to_dt=to_dt, algorithm=algorithm)
@@ -183,20 +184,11 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
                 return True
             except:
                 return False
-        client.restart()
-        for nc_file in nc_list:
-            C = client.map(write_and_index, nc_file,
-                           **{'center_dt': center_dt,
-                              'from_dt': begin,
-                              'to_dt': end,
-                              'algorithm': options['recipe'],
-                              'description': product_description,
-                              'pr': pr, 
-                              'dt': dt})
-        
-        nc_write_list = client.gather(C)
-        if not False in nc_write_list:
-            logger.info('Processing done, %d tiles written to S3' % n_tiles)
+            
+        C = client.map(write_and_index, nc_list)
+        status = client.gather(C)
+        if False in status:
+            logger.info('A nc file (or more) failed to written to datacube database')
         else:
-            logger.info('A nc file (or more) failed to written to S3')
+            logger.info('Processing done, %d tiles added to datacube database' % n_tiles)
         
