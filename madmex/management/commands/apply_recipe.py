@@ -177,9 +177,9 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
             try:
                 print("Adding %s to datacube database" % nc)
                 pr, dt = add_product_from_yaml(yaml_file, options['name'])
-                metadict = metadict_from_netcdf(file=nc, description=description,
-                                                center_dt=center_dt, from_dt=from_dt,
-                                                to_dt=to_dt, algorithm=algorithm)
+                metadict = metadict_from_netcdf(file=nc, description=product_description,
+                                                center_dt=center_dt, from_dt=begin,
+                                                to_dt=end, algorithm=options['recipe'])
                 add_dataset(pr=pr, dt=dt, metadict=metadict, file=nc)
                 return True
             except:
