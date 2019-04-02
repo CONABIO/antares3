@@ -160,7 +160,7 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
         >>> with open('~/.config/madmex/indexing/corresponding_config_file.yaml') src:
         >>>     description = yaml.load(src)
 
-        >>> metadict = metadict_from_netcdf(nc_file, description, center_dt=datetime(2015, 7, 1))
+        >>> file, metadict = metadict_from_netcdf(nc_file, description, center_dt=datetime(2015, 7, 1))
         >>> pprint(metadict)
 
     """
