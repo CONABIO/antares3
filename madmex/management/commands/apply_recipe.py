@@ -173,22 +173,26 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
 
         # Add product
         product_description = yaml_to_dict(yaml_file)
-        def write_and_index(nc):
+        pr, dt = add_product_from_yaml(yaml_file, options['name'])
+        def add_dataset_to_db(tup):
             try:
-                print("Adding %s to datacube database" % nc)
-                pr, dt = add_product_from_yaml(yaml_file, options['name'])
-                metadict = metadict_from_netcdf(file=nc, description=product_description,
-                                                center_dt=center_dt, from_dt=begin,
-                                                to_dt=end, algorithm=options['recipe'])
-                add_dataset(pr=pr, dt=dt, metadict=metadict, file=nc)
+                print("Adding %s to datacube database" % tup[0])
+                add_dataset(pr=pr, dt=dt, metadict=tup[1], file=tup[0])
                 return True
             except:
                 return False
-            
-        C = client.map(write_and_index, nc_list)
+        args = {'description': product_description,
+                'center_dt': center_dt,
+                'from_dt':begin,
+                'to_dt':end,
+                'algorithm':algorithm}    
+        C = client.map(metadict_from_netcdf, nc_list, **args)
+        r = client.gather(C)
+        l_r = [add_dataset_to_db(x) for x in r]
         status = client.gather(C)
-        if False in status:
+        if False in l_r:
             logger.info('A nc file (or more) failed to written to datacube database')
         else:
             logger.info('Processing done, %d tiles added to datacube database' % n_tiles)
+            
         
