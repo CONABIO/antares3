@@ -185,7 +185,8 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
                 'center_dt': center_dt,
                 'from_dt': begin,
                 'to_dt': end,
-                'algorithm': fun}    
+                'algorithm': fun}
+        client.restart()
         C = client.map(metadict_from_netcdf, nc_list, **args)
         r = client.gather(C)
         l_r = [add_dataset_to_db(x) for x in r]
