@@ -187,6 +187,7 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
                 'to_dt': end,
                 'algorithm': fun}
         client.restart()
+        logger.info('Extracting metadata from netcdf files')
         C = client.map(metadict_from_netcdf, nc_list, **args)
         r = client.gather(C)
         l_r = [add_dataset_to_db(x) for x in r]
