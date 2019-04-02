@@ -148,7 +148,7 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
             produce that dataset
 
     Return:
-        dict: A dictionary containing dataset metadata
+        tuple: Tuple containing nc file and dictionary containing dataset metadata
 
     Example:
         >>> from madmex.indexing import metadict_from_netcdf
@@ -238,4 +238,4 @@ def metadict_from_netcdf(file, description, center_dt, from_dt=None,
             'source_datasets': {},
         },
     }
-    return out
+    return (file, out)
