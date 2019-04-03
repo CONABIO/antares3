@@ -140,6 +140,7 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
         yaml_file = recipe_meta['config_file']
         begin = datetime.strptime(options['begin'], '%Y-%m-%d')
         end = datetime.strptime(options['end'], '%Y-%m-%d')
+        algorithm = options['recipe']
         time = (begin, end)
         center_dt = mid_date(begin, end)
         scheduler_file = options['scheduler']
@@ -185,11 +186,13 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
                 'center_dt': center_dt,
                 'from_dt': begin,
                 'to_dt': end,
-                'algorithm': fun}
+                'algorithm': algorithm}
+        
         client.restart()
         logger.info('Extracting metadata from netcdf files')
         C = client.map(metadict_from_netcdf, nc_list, **args)
         r = client.gather(C)
+        
         l_r = [add_dataset_to_db(x) for x in r]
         if False in l_r:
             logger.info('A nc file (or more) failed to written to datacube database')
