@@ -134,7 +134,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
                     dst.write(feature)
         else:
             filename = s3.write_shapefile(bucket=bucket, fc=fc, schema=schema,
-                                          crs=crs)
+                                          crs=crs, filename=filename)
         return filename
 
     def save(self, filename, meta_object, fc=None, bucket=None):
