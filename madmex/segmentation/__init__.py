@@ -8,6 +8,7 @@ import os
 from affine import Affine
 import numpy as np
 import fiona
+from fiona.crs import from_string
 import boto3
 import rasterio
 from rasterio import features
