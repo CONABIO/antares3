@@ -259,7 +259,7 @@ def segment(tile, algorithm, segmentation_meta, band_list, extra_args):
         if SEGMENTATION_DIR is not None:
             filename = os.path.join(SEGMENTATION_DIR, basename)
         elif SEGMENTATION_BUCKET is not None:
-            hash = hashlib.md5(name.encode('utf-8')).hexdigest()[0:6]
+            hash = hashlib.md5(basename.encode('utf-8')).hexdigest()[0:6]
             filename = hash + '_' + basename
         else:
             raise ValueError('You must set one of SEGMENTATION_DIR or SEGMENTATION_BUCKET variables')
