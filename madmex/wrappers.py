@@ -18,7 +18,6 @@ from fiona.crs import to_string
 from shapely.geometry import mapping, shape
 from affine import Affine
 import datacube
-from django.contrib.gis.geos.geometry import GEOSGeometry
 from datacube.api import GridWorkflow
 from datacube.utils.geometry import Geometry, CRS
 from rasterio.crs import CRS as CRS_rio
