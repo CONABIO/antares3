@@ -256,7 +256,7 @@ def segment(tile, algorithm, segmentation_meta, band_list, extra_args):
     try:
         # Load tile
         geoarray = GridWorkflow.load(tile[1], measurements=band_list)
-        basename = segmentation_meta.name + '_' + segmentation_meta.datasource + '_%d_%d_' % (tile[0][0], tile[0][1]) + segmentation_meta.datasource_year + '.shp'
+        basename = segmentation_meta.algorithm + '_' + segmentation_meta.name + '_' + segmentation_meta.datasource + '_%d_%d_' % (tile[0][0], tile[0][1]) + segmentation_meta.datasource_year + '.shp'
         if SEGMENTATION_DIR is not None:
             filename = os.path.join(SEGMENTATION_DIR, basename)
         elif SEGMENTATION_BUCKET is not None:
