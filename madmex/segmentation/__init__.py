@@ -155,7 +155,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
             str: Used for its side effect of writting a file to filesystem or S3
             and indexing it in the database. Also returns the filename
         """
-        geom = GEOSGeometry(self.geobox.extent.wkt)
+        geom = GEOSGeometry(json.dumps(self.geobox.geographic_extent.json))
         shp_path = self.to_shapefile(filename=filename, fc=fc, bucket=bucket)
         PredictObject.objects.get_or_create(path=shp_path,
                                             the_geom=geom,
