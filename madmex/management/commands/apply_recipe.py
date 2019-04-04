@@ -159,7 +159,7 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
             # Exception is in case one of the product hasn't been registered in the datacube
             except Exception as e:
                 pass
-        iterable = join_dicts(*dict_list).items()
+        iterable = join_dicts(*dict_list, join='full').items()
         
         # Start cluster and run 
         client = Client(scheduler_file=scheduler_file)
