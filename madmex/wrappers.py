@@ -9,6 +9,7 @@ import logging
 import sys
 
 import numpy as np
+from django.contrib.gis.geos.geometry import GEOSGeometry
 import rasterio
 from rasterio.features import rasterize
 from rasterio.warp import transform_geom
