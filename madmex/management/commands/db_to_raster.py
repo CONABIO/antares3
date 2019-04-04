@@ -101,9 +101,8 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         meta = src_files_to_mosaic[0].meta.copy()
 
         mosaic, out_trans = merge(src_files_to_mosaic)
-        mosaic = np.squeeze(mosaic)
-        meta.update(width=mosaic.shape[1],
-                    height=mosaic.shape[0],
+        meta.update(width=mosaic.shape[2],
+                    height=mosaic.shape[1],
                     transform=out_trans,
                     compress='lzw')
 
@@ -114,13 +113,13 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
 
         # rasterize region using mosaic as template
         mask_array = features.rasterize(shapes=[(geometry_region_proj, 1)],
-                                        out_shape=(mosaic.shape[0],mosaic.shape[1]),
+                                        out_shape=(mosaic.shape[1],mosaic.shape[2]),
                                         fill=0,
                                         transform=meta['transform'],
                                         dtype=rasterio.uint8)
 
         # Apply mask to mosaic
-        mosaic[mask_array==0] = 0
+        mosaic[:,mask_array==0] = 0
 
         # Write results to file
         filename_mosaic = os.path.expanduser(os.path.join("~/", filename))
