@@ -9,6 +9,7 @@ import os
 import json
 import logging
 import gc
+import numpy as np
 
 from dask.distributed import Client
 from fiona.crs import to_string
