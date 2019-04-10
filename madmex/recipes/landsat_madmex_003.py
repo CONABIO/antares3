@@ -43,11 +43,13 @@ def run(tile, center_dt, path):
         sr_0 = xr.auto_combine([GridWorkflow.load(x, dask_chunks={'x': 1667, 'y': 1667})
                          for x in tile[1]], concat_dim='time')
         sr_0.attrs['geobox'] = tile[1][0].geobox
+        # Mask clouds, shadow, water, ice,... and drop qa layer
+        clear = masking.make_mask(sr_0.pixel_qa, cloud=False, cloud_shadow=False,
+                                  snow=False)
+        sr_1 = sr_0.where(clear)
+        sr_1 = sr_1.drop('pixel_qa')
+        sr_1 = sr_1.apply(func=to_float, keep_attrs=True)
         
-        print('nc_filename = ', nc_filename)
-        print('geobox', sr_0.attrs['geobox'])
-
-
     except Exception as e:
         logger.warning('Tile (%d, %d) not processed. %s' % (tile[0][0], tile[0][1], e))
         return None
