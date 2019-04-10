@@ -49,6 +49,22 @@ def run(tile, center_dt, path):
         sr_1 = sr_0.where(clear)
         sr_1 = sr_1.drop('pixel_qa')
         sr_1 = sr_1.apply(func=to_float, keep_attrs=True)
+        # Compute vegetation indices
+        sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
+        sr_1['ndvi'].attrs['nodata'] = -9999
+        sr_1['ndmi'] = ((sr_1.nir - sr_1.swir1) / (sr_1.nir + sr_1.swir1)) * 10000
+        sr_1['ndmi'].attrs['nodata'] = -9999
+        # Run temporal reductions and rename DataArrays
+        sr_mean = sr_1.mean('time', keep_attrs=True, skipna=True)
+        sr_mean.rename({'blue': 'blue_mean',
+                        'green': 'green_mean',
+                        'red': 'red_mean',
+                        'nir': 'nir_mean',
+                        'swir1': 'swir1_mean',
+                        'swir2': 'swir2_mean',
+                        'ndmi': 'ndmi_mean',
+                        'ndvi': 'ndvi_mean'}, inplace=True)
+        print(sr_1['ndvi'])
         
     except Exception as e:
         logger.warning('Tile (%d, %d) not processed. %s' % (tile[0][0], tile[0][1], e))
