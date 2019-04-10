@@ -1,6 +1,7 @@
 import os
 from .landsat_madmex_001 import run as landsat_madmex_001
 from .landsat_madmex_002 import run as landsat_madmex_002
+from .landsat_madmex_003 import run as landsat_madmex_003
 from .landsat_colombia_001 import run as landsat_colombia_001
 from .landsat_belize_001 import run as landsat_belize_001
 from .landsat_guyana_001 import run as landsat_guyana_001
@@ -32,6 +33,11 @@ RECIPES = {
         'product': ['ls8_espa_mexico', 'ls5_espa_mexico', 'ls7_espa_mexico_50km'],
         'fun': landsat_madmex_002,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_madmex_002.yaml'),
+    },
+    'landsat_madmex_003': {
+        'product': ['ls8_espa_mexico', 'ls5_espa_mexico', 'ls7_espa_mexico_50km'],
+        'fun': landsat_madmex_003,
+        'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_madmex_003.yaml'),
     },
     'landsat_colombia_001': {
         'product': ['ls8_espa_colombia', 'ls7_espa_colombia', 'ls5_espa_colombia'],
