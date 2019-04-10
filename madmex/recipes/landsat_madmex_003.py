@@ -64,7 +64,35 @@ def run(tile, center_dt, path):
                         'swir2': 'swir2_mean',
                         'ndmi': 'ndmi_mean',
                         'ndvi': 'ndvi_mean'}, inplace=True)
-        print(sr_1['ndvi'])
+        # Compute min/max/std only for vegetation indices
+        ndvi_max = sr_1.ndvi.max('time', keep_attrs=True, skipna=True)
+        ndvi_max = ndvi_max.rename('ndvi_max')
+        ndvi_max.attrs['nodata'] = -9999
+        ndvi_min = sr_1.ndvi.min('time', keep_attrs=True, skipna=True)
+        ndvi_min = ndvi_min.rename('ndvi_min')
+        ndvi_min.attrs['nodata'] = -9999
+        # ndmi
+        ndmi_max = sr_1.ndmi.max('time', keep_attrs=True, skipna=True)
+        ndmi_max = ndmi_max.rename('ndmi_max')
+        ndmi_max.attrs['nodata'] = -9999
+        ndmi_min = sr_1.ndmi.min('time', keep_attrs=True, skipna=True)
+        ndmi_min = ndmi_min.rename('ndmi_min')
+        ndmi_min.attrs['nodata'] = -9999
+        # Load terrain metrics using same spatial parameters than sr
+        dc = datacube.Datacube(app = 'landsat_madmex_002_%s' % randomword(5))
+        terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
+                          time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
+                          dask_chunks={'x': 1667, 'y': 1667})
+        dc.close()
+        # Merge dataarrays
+        combined = xr.merge([sr_mean.apply(to_int),
+                             to_int(ndvi_max),
+                             to_int(ndvi_min),
+                             to_int(ndmi_max),
+                             to_int(ndmi_min),
+                             terrain])
+        combined.attrs['crs'] = crs
+        combined = combined.compute(scheduler='threads')
         
     except Exception as e:
         logger.warning('Tile (%d, %d) not processed. %s' % (tile[0][0], tile[0][1], e))
