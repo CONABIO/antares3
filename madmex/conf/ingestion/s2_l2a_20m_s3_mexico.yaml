@@ -1,3 +1,4 @@
+#check if this file is necessary
 source_type: s2_l2a_20m_granule
 output_type: s2_l2a_20m_s3_mexico
 
