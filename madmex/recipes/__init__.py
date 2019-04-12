@@ -69,20 +69,10 @@ RECIPES = {
         'fun': s2_20m_001,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/s2_20m_resampled_10m_001.yaml'),
     },
-    's2_20m_s3_001': {
-        'product': ['s2_l2a_20m_s3_mexico'],
-        'fun': s2_20m_001,
-        'config_file': os.path.expanduser('~/.config/madmex/indexing/s2_20m_s3_001.yaml'),
-    },
     's2_10m_scl_ndvi_mean_001': {
         'product': ['s2_l2a_10m_scl_s3_mexico'],
         'fun': s2_10m_scl_ndvi_mean_001,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/s2_10m_ndvi_mean_001.yaml'),
-    },
-    's1_2_10m_001': {
-        'product': ['s2_l2a_20m_s3_mexico'],
-        'fun': s1_2_10m_001,
-        'config_file': os.path.expanduser('~/.config/madmex/indexing/s1_2_10m_001.yaml'),
     },
     's1_2_20m_resampled_10m_001': {
         'product': ['s2_l2a_20m_mexico'],
