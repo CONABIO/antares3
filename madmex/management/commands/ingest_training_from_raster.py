@@ -31,7 +31,7 @@ Ingest a subset of training data randomly sampled from a raster into the antares
 --------------
 Example usage:
 --------------
-antares ingest_training_from_raster /path/to/file.tif --fraction 0.0001 --scheme madmex --year 2015 --name train_mexico --field code
+antares ingest_training_from_raster /path/to/file.tif --fraction 0.0001 --classes 31 --scheme madmex --year 2015 --name train_mexico --field code
     """
     def add_arguments(self, parser):
         parser.add_argument('input_file',
@@ -40,6 +40,9 @@ antares ingest_training_from_raster /path/to/file.tif --fraction 0.0001 --scheme
         parser.add_argument('-frac', '--fraction',
                             type=float,
                             help='fraction of data to ingest. If negative, ~310000 polygons will be ingested')
+        parser.add_argument('-cl', '--classes',
+                            type=int,
+                            help='Number of classes')
         parser.add_argument('-scheme', '--scheme',
                             type=str,
                             help='Name of the classification scheme to which the data belong')
@@ -58,6 +61,7 @@ antares ingest_training_from_raster /path/to/file.tif --fraction 0.0001 --scheme
         input_file = options['input_file']
         year = options['year']
         frac = options['fraction']
+        classes = options['classes']
         scheme = options['scheme']
         field = options['field']
         name = options['name']
@@ -86,13 +90,13 @@ antares ingest_training_from_raster /path/to/file.tif --fraction 0.0001 --scheme
             # Build mask for shapes
             mask = np.zeros(train_arr.shape, dtype=np.uint8)
             # Count total number of pixels per class
-            pxpcl = np.array([train_arr[train_arr == cl].size for cl in range(1,32)])
+            pxpcl = np.array([train_arr[train_arr == cl].size for cl in range(1,classes+1)])
             # Set fraction of polygons to ingest
             if frac < 0:
-                frac = 310000/np.sum(pxpcl)
+                frac = classes*10000/np.sum(pxpcl)
 
             # Generate number of samples per class
-            smplpxpcl = np.array([int(np.ceil(train_arr[train_arr == cl].size*frac)) for cl in range(1,32)])
+            smplpxpcl = np.array([int(np.ceil(train_arr[train_arr == cl].size*frac)) for cl in range(1,classes+1)])
 
             # Generate mask of samples
             smplcl = np.logical_and(pxpcl > 0, smplpxpcl > 0)
@@ -104,12 +108,12 @@ antares ingest_training_from_raster /path/to/file.tif --fraction 0.0001 --scheme
             if p.is_latlong(): # Here we assume that geographic coordinates are automatically 4326 (not quite true)
                 fc = [{'type': 'feature',
                        'geometry': mapping(shape(x[0])),
-                       'properties': {'class': int(x[1])}} for x in rasterio.features.shapes(train_arr,mask,connectivity=8,transform=aff)]
+                       'properties': {'class': int(x[1])}} for x in rasterio.features.shapes(train_arr,mask,connectivity=4,transform=aff)]
             else:
                 crs_str = to_string(src.crs)
                 fc = [{'type': 'feature',
                        'geometry': geometry_transform(x[0], crs_out='+proj=longlat', crs_in=crs_str),
-                       'properties': {'class': int(x[1])}} for x in rasterio.features.shapes(train_arr,mask,connectivity=8,transform=aff)]
+                       'properties': {'class': int(x[1])}} for x in rasterio.features.shapes(train_arr,mask,connectivity=4,transform=aff)]
                 
         # Write features to ValidObject table
         def train_obj_builder(x):
