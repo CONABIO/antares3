@@ -39,7 +39,7 @@ antares ingest_training_from_raster /path/to/file.tif --fraction 0.0001 --classe
                             help='Path of vector file to ingest')
         parser.add_argument('-frac', '--fraction',
                             type=float,
-                            help='fraction of data to ingest. If negative, ~310000 polygons will be ingested')
+                            help='fraction of data to ingest. If negative, ~classes*10000 polygons will be ingested')
         parser.add_argument('-cl', '--classes',
                             type=int,
                             help='Number of classes')
