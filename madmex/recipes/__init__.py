@@ -25,17 +25,17 @@ Adding recipes:
 
 RECIPES = {
     'landsat_madmex_001': {
-        'product': ['ls8_espa_mexico', 'ls5_espa_mexico', 'ls7_espa_mexico_50km'],
+        'product': ['ls8_espa_mexico', 'ls5_espa_mexico', 'ls7_espa_mexico'],
         'fun': landsat_madmex_001,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_madmex_001.yaml'),
     },
     'landsat_madmex_002': {
-        'product': ['ls8_espa_mexico', 'ls5_espa_mexico', 'ls7_espa_mexico_50km'],
+        'product': ['ls8_espa_mexico', 'ls5_espa_mexico', 'ls7_espa_mexico'],
         'fun': landsat_madmex_002,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_madmex_002.yaml'),
     },
     'landsat_madmex_003': {
-        'product': ['ls8_espa_mexico', 'ls5_espa_mexico', 'ls7_espa_mexico_50km'],
+        'product': ['ls8_espa_mexico', 'ls5_espa_mexico', 'ls7_espa_mexico'],
         'fun': landsat_madmex_003,
         'config_file': os.path.expanduser('~/.config/madmex/indexing/landsat_madmex_003.yaml'),
     },
