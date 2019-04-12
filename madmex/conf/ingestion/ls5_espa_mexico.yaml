@@ -1,7 +1,7 @@
 source_type: ls5_espa_scene
 output_type: ls5_espa_mexico
 
-description: Landsat 5 Collection 1 processed to surface reflectance by espa. Resampled to 30m Mexico INEGI Lambert Conformal Conic projection with a 100 km tile size.
+description: Landsat 5 Collection 1 processed to surface reflectance by espa. Resampled to 30m Mexico INEGI Lambert Conformal Conic projection with a 50 km tile size.
 
 location: '{{ ingestion_path }}'
 file_path_template: 'LS5_espa/mexico/LS5_espa_{tile_index[0]}_{tile_index[1]}_{start_time}{% if netcdf %}.nc{% endif %}'
