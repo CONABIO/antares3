@@ -40,7 +40,7 @@ def run(tile, center_dt, path):
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
-        sr_0 = xr.auto_combine([GridWorkflow.load(x, dask_chunks={'x': 1300, 'y': 1300})
+        sr_0 = xr.auto_combine([GridWorkflow.load(x, dask_chunks={'x': 1200, 'y': 1200})
                          for x in tile[1]], concat_dim='time')
         sr_0.attrs['geobox'] = tile[1][0].geobox
         # Mask clouds, shadow, water, ice,... and drop qa layer
@@ -82,7 +82,7 @@ def run(tile, center_dt, path):
         dc = datacube.Datacube(app = 'landsat_madmex_002_%s' % randomword(5))
         terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
                           time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
-                          dask_chunks={'x': 1300, 'y': 1300})
+                          dask_chunks={'x': 1200, 'y': 1200})
         dc.close()
         # Merge dataarrays
         combined = xr.merge([sr_mean.apply(to_int),
