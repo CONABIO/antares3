@@ -1,4 +1,4 @@
-description: Intermediary dataset used for segmentation with ndvi, derived from sen2cor
+description: Intermediary dataset used for segmentation with ndvi, derived from sen2cor. Input product has scl band of 20m resampled to 10m of sentinel2
 metadata_type: eo
 
 metadata:
