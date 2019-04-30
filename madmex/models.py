@@ -28,7 +28,7 @@ class Footprint(models.Model):
     '''This model represents a footprint.
     '''
     name = models.CharField(max_length=50, unique=True)
-    the_geom = models.PolygonField()
+    the_geom = models.GeometryField()
     sensor = models.CharField(max_length=50, default='')
     added = models.DateTimeField(auto_now_add=True)
 
