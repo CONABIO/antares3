@@ -29,7 +29,6 @@ class Command(AntaresBaseCommand):
         '''
         parser.add_argument('--shape', nargs=1, help='The name of the shape to ingest.')
         parser.add_argument('--sensor', nargs=1, help='The name of the sensor for these footprints.')
-        parser.add_argument('--country', nargs=1, help='Country to filter the footprints.')
         parser.add_argument('--column', nargs=1, help='Column of interest in shapefile.')
 
     def handle(self, **options):
@@ -37,9 +36,6 @@ class Command(AntaresBaseCommand):
         sensor = options['sensor'][0]
         country = options['country'][0]
         column = options['column'][0]
-
-        country_object = Country.objects.get(name=country)
-
 
         with fiona.open(shape_file) as source:
             print(source.crs)
@@ -56,12 +52,11 @@ class Command(AntaresBaseCommand):
                     s2 = s1
                 geom = GEOSGeometry(s2.wkt)
 
-                if country_object.the_geom.intersects(geom):
-                    name = '%03d%03d' % (feat['properties']['PATH'], feat['properties']['ROW'])
-                    if name:
-                        try:
-                            o = Footprint(the_geom = geom, sensor=sensor, name=name)
-                            o.save()
-                        except IntegrityError:
-                            logger.error('Name %s already exists.' % name)
+                name = '%03d%03d' % (feat['properties']['PATH'], feat['properties']['ROW'])
+                if name:
+                    try:
+                        o = Footprint(the_geom = geom, sensor=sensor, name=name)
+                        o.save()
+                    except IntegrityError:
+                        logger.error('Name %s already exists.' % name)
 
