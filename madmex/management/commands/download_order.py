@@ -26,18 +26,37 @@ contents of the order.
 Example usage:
 --------------
 # Downloads the orders found in the database that have not been downloaded yet.
-antares download_order
+antares download_order --order_ids xxx@xxx-04302019-111111-111 xxx@xxx-04302019-111111-112 xxx@xxx-04302019-111111-113
 '''
-    def handle(self, **options):
+    def add_arguments(self, parser):
+        parser.add_argument('-order_ids', '--order_ids',
+                            type=str,
+                            nargs='*',
+                            default=None,
+                            help='List of order ids to be downloaded')
+        
+    def handle(self, *args, **options):
+        order_ids = options['order_ids']
         client = EspaApi()
-        for order in Order.objects.filter(downloaded=False):
-            logger.info(order.order_id)
-            payload = client.get_list_order(order.order_id)
-            for image in payload[order.order_id]:
-                if image['product_dload_url']:
-                    logger.info('Download %s' % image['product_dload_url'])
-                    aware_download(image['product_dload_url'], TEMP_DIR)
-                else:
-                    logger.info('Skipping bad file')
-            order.downloaded = True
-            order.save()
+
+        def dl_order(qs):
+            for order in qs:
+                logger.info(order.order_id)
+                payload = client.get_list_order(order.order_id)
+                for image in payload[order.order_id]:
+                    if image['product_dload_url']:
+                        logger.info('Download %s' % image['product_dload_url'])
+                        aware_download(image['product_dload_url'], TEMP_DIR)
+                    else:
+                        logger.info('Skipping bad file')
+                order.downloaded = True
+                order.save()
+
+        if order_ids == None:
+            qs = Order.objects.filter(downloaded=False)
+            dl_order(qs) 
+        else:
+            for order_id in order_ids:
+                qs = Order.objects.filter(downloaded=False, order_id=order_id)
+                dl_order(qs) 
+
