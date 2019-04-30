@@ -34,7 +34,6 @@ class Command(AntaresBaseCommand):
     def handle(self, **options):
         shape_file = options['shape'][0]
         sensor = options['sensor'][0]
-        country = options['country'][0]
         column = options['column'][0]
 
         with fiona.open(shape_file) as source:
