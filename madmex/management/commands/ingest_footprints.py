@@ -51,7 +51,7 @@ class Command(AntaresBaseCommand):
                     s2 = s1
                 geom = GEOSGeometry(s2.wkt)
 
-                name = '%03d%03d' % (feat['properties']['PATH'], feat['properties']['ROW'])
+                name = column.strip()
                 if name:
                     try:
                         o = Footprint(the_geom = geom, sensor=sensor, name=name)
