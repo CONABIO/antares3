@@ -156,7 +156,9 @@ antares ingest_training_from_raster_chunk /path/to/file.tif --fraction 0.0001 --
                         fc = [{'type': 'feature',
                            'geometry': geometry_transform(x[0], crs_out='+proj=longlat', crs_in=crs_str),
                            'properties': {'class': int(x[1])}} for x in rasterio.features.shapes(train_arr,mask,connectivity=4,transform=aff)]
-                
+                 
+                    if len(fc) < 1:
+                        raise ValueError("No features")
 
                     obj_list = [train_obj_builder(x) for x in fc]
                     TrainObject.objects.bulk_create(obj_list)
