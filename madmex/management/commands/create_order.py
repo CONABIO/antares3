@@ -107,8 +107,9 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
                         coords = tuple(point_from_object(scene.get(coord)) for coord in ['lowerLeftCoordinate', 'upperLeftCoordinate', 'upperRightCoordinate', 'lowerRightCoordinate', 'lowerLeftCoordinate'])
                         scene_extent = Polygon(coords)
                         entity_id = scene.get('displayId')                        
-                        if isinstance(shape_name, int) and str(shape_name) in entity_id:
-                            interest.append(entity_id)
+                        if isinstance(shape_name, int):
+                            if str(shape_name) in entity_id:
+                                interest.append(entity_id)
                         elif scene_extent.intersects(shape_object.the_geom):                        
                             interest.append(entity_id)                            
             print(json.dumps(interest, indent=4))
