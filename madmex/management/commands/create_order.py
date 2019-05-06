@@ -66,15 +66,19 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
         espa_client = EspaApi()
 
         logger.info(shape_name)
-        try:
-            shape_object = Country.objects.get(name=shape_name)
-            logger.info('Country %s was loaded.' % shape_name)
-        except:
+        if isinstance(shape_name, int):
+            shape_object = Footprint.objects.get(name=shape_name)
+            logger.info('Footprint %s was loaded.' % shape_name)
+        elif isinstance(shape_name, str):
             try:
-                shape_object = Region.objects.get(name=shape_name)
-                logger.info('Region %s was loaded.' % shape_name)
+                shape_object = Country.objects.get(name=shape_name)
+                logger.info('Country %s was loaded.' % shape_name)
             except:
-                shape_object = None
+                try:
+                    shape_object = Region.objects.get(name=shape_name)
+                    logger.info('Region %s was loaded.' % shape_name)
+                except:
+                    shape_object = None
 
         if shape_object:
             extent = shape_object.the_geom.extent
@@ -102,13 +106,11 @@ antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '20
                     for scene in results:
                         coords = tuple(point_from_object(scene.get(coord)) for coord in ['lowerLeftCoordinate', 'upperLeftCoordinate', 'upperRightCoordinate', 'lowerRightCoordinate', 'lowerLeftCoordinate'])
                         scene_extent = Polygon(coords)
-                        entity_id = scene.get('displayId')
-                        # we use the same regular expression that espa uses to filter the names that are valid; otherwise, the order throws an error
-                        if scene_extent.intersects(shape_object.the_geom) and re.match(collection_regex, entity_id):
+                        entity_id = scene.get('displayId')                        
+                        if isinstance(shape_name, int) and str(shape_name) in entity_id:
                             interest.append(entity_id)
-                            footprint, _ = Footprint.objects.get_or_create(
-                                name=entity_id,
-                                the_geom=scene_extent)
+                        elif scene_extent.intersects(shape_object.the_geom):                        
+                            interest.append(entity_id)                            
             print(json.dumps(interest, indent=4))
             data = espa_client.order(collection_espa, interest, products)
             if data.get('status') == 'ordered':
