@@ -31,10 +31,10 @@ command must be used to download the scenes.
 Example usage:
 --------------
 # Downloads the Landsat 8 scenes that intersect the state of Jalisco and where taken during 2017.
-antares create_order --shape 'Jalisco'  --start-date '2017-01-01' --end-date '2017-12-31' --landsat 8
+antares create_order --region 'Jalisco'  --start-date '2017-01-01' --end-date '2017-12-31' --landsat 8
 
 # It is posible to search by Landsat tile, under the rule 'path0row'. For instance:
-antares create_order --shape 22049  --start-date '2017-01-01' --end-date '2017-12-31' --landsat 8
+antares create_order --region 22049  --start-date '2017-01-01' --end-date '2017-12-31' --landsat 8
 '''
     def add_arguments(self, parser):
         '''
