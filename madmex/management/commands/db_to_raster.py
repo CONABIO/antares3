@@ -112,6 +112,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                                               geometry_region)
 
         # rasterize region using mosaic as template
+        logger.info('Masking mosaic')
         mask_array = features.rasterize(shapes=[(geometry_region_proj, 1)],
                                         out_shape=(mosaic.shape[1],mosaic.shape[2]),
                                         fill=0,
@@ -122,6 +123,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         mosaic[:,mask_array==0] = 0
 
         # Write results to file
+        logger.info('Writing mosaig to filename')
         filename_mosaic = os.path.expanduser(os.path.join("~/", filename))
         with rasterio.open(filename_mosaic, "w", **meta) as dst:
             dst.write(mosaic)
@@ -133,6 +135,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
                 pass
 
         #close & clean:
+        logger.info('Deleting temporary results')
         for i in range(0,len(result)):
             src_files_to_mosaic[i].close()
             os.remove(result[i])
