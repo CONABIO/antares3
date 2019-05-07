@@ -20,6 +20,12 @@ logger = logging.getLogger(__name__)
 def point_from_object(coords):
     return (coords.get('longitude'), coords.get('latitude'))
 
+def int_or_str(value):
+    try:
+        return int(value)
+    except:
+        return value
+    
 class Command(AntaresBaseCommand):
     help = '''
 Command that places an order into the ESPA system matching the given criteria. ESPA
@@ -34,13 +40,13 @@ Example usage:
 antares create_order --region 'Jalisco'  --start-date '2017-01-01' --end-date '2017-12-31' --landsat 8
 
 # It is posible to search by Landsat tile, under the rule 'path0row'. For instance:
-antares create_order --region 22049  --start-date '2017-01-01' --end-date '2017-12-31' --landsat 8
+antares create_order --region 22049  --start-date '2001-01-01' --end-date '2002-12-31' --landsat 5 --max-cloud-cover 30
 '''
     def add_arguments(self, parser):
         '''
         Just queries for the name to greet.
         '''
-        parser.add_argument('--region', help='The name of the shape to use in the database.')
+        parser.add_argument('--region', help='The name of the region to use in the database.')
         parser.add_argument('--start-date', help='Date to start the query, inclusive.')
         parser.add_argument('--end-date', help='Date to end the query, inclusive.')
         parser.add_argument('--landsat',
@@ -52,9 +58,9 @@ antares create_order --region 22049  --start-date '2017-01-01' --end-date '2017-
                             help='Maximum amount of cloud cover.')
 
     def handle(self, **options):
-        '''This method takes a given shape names and queries the usgs api for available scenes.
+        '''This method takes a given region names and queries the usgs api for available scenes.
 
-        Using two api clients for the usgs and espa we query for a given shape and create an order
+        Using two api clients for the usgs and espa we query for a given region and create an order
         to download the landsat scenes for a specific temporal window.
         '''
         usgs_client = UsgsApi()
@@ -63,28 +69,30 @@ antares create_order --region 22049  --start-date '2017-01-01' --end-date '2017-
         start_date = options['start_date']
         end_date = options['end_date']
         landsat = options['landsat']
-        shape_name = options['region']
+        region = options['region']
         cloud_cover = options['max_cloud_cover']
 
         espa_client = EspaApi()
 
-        logger.info(shape_name)
-        if isinstance(int(shape_name), int):
-            shape_object = Footprint.objects.get(name=shape_name)
-            logger.info('Footprint %s was loaded.' % shape_name)
-        elif isinstance(shape_name, str):
+        logger.info(region)
+        
+        region = int_or_str(region)
+        if isinstance(region, int):
+            region_object = Footprint.objects.get(name=region)
+            logger.info('Footprint %s was loaded.' % region)
+        elif isinstance(region, str):
             try:
-                shape_object = Country.objects.get(name=shape_name)
-                logger.info('Country %s was loaded.' % shape_name)
+                region_object = Country.objects.get(name=region)
+                logger.info('Country %s was loaded.' % region)
             except:
                 try:
-                    shape_object = Region.objects.get(name=shape_name)
-                    logger.info('Region %s was loaded.' % shape_name)
+                    region_object = Region.objects.get(name=region)
+                    logger.info('Region %s was loaded.' % region)
                 except:
-                    shape_object = None
+                    region_object = None
 
-        if shape_object:
-            extent = shape_object.the_geom.extent
+        if region_object:
+            extent = region_object.the_geom.extent
 
             if landsat == 8:
                 collection_usgs = 'LANDSAT_8_C1'
@@ -110,10 +118,10 @@ antares create_order --region 22049  --start-date '2017-01-01' --end-date '2017-
                         coords = tuple(point_from_object(scene.get(coord)) for coord in ['lowerLeftCoordinate', 'upperLeftCoordinate', 'upperRightCoordinate', 'lowerRightCoordinate', 'lowerLeftCoordinate'])
                         scene_extent = Polygon(coords)
                         entity_id = scene.get('displayId')                        
-                        if isinstance(int(shape_name), int):
-                            if str(shape_name) in entity_id:
+                        if isinstance(region, int):
+                            if str(region) in entity_id:
                                 interest.append(entity_id)
-                        elif scene_extent.intersects(shape_object.the_geom):                        
+                        elif scene_extent.intersects(region_object.the_geom):                        
                             interest.append(entity_id)                            
             print(json.dumps(interest, indent=4))
             data = espa_client.order(collection_espa, interest, products)
@@ -124,4 +132,4 @@ antares create_order --region 22049  --start-date '2017-01-01' --end-date '2017-
             else:
                 logger.info(json.dumps(data, indent=4))
         else:
-            logger.info('No shape with the name %s was found in the database.' % shape_name)
+            logger.info('No region with the name %s was found in the database.' % region)
