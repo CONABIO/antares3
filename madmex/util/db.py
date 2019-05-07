@@ -1,6 +1,6 @@
 from madmex.models import Tag, PredictClassification, ValidClassification
 
-def classification_to_cmap(scheme):
+def get_cmap_from_scheme(scheme):
     """Generate a colormap (cmap) object for a given classification
 
     Colors are read from the database. The cmap can later be written to the metadata
