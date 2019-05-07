@@ -1,6 +1,6 @@
 from madmex.models import Tag, PredictClassification, ValidClassification
 
-def classification_to_cmap(x, region):
+def classification_to_cmap(scheme):
     """Generate a colormap (cmap) object for a given classification
 
     Colors are read from the database. The cmap can later be written to the metadata
@@ -8,17 +8,14 @@ def classification_to_cmap(x, region):
     0 is always considered no value and is therefore assigned no full transparency
 
     Args:
-        x (str): Name of an existing classification, registered in the madmex_predictclassification
+        scheme (str): Name of an existing scheme, registered in the madmex_tag
             table
-        region (geom): geometry of region to avoid blowing DB memory in query
 
     Returns:
         dict: A color map object {value0: [R, G, B, Alpha], ...}
     """
     def hex_to_rgba(hex_code):
         return tuple(int(hex_code[i:i+2], 16) for i in (1, 3 ,5)) + (255,)
-    first = PredictClassification.objects.filter(predict_object__the_geom__intersects=region).filter(name=x).first()
-    scheme = first.tag.scheme
     qs_tag = Tag.objects.filter(scheme=scheme)
     hex_dict = dict([(i.numeric_code, i.color) for i in qs_tag])
     rgb_dict = {k:hex_to_rgba(v) for k,v in hex_dict.items()}
