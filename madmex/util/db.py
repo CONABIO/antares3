@@ -1,7 +1,7 @@
 from madmex.models import Tag, PredictClassification, ValidClassification
 
 def get_cmap_from_scheme(scheme):
-    """Generate a colormap (cmap) object for a given classification
+    """Generate a colormap (cmap) object for a given scheme
 
     Colors are read from the database. The cmap can later be written to the metadata
     of a GeoTiff file using the write_colormap rasterio method
