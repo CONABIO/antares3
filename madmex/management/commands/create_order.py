@@ -46,7 +46,7 @@ antares create_order --region 22049  --start-date '2001-01-01' --end-date '2002-
         '''
         Just queries for the name to greet.
         '''
-        parser.add_argument('--region', help='The name of the region to use in the database.')
+        parser.add_argument('--region', type=int_or_string, help='The name of the region to use in the database.')
         parser.add_argument('--start-date', help='Date to start the query, inclusive.')
         parser.add_argument('--end-date', help='Date to end the query, inclusive.')
         parser.add_argument('--landsat',
