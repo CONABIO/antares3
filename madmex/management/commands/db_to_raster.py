@@ -128,7 +128,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         with rasterio.open(filename_mosaic, "w", **meta) as dst:
             dst.write(mosaic)
             try:
-                cmap = classification_to_cmap(name, region)
+                cmap = classification_to_cmap(qs_ids[0].tag.scheme)
                 dst.write_colormap(1,cmap)
             except Exception as e:
                 logger.info('Didn\'t find a colormap or couldn\'t write it: %s' % e)
