@@ -21,7 +21,7 @@ from rasterio import features
 
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import Country, Region, PredictClassification
-from madmex.util.db import classification_to_cmap
+from madmex.util.db import get_cmap_from_scheme
 from madmex.settings import TEMP_DIR
 from madmex.wrappers import write_predict_result_to_raster
 
@@ -128,7 +128,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         with rasterio.open(filename_mosaic, "w", **meta) as dst:
             dst.write(mosaic)
             try:
-                cmap = classification_to_cmap(qs_ids[0].tag.scheme)
+                cmap = get_cmap_from_scheme(qs_ids[0].tag.scheme)
                 dst.write_colormap(1,cmap)
             except Exception as e:
                 logger.info('Didn\'t find a colormap or couldn\'t write it: %s' % e)
