@@ -83,7 +83,7 @@ antares db_to_raster --region Jalisco --name s2_001_jalisco_2017_bis_rf_1 --file
         if not os.path.exists(path_destiny):
             os.makedirs(path_destiny)
 
-        qs_ids = PredictClassification.objects.filter(name=name).distinct('predict_object_id')
+        qs_ids = PredictClassification.objects.filter(predict_object__the_geom__intersects=region).filter(name=name).distinct('predict_object_id')
         list_ids = [x.predict_object_id for x in qs_ids]
 
         client = Client(scheduler_file=scheduler_file)
