@@ -40,7 +40,10 @@ Example usage:
 antares create_order --region 'Jalisco'  --start-date '2017-01-01' --end-date '2017-12-31' --landsat 8
 
 # It is posible to search by Landsat tile, under the rule 'path0row'. For instance:
-antares create_order --region 22049  --start-date '2001-01-01' --end-date '2002-12-31' --landsat 5 --max-cloud-cover 30
+antares create_order --region 22049  --start-date '2001-01-01' --end-date '2002-12-31' --landsat 5 --max-cloud-coiver 30
+
+# Show only the Landsat 5 scenes that intersect the state of Jalisco and where taken during 2005.
+antares create_order --region 'Jalisco'  --start-date '2005-01-01' --end-date '2005-12-31' --landsat 5 --no-order
 '''
     def add_arguments(self, parser):
         '''
@@ -56,6 +59,11 @@ antares create_order --region 22049  --start-date '2001-01-01' --end-date '2002-
                             type=int,
                             default=100,
                             help='Maximum amount of cloud cover.')
+        parser.add_argument('--no-order',
+                            dest='order',
+                            action='store_false',
+                            help='Show only the scenes found.')
+        parser.set_defaults(order=True)
 
     def handle(self, **options):
         '''This method takes a given region names and queries the usgs api for available scenes.
@@ -71,6 +79,7 @@ antares create_order --region 22049  --start-date '2001-01-01' --end-date '2002-
         landsat = options['landsat']
         region = options['region']
         cloud_cover = options['max_cloud_cover']
+        order = options['order']
 
         espa_client = EspaApi()
 
@@ -123,13 +132,17 @@ antares create_order --region 22049  --start-date '2001-01-01' --end-date '2002-
                                 interest.append(entity_id)
                         elif scene_extent.intersects(region_object.the_geom):                        
                             interest.append(entity_id)                            
-            print(json.dumps(interest, indent=4))
-            data = espa_client.order(collection_espa, interest, products)
-            if data.get('status') == 'ordered':
-                logger.info('The order was posted with id: %s' % data.get('orderid'))
-                order = Order(user=espa_client.username, order_id=data.get('orderid'), downloaded=False)
-                order.save()
+            if order == True:
+                data = espa_client.order(collection_espa, interest, products)
+                if data.get('status') == 'ordered':
+                    logger.info('The order was posted with id: %s' % data.get('orderid'))
+                    order = Order(user=espa_client.username, order_id=data.get('orderid'), downloaded=False)
+                    order.save()
+                else:
+                    logger.info(json.dumps(data, indent=4))
             else:
-                logger.info(json.dumps(data, indent=4))
+                logger.info("%s scenes found in %s" %(len(interest), region))
+                logger.info(json.dumps(interest, indent=4))
+                logger.info("Delete '--no-order' to make the request to USGS.")
         else:
             logger.info('No region with the name %s was found in the database.' % region)
