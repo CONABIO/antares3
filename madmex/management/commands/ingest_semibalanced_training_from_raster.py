@@ -31,7 +31,7 @@ Ingest a subset of training data randomly sampled from a raster into the antares
 --------------
 Example usage:
 --------------
-antares ingest_semibalanced_training_from_raster /path/to/file.tif --fraction 0.0001 --ur_fraction 0.9 --classes 31 --scheme madmex --year 2015 --name train_mexico --field code
+antares ingest_semibalanced_training_from_raster /path/to/file.tif --fraction 0.0001 --ur_fraction 0.9 --classes 31 --scheme madmex --year 2015 --name train_mexico --field class
     """
     def add_arguments(self, parser):
         parser.add_argument('input_file',
@@ -100,7 +100,7 @@ antares ingest_semibalanced_training_from_raster /path/to/file.tif --fraction 0.
                 frac = len(pxpcl[pxpcl > 0])*10000/np.sum(pxpcl)
 
             # Generate customized fractions
-            var_frac = frac * np.sum(pxpcl) / (len(pxpcl[pxpcl > 0]) * pxpcl)
+            var_frac = [ -1 if p == 0 else frac * np.sum(pxpcl) / (len(pxpcl[pxpcl > 0]) * p) for p in pxpcl ]
             var_frac[var_frac > 1] = ur_frac
 
             # Generate mask of samples
