@@ -100,7 +100,7 @@ antares ingest_semibalanced_training_from_raster /path/to/file.tif --fraction 0.
                 frac = len(pxpcl[pxpcl > 0])*10000/np.sum(pxpcl)
 
             # Generate customized fractions
-            var_frac = [ -1 if p == 0 else frac * np.sum(pxpcl) / (len(pxpcl[pxpcl > 0]) * p) for p in pxpcl ]
+            var_frac = np.array([ -1 if p == 0 else frac * np.sum(pxpcl) / (len(pxpcl[pxpcl > 0]) * p) for p in pxpcl ])
             var_frac[var_frac > 1] = ur_frac
 
             # Generate mask of samples
