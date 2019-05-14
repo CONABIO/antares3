@@ -87,6 +87,49 @@ def parser_extra_args(x):
     d1 = {k: change_type(v) for k, v in d0.items()}
     return d1
 
+def parser_grid_args(x):
+    """Helper to parse grid args passed to argparse
+    nargs= must be set to '*' in add_argument
+    Args:
+        x (list): A list of strings. Each string must be a key=values pair
+    Return:
+        dict: Kwargs style dictionary
+    Example:
+        a = ['arg0=1,2,3', 'arg1=sqrt,log2']
+    """
+    def to_bool(s):
+        if s.lower() == 'true':
+            return True
+        elif s.lower() == 'false':
+            return False
+        else:
+            raise ValueError('Cannot be coerced to boolean')
+
+    def change_type(s):
+        try:
+            r = to_bool(s)
+            return r
+        except ValueError as e:
+            pass
+
+        try:
+            r = int(s)
+            return r
+        except ValueError as e:
+            pass
+
+        try:
+            r = float(s)
+            return r
+        except ValueError as e:
+            pass
+
+        return s
+
+    d0 = dict(item.split('=') for item in x)
+    d1 = {k: [change_type(item) for item in v.split(',')] for k, v in d0.items()}
+    return d1
+
 
 def chunk(iterable, size=10000):
     """Splits an iterable into chunks
