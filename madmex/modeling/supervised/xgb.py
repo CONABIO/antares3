@@ -49,3 +49,8 @@ class Model(BaseModel):
         """
         X = self.hot_encode_predict(X)
         return self.model.predict_proba(X).max(axis=1)
+
+    def grid_search_cv_fit(self, X, y, cv, parameter_values):
+        X = self.hot_encode_training(X)
+        grid_search = GridSearchCV(self.model, parameter_values, cv=cv)
+        return grid_search.fit(X, y)
