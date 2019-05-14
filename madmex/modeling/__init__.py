@@ -58,6 +58,13 @@ class BaseModel(abc.ABC):
         '''
         NotImplementedError('Children of BaseModel need to implement their own predict_confidence method')
 
+        
+    def grid_search_cv_fit(self, X, y, cv, parameter_values):
+        '''
+        For every unseen observation, get the highest probability
+        '''
+        NotImplementedError('Children of BaseModel need to implement their own predict_confidence method')
+
 
     def hot_encode_training(self, X):
         """Apply one hot encoding to one or several predictors determined by the list
