@@ -1,0 +1,205 @@
+
+#!/usr/bin/env python
+
+"""
+Author: Loic Dutrieux
+Date: 2018-02-20
+Purpose: Fit a statistical model to a datacube product
+"""
+from importlib import import_module
+import os
+import logging
+from datetime import datetime
+import pickle
+
+from dask.distributed import Client, LocalCluster
+import numpy as np
+
+from madmex.management.base import AntaresBaseCommand
+
+from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_netcdf
+from madmex.util import yaml_to_dict, mid_date, parser_extra_args
+from madmex.recipes import RECIPES
+from madmex.wrappers import extract_tile_db, gwf_query
+from madmex.util.datacube import var_to_ind
+
+logger = logging.getLogger(__name__)
+
+class Command(AntaresBaseCommand):
+    help = """
+Command line for training a statistical model over a given extent using:
+    - A training set of geometries with attributes stored in the database
+    - A datacube product
+    - One of the models implemented in madmex.modeling
+The steps of the process are for each tile of the datacube product to:
+    - Load the data as an xarray Dataset
+    - Query and load the corresponding training geometries from the database
+    - Perform data extraction and spatial aggregation for the geometries overlay
+All extracted data are then concatenated and used to train a statistical model. The model is then
+saved to the database
+--------------
+Example usage:
+--------------
+# With grid args passed to gridsearchcv, use region name instead of lat long bounding box
+antares model_grid_search_cv_fit -model rf -p landsat_madmex_001_jalisco_2017_2 -t jalisco_chips --region Jalisco -sp mean -grid -grid n_estimators=1,500,700 max_depth=1,3,10,12 max_features=sqrt,log2 random_state=45833476
+# Only extract data and write the X and y array to file for further inspection (no grid search is performed)
+antares model_grid_search_cv_fit -p s2_001_jalisco_2017_0 -t jalisco_bits --region Jalisco --filename training_sentinel2_jalisco_bits.pkl
+"""
+    def add_arguments(self, parser):
+        parser.add_argument('-model', '--model',
+                            type=str,
+                            default=None,
+                            help=('Name of the model to apply to the dataset. It is posible to retrieve a list '
+                                  'of implemented models using the antares model_params command line'))
+        parser.add_argument('-p', '--product',
+                            type=str,
+                            required=True,
+                            help='Name of the datacube product to use for model fitting')
+        parser.add_argument('-t', '--training',
+                            type=str,
+                            required=True,
+                            help='Training data database identifier')
+        parser.add_argument('-lat', '--lat',
+                            type=float,
+                            nargs=2,
+                            default=None,
+                            help='minimum and maximum latitude of the bounding box over which the model should be trained')
+        parser.add_argument('-long', '--long',
+                            type=float,
+                            nargs=2,
+                            default=None,
+                            help='minimum and maximum longitude of the bounding box over which the model should be trained')
+        parser.add_argument('-region', '--region',
+                            type=str,
+                            default=None,
+                            help=('Name of the region over which the recipe should be applied. The geometry of the region should be present '
+                                  'in the madmex-region or the madmex-country table of the database (Overrides lat and long when present) '
+                                  'Use ISO country code for country name'))
+        parser.add_argument('-sample', '--sample',
+                            type=float,
+                            default=0.2,
+                            help='Proportion of the training data to use. Must be float between 0 and 1. A random sampling of the training objects is performed (defaults to 0.2).')
+        parser.add_argument('-name', '--name',
+                            type=str,
+                            default=None,
+                            help='Name under which the produced model should be referenced in the database')
+        parser.add_argument('-sp', '--spatial_aggregation',
+                            type=str,
+                            required=False,
+                            default='mean',
+                            help='Function to use for spatially aggregating the pixels over the training geometries (defaults to mean)')
+        parser.add_argument('-categorical_variables', '--categorical_variables',
+                            type=str,
+                            nargs='*',
+                            default=None,
+                            help='List of categorical variables to be encoded using One Hot Encoding before model fit')
+        parser.add_argument('--remove-outliers',
+                            action='store_true',
+                            help='Perform outlier removal via isolation forest anomaly score before model fitting')
+        parser.add_argument('-filename', '--filename',
+                            type=str,
+                            default=None,
+                            help='Name of a pickle file to store X and y array. Optional, no model is fitted when used')
+        parser.add_argument('-extra', '--extra_kwargs',
+                            type=str,
+                            default='',
+                            nargs='*',
+                            help='''
+Additional named arguments passed to the selected model class constructor. These arguments have
+to be passed in the form of key=value pairs. e.g.: model_fit ... -extra arg1=12 arg2=median
+To consult the exposed arguments for each model, use the "model_params" command line''')
+        parser.add_argument('-sc', '--scheduler',
+                            type=str,
+                            default=None,
+                            help='Path to file with scheduler information (usually called scheduler.json)')
+        parser.add_argument('-cv', '--cv',
+                            type=int,
+                            default=5,
+                            help='Number of folds for cross validation')
+        parser.add_argument('-grid', '--grid_kwargs',
+                            type=str,
+                            default='',
+                            nargs='*',
+                            help='''
+grid arguments passed to the selected gridsearch class constructor. These arguments have
+to be passed in the form of key=values pairs. e.g.: model_fit ... -grid arg1=1,2,3 arg2=sqrt,log2''')
+
+    def handle(self, *args, **options):
+        # Unpack variables
+        product = options['product']
+        model = options['model']
+        name = options['name']
+        training = options['training']
+        sp = options['spatial_aggregation']
+        kwargs = parser_extra_args(options['extra_kwargs'])
+        categorical_variables = options['categorical_variables']
+        sample = options['sample']
+        filename = options['filename']
+        scheduler_file = options['scheduler']
+        remove_outliers = options['remove_outliers']
+        cv = options['cv']
+        parameter_values = parser_grid_args(options['grid_kwargs'])
+
+        # Prepare encoding of categorical variables if any specified
+        if categorical_variables is not None:
+            kwargs.update(categorical_features=var_to_ind(categorical_variables))
+
+        # Load model class
+        if filename is None:
+            try:
+                module = import_module('madmex.modeling.supervised.%s' % model)
+                Model = module.Model
+            except ImportError as e:
+                raise ValueError('Invalid model argument')
+
+        # datacube query
+        gwf_kwargs = { k: options[k] for k in ['product', 'lat', 'long', 'region']}
+        iterable = gwf_query(**gwf_kwargs)
+
+        # Start cluster and run 
+        client = Client(scheduler_file=scheduler_file)
+        client.restart()
+        C = client.map(extract_tile_db,
+                       iterable,
+                       pure=False,
+                       **{'sp': sp,
+                          'training_set': training,
+                          'sample': sample})
+        arr_list = client.gather(C)
+
+        logger.info('Completed extraction of training data from %d tiles' , len(arr_list))
+
+        # Zip list of predictors, target into two lists
+        X_list, y_list = zip(*arr_list)
+
+        # Filter Nones
+        X_list = [x for x in X_list if x is not None]
+        y_list = [x for x in y_list if x is not None]
+
+        # Concatenate the lists
+        X = np.concatenate(X_list)
+        y = np.concatenate(y_list)
+
+        # Optionally run outliers removal
+        if remove_outliers:
+            X, y = Model.remove_outliers(X, y)
+
+        # Optionally write the arrays to pickle file
+        if filename is not None:
+            logger.info('Writting X and y arrays to pickle file, no model will be fitted')
+            with open(filename, 'wb') as dst:
+                pickle.dump((X, y), dst)
+
+        else:
+            print("Fitting %s model for %d observations" % (model, y.shape[0]))
+
+            # Fit model
+            mod = Model(**kwargs)
+            f_model = mod.grid_search_cv_fit(X, y, cv, parameter_values)
+
+            print(f_model.best_params_)
+            print("Grid scores:")
+            means = f_model.cv_results_['mean_test_score']
+            stds = f_model.cv_results_['std_test_score']
+            for mean, std, params in zip(means, stds, f_model.cv_results_['params']):
+                print("%0.3f (+/-%0.03f) for %r" % (mean, std * 2, params))
