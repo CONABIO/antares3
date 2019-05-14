@@ -19,7 +19,7 @@ class Country(models.Model):
 class Region(models.Model):
     '''This model represents a region that can be related to a Country.
     '''
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     the_geom = models.GeometryField()
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='country', default=None)
     added = models.DateTimeField(auto_now_add=True)
