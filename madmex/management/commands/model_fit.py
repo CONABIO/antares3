@@ -130,7 +130,7 @@ To consult the exposed arguments for each model, use the "model_params" command 
         sample = options['sample']
         filename = options['filename']
         scheduler_file = options['scheduler']
-        remove_outliers = options['remove_outliers']
+        remove_outliers = options['remove-outliers']
 
         # Prepare encoding of categorical variables if any specified
         if categorical_variables is not None:
