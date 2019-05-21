@@ -89,19 +89,24 @@ antares ingest_training_from_raster /path/to/file.tif --fraction 0.0001 --classe
 
             # Build mask for shapes
             mask = np.zeros(train_arr.shape, dtype=np.uint8)
-            # Count total number of pixels per class
-            pxpcl = np.array([train_arr[train_arr == cl].size for cl in range(1,classes+1)])
-            # Set fraction of polygons to ingest
-            if frac < 0:
-                frac = classes*10000/np.sum(pxpcl)
+            if frac == 1.0:
+                mask[train_arr != 0] = 1
+                print("frac = 1")
+            else:
+                print("frac < 1")
+                # Count total number of pixels per class
+                pxpcl = np.array([train_arr[train_arr == cl].size for cl in range(1,classes+1)])
+                # Set fraction of polygons to ingest
+                if frac < 0:
+                    frac = classes*10000/np.sum(pxpcl)
 
-            # Generate number of samples per class
-            smplpxpcl = np.array([int(np.ceil(train_arr[train_arr == cl].size*frac)) for cl in range(1,classes+1)])
-
-            # Generate mask of samples
-            smplcl = np.logical_and(pxpcl > 0, smplpxpcl > 0)
-            if any(smplcl):
-                mask[add_samples(frac, smplcl, train_arr) == 1] = 1
+                # Generate number of samples per class
+                smplpxpcl = np.array([int(np.ceil(train_arr[train_arr == cl].size*frac)) for cl in range(1,classes+1)])
+  
+                # Generate mask of samples
+                smplcl = np.logical_and(pxpcl > 0, smplpxpcl > 0)
+                if any(smplcl):
+                    mask[add_samples(frac, smplcl, train_arr) == 1] = 1
 
             # Build the feature collection
             p = Proj(src.crs)
