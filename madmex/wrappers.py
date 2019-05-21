@@ -21,6 +21,7 @@ import datacube
 from datacube.api import GridWorkflow
 from datacube.utils.geometry import Geometry, CRS
 from rasterio.crs import CRS as CRS_rio
+from pyproj import Proj
 from datacube.model import GridSpec
 from django.contrib.gis.geos import Polygon
 
@@ -437,10 +438,13 @@ def write_predict_result_to_raster(id, predict_name, resolution, path_destiny):
         fc_pred_sorted = None
         pred_objects_sorted = None
         #rasterize
-        #TODO: check if crs is already in lat lon then next line produce bad results?
-        geometry_seg_proj = transform_geom(CRS_rio.from_epsg(4326),
-                                           CRS_rio.from_proj4(crs),
-                                           geometry_seg)
+        proj_crs = Proj(src.crs)
+        if not proj_crs.is_latlong():
+            geometry_seg_proj = transform_geom(CRS_rio.from_epsg(4326),
+                                               CRS_rio.from_proj4(crs),
+                                               geometry_seg)
+        else:
+            geometry_seg_proj = geometry_seg
         xmin, ymin, xmax, ymax = shape(geometry_seg_proj).bounds
         nrows = int(((ymax - ymin) // resolution) + 1)
         ncols = int(((xmax - xmin) // resolution) + 1)
