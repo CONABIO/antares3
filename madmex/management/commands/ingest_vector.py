@@ -60,12 +60,15 @@ antares ingest_vector --file <path-to-file>/my_shapefile.shp --layer-name layer
             to_string_crs = to_string(src_crs)
             proj_crs = Proj(src.crs)
             if not proj_crs.is_latlong():
-                fc_proj = [feature_transform(x, "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs", to_string_crs) for x in fc]
+                fc_proj = [feature_transform(x,
+                                            "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
+                                            to_string_crs) for x in fc]
             else:
                 fc_proj = fc
 
             shape_list = [shape(feat['geometry']) for feat in fc_proj]
-            country, _ = Country.objects.get_or_create(the_geom=GEOSGeometry(country_shape.wkt), name=layer_name)
+            country, _ = Country.objects.get_or_create(the_geom=GEOSGeometry(country_shape.wkt),
+                                                       name=layer_name)
             for k in range(0,len(fc_proj)):
                 shape = shape_list[k]
                 geom = GEOSGeometry(shape.wkt,4326)
@@ -80,20 +83,4 @@ antares ingest_vector --file <path-to-file>/my_shapefile.shp --layer-name layer
                 _ = Region.objects.get_or_create(name=name_feature,
                                                  the_geom=geom,
                                                  country=country)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
