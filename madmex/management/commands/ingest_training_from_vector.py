@@ -78,7 +78,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
             return obj
 
         obj_list = [train_obj_builder(x) for x in fc]
-        batch_size = int(len(obj_list)/4)
+        batch_size = int(len(obj_list)/10)
         TrainObject.objects.bulk_create(obj_list, batch_size=batch_size)
 
         # Get list of unique tags
