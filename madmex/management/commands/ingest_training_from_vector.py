@@ -78,7 +78,8 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
             return obj
 
         obj_list = [train_obj_builder(x) for x in fc]
-        TrainObject.objects.bulk_create(obj_list)
+        batch_size = int(len(obj_list)/4)
+        TrainObject.objects.bulk_create(obj_list, batch_size=batch_size)
 
         # Get list of unique tags
         unique_numeric_codes = list(set([x['properties'][field] for x in fc]))
@@ -102,4 +103,4 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
 
         train_class_obj_list = [train_class_obj_builder(x) for x in zip(obj_list, fc)]
 
-        TrainClassification.objects.bulk_create(train_class_obj_list)
+        TrainClassification.objects.bulk_create(train_class_obj_list, batch_size=batch_size)
