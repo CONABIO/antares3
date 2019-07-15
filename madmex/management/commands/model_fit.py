@@ -101,6 +101,9 @@ antares model_fit -p s2_001_jalisco_2017_0 -t jalisco_bits --region Jalisco --fi
         parser.add_argument('--remove-outliers',
                             action='store_true',
                             help='Perform outlier removal via isolation forest anomaly score before model fitting')
+        parser.add_argument('--load-dataset',
+                            action='store_true',
+                            help='Load dataset to fit model')
         parser.add_argument('-filename', '--filename',
                             type=str,
                             default=None,
@@ -130,59 +133,65 @@ To consult the exposed arguments for each model, use the "model_params" command 
         sample = options['sample']
         filename = options['filename']
         scheduler_file = options['scheduler']
-        remove_outliers = options['remove_outliers']
+        remove_outliers = options['remove_outliers'] 
+        load_dataset = options['load_dataset']
+
 
         # Prepare encoding of categorical variables if any specified
         if categorical_variables is not None:
             kwargs.update(categorical_features=var_to_ind(categorical_variables))
 
         # Load model class
-        if filename is None:
+        if filename is None or (filename is not None and load_dataset):
             try:
                 module = import_module('madmex.modeling.supervised.%s' % model)
                 Model = module.Model
             except ImportError as e:
                 raise ValueError('Invalid model argument')
 
-        # datacube query
-        gwf_kwargs = { k: options[k] for k in ['product', 'lat', 'long', 'region']}
-        iterable = gwf_query(**gwf_kwargs)
+        if not load_dataset:
+            # datacube query
+            gwf_kwargs = { k: options[k] for k in ['product', 'lat', 'long', 'region']}
+            iterable = gwf_query(**gwf_kwargs)
 
-        # Start cluster and run 
-        client = Client(scheduler_file=scheduler_file)
-        client.restart()
-        C = client.map(extract_tile_db,
+            # Start cluster and run 
+            client = Client(scheduler_file=scheduler_file)
+            client.restart()
+            C = client.map(extract_tile_db,
                        iterable,
                        pure=False,
                        **{'sp': sp,
                           'training_set': training,
                           'sample': sample})
-        arr_list = client.gather(C)
+            arr_list = client.gather(C)
 
-        logger.info('Completed extraction of training data from %d tiles' , len(arr_list))
+            logger.info('Completed extraction of training data from %d tiles' , len(arr_list))
 
-        # Zip list of predictors, target into two lists
-        X_list, y_list = zip(*arr_list)
+            # Zip list of predictors, target into two lists
+            X_list, y_list = zip(*arr_list)
 
-        # Filter Nones
-        X_list = [x for x in X_list if x is not None]
-        y_list = [x for x in y_list if x is not None]
+            # Filter Nones
+            X_list = [x for x in X_list if x is not None]
+            y_list = [x for x in y_list if x is not None]
 
-        # Concatenate the lists
-        X = np.concatenate(X_list)
-        y = np.concatenate(y_list)
+            # Concatenate the lists
+            X = np.concatenate(X_list)
+            y = np.concatenate(y_list)
+        else:
+            with open(filename, 'rb') as f:
+                X, y = pickle.load(f)
 
         # Optionally run outliers removal
         if remove_outliers:
             X, y = Model.remove_outliers(X, y)
 
         # Optionally write the arrays to pickle file
-        if filename is not None:
+        if filename is not None and not load_dataset:
             logger.info('Writting X and y arrays to pickle file, no model will be fitted')
             with open(filename, 'wb') as dst:
                 pickle.dump((X, y), dst)
 
-        else:
+        elif filename is None or (filename is not None and load_dataset):
             print("Fitting %s model for %d observations" % (model, y.shape[0]))
 
             # Fit model
