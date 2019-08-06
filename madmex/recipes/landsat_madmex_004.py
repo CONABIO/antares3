@@ -56,7 +56,7 @@ def run(tile, center_dt, path, histogram_match=False):
         sr_1 = sr_1.apply(func=to_float, keep_attrs=True)
         # Check wheter or not to perform histogram matching:
         if tile_reference:
-            def histogram_match(source2D, r_values, r_quantiles):
+            def histogram_matching(source2D, r_values, r_quantiles):
                 orig_shape = source2D.shape
                 s_values, s_idx, s_counts = np.unique(source2D, return_inverse=True, return_counts=True)
                 s_quantiles = np.cumsum(s_counts).astype(np.float64) / source2D.size
@@ -67,7 +67,7 @@ def run(tile, center_dt, path, histogram_match=False):
                 s_band = source2D[band]
                 r_values, r_counts = np.unique(reference2D, return_counts=True)
                 r_quantiles = np.cumsum(r_counts).astype(np.float64) / reference2D.size
-                target_DA = xr.concat([xr.DataArray(histogram_match(s_band.isel(time=k).values,
+                target_DA = xr.concat([xr.DataArray(histogram_matching(s_band.isel(time=k).values,
                                                                                    r_values,
                                                                                    r_quantiles),
                                                     dims=['y','x'],
