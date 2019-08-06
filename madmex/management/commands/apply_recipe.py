@@ -191,7 +191,7 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
                     pass
              list_iterable_reference = list(join_dicts(*dict_list_reference, join='full').items())
              list_iterable = list(iterable)
-             if len(list_iterable) = len(list_iterable_reference):
+             if len(list_iterable) == len(list_iterable_reference):
                  list_iterable_sorted = sorted(list_iterable, key=itemgetter(0))
                  list_iterable_reference_sorted = sorted(list_iterable_reference, key=itemgetter(0))
                  list_iterable = None
@@ -202,6 +202,8 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
                                 **{'center_dt': center_dt,
                                    'path': path,
                                    'histogram_match': True})
+            else:
+                logger.info('Can not perform histogram match, source and reference lists have different lengths')
         else:
             C = client.map(fun, iterable,
                            pure=False,
