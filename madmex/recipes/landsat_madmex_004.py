@@ -55,7 +55,7 @@ def run(tile, center_dt, path, histogram_match=False):
         sr_1 = sr_1.drop('pixel_qa')
         sr_1 = sr_1.apply(func=to_float, keep_attrs=True)
         # Check wheter or not to perform histogram matching:
-        if tile_reference:
+        if histogram_match:
             def histogram_matching(source2D, r_values, r_quantiles):
                 orig_shape = source2D.shape
                 s_values, s_idx, s_counts = np.unique(source2D, return_inverse=True, return_counts=True)
