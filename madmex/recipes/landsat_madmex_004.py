@@ -16,23 +16,26 @@ from madmex.util import randomword
 logger = logging.getLogger(__name__)
 
 
-def run(tile, center_dt, path, tile_template):
+def run(tile, center_dt, path, histogram_match=False):
     """Basic data preparation recipe 004
 
     Combines temporal statistics of surface reflectance and ndvi with terrain
     metrics. Optional perform histogram matching with recipe product of reference
 
     Args:
-        tile (tuple): Tuple of (tile indices, Tile object). Tile object can be
-            loaded as xarray.Dataset using gwf.load()
+        tile (tuple or list of tuples): Tuple of (tile indices, Tile object). Tile object can be
+            loaded as xarray.Dataset using gwf.load(). If histogram_match is True then must be a list of tuples wich in first position has a source Tile and in second position has a reference Tile
         center_dt (datetime): Date to be used in making the filename
         path (str): Directory where files generated are to be written
-        tile_template (tuple): Tuple of (tile indices, Tile object) of template for histogram matching
-
+        histogram_match (bool): Wether to perform histogram match
     Return:
         str: The filename of the netcdf file created
     """
     try:
+
+        if histogram_match:
+            tile_reference = tile[1]
+            tile = tile[0]
         # Get crs from first tile of tile list
         crs = tile[1][0].geobox.crs
         center_dt = center_dt.strftime("%Y-%m-%d")
@@ -52,7 +55,7 @@ def run(tile, center_dt, path, tile_template):
         sr_1 = sr_1.drop('pixel_qa')
         sr_1 = sr_1.apply(func=to_float, keep_attrs=True)
         # Check wheter or not to perform histogram matching:
-        if tile_template:
+        if tile_reference:
             def histogram_match(source2D, r_values, r_quantiles):
                 orig_shape = source2D.shape
                 s_values, s_idx, s_counts = np.unique(source2D, return_inverse=True, return_counts=True)
@@ -74,21 +77,21 @@ def run(tile, center_dt, path, tile_template):
                                                     attrs=s_band.attrs) for k in range(0,n_times)],dim='time')
                 return target_DA
 
-            sr_template = xr.auto_combine([GridWorkflow.load(x,
+            sr_reference = xr.auto_combine([GridWorkflow.load(x,
                                                              dask_chunks={'x': 1200, 'y': 1200},
                                                              measurements=['blue_mean',
                                                                            'green_mean',
                                                                            'red_mean',
                                                                            'nir_mean',
                                                                            'swir1_mean',
-                                                                           'swir2_mean']) for x in tile_template[1]],
+                                                                           'swir2_mean']) for x in tile_reference[1]],
                                                              concat_dim='time')
             xr_ds = xr.Dataset({}, attrs = sr_1.attrs)
             band_list_source = list(sr_1.data_vars)
             for k in range(0, len(band_list_source)):
                 band = band_list_source[k]
                 xr_ds[band] = wrapper_histogram_match(sr_1,
-                                                      sr_template[band + '_mean'].values,
+                                                      sr_reference[band + '_mean'].values,
                                                       band,
                                                       sr_1.dims['time'])
             sr_1.update(xr_ds.chunk({'x': 1200, 'y': 1200}))
