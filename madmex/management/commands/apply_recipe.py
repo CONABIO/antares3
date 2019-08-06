@@ -181,13 +181,15 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
         client.restart()
         if recipe_reference is not None and begin_reference is not None and end_reference is not None:
             dict_list_reference = []
-            gwf_kwargs_reference = { k: options[k] for k in ['lat', 'long', 'region', 'begin_reference', 'end_reference', 'resolution', 'tilesize', 'origin', 'proj4']}
-            gwf_kwargs_reference.update(product = recipe_reference)
+            gwf_kwargs_reference = { k: options[k] for k in ['lat', 'long', 'region', 'resolution', 'tilesize', 'origin', 'proj4']}
+            gwf_kwargs_reference.update(product = recipe_reference, begin=begin_reference, end=end_reference)
             try:
                 dict_list_reference.append(gwf_query(**gwf_kwargs_reference, view=False))
             # Exception is in case one of the product hasn't been registered in the datacube
             except Exception as e:
                 pass
+            print(gwf_query(**gwf_kwargs_reference, view=False))
+            print(join_dicts(*dict_list_reference, join='full').items())
             list_iterable_reference = list(join_dicts(*dict_list_reference, join='full').items())
             list_iterable = list(iterable)
             if len(list_iterable) == len(list_iterable_reference):
