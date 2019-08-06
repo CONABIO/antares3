@@ -202,8 +202,8 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
                                 **{'center_dt': center_dt,
                                    'path': path,
                                    'histogram_match': True})
-            else:
-                logger.info('Can not perform histogram match, source and reference lists have different lengths')
+             else:
+                 logger.info('Can not perform histogram match, source and reference lists have different lengths')
         else:
             C = client.map(fun, iterable,
                            pure=False,
