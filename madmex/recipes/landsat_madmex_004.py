@@ -81,7 +81,8 @@ def run(tile, center_dt, path, tile_template):
                                                                            'red_mean',
                                                                            'nir_mean',
                                                                            'swir1_mean',
-                                                                           'swir2_mean']) for x in tile_template[1]], concat_dim='time')
+                                                                           'swir2_mean']) for x in tile_template[1]],
+                                                             concat_dim='time')
             xr_ds = xr.Dataset({}, attrs = sr_1.attrs)
             band_list_source = list(sr_1.data_vars)
             for k in range(0, len(band_list_source)):
@@ -91,6 +92,7 @@ def run(tile, center_dt, path, tile_template):
                                                       band,
                                                       sr_1.dims['time'])
             sr_1.update(xr_ds.chunk({'x': 1200, 'y': 1200}))
+            xr_ds = None
         # Compute vegetation indices
         sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
         sr_1['ndvi'].attrs['nodata'] = -9999
