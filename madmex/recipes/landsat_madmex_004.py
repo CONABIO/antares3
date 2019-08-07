@@ -124,25 +124,23 @@ def run(tile, center_dt, path, histogram_match=False):
         ndmi_min = ndmi_min.rename('ndmi_min')
         ndmi_min.attrs['nodata'] = -9999
         # Load terrain metrics using same spatial parameters than sr
-        #dc = datacube.Datacube(app = 'landsat_madmex_002_%s' % randomword(5))
-        #terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
-        #                  time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
-        #                  dask_chunks={'x': 1200, 'y': 1200})
-        #dc.close()
+        dc = datacube.Datacube(app = 'landsat_madmex_002_%s' % randomword(5))
+        terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
+                          time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
+                          dask_chunks={'x': 1200, 'y': 1200})
+        dc.close()
         # Merge dataarrays
         combined = xr.merge([sr_mean.apply(to_int),
                              to_int(ndvi_max),
                              to_int(ndvi_min),
                              to_int(ndmi_max),
-                             to_int(ndmi_min)])
-        #                     to_int(ndmi_min),
-        #                     terrain])
+                             to_int(ndmi_min),
+                             terrain])
         combined.attrs['crs'] = crs
         combined = combined.compute(scheduler='threads')
         write_dataset_to_netcdf(combined, nc_filename)
         # Explicitely deallocate objects and run garbage collector
-        #sr_0=sr_1=sr_mean=clear=ndvi_max=ndvi_min=ndmi_max=ndmi_min=terrain=combined=None
-        sr_0=sr_1=sr_mean=clear=ndvi_max=ndvi_min=ndmi_max=ndmi_min=combined=None
+        sr_0=sr_1=sr_mean=clear=ndvi_max=ndvi_min=ndmi_max=ndmi_min=terrain=combined=None
         gc.collect()
         return nc_filename
     except Exception as e:
