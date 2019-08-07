@@ -16,7 +16,7 @@ from madmex.util import randomword
 logger = logging.getLogger(__name__)
 
 
-def run(tile, center_dt, path, histogram_match=False):
+def run(tile, center_dt, path, histogram_match):
     """Basic data preparation recipe 004
 
     Combines temporal statistics of surface reflectance and ndvi with terrain
@@ -32,7 +32,6 @@ def run(tile, center_dt, path, histogram_match=False):
         str: The filename of the netcdf file created
     """
     try:
-
         if histogram_match:
             tile_reference = tile[1]
             tile = tile[0]
@@ -77,15 +76,14 @@ def run(tile, center_dt, path, histogram_match=False):
                                                     attrs=s_band.attrs) for k in range(0,n_times)],dim='time')
                 return target_DA
 
-            sr_reference = xr.auto_combine([GridWorkflow.load(x,
-                                                             dask_chunks={'x': 1200, 'y': 1200},
-                                                             measurements=['blue_mean',
-                                                                           'green_mean',
-                                                                           'red_mean',
-                                                                           'nir_mean',
-                                                                           'swir1_mean',
-                                                                           'swir2_mean']) for x in tile_reference[1]],
-                                                             concat_dim='time')
+            sr_reference = GridWorkflow.load(tile_reference,
+                                             dask_chunks={'x': 1200, 'y': 1200},
+                                             measurements=['blue_mean',
+                                                           'green_mean',
+                                                           'red_mean',
+                                                           'nir_mean',
+                                                           'swir1_mean',
+                                                           'swir2_mean'])
             xr_ds = xr.Dataset({}, attrs = sr_1.attrs)
             band_list_source = list(sr_1.data_vars)
             for k in range(0, len(band_list_source)):
@@ -136,7 +134,7 @@ def run(tile, center_dt, path, histogram_match=False):
                              to_int(ndvi_max),
                              to_int(ndvi_min),
                              to_int(ndmi_max),
-                             to_int(ndmi_min),
+                             to_int(ndmi_min)])
                              terrain])
         combined.attrs['crs'] = crs
         combined = combined.compute(scheduler='threads')
