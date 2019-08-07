@@ -76,7 +76,7 @@ def run(tile, center_dt, path, histogram_match=False):
                                                     attrs=s_band.attrs) for k in range(0,n_times)],dim='time')
                 return target_DA
 
-            sr_reference = GridWorkflow.load(tile_reference,
+            sr_reference = GridWorkflow.load(tile_reference[1],
                                              dask_chunks={'x': 1200, 'y': 1200},
                                              measurements=['blue_mean',
                                                            'green_mean',
