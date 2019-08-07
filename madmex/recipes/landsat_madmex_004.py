@@ -134,7 +134,7 @@ def run(tile, center_dt, path, histogram_match=False):
                              to_int(ndvi_max),
                              to_int(ndvi_min),
                              to_int(ndmi_max),
-                             to_int(ndmi_min)]
+                             to_int(ndmi_min)])
         #                     to_int(ndmi_min),
         #                     terrain])
         combined.attrs['crs'] = crs
