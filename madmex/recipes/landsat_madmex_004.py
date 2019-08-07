@@ -16,7 +16,7 @@ from madmex.util import randomword
 logger = logging.getLogger(__name__)
 
 
-def run(tile, center_dt, path, histogram_match):
+def run(tile, center_dt, path, histogram_match=False):
     """Basic data preparation recipe 004
 
     Combines temporal statistics of surface reflectance and ndvi with terrain
