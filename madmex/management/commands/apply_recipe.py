@@ -201,7 +201,7 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
             def search_tile_in_reference(dc_tile):
                 a = [tile for tile in list_iterable_reference_sorted if tile[0] == dc_tile]
                 return a[0]
-            list_iterable_reference_adjusted = [tile if tile[0] not in list_dc_tile_reference else search_tile_in_reference(tile[0]) for tile in list_iterable_sorted]
+            list_iterable_reference_adjusted = [tile if tile[0] not in list_dc_tiles_reference else search_tile_in_reference(tile[0]) for tile in list_iterable_sorted]
             if len(list_iterable_reference_adjusted) == len(list_iterable_sorted):
                 list_union = [(s,t) for (s,t) in zip(list_iterable_sorted, list_iterable_reference_adjusted)]
                 C = client.map(fun, list_union,
