@@ -180,7 +180,12 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
         client = Client(scheduler_file=scheduler_file)
         client.restart()
         if recipe_reference is not None and begin_reference is not None and end_reference is not None:
-            gwf_kwargs_reference = {'product': recipe_reference, 'begin': begin_reference, 'end': end_reference, 'region': options['region']}
+            gwf_kwargs_reference = {'product': recipe_reference,
+                                    'begin': begin_reference,
+                                    'end': end_reference,
+                                    'region': options['region'],
+                                    'lat': options['lat'],
+                                    'long': options['long']}
             try:
                 iterable_reference = gwf_query(**gwf_kwargs_reference)
                 list_iterable_reference = list(iterable_reference)
