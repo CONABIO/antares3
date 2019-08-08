@@ -193,20 +193,16 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
             except Exception as e:
                 pass
             list_iterable = list(iterable)
-            if len(list_iterable) == len(list_iterable_reference):
-                list_iterable_sorted = sorted(list_iterable, key=itemgetter(0))
-                list_iterable_reference_sorted = sorted(list_iterable_reference, key=itemgetter(0))
-                list_iterable = None
-                list_iterable_reference = None
-                list_union = [(s,t) for (s,t) in zip(list_iterable_sorted, list_iterable_reference_sorted)]
-                C = client.map(fun, list_union,
-                               pure=False,
-                               **{'center_dt': center_dt,
-                                  'path': path,
-                                  'histogram_match': True})
-            else:
-                logger.info('Can not perform histogram match, source and reference lists have different lengths')
-                C = None
+            list_iterable_sorted = sorted(list_iterable, key=itemgetter(0))
+            list_iterable_reference_sorted = sorted(list_iterable_reference, key=itemgetter(0))
+            list_iterable = None
+            list_iterable_reference = None
+            list_union = [(s,t) for (s,t) in zip(list_iterable_sorted, list_iterable_reference_sorted) if s[0]==t[0]]
+            C = client.map(fun, list_union,
+                           pure=False,
+                           **{'center_dt': center_dt,
+                              'path': path,
+                              'histogram_match': True})
         else:
             C = client.map(fun, iterable,
                            pure=False,
