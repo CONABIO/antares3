@@ -43,7 +43,7 @@ def run(tile, center_dt, path, histogram_match=False):
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
-        sr_0 = xr.auto_combine([GridWorkflow.load(x, dask_chunks={'x': 1200, 'y': 1200})
+        sr_0 = xr.auto_combine([GridWorkflow.load(x, dask_chunks={'x': 800, 'y': 800})
                          for x in tile[1]], concat_dim='time')
         sr_0.attrs['geobox'] = tile[1][0].geobox
         sr_0.attrs['crs'] = crs
@@ -78,7 +78,7 @@ def run(tile, center_dt, path, histogram_match=False):
                     return target_DA
 
                 sr_reference = GridWorkflow.load(tile_reference[1],
-                                                 dask_chunks={'x': 1200, 'y': 1200},
+                                                 dask_chunks={'x': 800, 'y': 800},
                                                  measurements=['blue_mean',
                                                                'green_mean',
                                                                'red_mean',
@@ -93,7 +93,7 @@ def run(tile, center_dt, path, histogram_match=False):
                                                           sr_reference[band + '_mean'].values,
                                                           band,
                                                           sr_1.dims['time'])
-                sr_1.update(xr_ds.chunk({'x': 1200, 'y': 1200}))
+                sr_1.update(xr_ds.chunk({'x': 800, 'y': 800}))
                 xr_ds = None
         except Exception as e:
             logger.warning('Could not perform histogram match, continuing with recipe though')
@@ -131,7 +131,7 @@ def run(tile, center_dt, path, histogram_match=False):
         dc = datacube.Datacube(app = 'landsat_madmex_002_%s' % randomword(5))
         terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
                           time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
-                          dask_chunks={'x': 1200, 'y': 1200})
+                          dask_chunks={'x': 800, 'y': 800})
         dc.close()
         # Merge dataarrays
         combined = xr.merge([sr_mean.apply(to_int),
