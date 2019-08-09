@@ -53,47 +53,51 @@ def run(tile, center_dt, path, histogram_match=False):
         sr_1 = sr_0.where(clear)
         sr_1 = sr_1.drop('pixel_qa')
         sr_1 = sr_1.apply(func=to_float, keep_attrs=True)
-        # Check wheter or not to perform histogram matching:
-        if histogram_match:
-            def histogram_matching(source2D, r_values, r_quantiles):
-                orig_shape = source2D.shape
-                s_values, s_idx, s_counts = np.unique(source2D, return_inverse=True, return_counts=True)
-                s_quantiles = np.cumsum(s_counts).astype(np.float64) / source2D.size
-                interp_r_values = np.interp(s_quantiles, r_quantiles, r_values)
-                target = interp_r_values[s_idx].reshape(orig_shape)
-                return target
-            def wrapper_histogram_match(source2D, reference2D, band, n_times):
-                s_band = source2D[band]
-                r_values, r_counts = np.unique(reference2D, return_counts=True)
-                r_quantiles = np.cumsum(r_counts).astype(np.float64) / reference2D.size
-                target_DA = xr.concat([xr.DataArray(histogram_matching(s_band.isel(time=k).values,
-                                                                                   r_values,
-                                                                                   r_quantiles),
-                                                    dims=['y','x'],
-                                                    coords= {'y': s_band.coords['y'],
-                                                             'x': s_band.coords['x'],
-                                                             'time': s_band.coords['time'][k]},
-                                                    attrs=s_band.attrs) for k in range(0,n_times)],dim='time')
-                return target_DA
+        try:
+            # Check wheter or not to perform histogram matching:
+            if histogram_match:
+                def histogram_matching(source2D, r_values, r_quantiles):
+                    orig_shape = source2D.shape
+                    s_values, s_idx, s_counts = np.unique(source2D, return_inverse=True, return_counts=True)
+                    s_quantiles = np.cumsum(s_counts).astype(np.float64) / source2D.size
+                    interp_r_values = np.interp(s_quantiles, r_quantiles, r_values)
+                    target = interp_r_values[s_idx].reshape(orig_shape)
+                    return target
+                def wrapper_histogram_match(source2D, reference2D, band, n_times):
+                    s_band = source2D[band]
+                    r_values, r_counts = np.unique(reference2D, return_counts=True)
+                    r_quantiles = np.cumsum(r_counts).astype(np.float64) / reference2D.size
+                    target_DA = xr.concat([xr.DataArray(histogram_matching(s_band.isel(time=k).values,
+                                                                                       r_values,
+                                                                                       r_quantiles),
+                                                        dims=['y','x'],
+                                                        coords= {'y': s_band.coords['y'],
+                                                                 'x': s_band.coords['x'],
+                                                                 'time': s_band.coords['time'][k]},
+                                                        attrs=s_band.attrs) for k in range(0,n_times)],dim='time')
+                    return target_DA
 
-            sr_reference = GridWorkflow.load(tile_reference[1],
-                                             dask_chunks={'x': 1200, 'y': 1200},
-                                             measurements=['blue_mean',
-                                                           'green_mean',
-                                                           'red_mean',
-                                                           'nir_mean',
-                                                           'swir1_mean',
-                                                           'swir2_mean'])
-            xr_ds = xr.Dataset({}, attrs = sr_1.attrs)
-            band_list_source = list(sr_1.data_vars)
-            for k in range(0, len(band_list_source)):
-                band = band_list_source[k]
-                xr_ds[band] = wrapper_histogram_match(sr_1,
-                                                      sr_reference[band + '_mean'].values,
-                                                      band,
-                                                      sr_1.dims['time'])
-            sr_1.update(xr_ds.chunk({'x': 1200, 'y': 1200}))
-            xr_ds = None
+                sr_reference = GridWorkflow.load(tile_reference[1],
+                                                 dask_chunks={'x': 1200, 'y': 1200},
+                                                 measurements=['blue_mean',
+                                                               'green_mean',
+                                                               'red_mean',
+                                                               'nir_mean',
+                                                               'swir1_mean',
+                                                               'swir2_mean'])
+                xr_ds = xr.Dataset({}, attrs = sr_1.attrs)
+                band_list_source = list(sr_1.data_vars)
+                for k in range(0, len(band_list_source)):
+                    band = band_list_source[k]
+                    xr_ds[band] = wrapper_histogram_match(sr_1,
+                                                          sr_reference[band + '_mean'].values,
+                                                          band,
+                                                          sr_1.dims['time'])
+                sr_1.update(xr_ds.chunk({'x': 1200, 'y': 1200}))
+                xr_ds = None
+        except Exception as e:
+            logger.warning('Could not perform histogram match, continuing with recipe though')
+            pass
         # Compute vegetation indices
         sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
         sr_1['ndvi'].attrs['nodata'] = -9999
