@@ -14,7 +14,7 @@ from datetime import datetime
 from madmex.util import randomword
 
 from madmex.loggerwriter import LoggerWriter
-
+import sys
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
 logger = logging.getLogger(__name__)
