@@ -66,7 +66,7 @@ def run(tile, center_dt, path, histogram_match=False):
                     nans, x = nan_helper(source_ravel)
                     source_ravel[nans]= np.interp(x(nans), x(~nans), source_ravel[~nans])
                     source2D_band = source_ravel.reshape(orig_shape)
-                    source_ravel = None
+                    source_ravel = nans = x = None
                     s_values, s_idx, s_counts = np.unique(source2D_band, return_inverse=True, return_counts=True)
                     s_quantiles = np.cumsum(s_counts).astype(np.float64) / source2D_band.size
                     interp_r_values = np.interp(s_quantiles, r_quantiles, r_values)
