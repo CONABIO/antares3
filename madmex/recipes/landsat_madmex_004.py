@@ -13,8 +13,16 @@ from madmex.util.xarray import to_float, to_int
 from datetime import datetime
 from madmex.util import randomword
 
+from madmex.loggerwriter import LoggerWriter
+
+
+logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
 logger = logging.getLogger(__name__)
 
+stdl = LoggerWriter(logger.debug)
+sys.stdout = stdl
+stdl = LoggerWriter(logger.error)
+sys.stderr = stdl
 
 def run(tile, center_dt, path, histogram_match=False):
     """Basic data preparation recipe 004
@@ -105,7 +113,7 @@ def run(tile, center_dt, path, histogram_match=False):
                 sr_1 = sr_1.apply(func=to_float, keep_attrs=True)
                 xr_ds = None
         except Exception as e:
-            logger.warning('Could not perform histogram match, continuing with recipe though')
+            logger.warning('Could not perform histogram match, continuing with recipe though. Exception: {}'.format(e))
             pass
         # Compute vegetation indices
         sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
