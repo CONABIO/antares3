@@ -29,7 +29,7 @@ before_install:
   # Python (numpy headers required for rasterio)
   - pip install -U pip
   - pip install numpy
-  - pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
+  - pip install GDAL==1.10.0 --global-option=build_ext --global-option="-I/usr/include/gdal"
   - pip install datacube==1.6rc2
   - pip install xgboost
   - ./travis_setup.py
