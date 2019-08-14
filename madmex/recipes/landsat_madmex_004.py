@@ -1,5 +1,8 @@
 import os
+import sys
+from datetime import datetime
 import gc
+
 import datacube
 import xarray as xr
 import numpy as np
@@ -10,11 +13,8 @@ from datacube.storage import masking
 from datacube.api import GridWorkflow
 
 from madmex.util.xarray import to_float, to_int
-from datetime import datetime
 from madmex.util import randomword
-
 from madmex.loggerwriter import LoggerWriter
-import sys
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(module)s %(funcName)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -145,7 +145,7 @@ def run(tile, center_dt, path, histogram_match=False):
         ndmi_min = ndmi_min.rename('ndmi_min')
         ndmi_min.attrs['nodata'] = -9999
         # Load terrain metrics using same spatial parameters than sr
-        dc = datacube.Datacube(app = 'landsat_madmex_002_%s' % randomword(5))
+        dc = datacube.Datacube(app = 'landsat_madmex_004_%s' % randomword(5))
         terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
                           time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
                           dask_chunks={'x': 800, 'y': 800})
