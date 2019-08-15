@@ -33,6 +33,7 @@ before_install:
   - pip install GDAL==1.10.0 --global-option=build_ext --global-option="-I/usr/include/gdal"
   - pip install datacube==1.6.0
   - pip install xgboost
+  - pip install sqlalchemy==1.2.18
   - ./travis_setup.py
 
 env:
