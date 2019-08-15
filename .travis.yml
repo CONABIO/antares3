@@ -34,6 +34,7 @@ before_install:
   - pip install datacube==1.6.0
   - pip install xgboost
   - pip install sqlalchemy==1.2.18
+  - pip install psycopg2-binary
   - ./travis_setup.py
 
 env:
