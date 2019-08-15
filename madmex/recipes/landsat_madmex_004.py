@@ -63,27 +63,24 @@ def run(tile, center_dt, path, histogram_match=False):
         sr_1 = sr_1.apply(func=to_float, keep_attrs=True)
         try:
             # Check wheter or not to perform histogram matching:
-            if histogram_match:
-                def nan_helper(y):
-                    #based on: https://stackoverflow.com/questions/6518811/interpolate-nan-values-in-a-numpy-array
-                    return np.isnan(y), lambda z: z.nonzero()[0]
                 def histogram_matching(source2D_band, r_values, r_quantiles):
                     orig_shape = source2D_band.shape
-                    idx_nans = np.isnan(source2D_band)
                     source_ravel = source2D_band.ravel()
-                    nans, x = nan_helper(source_ravel)
-                    source_ravel[nans]= np.interp(x(nans), x(~nans), source_ravel[~nans])
-                    source2D_band = source_ravel.reshape(orig_shape)
-                    source_ravel = nans = x = None
-                    s_values, s_idx, s_counts = np.unique(source2D_band, return_inverse=True, return_counts=True)
-                    s_quantiles = np.cumsum(s_counts).astype(np.float64) / source2D_band.size
+                    source2D_band = None
+                    s_values, s_idx, s_counts = np.unique(source_ravel[~np.isnan(source_ravel)],
+                                                          return_inverse=True, return_counts=True)
+                    s_values_nas, s_idx_nas = np.unique(source_ravel, return_inverse=True)
+                    s_quantiles = np.cumsum(s_counts).astype(np.float64) / source_ravel.size
                     interp_r_values = np.interp(s_quantiles, r_quantiles, r_values)
-                    target = interp_r_values[s_idx].reshape(orig_shape)
-                    target[idx_nans] = -9999
+                    s_values_nas[0:len(s_values)] = interp_r_values
+                    interp_r_values = None
+                    target = s_values_nas[s_idx_nas].reshape(orig_shape)
                     return target
                 def wrapper_histogram_match(source2D_band, reference2D_band, n_times):
-                    r_values, r_counts = np.unique(reference2D_band, return_counts=True)
-                    r_quantiles = np.cumsum(r_counts).astype(np.float64) / reference2D_band.size
+                    reference_ravel = reference2D_band.ravel()
+                    reference2D_band = None
+                    r_values, r_counts = np.unique(reference_ravel[~np.isnan(reference_ravel)], return_counts=True)
+                    r_quantiles = np.cumsum(r_counts).astype(np.float64) / reference_ravel.size
                     target_DA = xr.concat([xr.DataArray(histogram_matching(source2D_band.isel(time=k).values,
                                                                                        r_values,
                                                                                        r_quantiles),
