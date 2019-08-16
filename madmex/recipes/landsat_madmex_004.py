@@ -65,54 +65,54 @@ def run(tile, center_dt, path, histogram_match=False):
             sr_1.load()
             try:
                 # Check wheter or not to perform histogram matching:
-                    def histogram_matching(source2D_band, r_values, r_quantiles):
-                        orig_shape = source2D_band.shape
-                        source_ravel = source2D_band.ravel()
-                        source2D_band = None
-                        s_values, s_idx, s_counts = np.unique(source_ravel[~np.isnan(source_ravel)],
-                                                              return_inverse=True, return_counts=True)
-                        s_values_nas, s_idx_nas = np.unique(source_ravel, return_inverse=True)
-                        s_quantiles = np.cumsum(s_counts).astype(np.float64) / source_ravel.size
-                        interp_r_values = np.interp(s_quantiles, r_quantiles, r_values)
-                        s_values_nas[0:len(s_values)] = interp_r_values
-                        interp_r_values = None
-                        target = s_values_nas[s_idx_nas].reshape(orig_shape)
-                        return target
-                    def wrapper_histogram_match(source2D_band, reference2D_band, n_times):
-                        reference_ravel = reference2D_band.ravel()
-                        reference2D_band = None
-                        r_values, r_counts = np.unique(reference_ravel[~np.isnan(reference_ravel)], return_counts=True)
-                        r_quantiles = np.cumsum(r_counts).astype(np.float64) / reference_ravel.size
-                        dA_list = []
-                        for k in range(0, n_times):
-                            histogram_match_result =histogram_matching(source2D_band.isel(time=k).values,
-                                                                       r_values,
-                                                                       r_quantiles)
-                            dA_list.append(xr.DataArray(histogram_match_result,
-                                                        dims=['y','x'],
-                                                        coords= {'y': source2D_band.coords['y'],
-                                                                 'x': source2D_band.coords['x'],
-                                                                 'time': source2D_band.coords['time'][k]},
-                                                        attrs=source2D_band.attrs))
-                        target_DA = xr.concat(dA_list,dim='time')
-                        dA_list = None
-                        return target_DA
+                def histogram_matching(source2D_band, r_values, r_quantiles):
+                    orig_shape = source2D_band.shape
+                    source_ravel = source2D_band.ravel()
+                    source2D_band = None
+                    s_values, s_idx, s_counts = np.unique(source_ravel[~np.isnan(source_ravel)],
+                                                          return_inverse=True, return_counts=True)
+                    s_values_nas, s_idx_nas = np.unique(source_ravel, return_inverse=True)
+                    s_quantiles = np.cumsum(s_counts).astype(np.float64) / source_ravel.size
+                    interp_r_values = np.interp(s_quantiles, r_quantiles, r_values)
+                    s_values_nas[0:len(s_values)] = interp_r_values
+                    interp_r_values = None
+                    target = s_values_nas[s_idx_nas].reshape(orig_shape)
+                    return target
+                def wrapper_histogram_match(source2D_band, reference2D_band, n_times):
+                    reference_ravel = reference2D_band.ravel()
+                    reference2D_band = None
+                    r_values, r_counts = np.unique(reference_ravel[~np.isnan(reference_ravel)], return_counts=True)
+                    r_quantiles = np.cumsum(r_counts).astype(np.float64) / reference_ravel.size
+                    dA_list = []
+                    for k in range(0, n_times):
+                        histogram_match_result =histogram_matching(source2D_band.isel(time=k).values,
+                                                                   r_values,
+                                                                   r_quantiles)
+                        dA_list.append(xr.DataArray(histogram_match_result,
+                                                    dims=['y','x'],
+                                                    coords= {'y': source2D_band.coords['y'],
+                                                             'x': source2D_band.coords['x'],
+                                                             'time': source2D_band.coords['time'][k]},
+                                                    attrs=source2D_band.attrs))
+                    target_DA = xr.concat(dA_list,dim='time')
+                    dA_list = None
+                    return target_DA
 
-                    sr_reference = GridWorkflow.load(tile_reference[1],
-                                                     measurements=['blue_mean',
-                                                                   'green_mean',
-                                                                   'red_mean',
-                                                                   'nir_mean',
-                                                                   'swir1_mean',
-                                                                   'swir2_mean'])
-                    xr_ds = xr.Dataset({}, attrs = sr_1.attrs)
-                    band_list_source = list(sr_1.data_vars)
-                    for band in band_list_source:
-                        xr_ds[band] = wrapper_histogram_match(sr_1[band],
-                                                              sr_reference[band + '_mean'].values,
-                                                              sr_1.dims['time'])
-                    sr_1.update(xr_ds.chunk({'x': 800, 'y': 800}))
-                    xr_ds = None
+                sr_reference = GridWorkflow.load(tile_reference[1],
+                                                 measurements=['blue_mean',
+                                                               'green_mean',
+                                                               'red_mean',
+                                                               'nir_mean',
+                                                               'swir1_mean',
+                                                               'swir2_mean'])
+                xr_ds = xr.Dataset({}, attrs = sr_1.attrs)
+                band_list_source = list(sr_1.data_vars)
+                for band in band_list_source:
+                    xr_ds[band] = wrapper_histogram_match(sr_1[band],
+                                                          sr_reference[band + '_mean'].values,
+                                                          sr_1.dims['time'])
+                sr_1.update(xr_ds.chunk({'x': 800, 'y': 800}))
+                xr_ds = None
             except Exception as e:
                 logger.warning('Could not perform histogram match, continuing with recipe though. Exception: {}'.format(e))
                 pass
