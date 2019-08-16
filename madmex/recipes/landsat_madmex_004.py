@@ -81,16 +81,19 @@ def run(tile, center_dt, path, histogram_match=False):
                     reference2D_band = None
                     r_values, r_counts = np.unique(reference_ravel[~np.isnan(reference_ravel)], return_counts=True)
                     r_quantiles = np.cumsum(r_counts).astype(np.float64) / reference_ravel.size
-                    aux_list = [xr.DataArray(histogram_matching(source2D_band.isel(time=k).values,
-                                                                r_values,
-                                                                r_quantiles),
-                                             dims=['y','x'],
-                                             coords= {'y': source2D_band.coords['y'],
-                                                      'x': source2D_band.coords['x'],
-                                                      'time': source2D_band.coords['time'][k]},
-                                             attrs=source2D_band.attrs) for k in range(0,n_times)]
-                    target_DA = xr.concat(aux_list,dim='time')
-                    aux_list = None
+                    dA_list = []
+                    for k in range(0, n_times):
+                        histogram_match_result =histogram_matching(source2D_band.isel(time=k).values,
+                                                                   r_values,
+                                                                   r_quantiles)
+                        dA_list.append(xr.DataArray(histogram_match_result,
+                                                    dims=['y','x'],
+                                                    coords= {'y': source2D_band.coords['y'],
+                                                             'x': source2D_band.coords['x'],
+                                                             'time': source2D_band.coords['time'][k]},
+                                                    attrs=source2D_band.attrs))
+                    target_DA = xr.concat(dA_list,dim='time')
+                    dA_list = None
                     return target_DA
 
                 sr_reference = GridWorkflow.load(tile_reference[1],
