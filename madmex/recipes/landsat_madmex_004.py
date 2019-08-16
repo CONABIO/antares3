@@ -83,7 +83,7 @@ def run(tile, center_dt, path, histogram_match=False):
                     r_quantiles = np.cumsum(r_counts).astype(np.float64) / reference_ravel.size
                     dA_list = []
                     for k in range(0, n_times):
-                        histogram_match_result =histogram_matching(source2D_band.isel(time=k).values,
+                        histogram_match_result =histogram_matching(source2D_band.isel(time=k).load().values,
                                                                    r_values,
                                                                    r_quantiles)
                         dA_list.append(xr.DataArray(histogram_match_result,
@@ -97,7 +97,6 @@ def run(tile, center_dt, path, histogram_match=False):
                     return target_DA
 
                 sr_reference = GridWorkflow.load(tile_reference[1],
-                                                 dask_chunks={'x': 800, 'y': 800},
                                                  measurements=['blue_mean',
                                                                'green_mean',
                                                                'red_mean',
