@@ -85,7 +85,7 @@ def run(tile, center_dt, path, histogram_match=False):
                         r_quantiles = np.cumsum(r_counts).astype(np.float64) / reference_ravel.size
                         dA_list = []
                         for k in range(0, n_times):
-                            histogram_match_result =histogram_matching(source2D_band.isel(time=k).load().values,
+                            histogram_match_result =histogram_matching(source2D_band.isel(time=k).values,
                                                                        r_values,
                                                                        r_quantiles)
                             dA_list.append(xr.DataArray(histogram_match_result,
@@ -112,8 +112,6 @@ def run(tile, center_dt, path, histogram_match=False):
                                                               sr_reference[band + '_mean'].values,
                                                               sr_1.dims['time'])
                     sr_1.update(xr_ds.chunk({'x': 800, 'y': 800}))
-                    sr_1 = sr_1.where(clear)
-                    sr_1 = sr_1.apply(func=to_float, keep_attrs=True)
                     xr_ds = None
             except Exception as e:
                 logger.warning('Could not perform histogram match, continuing with recipe though. Exception: {}'.format(e))
