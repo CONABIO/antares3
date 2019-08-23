@@ -56,7 +56,7 @@ antares apply_recipe -recipe landsat_ndvi_mean -b 2017-01-01 -e 2017-12-31 --reg
 antares apply_recipe -recipe landsat_madmex_004 -b 2017-01-01 -e 2017-12-31 --region Jalisco --name landsat_madmex_004_jalisco_2017
 
 # Apply landsat_madmex_004 recipe with histogram match (The datacube must contain the ls8_espa_mexico)
-antares apply_recipe 
+antares apply_recipe -recipe landsat_madmex_004 -b 1995-01-01 -e 1996-12-31 -region Durango --name recipe_mex_histogram_match_L5_9596 -recipe_reference recipe_mex_L7L8_1415 --begin_reference 2014-01-01 --end_reference 2015-12-31 -sc /shared_volume/scheduler.json
 
 # Apply sentinel 20m 001 recipe (The datacube must contain the s2_20m_mexico dataset)
 antares apply_recipe -recipe s2_20m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_0
@@ -69,6 +69,7 @@ antares apply_recipe -recipe s2_10m_scl_ndvi_mean_001 -b 2017-01-01 -e 2017-12-3
 
 #Apply s1_2_10m_001 recipe (combination with S2, S1 and terrain)
 antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s1_2_001_jalisco_2017
+
 
 """
     def add_arguments(self, parser):
