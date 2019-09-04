@@ -1,48 +1,11 @@
-language: python
-
-cache: pip
-
-dist: xenial
-
-addons:
-  postgresql: "9.5"
-
-sudo: required
-
-python:
-  - "3.6"
-
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install -y software-properties-common
-  - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes
-  - sudo apt-get --yes --force-yes update -qq
-  # Datacube system dependencies (gdal and netcdf)
-  - sudo apt-get install --yes libhdf5-serial-dev libnetcdf-dev libproj-dev libgeos-dev
-  - sudo apt-get install --yes gdal-bin libgdal-dev
-  # POstgis dependencies
-  - sudo apt-get install --yes postgresql-9.5 postgresql-9.5-postgis-2.4
-  # Python (numpy headers required for rasterio)
-  - pip install -U pip
-  - pip install numpy
-  - pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option='-I/usr/include/gdal'
-  - pip install datacube==1.7.0
-  - ./travis_setup.py
-
-env:
-  - SECRET_KEY=key
-  - HDF5_USE_FILE_LOCKING=FALSE
-
-install:
-  - pip install '.[all]'
+services:
+  - docker
 
 before_script:
-  - psql -U postgres -c "create extension postgis"
-  - createdb datacube
-  - datacube -v system init
+  - docker pull madmex/travis_antares3:v1
 
 script:
-  - python setup.py test
+  - docker run --rm -it --name travis-madmex-test --hostname madmex madmex/travis_antares3:v1 /bin/bash -c 'git clone --single-branch -b training-data-model-fit https://github.com/CONABIO/antares3.git /home/madmex_user/training-data-model-fit && /home/madmex_user/training-data-model-fit/travis_setup.py && cd /home/madmex_user/training-data-model-fit/ && sudo -u madmex_user python3.6 setup.py test'
 
 after_success:
   - pip install -r docs/requirements.txt 
