@@ -18,7 +18,7 @@ before_install:
   - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes
   - sudo apt-get --yes --force-yes update -qq
   # Datacube system dependencies (gdal and netcdf)
-  - sudo apt-get install --yes libhdf5-serial-dev netcdf-bin libnetcdf-dev libproj-dev libgeos-dev
+  - sudo apt-get install --yes libhdf5-serial-dev libnetcdf-dev libproj-dev libgeos-dev
   - sudo apt-get install --yes gdal-bin libgdal-dev
   # POstgis dependencies
   - sudo apt-get install --yes postgresql-9.5 postgresql-9.5-postgis-2.4
