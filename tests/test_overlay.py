@@ -12,11 +12,8 @@ test_shp = os.path.join(path, 'data/test_lc_class.shp')
 test_nc = os.path.join(path, 'data/test_data.nc')
 
 dataset = xr.open_dataset(test_nc)
-try:
-    with fiona.open(test_shp) as src:
-        fc = [x for x in src]
-except Exception as e:
-    print(e)
+with fiona.open(test_shp) as src:
+    fc = [x for x in src]
     
 
 class TestExtract(unittest.TestCase):
