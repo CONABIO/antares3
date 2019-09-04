@@ -31,6 +31,7 @@ before_install:
 
 env:
   - SECRET_KEY=key
+  - HDF5_USE_FILE_LOCKING=FALSE
 
 install:
   - pip install '.[all]'
