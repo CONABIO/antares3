@@ -21,7 +21,7 @@ before_install:
   - sudo apt-get install --yes netcdf-bin libnetcdf-dev libproj-dev libgeos-dev
   - sudo apt-get install --yes gdal-bin libgdal-dev
   # POstgis dependencies
-  - sudo apt-get install --yes postgresql postgresql-10-postgis-2.4
+  - sudo apt-get install --yes postgresql-9.5 postgresql-9.5-postgis-2.4
   # Python (numpy headers required for rasterio)
   - pip install -U pip
   - pip install numpy
