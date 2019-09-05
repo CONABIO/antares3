@@ -8,9 +8,7 @@ env:
   - datacube_branch=develop
   
 script:
-  - docker run --rm -it -e antares_branch=$antares_branch -e datacube_branch=$datacube_branch \
-    madmex/travis_antares3:v1 \
-    /bin/bash -c 'git clone --single-branch -b $antares_branch https://github.com/CONABIO/antares3.git /home/madmex_user/branch && cd /home/madmex_user/branch && /home/madmex_user/branch/travis_setup.py && sudo service postgresql start && sudo -u postgres createdb datacube && source /home/madmex_user/.profile && pip3.6 install --user git+https://github.com/opendatacube/datacube-core.git@$datacube_branch --no-deps --upgrade && datacube system init && cd /home/madmex_user/branch && python3.6 setup.py test' 
+  - docker run --rm -it -e antares_branch=$antares_branch -e datacube_branch=$datacube_branch madmex/travis_antares3:v1 /bin/bash -c 'git clone --single-branch -b $antares_branch https://github.com/CONABIO/antares3.git /home/madmex_user/branch && cd /home/madmex_user/branch && /home/madmex_user/branch/travis_setup.py && sudo service postgresql start && sudo -u postgres createdb datacube && source /home/madmex_user/.profile && pip3.6 install --user git+https://github.com/opendatacube/datacube-core.git@$datacube_branch --no-deps --upgrade && datacube system init && cd /home/madmex_user/branch && python3.6 setup.py test' 
 
 after_success:
   - pip install -r docs/requirements.txt 
