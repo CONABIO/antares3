@@ -18,7 +18,7 @@ import numpy as np
 from madmex.management.base import AntaresBaseCommand
 
 from madmex.indexing import add_product_from_yaml, add_dataset, metadict_from_netcdf
-from madmex.util import yaml_to_dict, mid_date, parser_extra_args
+from madmex.util import yaml_to_dict, mid_date, parser_extra_args, parser_grid_args
 from madmex.recipes import RECIPES
 from madmex.wrappers import extract_tile_db, gwf_query
 from madmex.util.datacube import var_to_ind
