@@ -1,6 +1,6 @@
 
 from lightgbm import LGBMClassifier
-
+from sklearn.model_selection import GridSearchCV
 from madmex.modeling import BaseModel
 
 
