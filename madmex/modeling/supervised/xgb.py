@@ -5,6 +5,7 @@ except ImportError:
 else:
     _has_xgboost = True
 
+from sklearn.model_selection import GridSearchCV
 from madmex.modeling import BaseModel
 
 
