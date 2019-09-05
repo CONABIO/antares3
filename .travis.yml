@@ -4,8 +4,7 @@ services:
 before_script:
   - docker pull madmex/travis_antares3:v1
 env:
-  - antares_branch=$TRAVIS_BRANCH
-  - datacube_branch=develop
+  - antares_branch=$TRAVIS_BRANCH datacube_branch=develop
   
 script:
   - echo $TRAVIS_BRANCH
