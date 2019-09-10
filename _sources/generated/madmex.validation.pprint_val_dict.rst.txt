@@ -1,6 +1,0 @@
-madmex.validation.pprint\_val\_dict
-===================================
-
-.. currentmodule:: madmex.validation
-
-.. autofunction:: pprint_val_dict

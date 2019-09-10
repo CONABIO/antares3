@@ -1,6 +1,0 @@
-madmex.modeling.BaseModel.predict
-=================================
-
-.. currentmodule:: madmex.modeling
-
-.. automethod:: BaseModel.predict

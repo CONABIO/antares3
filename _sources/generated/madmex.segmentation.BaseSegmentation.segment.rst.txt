@@ -1,6 +1,0 @@
-madmex.segmentation.BaseSegmentation.segment
-============================================
-
-.. currentmodule:: madmex.segmentation
-
-.. automethod:: BaseSegmentation.segment

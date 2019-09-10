@@ -1,6 +1,0 @@
-madmex.ingestion.s2\_l2a\_20m.metadata\_convert
-===============================================
-
-.. currentmodule:: madmex.ingestion.s2_l2a_20m
-
-.. autofunction:: metadata_convert

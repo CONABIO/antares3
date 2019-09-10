@@ -1,6 +1,0 @@
-madmex.io.vector\_db.load\_segmentation\_from\_dataset
-======================================================
-
-.. currentmodule:: madmex.io.vector_db
-
-.. autofunction:: load_segmentation_from_dataset

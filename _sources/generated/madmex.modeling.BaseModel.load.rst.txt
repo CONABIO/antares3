@@ -1,6 +1,0 @@
-madmex.modeling.BaseModel.load
-==============================
-
-.. currentmodule:: madmex.modeling
-
-.. automethod:: BaseModel.load

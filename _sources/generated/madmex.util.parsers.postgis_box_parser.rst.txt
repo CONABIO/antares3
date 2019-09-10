@@ -1,6 +1,0 @@
-madmex.util.parsers.postgis\_box\_parser
-========================================
-
-.. currentmodule:: madmex.util.parsers
-
-.. autofunction:: postgis_box_parser

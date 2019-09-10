@@ -1,6 +1,0 @@
-madmex.lcc.bitemporal.BaseBiChange.label\_change
-================================================
-
-.. currentmodule:: madmex.lcc.bitemporal
-
-.. automethod:: BaseBiChange.label_change

@@ -1,6 +1,0 @@
-madmex.lcc.bitemporal.BaseBiChange.filter\_no\_change
-=====================================================
-
-.. currentmodule:: madmex.lcc.bitemporal
-
-.. automethod:: BaseBiChange.filter_no_change

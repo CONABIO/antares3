@@ -1,6 +1,0 @@
-madmex.util.pprint\_args
-========================
-
-.. currentmodule:: madmex.util
-
-.. autofunction:: pprint_args

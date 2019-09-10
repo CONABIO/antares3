@@ -1,6 +1,0 @@
-madmex.util.numpy.groupby
-=========================
-
-.. currentmodule:: madmex.util.numpy
-
-.. autofunction:: groupby

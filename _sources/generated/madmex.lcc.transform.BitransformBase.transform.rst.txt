@@ -1,6 +1,0 @@
-madmex.lcc.transform.BitransformBase.transform
-==============================================
-
-.. currentmodule:: madmex.lcc.transform
-
-.. automethod:: BitransformBase.transform

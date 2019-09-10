@@ -1,6 +1,0 @@
-madmex.segmentation.BaseSegmentation.polygonize
-===============================================
-
-.. currentmodule:: madmex.segmentation
-
-.. automethod:: BaseSegmentation.polygonize

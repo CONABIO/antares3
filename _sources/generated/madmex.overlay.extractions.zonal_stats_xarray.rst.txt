@@ -1,6 +1,0 @@
-madmex.overlay.extractions.zonal\_stats\_xarray
-===============================================
-
-.. currentmodule:: madmex.overlay.extractions
-
-.. autofunction:: zonal_stats_xarray

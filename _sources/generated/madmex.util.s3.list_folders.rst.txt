@@ -1,6 +1,0 @@
-madmex.util.s3.list\_folders
-============================
-
-.. currentmodule:: madmex.util.s3
-
-.. autofunction:: list_folders

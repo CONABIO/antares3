@@ -1,6 +1,0 @@
-madmex.modeling.BaseModel.to\_db
-================================
-
-.. currentmodule:: madmex.modeling
-
-.. automethod:: BaseModel.to_db

@@ -1,6 +1,0 @@
-madmex.util.s3.write\_raster
-============================
-
-.. currentmodule:: madmex.util.s3
-
-.. autofunction:: write_raster

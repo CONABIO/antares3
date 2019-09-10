@@ -1,6 +1,0 @@
-madmex.validation.query\_validation\_intersect
-==============================================
-
-.. currentmodule:: madmex.validation
-
-.. autofunction:: query_validation_intersect

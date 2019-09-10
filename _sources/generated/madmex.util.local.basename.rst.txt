@@ -1,6 +1,0 @@
-madmex.util.local.basename
-==========================
-
-.. currentmodule:: madmex.util.local
-
-.. autofunction:: basename

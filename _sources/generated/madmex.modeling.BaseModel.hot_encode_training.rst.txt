@@ -1,6 +1,0 @@
-madmex.modeling.BaseModel.hot\_encode\_training
-===============================================
-
-.. currentmodule:: madmex.modeling
-
-.. automethod:: BaseModel.hot_encode_training

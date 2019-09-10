@@ -1,6 +1,0 @@
-madmex.lcc.bitemporal.BaseBiChange.from\_geoarray
-=================================================
-
-.. currentmodule:: madmex.lcc.bitemporal
-
-.. automethod:: BaseBiChange.from_geoarray

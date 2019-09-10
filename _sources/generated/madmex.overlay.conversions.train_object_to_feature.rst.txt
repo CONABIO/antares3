@@ -1,6 +1,0 @@
-madmex.overlay.conversions.train\_object\_to\_feature
-=====================================================
-
-.. currentmodule:: madmex.overlay.conversions
-
-.. autofunction:: train_object_to_feature

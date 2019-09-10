@@ -1,6 +1,0 @@
-madmex.util.spatial.feature\_transform
-======================================
-
-.. currentmodule:: madmex.util.spatial
-
-.. autofunction:: feature_transform

@@ -1,6 +1,0 @@
-madmex.util.db.get\_label\_encoding
-===================================
-
-.. currentmodule:: madmex.util.db
-
-.. autofunction:: get_label_encoding

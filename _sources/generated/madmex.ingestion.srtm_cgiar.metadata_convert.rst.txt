@@ -1,6 +1,0 @@
-madmex.ingestion.srtm\_cgiar.metadata\_convert
-==============================================
-
-.. currentmodule:: madmex.ingestion.srtm_cgiar
-
-.. autofunction:: metadata_convert

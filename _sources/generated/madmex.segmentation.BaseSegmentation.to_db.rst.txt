@@ -1,6 +1,0 @@
-madmex.segmentation.BaseSegmentation.to\_db
-===========================================
-
-.. currentmodule:: madmex.segmentation
-
-.. automethod:: BaseSegmentation.to_db

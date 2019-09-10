@@ -1,6 +1,0 @@
-madmex.util.join\_dicts
-=======================
-
-.. currentmodule:: madmex.util
-
-.. autofunction:: join_dicts
