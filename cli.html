@@ -1,0 +1,447 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Command line interface &mdash; antares3 0.4.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Downloading data" href="download.html" />
+    <link rel="prev" title="Amazon Web Services" href="deployment/aws_cloud.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> antares3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.4.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command line interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#command-list">Command list</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#system-administration">System administration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-preparation">Data preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-download">Data download</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ingestion">Ingestion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#export">Export</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#processing">Processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#validation">Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inventory-parameters-retrieval">Inventory, parameters retrieval</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#help-page-example">Help page example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="download.html">Downloading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ingest.html">Ingesting data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="extend.html">Extending the system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="example_s2_land_cover.html">Sentinel 2 based Land cover example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_api.html">Land cover and land cover change: API example</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">antares3</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Command line interface</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/cli.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="command-line-interface">
+<h1>Command line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
+<p>All command line interface start with the prefix <code class="docutils literal notranslate"><span class="pre">antares</span></code>. Simply running <code class="docutils literal notranslate"><span class="pre">antares</span></code> in a terminal will give a list of all available commands. Detailed help of each command line can then be accessed by running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">command_line</span> <span class="pre">--help</span></code>. An example of help pages, returned by the <code class="docutils literal notranslate"><span class="pre">--help</span></code> flag is given at the bottom of this page.</p>
+<div class="section" id="command-list">
+<h2>Command list<a class="headerlink" href="#command-list" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="system-administration">
+<h3>System administration<a class="headerlink" href="#system-administration" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 79%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Short description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>antares init</p></td>
+<td><p>Perform initial system setup (database, configuration files)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="data-preparation">
+<h3>Data preparation<a class="headerlink" href="#data-preparation" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Short description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>antares rasterize_vector_file</p></td>
+<td><p>Generate a tiled raster product from any vector file</p></td>
+</tr>
+<tr class="row-odd"><td><p>antares make_country_mask</p></td>
+<td><p>Generate a tiled raster binary mask for any country</p></td>
+</tr>
+<tr class="row-even"><td><p>antares prepare_metadata</p></td>
+<td><p>Generate metadata for a given dataset prior to datacube indexing</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="data-download">
+<h3>Data download<a class="headerlink" href="#data-download" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 74%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Short description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>antares create_order</p></td>
+<td><p>Place a Landsat surface reflectance pre-processing order to espa</p></td>
+</tr>
+<tr class="row-odd"><td><p>antares download_order</p></td>
+<td><p>Download a previously placed espa processing order</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="ingestion">
+<h3>Ingestion<a class="headerlink" href="#ingestion" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Short description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>antares ingest_catalog</p></td>
+<td><p>Ingest Landsat data catalog into the database</p></td>
+</tr>
+<tr class="row-odd"><td><p>antares ingest_footprints</p></td>
+<td><p>Ingest shapefile of Landsat scenes footprints into the database</p></td>
+</tr>
+<tr class="row-even"><td><p>antares ingest_training</p></td>
+<td><p>Ingest training data into the database</p></td>
+</tr>
+<tr class="row-odd"><td><p>antares ingest_validation</p></td>
+<td><p>Ingest validation data into the database</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="export">
+<h3>Export<a class="headerlink" href="#export" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Short description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>antares db_to_vector</p></td>
+<td><p>Export the result of a classification to a vector file</p></td>
+</tr>
+<tr class="row-odd"><td><p>antares db_to_raster</p></td>
+<td><p>Export the result of a classification to a raster file</p></td>
+</tr>
+<tr class="row-even"><td><p>antares generate_style</p></td>
+<td><p>Export the information of a given scheme to a QGIS style file</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="processing">
+<h3>Processing<a class="headerlink" href="#processing" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Short description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>antares apply_recipe</p></td>
+<td><p>Generate a new datacube product from a defined recipe</p></td>
+</tr>
+<tr class="row-odd"><td><p>antares segment</p></td>
+<td><p>Run segmentation and write the output to the database</p></td>
+</tr>
+<tr class="row-even"><td><p>antares model_fit</p></td>
+<td><p>Train a model given a training set and a datacube product</p></td>
+</tr>
+<tr class="row-odd"><td><p>antares model_predict</p></td>
+<td><p>Predict land cover pixel based given a trained model</p></td>
+</tr>
+<tr class="row-even"><td><p>antares model_predict_object</p></td>
+<td><p>Predict land cover for a set of segmentation polygons</p></td>
+</tr>
+<tr class="row-odd"><td><p>antares detect_change</p></td>
+<td><p>Run change detection and classification between two products</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="validation">
+<h3>Validation<a class="headerlink" href="#validation" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Short description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>antares validate</p></td>
+<td><p>Validate a classification using an ingested set of validation data</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="inventory-parameters-retrieval">
+<h3>Inventory, parameters retrieval<a class="headerlink" href="#inventory-parameters-retrieval" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Short description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>antares list</p></td>
+<td><p>List models, training sets, classifications, segmentation, … present in the database</p></td>
+</tr>
+<tr class="row-odd"><td><p>antares bi_change_params</p></td>
+<td><p>Retrieve list of change detection algorithm implemented and their parameters</p></td>
+</tr>
+<tr class="row-even"><td><p>antares model_params</p></td>
+<td><p>Retrieve list of models implemented and their parameters</p></td>
+</tr>
+<tr class="row-odd"><td><p>antares segment_params</p></td>
+<td><p>Retrieve list of segmentation agorithms implemented and their parameters</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="help-page-example">
+<h2>Help page example<a class="headerlink" href="#help-page-example" title="Permalink to this headline">¶</a></h2>
+<p>Running <code class="docutils literal notranslate"><span class="pre">antares</span> <span class="pre">model_fit</span> <span class="pre">--help</span></code> returns:</p>
+<div class="system-message">
+<p class="system-message-title">System Message: ERROR/6 (<span class="docutils literal">/home/travis/build/CONABIO/antares3/docs/cli.rst</span>, line 126)</p>
+<p>Command 'antares model_fit --help' failed: [Errno 2] No such file or directory: 'antares': 'antares'</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="download.html" class="btn btn-neutral float-right" title="Downloading data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="deployment/aws_cloud.html" class="btn btn-neutral float-left" title="Amazon Web Services" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, CONABIO
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
