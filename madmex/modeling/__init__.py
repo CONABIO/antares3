@@ -13,6 +13,7 @@ import numpy as np
 from sklearn import metrics
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import IsolationForest
+from sklearn.utils import shuffle
 
 from madmex.models import Model
 from madmex.settings import SERIALIZED_OBJECTS_DIR
@@ -141,8 +142,9 @@ class BaseModel(abc.ABC):
             y_out[:] = g[0]
             y_list.append(y_out)
         # Concatenate returned arrays
-        X = np.concatenate(X_list)
-        y = np.concatenate(y_list)
+        Xc = np.concatenate(X_list)
+        yc = np.concatenate(y_list)
+        X, y = shuffle(Xc,yc,random_state=658432434)
         return (X, y)
 
 

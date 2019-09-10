@@ -6,6 +6,7 @@ Created on Jan 17, 2018
 import os
 
 from sklearn.ensemble.forest import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
 from sklearn.externals import joblib
 
 from madmex.modeling import BaseModel

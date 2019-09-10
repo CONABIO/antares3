@@ -40,7 +40,7 @@ Example usage:
 antares create_order --region 'Jalisco'  --start-date '2017-01-01' --end-date '2017-12-31' --landsat 8
 
 # It is posible to search by Landsat tile, under the rule 'path0row'. For instance:
-antares create_order --region 22049  --start-date '2001-01-01' --end-date '2002-12-31' --landsat 5 --max-cloud-coiver 30
+antares create_order --region 22049  --start-date '2001-01-01' --end-date '2002-12-31' --landsat 5 --max-cloud-cover 30
 
 # Show only the Landsat 5 scenes that intersect the state of Jalisco and where taken during 2005.
 antares create_order --region 'Jalisco'  --start-date '2005-01-01' --end-date '2005-12-31' --landsat 5 --no-order
@@ -106,7 +106,7 @@ antares create_order --region 'Jalisco'  --start-date '2005-01-01' --end-date '2
             if landsat == 8:
                 collection_usgs = 'LANDSAT_8_C1'
                 collection_espa = 'olitirs8_collection'
-                collection_regex = r'LC08_[0-9A-Z]{4}_\d{6}_\d{8}_\d{8}_\d{2}_(RT|T1|T2)'
+                collection_regex = '^lc08_{1}\\w{4}_{1}[0-9]{6}_{1}[0-9]{8}_{1}[0-9]{8}_{1}[0-9]{2}_{1}\\w{2}$'
             elif landsat == 7:
                 collection_usgs = 'LANDSAT_ETM_C1'
                 collection_espa = 'etm7_collection'

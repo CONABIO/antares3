@@ -9,6 +9,7 @@ from importlib import import_module
 import os
 import logging
 from datetime import datetime
+from operator import itemgetter
 
 from dask.distributed import Client, LocalCluster
 
@@ -32,28 +33,30 @@ area.
 Data are processed in parallel using dask distributed
 
 Available recipes are:
-    - landsat_8_madmex_001: Temporal metrics (min, max, mean, std) of Landsat bands and ndvi combined with terrain metrics (elevation, slope and aspect)
-    - landsat_8_ndvi_mean: Simple ndvi temporal mean
-    - landsat_8_madmex_002: Temporal metrics (mean) of Landsat bands and nd ndmi, ndvi (min,max) combined with terrain metrics (elevation, slope and aspect)
+    - landsat_ndvi_mean: Simple ndvi temporal mean
+    - landsat_madmex_004: Temporal metrics (mean) of Landsat bands and nd ndmi, ndvi (min,max) combined with terrain metrics (elevation, slope and aspect)
     - s2_20m_001: Temporal metrics (mean) of Sentinel2 20m bands and ndmi, ndvi (min,max) combined with terrain metrics (elevation, slope and aspect)
     - s2_20m_resampled_10m_001: Temporal metrics (mean) of Sentinel2 20m bands resampled to 10m resolution using GridSpec functionality of datacube (same description of s2_20m_001 recipe).
     - s2_10m_scl_ndvi_mean_001: Ndvi of Sentinel2 10m resolution bands
     - s1_2_10m_001: Temporal metrics (mean) of Sentinel2 bands. Right now the recipe is using 2015 data for Sentinel1 bands. For Sentinel2 also nd ndmi, ndvi (min,max) combined with terrain metrics (elevation, slope and aspect) are calculated.
-    
+
 
 See docstring in madmex/recipes/__init__.py for instructions on how to add new recipes to the system
 
 --------------
 Example usage:
 --------------
-# Apply landsat_8_madmex_001 recipe (The datacube must contain the ls8_espa_mexico and srtm_cgiar_mexico products)
-antares apply_recipe -recipe landsat_8_madmex_001 -b 2016-01-01 -e 2016-12-31 -lat 19 23 -long -106 -101 --name landsat_8_madmex_001_jalisco_2016
+# Apply landsat_madmex_004 recipe (The datacube must contain the ls8_espa_mexico and srtm_cgiar_mexico products)
+antares apply_recipe -recipe landsat_madmex_004 -b 2016-01-01 -e 2016-12-31 -lat 19 23 -long -106 -101 --name landsat_madmex_004_jalisco_2016
 
-# Apply landsat_8_ndvi_mean recipe (The datacube must contain the ls8_espa_mexico)
-antares apply_recipe -recipe landsat_8_ndvi_mean -b 2017-01-01 -e 2017-12-31 --region Jalisco --name landsat_ndvi_jalisco_2017
+# Apply landsat_ndvi_mean recipe (The datacube must contain the ls8_espa_mexico)
+antares apply_recipe -recipe landsat_ndvi_mean -b 2017-01-01 -e 2017-12-31 --region Jalisco --name landsat_ndvi_jalisco_2017
 
-# Apply landsat_8_madmex_002 recipe (The datacube must contain the ls8_espa_mexico)
-antares apply_recipe -recipe landsat_8_madmex_002 -b 2017-01-01 -e 2017-12-31 --region Jalisco --name landsat_8_madmex_002_jalisco_2017
+# Apply landsat_madmex_004 recipe (The datacube must contain the ls8_espa_mexico)
+antares apply_recipe -recipe landsat_madmex_004 -b 2017-01-01 -e 2017-12-31 --region Jalisco --name landsat_madmex_004_jalisco_2017
+
+# Apply landsat_madmex_004 recipe with histogram match (The datacube must contain the ls8_espa_mexico)
+antares apply_recipe -recipe landsat_madmex_004 -b 1995-01-01 -e 1996-12-31 -region Durango --name recipe_mex_histogram_match_L5_9596 -recipe_reference recipe_mex_L7L8_1415 --begin_reference 2014-01-01 --end_reference 2015-12-31 -sc /shared_volume/scheduler.json
 
 # Apply sentinel 20m 001 recipe (The datacube must contain the s2_20m_mexico dataset)
 antares apply_recipe -recipe s2_20m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_0
@@ -62,10 +65,11 @@ antares apply_recipe -recipe s2_20m_001 -b 2017-01-01 -e 2017-12-31 -region Jali
 antares apply_recipe -recipe s2_20m_resampled_10m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_10_resampled --resolution -10 10 --tilesize 100020 100020 --origin 2426720 977160 --proj4 '+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +a=6378137 +b=6378136.027241431 +units=m +no_defs'
 
 #Apply sentinel 10m_scl 001 recipe (ndvi)
-antares apply_recipe -recipe s2_10m_scl_ndvi_mean_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_10 
+antares apply_recipe -recipe s2_10m_scl_ndvi_mean_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s2_001_jalisco_2017_10
 
 #Apply s1_2_10m_001 recipe (combination with S2, S1 and terrain)
 antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Jalisco --name s1_2_001_jalisco_2017
+
 
 """
     def add_arguments(self, parser):
@@ -98,6 +102,18 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
                             help=('Name of the region over which the recipe should be applied. The geometry of the region should be present '
                                   'in the madmex-region or the madmex-country table of the database (Overrides lat and long when present) '
                                   'Use ISO country code for country name'))
+        parser.add_argument('-recipe_reference', '--recipe_reference',
+                            type=str,
+                            default=None,
+                            help='Recipe reference for histogram matching')
+        parser.add_argument('--begin_reference',
+                            type=str,
+                            default=None,
+                            help='Begin date for recipe reference in histogram matching')
+        parser.add_argument('--end_reference',
+                            type=str,
+                            default=None,
+                            help='End date used for recipe reference in histogram matching')
         parser.add_argument('-name', '--name',
                             type=str,
                             required=True,
@@ -144,8 +160,9 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
         time = (begin, end)
         center_dt = mid_date(begin, end)
         scheduler_file = options['scheduler']
-        
-
+        recipe_reference = options['recipe_reference']
+        begin_reference = options['begin_reference']
+        end_reference = options['end_reference']
         # database query
         gwf_kwargs = { k: options[k] for k in ['lat', 'long', 'region', 'begin', 'end', 'resolution', 'tilesize', 'origin', 'proj4']}
 
@@ -160,14 +177,47 @@ antares apply_recipe -recipe s1_2_10m_001 -b 2017-01-01 -e 2017-12-31 -region Ja
             except Exception as e:
                 pass
         iterable = join_dicts(*dict_list, join='full').items()
-        
-        # Start cluster and run 
+        # Start cluster and run
         client = Client(scheduler_file=scheduler_file)
         client.restart()
-        C = client.map(fun, iterable,
-                       pure=False,
-                       **{'center_dt': center_dt,
-                          'path': path})
+        if recipe_reference is not None and begin_reference is not None and end_reference is not None:
+            gwf_kwargs_reference = {'product': recipe_reference,
+                                    'begin': begin_reference,
+                                    'end': end_reference,
+                                    'region': options['region'],
+                                    'lat': options['lat'],
+                                    'long': options['long']}
+            try:
+                iterable_reference = gwf_query(**gwf_kwargs_reference)
+                list_iterable_reference = list(iterable_reference)
+            # Exception is in case one of the product hasn't been registered in the datacube
+            except Exception as e:
+                pass
+            list_iterable = list(iterable)
+            list_iterable_sorted = sorted(list_iterable, key=itemgetter(0))
+            list_iterable_reference_sorted = sorted(list_iterable_reference, key=itemgetter(0))
+            list_iterable = None
+            list_iterable_reference = None
+            list_dc_tiles_reference = [k[0] for k in list_iterable_reference_sorted]
+            def search_tile_in_reference(dc_tile):
+                a = [tile for tile in list_iterable_reference_sorted if tile[0] == dc_tile]
+                return a[0]
+            list_iterable_reference_adjusted = [tile if tile[0] not in list_dc_tiles_reference else search_tile_in_reference(tile[0]) for tile in list_iterable_sorted]
+            if len(list_iterable_reference_adjusted) == len(list_iterable_sorted):
+                list_union = [(s,t) for (s,t) in zip(list_iterable_sorted, list_iterable_reference_adjusted)]
+                C = client.map(fun, list_union,
+                               pure=False,
+                               **{'center_dt': center_dt,
+                                  'path': path,
+                                  'histogram_match': True})
+            else:
+                logger.info('Can not perform histogram match, source and reference lists have different lengths')
+                C = None
+        else:
+            C = client.map(fun, iterable,
+                           pure=False,
+                           **{'center_dt': center_dt,
+                              'path': path})
         nc_list = client.gather(C)
         n_tiles = len([x for x in nc_list if x is not None])
         logger.info('Processing done, %d tiles written to disk' % n_tiles)
