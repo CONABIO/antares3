@@ -15,7 +15,7 @@ def metadata_convert(path, bucket=None):
     prepares a metadata string with the appropriate formating.
 
     Args:
-        path (str): Path of the directory containing the Rapideye bands
+        path (str): Path of the directory containing the Rapideye image
             and the Rapideye metadata file.
         bucket (str or None): Name of the s3 bucket containing the data. If ``None``
             (default), data are considered to be on a mounted filesystem
