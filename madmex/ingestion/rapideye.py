@@ -54,7 +54,7 @@ def metadata_convert(path, bucket=None):
     ns2 = 'http://schemas.rapideye.de/products/productMetadataGeocorrected'
     ns3 = 'http://earth.esa.int/eop'
     dt = root.find('ns:metaDataProperty/ns2:EarthObservationMetaData/ns3:downlinkedTo/ns3:DownlinkInformation/ns3:acquisitionDate',
-                      namespaces={'ns': ns, 'ns2': ns2, 'ns3': ns3}).text
+                   namespaces={'ns': ns, 'ns2': ns2, 'ns3': ns3}).text
     #removing minutes, seconds, ...
     dt = dt[:19]
     instrument = root.find('ns:using/ns3:EarthObservationEquipment/ns3:instrument/ns3:Instrument/ns3:shortName',
