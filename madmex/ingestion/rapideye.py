@@ -57,6 +57,8 @@ def metadata_convert(path, bucket=None):
                    namespaces={'ns': ns, 'ns2': ns2, 'ns3': ns3}).text
     #removing minutes, seconds, ...
     dt = dt[:19]
+    product_type = root.find('ns:metaDataProperty/ns2:EarthObservationMetaData/ns3:productType',
+                             namespaces = {'ns':ns, 'ns2':ns2,'ns3':ns3}).text
     instrument = root.find('ns:using/ns3:EarthObservationEquipment/ns3:instrument/ns3:Instrument/ns3:shortName',
                            namespaces={'ns': ns, 'ns3': ns3}).text
     format_image = root.find('ns:metaDataProperty/ns2:EarthObservationMetaData/ns3:processing/ns3:ProcessingInformation/ns3:nativeProductFormat',
