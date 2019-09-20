@@ -111,7 +111,11 @@ def metadata_convert(path, bucket=None):
         'ul_y': uly,
         'ur_y': uly,
         'crs': crs.wkt,
-        'blue': {'path': product, 'layer': 1}
+        'blue': {'path': product, 'layer': 1},
+        'green': {'green': product, 'layer': 2},
+        'red': {'path': product, 'layer': 3},
+        'red_edge': {'path': product, 'layer': 4},
+        'nir': {'nir': product, 'layer': 5}
         }
     # Load template
     env = Environment(loader=PackageLoader('madmex', 'templates'))
