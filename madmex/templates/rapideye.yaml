@@ -19,11 +19,11 @@ grid_spatial:
     spatial_reference: {{ crs }}
 image:
   bands:
-    blue: {layer: 1, path: "{{ blue }}" }
-    green: {layer: 1, path: "{{ green }}" }
-    red: {layer: 1, path: "{{ red }}" }
-    red_edge: {layer: 1, path: "{{ red_edge }}" }
-    nir: {layer: 1, path: "{{ nir }}" }
+    blue: {layer: {{ blue['layer'] }}, path: "{{ blue['path'] }}" }
+    green: {layer: {{ green['layer'] }}, path: "{{ green['path'] }}" }
+    red: {layer: {{ red['layer'] }}, path: "{{ red['path'] }}" }
+    red_edge: {layer: {{ red_edge['layer'] }}, path: "{{ red_edge['path'] }}" }
+    nir: {layer: {{ nir['layer'] }}, path: "{{ nir['path'] }}" }
 instrument: {name: {{ instrument }} }
 lineage:
   source_datasets: {}
