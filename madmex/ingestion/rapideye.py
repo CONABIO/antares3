@@ -40,8 +40,8 @@ def metadata_convert(path, bucket=None):
     if not os.path.isdir(path):
         raise ValueError('Argument path= is not a directory')
     xml_file_list = glob(os.path.join(path, '*.xml'))
-    # Filter list of xml files with regex (there could be more than one in case
-# some bands have been opend in qgis for example)
+    # Filter list of xml files with regex (there could be more than one in case 
+    # some bands have been opend in qgis for example)
 
     xml_file_list = [x for x in xml_file_list if pattern.search(x)]
     if len(xml_file_list) != 1:
@@ -57,36 +57,37 @@ def metadata_convert(path, bucket=None):
                       namespaces={'ns': ns, 'ns2': ns2, 'ns3': ns3}).text
     #removing minutes, seconds, ...
     dt = dt[:19]
-    instrument = root.find('ns:using/ns3:EarthObservationEquipment/ns3:instrument/ns3:Instrument/ns3:shortName',namespaces={'ns': ns, 'ns3': ns3}).text
+    instrument = root.find('ns:using/ns3:EarthObservationEquipment/ns3:instrument/ns3:Instrument/ns3:shortName',
+                           namespaces={'ns': ns, 'ns3': ns3}).text
     format_image = root.find('ns:metaDataProperty/ns2:EarthObservationMetaData/ns3:processing/ns3:ProcessingInformation/ns3:nativeProductFormat',
-                                     namespaces={'ns': ns, 'ns2':ns2,'ns3':ns3}).text
+                             namespaces={'ns': ns, 'ns2':ns2,'ns3':ns3}).text
     satellite = root.find('ns:using/ns3:EarthObservationEquipment/ns3:platform/ns3:Platform/ns3:serialIdentifier',
-                                  namespaces={'ns': ns, 'ns3':ns3}).text
+                          namespaces={'ns': ns, 'ns3':ns3}).text
     ul_lat = float(root.find('ns:target/ns2:Footprint/ns2:geographicLocation/ns2:topLeft/ns2:latitude',
-                                 namespaces={'ns': ns, 'ns2': ns2}).text)
+                             namespaces={'ns': ns, 'ns2': ns2}).text)
     ul_lon = float(root.find('ns:target/ns2:Footprint/ns2:geographicLocation/ns2:topLeft/ns2:longitude',
-                                 namespaces={'ns': ns, 'ns2': ns2}).text)
+                             namespaces={'ns': ns, 'ns2': ns2}).text)
     ur_lat = float(root.find('ns:target/ns2:Footprint/ns2:geographicLocation/ns2:topRight/ns2:latitude',
-                                 namespaces={'ns': ns, 'ns2': ns2}).text)
+                             namespaces={'ns': ns, 'ns2': ns2}).text)
     ur_lon = float(root.find('ns:target/ns2:Footprint/ns2:geographicLocation/ns2:topRight/ns2:longitude',
-                                 namespaces={'ns': ns, 'ns2': ns2}).text)
+                             namespaces={'ns': ns, 'ns2': ns2}).text)
     lr_lat = float(root.find('ns:target/ns2:Footprint/ns2:geographicLocation/ns2:bottomRight/ns2:latitude',
-                                 namespaces={'ns': ns, 'ns2': ns2}).text)
+                             namespaces={'ns': ns, 'ns2': ns2}).text)
     lr_lon = float(root.find('ns:target/ns2:Footprint/ns2:geographicLocation/ns2:bottomRight/ns2:longitude',
-                                 namespaces={'ns': ns, 'ns2': ns2}).text)
+                             namespaces={'ns': ns, 'ns2': ns2}).text)
     ll_lat = float(root.find('ns:target/ns2:Footprint/ns2:geographicLocation/ns2:bottomLeft/ns2:latitude',
-                                 namespaces={'ns': ns, 'ns2': ns2}).text)
+                             namespaces={'ns': ns, 'ns2': ns2}).text)
     ll_lon = float(root.find('ns:target/ns2:Footprint/ns2:geographicLocation/ns2:bottomLeft/ns2:longitude',
-                                 namespaces={'ns': ns, 'ns2': ns2}).text)
+                             namespaces={'ns': ns, 'ns2': ns2}).text)
     utm_zone = root.find('ns:resultOf/ns2:EarthObservationResult/ns3:product/ns2:ProductInformation/ns2:spatialReferenceSystem/ns2:projectionZone',
-                                     namespaces={'ns':ns,'ns2':ns2, 'ns3':ns3}).text
+                         namespaces={'ns':ns,'ns2':ns2, 'ns3':ns3}).text
     crs = CRS({'proj': 'utm',
-                   'zone': utm_zone})
+               'zone': utm_zone})
     p = Proj(crs)
     ulx,uly = p(ul_lon,ul_lat)
     lrx,lry = p(lr_lon,lr_lat)
     product = os.path.join(path, root.find('ns:resultOf/ns2:EarthObservationResult/ns3:product/ns2:ProductInformation/ns3:fileName',
-                                               namespaces={'ns':ns, 'ns2':ns2, 'ns3':ns3}).text)
+                                           namespaces={'ns':ns, 'ns2':ns2, 'ns3':ns3}).text)
     # Prepare metadata fields
     meta_out = {
         'id': uuid.uuid5(uuid.NAMESPACE_URL, path),
