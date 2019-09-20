@@ -22,10 +22,8 @@ image:
     blue: {layer: 1, path: "{{ blue }}" }
     green: {layer: 1, path: "{{ green }}" }
     red: {layer: 1, path: "{{ red }}" }
-    nir: {layer: 1, path: "{{ nir }}" }
-    swir1: {layer: 1, path: "{{ swir1 }}" }
-    swir2: {layer: 1, path: "{{ swir2 }}" }
-    pixel_qa: {layer: 1, path: "{{ qual }}" }
+    red_edge: {layer: 1, path: "{{ nir }}" }
+    nir: {layer: 1, path: "{{ swir1 }}" }
 instrument: {name: {{ instrument }} }
 lineage:
   source_datasets: {}
