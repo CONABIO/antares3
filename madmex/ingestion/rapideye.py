@@ -11,7 +11,7 @@ from jinja2 import Environment, PackageLoader
 def metadata_convert(path, bucket=None):
     """Prepare metatdata prior to datacube indexing
 
-    Given a directory containing Rapideye bands and a xml file,
+    Given a directory containing Rapideye image and a xml file,
     prepares a metadata string with the appropriate formating.
 
     Args:
