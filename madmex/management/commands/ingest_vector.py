@@ -59,7 +59,7 @@ antares ingest_vector --file <path-to-file>/my_shapefile.shp --layer-name layer
             src_crs = src.crs
             to_string_crs = to_string(src_crs)
             proj_crs = Proj(src.crs)
-            if not proj_crs.is_latlong():
+            if not proj_crs.crs.is_geographic:
                 fc_proj = [feature_transform(x,
                                             "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
                                             to_string_crs) for x in fc]
