@@ -1,4 +1,4 @@
-name: RE5_NAC
+name: RE2_NAC
 description: Rapideye 2 Collection RapidEye Ortho Product – Radiometric, sensor and geometric corrections applied to the data. 
 The product accuracy depends on the quality of the ground control and DEMs used. Product is processed as an
 individual 25 km by 25 km tile. If NAC, then Non-atmospherically corrected.
