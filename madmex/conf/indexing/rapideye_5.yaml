@@ -1,0 +1,74 @@
+name: RE5_NAC
+description: Rapideye 5 Collection RapidEye Ortho Product – Radiometric, sensor and geometric corrections applied to the data. 
+The product accuracy depends on the quality of the ground control and DEMs used. Product is processed as an
+individual 25 km by 25 km tile. If NAC, then Non-atmospherically corrected.
+metadata_type: eo
+
+metadata:
+    platform:
+        code: RE-5
+    instrument:
+        name: MSI
+    product_type: L3A
+    format:
+        name: GeoTiff
+
+measurements:
+    - name: 'blue'
+      aliases: [band_1, blue]
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'green'
+      aliases: [band_2, green]
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'red'
+      aliases: [band_3, red]
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'red_edge'
+      aliases: [band_4, red_edge]
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+    - name: 'nir'
+      aliases: [band_5, nir]
+      dtype: int16
+      nodata: -9999
+      units: 'reflectance'
+      flags_definition:
+        fill:
+          bits: [0]
+          description: Fill
+          values: {0: false, 1: true}
+        clear:
+          bits: [1]
+          description: Clear
+          values: {0: false, 1: true}
+        water:
+          bits: [2]
+          description: Water
+          values: {0: false, 1: true}
+        cloud_shadow:
+          bits: [3]
+          description: Cloud shadow
+          values: {0: false, 1: true}
+        snow:
+          bits: [4]
+          description: Snow
+          values: {0: false, 1: true}
+        cloud:
+          bits: [5]
+          description: Cloud
+          values: {0: false, 1: true}
+        cloud_confidence:
+          bits: [6,7]
+          description: Cloud confidence
+          values: 
+            0: none
+            1: low
+            2: medium
+            3: high
