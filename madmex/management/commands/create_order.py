@@ -141,8 +141,8 @@ antares create_order --region 'Jalisco'  --start-date '2005-01-01' --end-date '2
                 else:
                     logger.info(json.dumps(data, indent=4))
             else:
-                logger.info("%s scenes found in %s" %(len(interest), region))
                 logger.info(json.dumps(interest, indent=4))
+                logger.info("%s scenes found in %s" %(len(interest), region))
                 logger.info("Delete '--no-order' to make the request to USGS.")
         else:
             logger.info('No region with the name %s was found in the database.' % region)
