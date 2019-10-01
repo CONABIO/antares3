@@ -162,8 +162,7 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
                                             segmentation_information=meta_object)
         return filename
 
-    @classmethod
-    def is_in_db(seg_name, filename):
+    def is_in_db(self, seg_name, filename):
         """Check if the path is registered in the database
     
         Args:
