@@ -170,7 +170,7 @@ def is_in_db(self, seg_name, filename):
         filename: Path that should be registered on the database
     """
     qs_seg = SegmentationInformation.objects.filter(name=seg_name)
-    qs_pred = PredictObject.objects.filter(segmentation_information_id=qs_seg[0].id, path=path)
+    qs_pred = PredictObject.objects.filter(segmentation_information_id=qs_seg[0].id, path=filename)
     if len(qs_pred) > 0:
         return True
     else: 
