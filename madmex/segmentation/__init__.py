@@ -162,16 +162,16 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
                                             segmentation_information=meta_object)
         return filename
 
-def is_in_db(self, seg_name, filename):
-    """Check if the path is registered in the database
+    def is_in_db(self, seg_name, filename):
+        """Check if the path is registered in the database
     
-    Args:
-        seg_name (str): Name of segmentation
-        filename: Path that should be registered on the database
-    """
-    qs_seg = SegmentationInformation.objects.filter(name=seg_name)
-    qs_pred = PredictObject.objects.filter(segmentation_information_id=qs_seg[0].id, path=filename)
-    if len(qs_pred) > 0:
-        return True
-    else: 
-        return False
+        Args:
+            seg_name (str): Name of segmentation
+            filename: Path that should be registered on the database
+        """
+        qs_seg = SegmentationInformation.objects.filter(name=seg_name)
+        qs_pred = PredictObject.objects.filter(segmentation_information_id=qs_seg[0].id, path=filename)
+        if len(qs_pred) > 0:
+            return True
+        else: 
+            return False
