@@ -86,7 +86,7 @@ class PredictObject(models.Model):
     regions and each object should have an assigned tag which is the ground truth for
     it.
     '''
-    path = models.CharField(max_length=400, default='')
+    path = models.CharField(max_length=400, default='', unique=True)
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
     segmentation_information = models.ForeignKey(SegmentationInformation, on_delete=models.CASCADE, default=-1)
