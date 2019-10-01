@@ -18,7 +18,7 @@ from datacube.utils.geometry import CRS, GeoBox
 
 from madmex.settings import TEMP_DIR
 from madmex.util.spatial import feature_transform
-from madmex.models import PredictObject
+from madmex.models import PredictObject, SegmentationInformation
 from madmex.util import chunk, s3
 
 
@@ -161,3 +161,17 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
                                             the_geom=geom,
                                             segmentation_information=meta_object)
         return filename
+
+def is_in_db(self, seg_name, filename):
+    """Check if the path is registered in the database
+    
+    Args:
+        seg_name (str): Name of segmentation
+        filename: Path that should be registered on the database
+    """
+    qs_seg = SegmentationInformation.objects.filter(name=seg_name)
+    qs_pred = PredictObject.objects.filter(segmentation_information_id=qs_seg[0].id, path=path)
+    if len(qs_pred) > 0:
+        return True
+    else: 
+        return False
