@@ -260,18 +260,30 @@ def segment(tile, algorithm, segmentation_meta, band_list, extra_args):
         basename = segmentation_meta.algorithm + '_' + segmentation_meta.name + '_' + segmentation_meta.datasource + '_%d_%d_' % (tile[0][0], tile[0][1]) + segmentation_meta.datasource_year + '.shp'
         if SEGMENTATION_DIR is not None:
             filename = os.path.join(SEGMENTATION_DIR, basename)
+            if Segmentation.is_in_db(segmentation_meta.name, filename) and os.path.isfile(filename):
+                file_exist = True
+            else:
+                file_exist = False
         elif SEGMENTATION_BUCKET is not None:
             hash = hashlib.md5(basename.encode('utf-8')).hexdigest()[0:6]
             filename = hash + '_' + basename
+            file_list = s3.list_files(SEGMENTATION_BUCKET,filename)
+            if Segmentation.is_in_db(segmentation_meta.name, filename) and len(file_list) > 0:
+                file_exist = True
+            else:
+                file_exist = False
         else:
             raise ValueError('You must set one of SEGMENTATION_DIR or SEGMENTATION_BUCKET variables')
-        seg = Segmentation.from_geoarray(geoarray, **extra_args)
-        seg.segment()
-        # Try deallocating input array
-        fc = seg.polygonize()
-        seg.save(filename=filename, meta_object=segmentation_meta, fc=fc,
+            
+        if not file_exist:
+            seg = Segmentation.from_geoarray(geoarray, **extra_args)
+            seg.segment()
+            # Try deallocating input array
+            fc = seg.polygonize()
+            seg.save(filename=filename, meta_object=segmentation_meta, fc=fc,
                  bucket=SEGMENTATION_BUCKET)
-        seg.array = None
+            seg.array = None
+
         geoarray = None
         gc.collect()
         return True
