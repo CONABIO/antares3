@@ -70,8 +70,8 @@ antares ingest_vector --file <path-to-file>/my_shapefile.shp --layer-name layer
             country, _ = Country.objects.get_or_create(the_geom=GEOSGeometry(country_shape.wkt),
                                                        name=layer_name)
             for k in range(0,len(fc_proj)):
-                shape = shape_list[k]
-                geom = GEOSGeometry(shape.wkt,4326)
+                shapefile = shape_list[k]
+                geom = GEOSGeometry(shapefile.wkt,4326)
 
                 if not field: #needs to generate name for every entry
                     name = layer_name + '_%s'
