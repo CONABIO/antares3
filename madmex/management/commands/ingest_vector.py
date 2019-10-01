@@ -67,6 +67,7 @@ antares ingest_vector --file <path-to-file>/my_shapefile.shp --layer-name layer
                 fc_proj = fc
 
             shape_list = [shape(feat['geometry']) for feat in fc_proj]
+            country_shape = cascaded_union(shape_list)
             country, _ = Country.objects.get_or_create(the_geom=GEOSGeometry(country_shape.wkt),
                                                        name=layer_name)
             for k in range(0,len(fc_proj)):
