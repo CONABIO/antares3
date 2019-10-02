@@ -147,7 +147,8 @@ antares ingest_training_from_raster_chunk /path/to/file.tif --fraction 0.0001 --
 
                     # Build the feature collection
                     p = Proj(src.crs)
-                    if p.is_latlong(): # Here we assume that geographic coordinates are automatically 4326 (not quite true)
+#                    if p.is_latlong(): # is_latlong is no attribute anymore
+                    if p.crs.is_geographic: # Here we assume that geographic coordinates are automatically 4326 (not quite true)
                         fc = [{'type': 'feature',
                            'geometry': mapping(shape(x[0])),
                            'properties': {'class': int(x[1])}} for x in rasterio.features.shapes(train_arr,mask,connectivity=4,transform=aff)]
