@@ -171,5 +171,6 @@ antares ingest_training_from_raster_chunk /path/to/file.tif --fraction 0.0001 --
                     train_class_obj_list = [train_class_obj_builder(x) for x in zip(obj_list, fc)]
 
                     TrainClassification.objects.bulk_create(train_class_obj_list)
-                except:
+                except Exception as e:
+                    print(e)
                     pass
