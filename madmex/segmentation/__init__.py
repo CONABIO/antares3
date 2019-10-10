@@ -157,9 +157,9 @@ class BaseSegmentation(metaclass=abc.ABCMeta):
         """
         geom = GEOSGeometry(json.dumps(self.geobox.geographic_extent.json))
         shp_path = self.to_shapefile(filename=filename, fc=fc, bucket=bucket)
-        PredictObject.objects.get_or_create(path=shp_path,
-                                            the_geom=geom,
-                                            segmentation_information=meta_object)
+#        PredictObject.objects.get_or_create(path=shp_path,
+#                                            the_geom=geom,
+#                                            segmentation_information=meta_object)
         return filename
 
     @classmethod
