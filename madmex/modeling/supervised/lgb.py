@@ -10,7 +10,7 @@ class Model(BaseModel):
 
     def __init__(self, categorical_features=None, n_estimators=50, n_jobs=-1,
                  max_depth=30, learning_rate=0.1, reg_alpha=0,
-                 reg_lambda=0):
+                 reg_lambda=0, random_state=0):
         '''
         Example:
             >>> from madmex.modeling.supervised.lgb import Model
@@ -24,7 +24,7 @@ class Model(BaseModel):
         self.model = LGBMClassifier(n_estimators=n_estimators,
                                    n_jobs=n_jobs, max_depth=max_depth,
                                    learning_rate=learning_rate,
-                                   reg_alpha=reg_alpha, reg_lambda=reg_lambda)
+                                   reg_alpha=reg_alpha, reg_lambda=reg_lambda, random_state=random_state)
         self.model_name = 'lgb'
 
     def fit(self, X, y):
