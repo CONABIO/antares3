@@ -451,7 +451,7 @@ def write_predict_result_to_raster(id, predict_name, resolution, path_destiny):
         pred_objects_sorted = None
         #rasterize
         proj_crs = Proj(src.crs)
-        if not proj_crs.is_latlong():
+        if not proj_crs.crs.is_geographic:
             geometry_seg_proj = transform_geom(CRS_rio.from_epsg(4326),
                                                CRS_rio.from_proj4(crs),
                                                geometry_seg)
