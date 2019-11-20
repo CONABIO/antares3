@@ -35,7 +35,7 @@ def metadata_convert(path, bucket=None):
     Returns:
         str: The content of the metadata for later writing to file.
     """
-    pattern = re.compile(r'.*[0-9]{4}-[0-9]{2}-[0-9]{2}.*_RE(2|4|5)_3A.*_metadata\.xml')
+    pattern = re.compile(r'.*[0-9]{4}-[0-9]{2}-[0-9]{2}.*_RE(1|2|3|4|5)_3A.*_metadata\.xml')
     # Check that path is a dir and contains appropriate files
     if not os.path.isdir(path):
         raise ValueError('Argument path= is not a directory')
