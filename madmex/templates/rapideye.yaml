@@ -28,5 +28,5 @@ instrument: {name: {{ instrument }} }
 lineage:
   source_datasets: {}
 platform: {code: {{ satellite }} }
-processing_level: #not sure which value goes here
+processing_level: 3A
 product_type: {{ product_type }} 
