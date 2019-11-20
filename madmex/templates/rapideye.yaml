@@ -8,7 +8,7 @@ extent:
     ur: {lat: {{ ur_lat }}, lon: {{  ur_lon }} }
   from_dt: '{{ dt }}'
   to_dt: '{{ dt }}'
-format: {name: format_image}
+format: {name: {{ format_image }} }
 grid_spatial:
   projection:
     geo_ref_points:
@@ -29,4 +29,4 @@ lineage:
   source_datasets: {}
 platform: {code: {{ satellite }} }
 processing_level: #not sure which value goes here
-product_type: product_type 
+product_type: {{ product_type }} 
