@@ -115,7 +115,11 @@ def metadata_convert(path, bucket=None):
         'green': {'path': product, 'layer': 2},
         'red': {'path': product, 'layer': 3},
         'red_edge': {'path': product, 'layer': 4},
-        'nir': {'path': product, 'layer': 5}
+        'nir': {'path': product, 'layer': 5},
+        'format_image': format_image,
+        'instrument': instrument,
+        'satellite': satellite,
+        'product_type': product_type
         }
     # Load template
     env = Environment(loader=PackageLoader('madmex', 'templates'))
