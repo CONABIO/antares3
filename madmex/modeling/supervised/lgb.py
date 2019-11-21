@@ -10,7 +10,7 @@ class Model(BaseModel):
 
     def __init__(self, categorical_features=None, n_estimators=50, n_jobs=-1,
                  max_depth=30, learning_rate=0.1, reg_alpha=0,
-                 reg_lambda=0, random_state=0):
+                 reg_lambda=0, random_state=42107812):
         '''
         Example:
             >>> from madmex.modeling.supervised.lgb import Model
