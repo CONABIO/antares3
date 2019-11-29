@@ -11,6 +11,7 @@ import os
 import logging
 from glob import glob
 import itertools
+import re
 
 from dask.distributed import Client, LocalCluster
 
@@ -111,7 +112,7 @@ antares prepare_metadata --path dir/inside/bucket --bucket conabio-s3-oregon --d
         parser.add_argument('-pattern', '--pattern',
                             type=str,
                             default=None,
-                            help='Optional regex like pattern to use in the initial query. Only supported for s3 queries')
+                            help='Optional regex like pattern to use in the initial query.')
         parser.add_argument('-sc', '--scheduler',
                             type=str,
                             default=None,
@@ -128,7 +129,11 @@ antares prepare_metadata --path dir/inside/bucket --bucket conabio-s3-oregon --d
         multi = options['multi']
         scheduler_file = options['scheduler']
         if bucket is None:
-            subdir_list = glob(os.path.join(path, '*'))
+            s_lis = glob(os.path.join(path, '*'))
+            if pattern is None:
+                subdir_list = s_lis
+            else:
+                subdir_list = [x for x in s_lis if re.search(pattern, x)]
             # If the directory does not contain subdirectories it means that it's a single target directory
             if not any([os.path.isdir(x) for x in subdir_list]):
                 subdir_list = [path]
