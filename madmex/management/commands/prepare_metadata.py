@@ -129,12 +129,9 @@ antares prepare_metadata --path dir/inside/bucket --bucket conabio-s3-oregon --d
         scheduler_file = options['scheduler']
         if bucket is None:
             subdir_list = glob(os.path.join(path, '*'))
-            while any([os.path.isdir(x) for x in subdir_list]):
-                old_subdir_list = subdir_list
-                ll = [glob(os.path.join(sd, '*')) for sd in subdir_list]
-                flatten = itertools.chain.from_iterable
-                subdir_list = list(flatten(ll))
-            subdir_list = old_subdir_list
+            # If the directory does not contain subdirectories it means that it's a single target directory
+            if not any([os.path.isdir(x) for x in subdir_list]):
+                subdir_list = [path]
         else:
             subdir_list = s3.list_folders(bucket=bucket, path=path, pattern=pattern)
             if not subdir_list:
