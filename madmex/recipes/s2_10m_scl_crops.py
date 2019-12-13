@@ -61,7 +61,7 @@ def run(tile, center_dt, path):
         ndvi_min = sr_1.ndvi.min('time', keep_attrs=True, skipna=True)
         ndvi_min = ndvi_min.rename('ndvi_min')
         ndvi_min.attrs['nodata'] = 0
-        indexes = sr_1['ndvi'].argmax(axis=0).compute()
+        indexes = sr_1['ndvi'].argmax(axis=0).compute(scheduler='threads')
         begin_date = str(sr_1['ndvi']['time'][0].values).split('-')[0] + '-01-01'
         begin = datetime.strptime(begin_date, '%Y-%m-%d').timestamp()*1e-4 - 100
         ndvi_argmax = xr.DataArray(sr_1['ndvi']['time'][indexes].values.astype(datetime)*1e-13 - begin, 
