@@ -46,6 +46,7 @@ def run(tile, center_dt, path):
         # Compute ndvi
         sr_1['ndvi'] = ((sr_1.nir - sr_1.red) / (sr_1.nir + sr_1.red)) * 10000
         sr_1['ndvi'].attrs['nodata'] = 0
+        sr_1 = sr_1.chunk({'time': -1, 'x': 600, 'y': 600})
         # Run temporal reductions and rename DataArrays
         sr_mean = sr_1.mean('time', keep_attrs=True, skipna=True)
         sr_mean = sr_mean.rename({'red': 'red_mean',
@@ -61,7 +62,7 @@ def run(tile, center_dt, path):
         ndvi_min = sr_1.ndvi.min('time', keep_attrs=True, skipna=True)
         ndvi_min = ndvi_min.rename('ndvi_min')
         ndvi_min.attrs['nodata'] = 0
-        indexes = sr_1['ndvi'].argmax(axis=0).compute(scheduler='threads')
+        indexes = sr_1['ndvi'].data.argmax(axis=0)
         begin_date = str(sr_1['ndvi']['time'][0].values).split('-')[0] + '-01-01'
         begin = datetime.strptime(begin_date, '%Y-%m-%d').timestamp()*1e-4 - 100
         ndvi_argmax = xr.DataArray(sr_1['ndvi']['time'][indexes].values.astype(datetime)*1e-13 - begin, 
