@@ -66,7 +66,8 @@ def run(tile, center_dt, path):
                                coords=ndvi_max.coords, dims=ndvi_max.dims)        
         begin_date = str(sr_1['ndvi']['time'][0].values).split('-')[0] + '-01-01'
         begin = datetime.strptime(begin_date, '%Y-%m-%d').timestamp()*1e-4 - 100
-        ndvi_argmax = sr_1['ndvi']['time'][indexes].values.astype(datetime)*1e-13 - begin
+        ndvi_argmax = xr.DataArray(sr_1['ndvi']['time'][indexes].values.astype(datetime)*1e-13 - begin,
+                               coords=ndvi_max.coords, dims=ndvi_max.dims)
         ndvi_argmax = ndvi_argmax.rename('ndvi_argmax')
         ndvi_argmax.attrs['nodata'] = 0
 
