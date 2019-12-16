@@ -62,11 +62,11 @@ def run(tile, center_dt, path):
         ndvi_min = sr_1.ndvi.min('time', keep_attrs=True, skipna=True)
         ndvi_min = ndvi_min.rename('ndvi_min')
         ndvi_min.attrs['nodata'] = 0
-        indexes = sr_1['ndvi'].data.argmax(axis=0)
+        indexes = xr.DataArray(sr_1['ndvi'].where(np.isfinite(sr_1['ndvi']), other=-99).data.argmax(axis=0),
+                               coords=ndvi_max.coords, dims=ndvi_max.dims)        
         begin_date = str(sr_1['ndvi']['time'][0].values).split('-')[0] + '-01-01'
         begin = datetime.strptime(begin_date, '%Y-%m-%d').timestamp()*1e-4 - 100
-        ndvi_argmax = xr.DataArray(sr_1['ndvi']['time'][indexes].values.astype(datetime)*1e-13 - begin, 
-                                   coords=ndvi_max.coords, dims=ndvi_max.dims)
+        ndvi_argmax = sr_1['ndvi']['time'][indexes].values.astype(datetime)*1e-13 - begin
         ndvi_argmax = ndvi_argmax.rename('ndvi_argmax')
         ndvi_argmax.attrs['nodata'] = 0
 
