@@ -93,9 +93,9 @@ class BaseModel(abc.ABC):
     def hot_encode_predict(self, X):
         """Hot Encode data on which prediction is to be performed
         """
-         if self.categorical_features is not None:
-             X = self.enc.transform(X)
-         return X
+        if self.categorical_features is not None:
+            X = self.enc.transform(X)
+        return X
 
 
     @staticmethod
