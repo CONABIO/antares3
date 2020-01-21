@@ -85,7 +85,8 @@ class BaseModel(abc.ABC):
             ct = ColumnTransformer(
                  [('one_hot_encoder', OneHotEncoder(), self.categorical_features)],
                  remainder='passthrough')
-            X = ct.fit_transform(X)
+            self.enc = ct.fit(X)
+            X = ct.transform(X)
         return X
 
 
@@ -93,10 +94,7 @@ class BaseModel(abc.ABC):
         """Hot Encode data on which prediction is to be performed
         """
          if self.categorical_features is not None:
-             ct = ColumnTransformer(
-                  [('one_hot_encoder', OneHotEncoder(), self.categorical_features)],
-                  remainder='passthrough')
-             X = ct.fit_transform(X)
+             X = self.enc.transform(X)
          return X
 
 
