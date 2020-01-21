@@ -97,7 +97,7 @@ class BaseModel(abc.ABC):
                   [('one_hot_encoder', OneHotEncoder(), self.categorical_features)],
                   remainder='passthrough')
              X = ct.fit_transform(X)
-        return X
+         return X
 
 
     @staticmethod
