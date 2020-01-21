@@ -59,7 +59,7 @@ antares ingest_vector --file <path-to-file>/my_shapefile.shp --layer-name layer
             src_crs = src.crs
             to_string_crs = to_string(src_crs)
             proj_crs = Proj(src.crs)
-            if not proj_crs.is_latlong():
+            if not proj_crs.crs.is_geographic:
                 fc_proj = [feature_transform(x,
                                             "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
                                             to_string_crs) for x in fc]
@@ -67,11 +67,12 @@ antares ingest_vector --file <path-to-file>/my_shapefile.shp --layer-name layer
                 fc_proj = fc
 
             shape_list = [shape(feat['geometry']) for feat in fc_proj]
+            country_shape = cascaded_union(shape_list)
             country, _ = Country.objects.get_or_create(the_geom=GEOSGeometry(country_shape.wkt),
                                                        name=layer_name)
             for k in range(0,len(fc_proj)):
-                shape = shape_list[k]
-                geom = GEOSGeometry(shape.wkt,4326)
+                shapefile = shape_list[k]
+                geom = GEOSGeometry(shapefile.wkt,4326)
 
                 if not field: #needs to generate name for every entry
                     name = layer_name + '_%s'

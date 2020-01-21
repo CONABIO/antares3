@@ -1,0 +1,32 @@
+id: {{ id }}
+extent:
+  center_dt: '{{ dt }}'
+  coord:
+    ll: {lat: {{ ll_lat }}, lon: {{  ll_lon }} }
+    lr: {lat: {{ lr_lat }}, lon: {{  lr_lon }} }
+    ul: {lat: {{ ul_lat }}, lon: {{  ul_lon }} }
+    ur: {lat: {{ ur_lat }}, lon: {{  ur_lon }} }
+  from_dt: '{{ dt }}'
+  to_dt: '{{ dt }}'
+format: {name: {{ format_image }} }
+grid_spatial:
+  projection:
+    geo_ref_points:
+      ll: {x: {{ ll_x }}, y: {{ ll_y }} }
+      lr: {x: {{ lr_x }}, y: {{ lr_y }} }
+      ul: {x: {{ ul_x }}, y: {{ ul_y }} }
+      ur: {x: {{ ur_x }}, y: {{ ur_y }} }
+    spatial_reference: {{ crs }}
+image:
+  bands:
+    blue: {layer: {{ blue['layer'] }}, path: "{{ blue['path'] }}" }
+    green: {layer: {{ green['layer'] }}, path: "{{ green['path'] }}" }
+    red: {layer: {{ red['layer'] }}, path: "{{ red['path'] }}" }
+    red_edge: {layer: {{ red_edge['layer'] }}, path: "{{ red_edge['path'] }}" }
+    nir: {layer: {{ nir['layer'] }}, path: "{{ nir['path'] }}" }
+instrument: {name: {{ instrument }} }
+lineage:
+  source_datasets: {}
+platform: {code: {{ satellite }} }
+processing_level: 3A
+product_type: {{ product_type }} 

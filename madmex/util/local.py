@@ -7,6 +7,7 @@ import distutils
 import logging
 import os
 import re
+import glob
 from subprocess import check_output
 import sys
 import zipfile
@@ -35,8 +36,8 @@ def aware_download(url, directory):
     filename = url.split('/')[-1]
     filepath = os.path.join(directory, filename)
 
-
-    if not os.path.isfile(filepath):
+    similar_filenames = glob.glob(os.path.join(directory, filename.split('-')[0] + '*'))
+    if not os.path.isfile(filepath) and len(similar_filenames)==0:
         with open(filepath, "wb") as file_handle:
             print('Downloading %s' % filepath)
             response = requests.get(url, stream=True)

@@ -53,8 +53,7 @@ antares download_order --order_ids xxx@xxx-04302019-111111-111 xxx@xxx-04302019-
                 order.save()
 
         if order_ids == None:
-            qs = Order.objects.filter(downloaded=False)
-            dl_order(qs) 
+            print('Use order_ids argument to define order to download. See cmd line example: antares download_order --help') 
         else:
             for order_id in order_ids:
                 qs = Order.objects.filter(downloaded=False, order_id=order_id)

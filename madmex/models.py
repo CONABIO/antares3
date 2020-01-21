@@ -86,7 +86,7 @@ class PredictObject(models.Model):
     regions and each object should have an assigned tag which is the ground truth for
     it.
     '''
-    path = models.CharField(max_length=400, default='')
+    path = models.CharField(max_length=400, unique=True)
     the_geom = models.GeometryField()
     added = models.DateTimeField(auto_now_add=True)
     segmentation_information = models.ForeignKey(SegmentationInformation, on_delete=models.CASCADE, default=-1)
@@ -99,6 +99,33 @@ class TrainClassification(models.Model):
     interpret_tag = models.ForeignKey(Tag, related_name='interpret_tag', on_delete=models.CASCADE)
     train_object = models.ForeignKey(TrainObject, related_name='train_object', on_delete=models.CASCADE)
     training_set = models.CharField(max_length=100, default='')
+
+class Users(models.Model):
+    '''Table that holds information regarding users that will label polygons using
+    app.
+    Will change to hold more info.
+    '''
+    name = models.CharField(unique=True, max_length=100, default=None)
+
+class Institutions(models.Model):
+    '''Table that holds information regarding institutions where users will label
+    polygons using app.
+    '''
+    name = models.CharField(unique=True, max_length=100, default=None)
+
+class TrainClassificationLabeledByApp(models.Model):
+    ''' Table created with the purpose of holding values created via App.
+    Is similar to the one of TrainClassification
+    For ForeignKey blank or null check: https://stackoverflow.com/questions/16589069/foreignkey-does-not-allow-null-values
+    and: https://code.djangoproject.com/ticket/12708
+    '''
+    interpret_tag = models.ForeignKey(Tag, related_name='interpret_tag_app', on_delete=models.CASCADE, default=-1, blank=True, null=True)
+    train_object = models.ForeignKey(TrainObject, related_name='train_object_app', on_delete=models.CASCADE)
+    training_set = models.CharField(max_length=100, default='')
+    user = models.ForeignKey(Users, on_delete=models.CASCADE, default=-1,blank=True,null=True)
+    institution = models.ForeignKey(Institutions, on_delete=models.CASCADE, default=-1,blank=True,null=True)
+    automatic_label_tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    interpreted = models.BooleanField(default=False)
 
 class ChangeInformation(models.Model):
     """Gathers information about change objects

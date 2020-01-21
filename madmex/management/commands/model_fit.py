@@ -165,7 +165,7 @@ To consult the exposed arguments for each model, use the "model_params" command 
                           'sample': sample})
             arr_list = client.gather(C)
 
-            logger.info('Completed extraction of training data from %d tiles' , len(arr_list))
+            logger.info('Completed extraction of training data from {} tiles. Sample: {}'.format(len(arr_list), sample))
 
             # Zip list of predictors, target into two lists
             X_list, y_list = zip(*arr_list)

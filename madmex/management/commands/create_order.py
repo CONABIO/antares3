@@ -130,7 +130,7 @@ antares create_order --region 'Jalisco'  --start-date '2005-01-01' --end-date '2
                         if isinstance(region, int):
                             if str(region) in entity_id:
                                 interest.append(entity_id)
-                        elif scene_extent.intersects(region_object.the_geom):                        
+                        elif scene_extent.intersects(region_object.the_geom) and re.match(collection_regex, entity_id.lower()):                        
                             interest.append(entity_id)                            
             if order == True:
                 data = espa_client.order(collection_espa, interest, products)
@@ -141,8 +141,8 @@ antares create_order --region 'Jalisco'  --start-date '2005-01-01' --end-date '2
                 else:
                     logger.info(json.dumps(data, indent=4))
             else:
-                logger.info("%s scenes found in %s" %(len(interest), region))
                 logger.info(json.dumps(interest, indent=4))
+                logger.info("%s scenes found in %s" %(len(interest), region))
                 logger.info("Delete '--no-order' to make the request to USGS.")
         else:
             logger.info('No region with the name %s was found in the database.' % region)
