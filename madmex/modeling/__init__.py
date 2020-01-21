@@ -12,6 +12,7 @@ import dill
 import numpy as np
 from sklearn import metrics
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import IsolationForest
 from sklearn.utils import shuffle
 
@@ -81,18 +82,21 @@ class BaseModel(abc.ABC):
             array: The array of predictors with specified variables encoded
         """
         if self.categorical_features is not None:
-            enc = OneHotEncoder(categorical_features=self.categorical_features,
-                                sparse=False)
-            self.enc = enc.fit(X)
-            X = enc.transform(X)
+            ct = ColumnTransformer(
+                 [('one_hot_encoder', OneHotEncoder(), self.categorical_features)],
+                 remainder='passthrough')
+            X = ct.fit_transform(X)
         return X
 
 
     def hot_encode_predict(self, X):
         """Hot Encode data on which prediction is to be performed
         """
-        if self.categorical_features is not None:
-            X = self.enc.transform(X)
+         if self.categorical_features is not None:
+             ct = ColumnTransformer(
+                  [('one_hot_encoder', OneHotEncoder(), self.categorical_features)],
+                  remainder='passthrough')
+             X = ct.fit_transform(X)
         return X
 
 
