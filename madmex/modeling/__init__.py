@@ -80,6 +80,9 @@ class BaseModel(abc.ABC):
 
         Return:
             array: The array of predictors with specified variables encoded
+        See https://stackoverflow.com/questions/53802618/dummy-encoding-using-columtransformer
+            https://datascience.stackexchange.com/questions/41113/deprecationwarning-the-categorical-features-keyword-is-deprecated-in-version
+        for ColumnTransformer usage 
         """
         if self.categorical_features is not None:
             ct = ColumnTransformer(
