@@ -15,7 +15,7 @@ before_install:
   - pip install -U pip
 
 before_script:
-  - docker pull madmex/travis_antares3:v1
+  - docker pull madmex/travis_antares3:v2
 env:
   - antares_branch=$TRAVIS_BRANCH datacube_branch=develop
   
