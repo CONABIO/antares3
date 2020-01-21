@@ -16,7 +16,7 @@ from fiona.crs import to_string
 from pyproj import Proj
 
 from madmex.management.base import AntaresBaseCommand
-from madmex.models import TrainObject, Tag, TrainClassification
+from madmex.models import TrainObject, Tag, TrainClassification, TrainClassificationLabeledByApp
 from madmex.util.spatial import feature_transform
 
 logger = logging.getLogger(__name__)
@@ -48,12 +48,16 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
                             help='Data interpretation year',
                             required=False,
                             default=-1)
+        parser.add_argument('--app',
+                            action='store_true',
+                            help='Ingest to table TrainClassificationLabeledByApp?')
     def handle(self, **options):
         input_file = options['input_file']
         year = options['year']
         scheme = options['scheme']
         field = options['field']
         name = options['name']
+        app = options['app']
         # Create ValidClassification objects list
         # Push it to database
 
@@ -100,7 +104,23 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
                                       train_object=x[0],
                                       training_set=name)
             return obj
-
-        train_class_obj_list = [train_class_obj_builder(x) for x in zip(obj_list, fc)]
-
-        TrainClassification.objects.bulk_create(train_class_obj_list, batch_size=batch_size)
+        def train_class_labeled_by_app_obj_builder(x):
+            """x is a tuple (ValidObject, feature)"""
+            from madmex.models import Users, Institutions
+            user_dummy = Users()
+            institution_dummy = Institutions()
+            tag_dummy = Tag()
+            tag = tag_dict[x[1]['properties'][field]]
+            obj = TrainClassificationLabeledByApp(train_object=x[0],
+                                                  training_set=name,
+                                                  user=user_dummy,
+                                                  institution=institution_dummy,
+                                                  interpret_tag=tag_dummy,
+                                                  automatic_label_tag=tag)
+            return obj
+        if app is not None:
+            train_class_obj_list = [train_class_labeled_by_app_obj_builder(x) for x in zip(obj_list, fc)]
+            TrainClassificationLabeledByApp.objects.bulk_create(train_class_obj_list, batch_size=batch_size)
+        else:
+            train_class_obj_list = [train_class_obj_builder(x) for x in zip(obj_list, fc)]
+            TrainClassification.objects.bulk_create(train_class_obj_list, batch_size=batch_size)
