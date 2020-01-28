@@ -31,7 +31,7 @@ Ingest vector data to tables Country and Region in antares database.
 Example usage:
 --------------
 antares ingest_vector --file <path-to-file>/my_shapefile.shp --layer-name layer --field field
-antares ingest_vector --file <path-to-file>/my_shapefile.shp --layer-name layer
+antares ingest_vector --file <path-to-file>/my_shapefile.shp --layer-name layer --field ''
     """
 
     def add_arguments(self, parser):
