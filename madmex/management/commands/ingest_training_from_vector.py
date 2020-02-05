@@ -118,7 +118,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
                                                   interpret_tag=tag_dummy,
                                                   automatic_label_tag=tag)
             return obj
-        if app is not None:
+        if app:
             train_class_obj_list = [train_class_labeled_by_app_obj_builder(x) for x in zip(obj_list, fc)]
             TrainClassificationLabeledByApp.objects.bulk_create(train_class_obj_list, batch_size=batch_size)
         else:
