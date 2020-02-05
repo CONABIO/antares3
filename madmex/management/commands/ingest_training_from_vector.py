@@ -64,7 +64,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
         # Read file and Optionally reproject the features to longlat
         with fiona.open(input_file) as src:
             p = Proj(src.crs)
-            if p.proj_crs.crs.is_geographic: # Here we assume that geographic coordinates are automatically 4326 (not quite true)
+            if p.crs.is_geographic: # Here we assume that geographic coordinates are automatically 4326 (not quite true)
                 fc = list(src)
             else:
                 crs_str = to_string(src.crs)
