@@ -51,6 +51,15 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
         parser.add_argument('--app',
                             action='store_true',
                             help='Ingest to table TrainClassificationLabeledByApp?')
+        parser.add_argument('--train_interpreted',
+                            action='store_false',
+                            help='Does trainining set has some labels?')
+        parser.add_argument('-scheme_interpreted', '--scheme_interpreted',
+                            type=str,
+                            help='Name of the classification scheme to which the data belong. Use it if train_interpreted flag is set')
+        parser.add_argument('-field_interpreted', '--field_interpreted',
+                            type=str,
+                            help='Name of the vector file field containing the numeric codes of the class of interest. Use it if train_interpreted flag is set')
     def handle(self, **options):
         input_file = options['input_file']
         year = options['year']
@@ -58,6 +67,9 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
         field = options['field']
         name = options['name']
         app = options['app']
+        train_interpreted = options['train_interpreted']
+        scheme_interpreted = options['scheme_interpreted']
+        field_interpreted = options['field_interpreted']
         # Create ValidClassification objects list
         # Push it to database
 
@@ -109,13 +121,23 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
             from madmex.models import Users, Institutions
             user_dummy = Users()
             institution_dummy = Institutions()
-            tag_dummy = Tag()
+            if train_interpreted and field_interpreted is not None and scheme_interpreted is not None:
+                if Tag.objects.filter(scheme=scheme_interpreted).first() is not None:
+                    try:
+                        tag_interpreted = Tag.objects.get(pk=x['properties'][field_interpreted], scheme=scheme_interpreted)
+                    except:
+                        tag_interpreted = Tag()
+                else:
+                    logger.info('Couldnt find scheme_interpreted, you need to first run antares register_tag, even so will continue ingestion process')
+                    tag_interpreted = Tag()
+            else:
+                train_interpreted = Tag()
             tag = tag_dict[x[1]['properties'][field]]
             obj = TrainClassificationLabeledByApp(train_object=x[0],
                                                   training_set=name,
                                                   user=user_dummy,
                                                   institution=institution_dummy,
-                                                  interpret_tag=tag_dummy,
+                                                  interpret_tag=tag_interpreted,
                                                   automatic_label_tag=tag)
             return obj
         if app:
