@@ -51,7 +51,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
         parser.add_argument('--app',
                             action='store_true',
                             help='Ingest to table TrainClassificationLabeledByApp?')
-        parser.add_argument('--train_interpreted',
+        parser.add_argument('-train_interpreted', '--train_interpreted',
                             action='store_true',
                             help='Does trainining set has some labels?')
         parser.add_argument('-scheme_interpreted', '--scheme_interpreted',
