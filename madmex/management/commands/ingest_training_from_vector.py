@@ -131,7 +131,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
                     logger.info('Couldnt find scheme_interpreted, you need to first run antares register_tag, even so will continue ingestion process')
                     tag_interpreted = Tag()
             else:
-                train_interpreted = Tag()
+                tag_interpreted = Tag()
             tag = tag_dict[x[1]['properties'][field]]
             obj = TrainClassificationLabeledByApp(train_object=x[0],
                                                   training_set=name,
