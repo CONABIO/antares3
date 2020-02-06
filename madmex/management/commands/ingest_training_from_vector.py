@@ -121,7 +121,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
             from madmex.models import Users, Institutions
             user_dummy = Users()
             institution_dummy = Institutions()
-            if train_interpreted and field_interpreted is not None and scheme_interpreted is not None:
+            if not train_interpreted and field_interpreted is not None and scheme_interpreted is not None:
                 if Tag.objects.filter(scheme=scheme_interpreted).first() is not None:
                     try:
                         tag_interpreted = Tag.objects.get(pk=x['properties'][field_interpreted], scheme=scheme_interpreted)
