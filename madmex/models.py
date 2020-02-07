@@ -112,6 +112,18 @@ class Institutions(models.Model):
     polygons using app.
     '''
     name = models.CharField(unique=True, max_length=100, default=None)
+class CatalogTrainingSetForApp(models.Model):
+    '''Table that holds information regarding training sets that users of app will
+    select from
+    '''
+    name = models.CharField(unique=True, max_length=100, default=None)
+class TrainingSetAndODCTilesForApp(models.Model):
+    '''Table that relates training sets in TrainClassificationLabeledByApp table
+    with tiles of Open Data Cube. Therefore App just visualize a dc tile instead
+    all objects from a region.
+    '''
+    training_set = models.ForeignKey(CatalogTrainingSetForApp, on_delete=models.CASCADE)
+    odc_tile = models.CharField(max_length=10, default='')
 
 class TrainClassificationLabeledByApp(models.Model):
     ''' Table created with the purpose of holding values created via App.
@@ -121,7 +133,7 @@ class TrainClassificationLabeledByApp(models.Model):
     '''
     interpret_tag = models.ForeignKey(Tag, related_name='interpret_tag_app', on_delete=models.CASCADE, default=-1, blank=True, null=True)
     train_object = models.ForeignKey(TrainObject, related_name='train_object_app', on_delete=models.CASCADE)
-    training_set = models.CharField(max_length=100, default='')
+    training_set = models.ForeignKey(CatalogTrainingSetForApp, on_delete=models.CASCADE)
     user = models.ForeignKey(Users, on_delete=models.CASCADE, default=-1,blank=True,null=True)
     institution = models.ForeignKey(Institutions, on_delete=models.CASCADE, default=-1,blank=True,null=True)
     automatic_label_tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
