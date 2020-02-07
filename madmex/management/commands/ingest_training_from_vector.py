@@ -16,7 +16,7 @@ from fiona.crs import to_string
 from pyproj import Proj
 
 from madmex.management.base import AntaresBaseCommand
-from madmex.models import TrainObject, Tag, TrainClassification, TrainClassificationLabeledByApp
+from madmex.models import TrainObject, Tag, TrainClassification
 from madmex.util.spatial import feature_transform
 
 logger = logging.getLogger(__name__)
@@ -62,6 +62,9 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
         parser.add_argument('-field_interpreted', '--field_interpreted',
                             type=str,
                             help='Name of the vector file field containing the numeric codes of the class of interest. Use it if train_interpreted flag is set')
+        parser.add_argument('-dc_tile', '--dc_tile',
+                            type=str,
+                            help='Coordinates of dc tile to be registered in madmex_trainingsetandodctilesforapp table'
     def handle(self, **options):
         input_file = options['input_file']
         year = options['year']
@@ -72,6 +75,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
         train_interpreted = options['train_interpreted']
         scheme_interpreted = options['scheme_interpreted']
         field_interpreted = options['field_interpreted']
+        dc_tile = options['dc_tile']
         # Create ValidClassification objects list
         # Push it to database
 
@@ -120,10 +124,12 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
             return obj
         def train_class_labeled_by_app_obj_builder(x):
             """x is a tuple (ValidObject, feature)"""
-            from madmex.models import Users, Institutions
+            from madmex.models import Users, Institutions, CatalogTrainingSetForApp, TrainClassificationLabeledByApp, TrainingSetAndODCTilesForApp
             user_dummy = Users()
             institution_dummy = Institutions()
-            if train_interpreted and field_interpreted is not None and scheme_interpreted is not None:
+            training_set_for_app = CatalogTrainingSetForApp.objects.get_or_create(name=name)
+            TrainingSetAndODCTilesForApp.objects.get_or_create(training_set=training_set_for_app, odc_tile=dc_tile)
+            if train_interpreted and field_interpreted is not None and scheme_interpreted is not None and dc_tile is not None:
                 if Tag.objects.filter(scheme=scheme_interpreted).first() is not None:
                     try:
                         tag_interpreted = Tag.objects.get(pk=x[1]['properties'][field_interpreted], scheme=scheme_interpreted)
@@ -136,7 +142,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
                 tag_interpreted = Tag()
             tag = tag_dict[x[1]['properties'][field]]
             obj = TrainClassificationLabeledByApp(train_object=x[0],
-                                                  training_set=name,
+                                                  training_set=training_set_for_app,
                                                   user=user_dummy,
                                                   institution=institution_dummy,
                                                   interpret_tag=tag_interpreted,
