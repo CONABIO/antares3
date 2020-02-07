@@ -64,7 +64,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
                             help='Name of the vector file field containing the numeric codes of the class of interest. Use it if train_interpreted flag is set')
         parser.add_argument('-dc_tile', '--dc_tile',
                             type=str,
-                            help='Coordinates of dc tile to be registered in madmex_trainingsetandodctilesforapp table'
+                            help='Coordinates of dc tile to be registered in madmex_trainingsetandodctilesforapp table')
     def handle(self, **options):
         input_file = options['input_file']
         year = options['year']
