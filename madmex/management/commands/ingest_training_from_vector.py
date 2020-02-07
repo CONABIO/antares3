@@ -16,7 +16,7 @@ from fiona.crs import to_string
 from pyproj import Proj
 
 from madmex.management.base import AntaresBaseCommand
-from madmex.models import TrainObject, Tag, TrainClassification
+from madmex.models import TrainObject, Tag, TrainClassification, TrainClassificationLabeledByApp
 from madmex.util.spatial import feature_transform
 
 logger = logging.getLogger(__name__)
@@ -124,7 +124,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
             return obj
         def train_class_labeled_by_app_obj_builder(x):
             """x is a tuple (ValidObject, feature)"""
-            from madmex.models import Users, Institutions, CatalogTrainingSetForApp, TrainClassificationLabeledByApp, TrainingSetAndODCTilesForApp
+            from madmex.models import Users, Institutions, CatalogTrainingSetForApp, TrainingSetAndODCTilesForApp
             user_dummy = Users()
             institution_dummy = Institutions()
             training_set_for_app = CatalogTrainingSetForApp.objects.get_or_create(name=name)[0]
