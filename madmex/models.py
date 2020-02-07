@@ -138,7 +138,7 @@ class TrainClassificationLabeledByApp(models.Model):
     institution = models.ForeignKey(Institutions, on_delete=models.CASCADE, default=-1,blank=True,null=True)
     automatic_label_tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
     interpreted = models.BooleanField(default=False)
-    odc_tile = models.ForeignKey(TrainingSetAndODCTilesForApp, on_delete=models.CASCADE)
+    odc_tile = models.ForeignKey(TrainingSetAndODCTilesForApp, on_delete=models.CASCADE, default=-1)
 
 class ChangeInformation(models.Model):
     """Gathers information about change objects
