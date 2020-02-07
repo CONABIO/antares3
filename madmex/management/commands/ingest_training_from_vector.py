@@ -124,7 +124,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 201
             if train_interpreted and field_interpreted is not None and scheme_interpreted is not None:
                 if Tag.objects.filter(scheme=scheme_interpreted).first() is not None:
                     try:
-                        tag_interpreted = Tag.objects.get(pk=x[1]['properties'][field_interpreted], scheme=scheme_interpreted).id
+                        tag_interpreted = Tag.objects.get(pk=x[1]['properties'][field_interpreted], scheme=scheme_interpreted)
                     except:
                         tag_interpreted = Tag()
                 else:
