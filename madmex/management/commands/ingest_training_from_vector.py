@@ -127,7 +127,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
             from madmex.models import Users, Institutions, CatalogTrainingSetForApp, TrainClassificationLabeledByApp, TrainingSetAndODCTilesForApp
             user_dummy = Users()
             institution_dummy = Institutions()
-            training_set_for_app = CatalogTrainingSetForApp.objects.get_or_create(name=name)
+            training_set_for_app = CatalogTrainingSetForApp.objects.get_or_create(name=name)[0]
             TrainingSetAndODCTilesForApp.objects.get_or_create(training_set=training_set_for_app, odc_tile=dc_tile)
             if train_interpreted and field_interpreted is not None and scheme_interpreted is not None and dc_tile is not None:
                 if Tag.objects.filter(scheme=scheme_interpreted).first() is not None:
