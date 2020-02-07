@@ -29,6 +29,8 @@ Ingest a vector file containing training data into the antares database
 Example usage:
 --------------
 antares ingest_training_from_vector /path/to/file.shp --scheme madmex --year 2015 --name train_mexico --field code
+antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 2020 --name agricultura --field preds --app
+antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 2020 --name agricultura --field preds --app --train_interpreted --scheme_interpreted agricultura_conabio --field_interpreted class
     """
     def add_arguments(self, parser):
         parser.add_argument('input_file',
