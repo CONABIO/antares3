@@ -52,7 +52,7 @@ def run(tile, center_dt, path):
         sr_mean = sr_mean.rename({'ndvi': 'ndvi_mean'})
         sr_mean = sr_mean.apply(to_int)
         sr_mean.attrs['crs'] = crs
-        write_dataset_to_netcdf(sr_mean.compute(), nc_filename)
+        write_dataset_to_netcdf(sr_mean.compute(scheduler='threads'), nc_filename)
         # Explicitely deallocate objects and run garbage collector
         sr_0=sr_1=sr_mean=None
         gc.collect()
