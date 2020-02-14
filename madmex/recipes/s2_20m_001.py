@@ -43,7 +43,7 @@ def run(tile, center_dt, path):
         dc = datacube.Datacube(app = 's2_20m_001_%s' % randomword(5))
         terrain = dc.load(product='srtm_cgiar_mexico', like=sr_0,
                           time=(datetime(1970, 1, 1), datetime(2018, 1, 1)),
-                          dask_chunks={'x': 5000, 'y': 5000})
+                          dask_chunks={'time': 40, 'x': 5000, 'y': 5000})
         dc.close()
         # Keep clear pixels (2: Dark features, 4: Vegetation, 5: Not vegetated,
         # 6: Water, 7: Unclassified, 8: Cloud medium probability, 11: Snow/Ice)
