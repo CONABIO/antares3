@@ -124,6 +124,7 @@ class TrainingSetAndODCTilesForApp(models.Model):
     '''
     training_set = models.ForeignKey(CatalogTrainingSetForApp, on_delete=models.CASCADE)
     odc_tile = models.CharField(max_length=10, default='')
+    the_geom = models.GeometryField(null=True, blank=True)
 
 class TrainClassificationLabeledByApp(models.Model):
     ''' Table created with the purpose of holding values created via App.

@@ -18,6 +18,9 @@ from pyproj import Proj
 from madmex.management.base import AntaresBaseCommand
 from madmex.models import TrainObject, Tag, TrainClassification, TrainClassificationLabeledByApp
 from madmex.util.spatial import feature_transform
+from madmex.util.spatial import get_geom_bbox, geometry_transform
+from shapely.geometry import shape, mapping, Point, Polygon
+
 
 logger = logging.getLogger(__name__)
 
@@ -122,13 +125,48 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
                                       train_object=x[0],
                                       training_set=name)
             return obj
-        def train_class_labeled_by_app_obj_builder(x):
+        def get_geometry_extent_of_features(fc_input):
+            bbox_list = (get_geom_bbox(x['geometry']) for x in fc_input)
+            xmin_list, ymin_list, xmax_list, ymax_list = zip(*bbox_list)
+            xmin = min(xmin_list)
+            ymax  = max(ymax_list)
+            xmax = max(xmax_list)
+            ymin = min(ymin_list)
+            bbox = (xmin, ymin, xmax, ymax)
+            p1 = Point(xmin, ymax)
+            p2 = Point(xmax, ymax)
+            p3 = Point(xmax, ymin)
+            p4 = Point(xmin, ymin)
+            p1 = shape(geometry_transform(mapping(p1),crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
+                                          crs_in=src.crs))
+            p2 = shape(geometry_transform(mapping(p2),crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
+                                          crs_in=src.crs))
+            p3 = shape(geometry_transform(mapping(p3),crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
+                                          crs_in=src.crs))
+            p4 = shape(geometry_transform(mapping(p4),crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
+                                          crs_in=src.crs))
+            np1 = (p1.coords.xy[0][0], p1.coords.xy[1][0])
+            np2 = (p2.coords.xy[0][0], p2.coords.xy[1][0])
+            np3 = (p3.coords.xy[0][0], p3.coords.xy[1][0])
+            np4 = (p4.coords.xy[0][0], p4.coords.xy[1][0])
+            bb_polygon = Polygon([np1, np2, np3, np4])
+            return GEOSGeometry(json.dumps(mapping(bb_polygon)))
+        def catalog_training_set_and_odc_tiles_for_app_builder(fc_input):
+            from madmex.models import CatalogTrainingSetForApp, TrainingSetAndODCTilesForApp
+            tset_for_app = CatalogTrainingSetForApp.objects.get_or_create(name=name)[0]
+            geom = get_geometry_extent_of_features(fc_input)
+            tset_and_odc_tiles = TrainingSetAndODCTilesForApp.objects.get_or_create(training_set=tset_for_app,
+                                                                                            the_geom = geom,
+                                                                                            odc_tile=dc_tile)[0]
+
+            return (tset_for_app, tset_and_odc_tiles)
+
+
+        def train_class_labeled_by_app_obj_builder(x, training_set_for_app, training_set_and_odc_tiles):
             """x is a tuple (ValidObject, feature)"""
-            from madmex.models import Users, Institutions, CatalogTrainingSetForApp, TrainingSetAndODCTilesForApp
+            from madmex.models import Users, Institutions
             user_dummy = Users()
             institution_dummy = Institutions()
-            training_set_for_app = CatalogTrainingSetForApp.objects.get_or_create(name=name)[0]
-            training_set_and_odc_tiles = TrainingSetAndODCTilesForApp.objects.get_or_create(training_set=training_set_for_app, odc_tile=dc_tile)[0]
             if train_interpreted and field_interpreted is not None and scheme_interpreted is not None and dc_tile is not None:
                 if Tag.objects.filter(scheme=scheme_interpreted).first() is not None:
                     try:
@@ -150,7 +188,8 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
                                                   odc_tile=training_set_and_odc_tiles)
             return obj
         if app:
-            train_class_obj_list = [train_class_labeled_by_app_obj_builder(x) for x in zip(obj_list, fc)]
+            training_set_for_app, training_set_and_odc_tiles = catalog_training_set_and_odc_tiles_for_app_builder(fc)
+            train_class_obj_list = [train_class_labeled_by_app_obj_builder(x,training_set_for_app, training_set_and_odc_tiles) for x in zip(obj_list, fc)]
             TrainClassificationLabeledByApp.objects.bulk_create(train_class_obj_list, batch_size=batch_size)
         else:
             train_class_obj_list = [train_class_obj_builder(x) for x in zip(obj_list, fc)]
