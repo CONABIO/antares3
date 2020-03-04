@@ -137,14 +137,15 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
             p2 = Point(xmax, ymax)
             p3 = Point(xmax, ymin)
             p4 = Point(xmin, ymin)
+	    crs_input = to_string(src.crs)
             p1 = shape(geometry_transform(mapping(p1),crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
-                                          crs_in=src.crs))
+                                          crs_in=crs_input))
             p2 = shape(geometry_transform(mapping(p2),crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
-                                          crs_in=src.crs))
+                                          crs_in=crs_input))
             p3 = shape(geometry_transform(mapping(p3),crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
-                                          crs_in=src.crs))
+                                          crs_in=crs_input))
             p4 = shape(geometry_transform(mapping(p4),crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
-                                          crs_in=src.crs))
+                                          crs_in=crs_input))
             np1 = (p1.coords.xy[0][0], p1.coords.xy[1][0])
             np2 = (p2.coords.xy[0][0], p2.coords.xy[1][0])
             np3 = (p3.coords.xy[0][0], p3.coords.xy[1][0])
