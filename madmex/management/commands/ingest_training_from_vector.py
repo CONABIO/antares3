@@ -137,15 +137,10 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
             p2 = Point(xmax, ymax)
             p3 = Point(xmax, ymin)
             p4 = Point(xmin, ymin)
-            crs_input = to_string(src.crs)
-            p1 = shape(geometry_transform(mapping(p1),crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
-                                          crs_in=crs_input))
-            p2 = shape(geometry_transform(mapping(p2),crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
-                                          crs_in=crs_input))
-            p3 = shape(geometry_transform(mapping(p3),crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
-                                          crs_in=crs_input))
-            p4 = shape(geometry_transform(mapping(p4),crs_out="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
-                                          crs_in=crs_input))
+            p1 = shape(mapping(p1))
+            p2 = shape(mapping(p2))
+            p3 = shape(mapping(p3))
+            p4 = shape(mapping(p4))
             np1 = (p1.coords.xy[0][0], p1.coords.xy[1][0])
             np2 = (p2.coords.xy[0][0], p2.coords.xy[1][0])
             np3 = (p3.coords.xy[0][0], p3.coords.xy[1][0])
@@ -157,8 +152,8 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
             tset_for_app = CatalogTrainingSetForApp.objects.get_or_create(name=name)[0]
             geom = get_geometry_extent_of_features(fc_input)
             tset_and_odc_tiles = TrainingSetAndODCTilesForApp.objects.get_or_create(training_set=tset_for_app,
-                                                                                            the_geom = geom,
-                                                                                            odc_tile=dc_tile)[0]
+                                                                                    the_geom = geom,
+                                                                                    odc_tile=dc_tile)[0]
 
             return (tset_for_app, tset_and_odc_tiles)
 
