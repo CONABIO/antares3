@@ -117,6 +117,7 @@ class CatalogTrainingSetForApp(models.Model):
     select from
     '''
     name = models.CharField(unique=True, max_length=100, default=None)
+    scheme = models.CharField(max_length=50, default=None)
 class TrainingSetAndODCTilesForApp(models.Model):
     '''Table that relates training sets in TrainClassificationLabeledByApp table
     with tiles of Open Data Cube. Therefore App just visualize a dc tile instead
