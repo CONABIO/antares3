@@ -149,7 +149,7 @@ antares ingest_training_from_vector /path/to/file.shp --scheme automatic --year 
             return GEOSGeometry(json.dumps(mapping(bb_polygon)))
         def catalog_training_set_and_odc_tiles_for_app_builder(fc_input):
             from madmex.models import CatalogTrainingSetForApp, TrainingSetAndODCTilesForApp
-            tset_for_app = CatalogTrainingSetForApp.objects.get_or_create(name=name)[0]
+            tset_for_app = CatalogTrainingSetForApp.objects.get_or_create(name=name, scheme=scheme_interpreted)[0]
             geom = get_geometry_extent_of_features(fc_input)
             tset_and_odc_tiles = TrainingSetAndODCTilesForApp.objects.get_or_create(training_set=tset_for_app,
                                                                                     the_geom = geom,
