@@ -105,7 +105,10 @@ class Users(models.Model):
     app.
     Will change to hold more info.
     '''
-    name = models.CharField(unique=True, max_length=100, default=None)
+    first_name = models.CharField(unique=True, max_length=100, default=None)
+    last_name = models.CharField(unique=True, max_length=100, default=None)
+    email = models.CharField(unique=True, max_length=100, default=None)
+    password = models.CharField(unique=True, max_length=100, default=None)
 
 class Institutions(models.Model):
     '''Table that holds information regarding institutions where users will label
