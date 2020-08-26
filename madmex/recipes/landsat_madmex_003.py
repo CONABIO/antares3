@@ -56,14 +56,14 @@ def run(tile, center_dt, path):
         sr_1['ndmi'].attrs['nodata'] = -9999
         # Run temporal reductions and rename DataArrays
         sr_mean = sr_1.mean('time', keep_attrs=True, skipna=True)
-        sr_mean.rename({'blue': 'blue_mean',
-                        'green': 'green_mean',
-                        'red': 'red_mean',
-                        'nir': 'nir_mean',
-                        'swir1': 'swir1_mean',
-                        'swir2': 'swir2_mean',
-                        'ndmi': 'ndmi_mean',
-                        'ndvi': 'ndvi_mean'}, inplace=True)
+        sr_mean = sr_mean.rename({'blue': 'blue_mean',
+                                  'green': 'green_mean',
+                                  'red': 'red_mean',
+                                  'nir': 'nir_mean',
+                                  'swir1': 'swir1_mean',
+                                  'swir2': 'swir2_mean',
+                                  'ndmi': 'ndmi_mean',
+                                  'ndvi': 'ndvi_mean'})
         # Compute min/max/std only for vegetation indices
         ndvi_max = sr_1.ndvi.max('time', keep_attrs=True, skipna=True)
         ndvi_max = ndvi_max.rename('ndvi_max')
@@ -92,8 +92,7 @@ def run(tile, center_dt, path):
                              to_int(ndmi_min),
                              terrain])
         combined.attrs['crs'] = crs
-        combined = combined.compute(scheduler='threads')
-        write_dataset_to_netcdf(combined, nc_filename)
+        write_dataset_to_netcdf(combined.compute(scheduler='threads'), nc_filename)
         # Explicitely deallocate objects and run garbage collector
         sr_0=sr_1=sr_mean=clear=ndvi_max=ndvi_min=ndmi_max=ndmi_min=terrain=combined=None
         gc.collect()
