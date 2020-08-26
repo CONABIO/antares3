@@ -40,8 +40,8 @@ def run(tile, center_dt, path):
         if os.path.isfile(nc_filename):
             logger.warning('%s already exists. Returning filename for database indexing', nc_filename)
             return nc_filename
-        sr_0 = xr.auto_combine([GridWorkflow.load(x, dask_chunks={'x': 1200, 'y': 1200})
-                         for x in tile[1]], concat_dim='time')
+        sr_0 = xr.combine_by_coords([GridWorkflow.load(x, dask_chunks={'x': 1200, 'y': 1200})
+                                     for x in tile[1]], data_vars='minimal', coords='minimal')
         sr_0.attrs['geobox'] = tile[1][0].geobox
         # Mask clouds, shadow, water, ice,... and drop qa layer
         clear = masking.make_mask(sr_0.pixel_qa, cloud=False, cloud_shadow=False,
